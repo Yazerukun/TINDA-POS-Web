@@ -5,12 +5,14 @@
 
 **Fast, 100% offline, sign-language & touch-friendly Point of Sale and Inventory System designed for Philippine sari-sari stores, retail counters, and minimarts on any browser (Desktop, iPad, Tablet, Mobile).**
 
-[![Live Production](https://img.shields.io/badge/Live-tindaposweb.yomikaze--md.workers.dev-10B981?style=for-the-badge&logo=cloudflare&logoColor=white)](https://tindaposweb.yomikaze-md.workers.dev/)
+[![Cloudflare Pages](https://img.shields.io/badge/Live-tindapos--web.pages.dev-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://tindapos-web.pages.dev/)
+[![Live Production](https://img.shields.io/badge/Worker-tindaposweb.workers.dev-10B981?style=for-the-badge&logo=cloudflare&logoColor=white)](https://tindaposweb.yomikaze-md.workers.dev/)
 [![Build Status](https://img.shields.io/badge/Build-Passing%20(Vite%208)-10B981?style=for-the-badge&logo=vite&logoColor=white)](#-building-and-deploying)
 [![Database](https://img.shields.io/badge/Storage-100%25%20Offline%20(Dexie%20v4)-3B82F6?style=for-the-badge&logo=sqlite&logoColor=white)](#-offline-first-architecture)
 [![License](https://img.shields.io/badge/License-Free%20for%20Small%20Business-8B5CF6?style=for-the-badge)](#-license)
 
-> 🚀 **Live Production Link:** [https://tindaposweb.yomikaze-md.workers.dev/](https://tindaposweb.yomikaze-md.workers.dev/)
+> 🚀 **Primary Short Live URL:** **[https://tindapos-web.pages.dev/](https://tindapos-web.pages.dev/)**  
+> ⚡ **Secondary Edge Mirror:** [https://tindaposweb.yomikaze-md.workers.dev/](https://tindaposweb.yomikaze-md.workers.dev/)
 
 ---
 

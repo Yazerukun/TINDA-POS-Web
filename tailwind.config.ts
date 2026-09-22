@@ -7,14 +7,27 @@ export default {
     extend: {
       colors: {
         obsidian: {
-          950: '#05070a',
-          900: '#0b0f17',
-          850: '#101622',
-          800: '#161f2e',
-          750: '#1d283c',
-          700: '#26344d',
-          border: 'rgba(255, 255, 255, 0.08)',
-          glow: 'rgba(255, 255, 255, 0.03)'
+          950: '#050608',
+          900: '#090b10',
+          850: '#0e1118',
+          800: '#141822',
+          750: '#1b212f',
+          700: '#232b3d',
+          border: 'rgba(255, 255, 255, 0.05)',
+          glow: 'rgba(212, 175, 55, 0.05)'
+        },
+        gold: {
+          DEFAULT: '#D4AF37',
+          light: '#E2C799',
+          muted: '#C5A059',
+          dark: '#8C6D23',
+          glow: 'rgba(212, 175, 55, 0.22)'
+        },
+        burgundy: {
+          DEFAULT: '#8B1E22',
+          dark: '#5C1215',
+          deep: '#3B0B0D',
+          glow: 'rgba(139, 30, 34, 0.28)'
         },
         emerald: {
           400: '#34d399',
@@ -23,10 +36,10 @@ export default {
           glow: 'rgba(16, 185, 129, 0.2)'
         },
         amber: {
-          400: '#fbbf24',
-          500: '#f59e0b',
-          600: '#d97706',
-          glow: 'rgba(245, 158, 11, 0.2)'
+          400: '#E2C799',
+          500: '#D4AF37',
+          600: '#C5A059',
+          glow: 'rgba(212, 175, 55, 0.2)'
         },
         indigo: {
           400: '#818cf8',
@@ -35,20 +48,24 @@ export default {
         },
         rose: {
           400: '#fb7185',
-          500: '#f43f5e',
-          600: '#e11d48'
+          500: '#8B1E22',
+          600: '#5C1215'
         }
       },
       fontFamily: {
+        serif: ['Cinzel', 'Cormorant Garamond', 'Playfair Display', 'Georgia', 'serif'],
         sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
         mono: ['JetBrains Mono', 'SFMono-Regular', 'Consolas', 'monospace']
       },
       boxShadow: {
-        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-        'luxury': '0 20px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08)',
-        'glow-emerald': '0 0 35px -5px rgba(16, 185, 129, 0.35)',
-        'glow-amber': '0 0 35px -5px rgba(245, 158, 11, 0.35)',
-        'glow-indigo': '0 0 35px -5px rgba(99, 102, 241, 0.35)'
+        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.45)',
+        'luxury': '0 20px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+        'vault': '0 25px 70px -10px rgba(0, 0, 0, 0.95), 0 0 50px -10px rgba(212, 175, 55, 0.16), 0 0 0 1px rgba(255, 255, 255, 0.06)',
+        'glow-gold': '0 0 35px -5px rgba(212, 175, 55, 0.28)',
+        'glow-burgundy': '0 0 35px -5px rgba(139, 30, 34, 0.35)',
+        'glow-emerald': '0 0 35px -5px rgba(16, 185, 129, 0.25)',
+        'glow-amber': '0 0 35px -5px rgba(212, 175, 55, 0.25)',
+        'glow-indigo': '0 0 35px -5px rgba(99, 102, 241, 0.25)'
       },
       animation: {
         'fade-in': 'fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',

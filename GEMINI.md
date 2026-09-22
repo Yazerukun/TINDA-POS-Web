@@ -37,13 +37,16 @@
 ---
 
 ## Key Features in v1.0.1
-1. 📸 **Dual Photo Mode**: Device Camera capture (`capture="environment"`) & Gallery photo upload with zero backend dependency.
-2. ⚡ **Offline Canvas Compressor**: Prevents IndexedDB bloat by auto-downscaling to 320×320 WebP on the client before saving.
-3. 🏷️ **PWD / Senior Citizen 20% Auto-Calc**: 1-tap statutory discount on active shopping cart items.
-4. ⏸️ **Held Carts Queue**: Temporarily park active transactions and resume immediately when the customer returns.
-5. 💳 **Utang / Credit Ledger**: Tracks customer debt, credit ceilings, and partial/full settlement payments.
-6. 📊 **Executive Analytics**: Gross profit calculation, revenue statistics, audit log, and top-selling product leaderboard.
-7. 💾 **Universal Parity**: Seamless `.tinda-backup` export and import compatible with TINDA POS Android APK (`v1.0.38`).
+1. 🏛️ **Ultra-Luxury "Quiet Luxury" Redesign**:
+   - **The Private Vault (Authentication & Shift Onboarding)**: Floating obsidian glass vault card, gold monogram, cashier selection, 4-digit hairline PIN pad with masked dot feedback, and Opening Register Balance float stepper (₱1,000, ₱2,000, ₱5,000, Custom).
+   - **The Executive POS Counter**: Private Reserve v1.0 header with live metallic status pulse, active Concierge avatar, Quick Search with `[ ⌘K ]` shortcut listener, horizontal sliding gold category indicator line, razor-thin catalog product cards with soft inner shadows, client assignment selector (VIP / Utang accounts), editorial grand total centerpiece, quick tender gold chips (`[ Exact ]`, `[ ₱500 ]`, `[ ₱1,000 ]`, `[ Custom ]`), and brushed gold checkout authorization with champagne confetti.
+2. 📸 **Dual Photo Mode**: Device Camera capture (`capture="environment"`) & Gallery photo upload with zero backend dependency.
+3. ⚡ **Offline Canvas Compressor**: Prevents IndexedDB bloat by auto-downscaling to 320×320 WebP on the client before saving.
+4. 🏷️ **PWD / Senior Citizen 20% Auto-Calc**: 1-tap statutory discount on active shopping cart items.
+5. ⏸️ **Held Carts Queue**: Temporarily park active transactions and resume immediately when the customer returns.
+6. 💳 **Utang / Credit Ledger**: Tracks customer debt, credit ceilings, and partial/full settlement payments.
+7. 📊 **Executive Analytics**: Gross profit calculation, revenue statistics, audit log, and top-selling product leaderboard.
+8. 💾 **Universal Parity**: Seamless `.tinda-backup` export and import compatible with TINDA POS Android APK (`v1.0.38`).
 
 ---
 

@@ -8,6 +8,7 @@ import { AnalyticsScreen } from './components/AnalyticsScreen'
 import { CustomersScreen } from './components/CustomersScreen'
 import { SettingsScreen } from './components/SettingsScreen'
 import { CheckoutModal } from './components/CheckoutModal'
+import { VaultAuthModal, type VaultSession } from './components/VaultAuthModal'
 
 export default function App(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<ActiveTab>('pos')
@@ -20,12 +21,25 @@ export default function App(): React.JSX.Element {
   const [heldCarts, setHeldCarts] = useState<HeldCart[]>([])
   const [loading, setLoading] = useState(true)
 
+  // Vault Session / Cashier Authentication State (Screen 1 vs Screen 2)
+  const [vaultSession, setVaultSession] = useState<VaultSession | null>(() => {
+    try {
+      const saved = localStorage.getItem('tinda_vault_session')
+      return saved ? JSON.parse(saved) : null
+    } catch {
+      return null
+    }
+  })
+  const [isVaultLocked, setIsVaultLocked] = useState<boolean>(!vaultSession)
+
   // Checkout modal state
   const [checkoutData, setCheckoutData] = useState<{
     subtotal_c: number
     discount_c: number
     discount_type: DiscountType
     total_c: number
+    customerId?: number | null
+    quickTender_c?: number
   } | null>(null)
 
   // Load all data from Dexie
@@ -85,9 +99,18 @@ export default function App(): React.JSX.Element {
     subtotal_c: number,
     discount_c: number,
     discount_type: DiscountType,
-    total_c: number
+    total_c: number,
+    customerId?: number | null,
+    quickTender_c?: number
   ) => {
-    setCheckoutData({ subtotal_c, discount_c, discount_type, total_c })
+    setCheckoutData({
+      subtotal_c,
+      discount_c,
+      discount_type,
+      total_c,
+      customerId,
+      quickTender_c
+    })
   }
 
   const handleTransactionComplete = async (tx: Transaction) => {
@@ -102,26 +125,45 @@ export default function App(): React.JSX.Element {
     setSettings(newSettings)
   }
 
+  // Handle Vault Session Onboarding
+  const handleAuthenticated = (session: VaultSession) => {
+    setVaultSession(session)
+    setIsVaultLocked(false)
+    try {
+      localStorage.setItem('tinda_vault_session', JSON.stringify(session))
+    } catch {
+      // ignore
+    }
+  }
+
+  const handleLockTerminal = () => {
+    setIsVaultLocked(true)
+  }
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-obsidian-950 flex flex-col items-center justify-center text-slate-300">
-        <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-400 font-black text-2xl border border-emerald-500/30 shadow-glow-emerald animate-pulse">
-          T
+      <div className="min-h-screen bg-obsidian-950 flex flex-col items-center justify-center text-stone-300">
+        <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-b from-amber-200/15 via-gold/15 to-transparent border border-gold/40 shadow-glow-gold animate-pulse">
+          <span className="font-serif text-3xl font-bold tracking-widest text-gold-light">T</span>
+          <div className="absolute -inset-1 rounded-2xl bg-gold/10 blur-[6px] -z-10" />
         </div>
-        <p className="mt-4 text-xs font-bold tracking-widest text-slate-400 uppercase">
-          Initializing TINDA POS Web Engine...
+        <p className="mt-5 font-serif text-xs font-bold tracking-[0.3em] text-gold-light uppercase">
+          INITIALIZING TINDA PRIVATE TERMINAL...
         </p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-obsidian-950 text-slate-100 flex flex-col selection:bg-emerald-500 selection:text-obsidian-950">
-      {/* Top Luxury Navigation */}
+    <div className="min-h-screen bg-obsidian-950 text-stone-100 flex flex-col selection:bg-amber-400 selection:text-obsidian-950 font-sans">
+      {/* Top Luxury Navigation (Executive Header) */}
       <Navigation
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         cartCount={cart.reduce((s, i) => s + i.quantity, 0)}
+        cashierName={vaultSession?.cashierName || 'Master Concierge'}
+        cashierRole={vaultSession?.cashierRole || 'Terminal Lead'}
+        onLockTerminal={handleLockTerminal}
       />
 
       {/* Main Screen Router */}
@@ -168,7 +210,14 @@ export default function App(): React.JSX.Element {
         )}
       </main>
 
-      {/* Checkout Modal */}
+      {/* Screen 1: The Private Vault (Cashier Login & Shift Float Onboarding Modal) */}
+      <VaultAuthModal
+        isOpen={isVaultLocked}
+        onAuthenticated={handleAuthenticated}
+        currentCashier={vaultSession?.cashierName}
+      />
+
+      {/* Checkout Modal (Private Settlement Authorization) */}
       {checkoutData && (
         <CheckoutModal
           items={cart}
@@ -177,7 +226,9 @@ export default function App(): React.JSX.Element {
           discount_type={checkoutData.discount_type}
           total_c={checkoutData.total_c}
           customers={customers}
-          selectedCustomerId={null}
+          selectedCustomerId={checkoutData.customerId || null}
+          presetTender_c={checkoutData.quickTender_c}
+          cashierName={vaultSession?.cashierName}
           onClose={() => setCheckoutData(null)}
           onComplete={handleTransactionComplete}
         />

@@ -18,11 +18,13 @@
 
 </div>
 
-## 🏪 The Complete Retail Counter in Any Browser
+## 🏪 The Private Reserve & Executive Counter
 
-**TINDA POS Web v1.0.1** brings enterprise-level retail point-of-sale functionality directly to any web browser. Engineered with the **Apple Design Standard**, it features deep obsidian aesthetics, layered glassmorphism, luminous emerald accents, and sub-16ms tactile responsiveness.
+**TINDA POS Web v1.0.1** transforms retail checkout into an ultra-luxury, "Quiet Luxury / Stealth Wealth" private terminal interface inspired by high-end private client desks (Audemars Piguet, Amex Centurion). Engineered with the **Apple Design Standard**, it features deep obsidian aesthetics (`#050608`), Champagne Gold accents (`#D4AF37`), editorial serif typography (Cinzel & Cormorant Garamond), and sub-16ms tactile responsiveness.
 
-### 🌟 Key Highlights in v1.0.1:
+### 🌟 Key Highlights:
+* 🏛️ **The Private Vault (Cashier Authentication & Shift Float)**: Floating obsidian glass vault card, gold monogram, cashier profile selector, 4-digit hairline PIN pad with masked feedback, and Opening Register Balance float stepper (₱1,000, ₱2,000, ₱5,000, Custom).
+* 💼 **The Executive POS Counter**: Private Reserve header with live metallic status pulse, active Concierge avatar, Quick Search with `[ ⌘K ]` shortcut listener, horizontal sliding gold category indicator line, razor-thin catalog product cards with soft inner shadows, client assignment selector (VIP / Utang accounts), editorial grand total centerpiece, quick tender gold chips (`[ Exact ]`, `[ ₱500 ]`, `[ ₱1,000 ]`, `[ Custom ]`), and brushed gold checkout authorization with champagne confetti.
 * ⚡ **100% True Offline Operation**: Stored directly within your browser's persistent Dexie IndexedDB engine. No recurring monthly fees, no mandatory server connection, and zero internet data consumed during checkout.
 * 📸 **Dual Photo Mode (Camera & Gallery)**: Easily attach product photos using your device camera or choose pictures directly from your files/gallery.
 * 🚀 **Client-Side Canvas Auto-Compressor**: Automatically resizes high-resolution photos to 320×320px WebP (~15KB) on the device before saving, eliminating database bloat and guaranteeing buttery 60fps scrolling.

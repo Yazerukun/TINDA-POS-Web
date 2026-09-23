@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import type { Product, Category, CartItem, DiscountType, HeldCart, Customer } from '../types'
 import { money } from '../utils/format'
+import { BarcodeScannerModal } from './BarcodeScannerModal'
 
 interface POSScreenProps {
   products: Product[]
@@ -56,6 +57,7 @@ export function POSScreen({
   const [discountType, setDiscountType] = useState<DiscountType>('NONE')
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null)
   const [activeInvoiceId, setActiveInvoiceId] = useState<string>('')
+  const [scanOpen, setScanOpen] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Generate luxury invoice sequence on mount or cart change
@@ -175,6 +177,20 @@ export function POSScreen({
 
   const selectedCustomer = customers.find((c) => c.id === selectedCustomerId)
 
+  // Camera barcode scan handler: auto-add matching product to ticket
+  const handleScanDetect = (code: string) => {
+    const match = products.find(
+      (p) => p.barcode === code || p.sku?.toLowerCase() === code.toLowerCase()
+    )
+    setScanOpen(false)
+    if (match) {
+      addToCart(match)
+    } else {
+      setSearchQuery(code)
+      searchInputRef.current?.focus()
+    }
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
       {/* Left Catalog Area (7 cols on lg, 8 cols on xl) */}
@@ -198,11 +214,18 @@ export function POSScreen({
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-950/40 border border-white/[0.05] text-[10px] font-mono text-stone-400">
+          <button
+            onClick={() => setScanOpen(true)}
+            aria-label="Scan barcode with camera"
+            className="btn-press flex items-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-950/40 border border-gold/25 hover:border-gold/60 hover:bg-gold/[0.08] text-[10px] font-mono text-gold-light transition-all shadow-glow-gold"
+          >
             <ScanLine className="h-3.5 w-3.5 text-gold-muted" />
-            <span className="tracking-wider uppercase">OPTICAL SCANNER READY</span>
-          </div>
+            <span className="tracking-wider uppercase">Scan</span>
+          </button>
         </div>
+
+        {/* Camera Barcode Scanner Overlay */}
+        <BarcodeScannerModal open={scanOpen} onClose={() => setScanOpen(false)} onDetect={handleScanDetect} />
 
         {/* Category Navigation: Understated Horizontal Tab Line with Sliding Gold Indicator */}
         <div className="relative border-b border-white/[0.06] overflow-x-auto scrollbar-none flex items-center gap-6 px-1">

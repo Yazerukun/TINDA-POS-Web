@@ -229,6 +229,8 @@ export default function App(): React.JSX.Element {
           selectedCustomerId={checkoutData.customerId || null}
           presetTender_c={checkoutData.quickTender_c}
           cashierName={vaultSession?.cashierName}
+          settings={settings}
+          terminalId={vaultSession?.terminalId || 'TRM-8891'}
           onClose={() => setCheckoutData(null)}
           onComplete={handleTransactionComplete}
         />

@@ -112,3 +112,100 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.22);
 }
+
+/* 80mm Thermal Receipt */
+.receipt {
+  background: #ffffff;
+  color: #000000;
+  width: 78mm;
+  padding: 3mm 4mm;
+  font-family: 'JetBrains Mono', 'SFMono-Regular', monospace;
+  font-size: 11px;
+  line-height: 1.4;
+}
+.receipt .center {
+  text-align: center;
+}
+.receipt .bold {
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.receipt .tiny {
+  font-size: 9px;
+  color: #555;
+  margin-top: 1mm;
+}
+.receipt .dashed {
+  border-top: 1px dashed #000;
+  margin: 2.5mm 0;
+}
+.receipt .dashed.thin {
+  margin: 1.5mm 0;
+}
+.receipt .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.receipt .row.total {
+  font-weight: 700;
+  font-size: 12.5px;
+  margin-top: 1mm;
+}
+.receipt .item-head {
+  display: flex;
+  font-weight: 700;
+}
+.receipt .item {
+  display: flex;
+  gap: 2mm;
+}
+.receipt .item .name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.receipt .item .qty,
+.receipt .item-head .qty {
+  flex: 0 0 34mm;
+  text-align: right;
+}
+.receipt .item .amt,
+.receipt .item-head .amt {
+  flex: 0 0 20mm;
+  text-align: right;
+}
+.receipt .footer {
+  margin: 1mm 0;
+}
+
+/* Print only the .print-area (80mm receipt) */
+.print-area {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+}
+@media print {
+  @page {
+    size: 80mm auto;
+    margin: 4mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    margin: 0;
+  }
+}

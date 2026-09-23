@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { X, CheckCircle2, Banknote, CreditCard, UserCheck, Printer, ShieldCheck, Sparkles } from 'lucide-react'
 import confetti from 'canvas-confetti'
-import type { CartItem, Customer, DiscountType, Transaction } from '../types'
+import type { CartItem, Customer, DiscountType, StoreSettings, Transaction } from '../types'
 import { money } from '../utils/format'
 import { db } from '../db'
+import { Receipt } from './Receipt'
 
 interface CheckoutModalProps {
   items: CartItem[]
@@ -15,6 +16,8 @@ interface CheckoutModalProps {
   selectedCustomerId: number | null
   presetTender_c?: number
   cashierName?: string
+  settings?: StoreSettings
+  terminalId: string
   onClose: () => void
   onComplete: (tx: Transaction) => void
 }
@@ -29,6 +32,8 @@ export function CheckoutModal({
   selectedCustomerId,
   presetTender_c,
   cashierName = 'Master Concierge',
+  settings,
+  terminalId,
   onClose,
   onComplete
 }: CheckoutModalProps): React.JSX.Element {
@@ -218,6 +223,16 @@ export function CheckoutModal({
               </div>
             </div>
 
+            {/* Print-only 80mm receipt document */}
+            <Receipt
+              tx={completedTx}
+              storeName={settings?.store_name}
+              address={settings?.address}
+              contact={settings?.contact_number}
+              receiptFooter={settings?.receipt_footer}
+              terminalId={terminalId}
+            />
+
             {/* Print & Close Actions */}
             <div className="flex gap-2.5">
               <button
@@ -226,7 +241,7 @@ export function CheckoutModal({
                 className="btn-press flex-1 py-3 px-4 rounded-2xl bg-zinc-950 border border-white/[0.08] hover:border-gold/40 text-stone-300 text-xs font-mono tracking-wider uppercase flex items-center justify-center gap-2"
               >
                 <Printer className="h-4 w-4 text-gold-muted" />
-                <span>Print Bill</span>
+                <span>Print Receipt</span>
               </button>
 
               <button

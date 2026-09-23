@@ -26,7 +26,7 @@ interface CashierProfile {
 
 const CASHIER_PROFILES: CashierProfile[] = [
   { id: 'c1', name: 'Alfonso V.', role: 'Master Concierge', initials: 'AV', pin: '1234' },
-  { id: 'c2', name: 'Isabella M.', role: 'Senior Vault Associate', initials: 'IM', pin: '1234' },
+  { id: 'c2', name: 'Isabella M.', role: 'Senior Inventory Associate', initials: 'IM', pin: '1234' },
   { id: 'c3', name: 'Sebastian R.', role: 'Private Client Specialist', initials: 'SR', pin: '1234' },
 ]
 
@@ -42,7 +42,7 @@ const GRID_BACKDROP = {
 
 const FEATURES = [
   { icon: Fingerprint, title: 'Concierge-keyed PIN access', desc: 'Per-staff identity, no shared keys' },
-  { icon: WifiOff, title: 'Offline-first vault', desc: 'Your register works with zero signal' },
+  { icon: WifiOff, title: 'Offline-first inventory', desc: 'Your register works with zero signal' },
   { icon: ShieldCheck, title: 'End-to-end session records', desc: 'Every shift is sealed and auditable' },
   { icon: ServerCog, title: 'Edge-served on Cloudflare', desc: 'Global points of presence, near-zero TTFB' },
 ] as const
@@ -88,7 +88,7 @@ function BrandPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
           <span className="text-gold-gradient">with confidence.</span>
         </h1>
         <p className="mt-5 text-sm leading-relaxed text-stone-400">
-          Authorized concierge access to the Tinda vault. Shift floats, private settlement and client
+          Authorized concierge access to the Tinda inventory. Shift floats, private settlement and client
           records — sealed under a single terminal session.
         </p>
 
@@ -363,7 +363,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                   </p>
                 </div>
               ) : (
-                /* Step 2: Vault Float & Shift Setup */
+                /* Step 2: Inventory Float & Shift Setup */
                 <div className="animate-fade-in">
                   <div className="flex items-center gap-3 p-3 rounded-2xl bg-amber-500/[0.08] border border-gold/25 mb-6">
                     <div className="h-9 w-9 rounded-full bg-gold/20 flex items-center justify-center text-amber-300">
@@ -434,7 +434,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                       onClick={handleConfirmSession}
                       className="btn-gold w-full py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2 text-xs font-bold tracking-[0.2em] uppercase shadow-glow-gold"
                     >
-                      <span>Confirm & Open Vault Session</span>
+                      <span>Confirm & Open Inventory Session</span>
                       <ArrowRight className="h-4 w-4" />
                     </button>
 

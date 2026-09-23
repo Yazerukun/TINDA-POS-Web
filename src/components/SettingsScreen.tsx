@@ -55,14 +55,17 @@ export function SettingsScreen({ settings, onSaveSettings, onRefreshAll }: Setti
   }
 
   const handleResetData = async () => {
-    if (confirm('Sigurado ka ba nga i-reset ang database sa default demo products?')) {
+    if (confirm('Sigurado ka ba nga i-clear ang TANANG data? Products, sales, customers, held tickets, ug restocking history ang mawala — walay demo items nga ibalik.')) {
       await db.products.clear()
       await db.categories.clear()
       await db.transactions.clear()
       await db.customers.clear()
+      await db.held_carts.clear()
+      await db.restock_logs.clear()
+      await db.settings.clear()
       await initDatabase()
       onRefreshAll()
-      alert('Database reset complete!')
+      alert('Database cleared! Sugdi ug idugang ang imong kaugalingong mga produkto.')
     }
   }
 
@@ -72,7 +75,7 @@ export function SettingsScreen({ settings, onSaveSettings, onRefreshAll }: Setti
       <div>
         <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
           <Settings className="h-6 w-6 text-emerald-400" />
-          <span>Store Settings & Universal Backup Vault</span>
+          <span>Store Settings & Universal Backup Archive</span>
         </h2>
         <p className="text-xs text-slate-400">
           I-configure ang impormasyon sa tindahan ug i-manage ang mga backup nga 100% offline.
@@ -177,12 +180,12 @@ export function SettingsScreen({ settings, onSaveSettings, onRefreshAll }: Setti
         </form>
       </div>
 
-      {/* Universal Backup Vault */}
+      {/* Universal Backup Archive */}
       <div className="glass-panel rounded-3xl border border-white/[0.1] p-6 shadow-2xl space-y-4">
         <div className="border-b border-white/[0.08] pb-3">
           <h3 className="text-sm font-bold text-white flex items-center gap-2">
             <Database className="h-4 w-4 text-indigo-400" />
-            <span>Universal .tinda-backup Vault</span>
+            <span>Universal .tinda-backup Archive</span>
           </h3>
           <p className="text-xs text-slate-400 mt-0.5">
             100% interoperable tali sa Android APK ug niining Web version.
@@ -239,13 +242,13 @@ export function SettingsScreen({ settings, onSaveSettings, onRefreshAll }: Setti
 
         {/* Reset Database */}
         <div className="pt-3 border-t border-white/[0.06] flex justify-between items-center">
-          <span className="text-xs text-slate-500">Need to reload sample demo items?</span>
+          <span className="text-xs text-slate-500">I-clear ang tibuok data sa tindahan (products, sales, customers, held tickets, restocking history).</span>
           <button
             onClick={handleResetData}
             className="btn-press px-3 py-1.5 rounded-xl border border-white/[0.08] text-slate-400 hover:text-white text-xs font-semibold flex items-center gap-1.5"
           >
             <RefreshCw className="h-3.5 w-3.5" />
-            <span>Reset Demo Data</span>
+            <span>Clear All Data</span>
           </button>
         </div>
       </div>

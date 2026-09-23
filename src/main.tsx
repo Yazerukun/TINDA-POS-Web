@@ -4,7 +4,7 @@ import App from './App'
 import './index.css'
 import { initDatabase } from './db'
 
-// Initialize Dexie sample database on startup
+// Initialize Dexie database (categories + default settings only — no demo data) on startup
 initDatabase().catch(console.error)
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

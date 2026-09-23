@@ -187,6 +187,7 @@ export default function App(): React.JSX.Element {
             products={products}
             categories={categories}
             onRefresh={loadData}
+            cashierName={vaultSession?.cashierName}
           />
         )}
 
@@ -210,7 +211,7 @@ export default function App(): React.JSX.Element {
         )}
       </main>
 
-      {/* Screen 1: The Private Vault (Cashier Login & Shift Float Onboarding Modal) */}
+      {/* Screen 1: Cashier Login & Shift Float Onboarding Modal */}
       <VaultAuthModal
         isOpen={isVaultLocked}
         onAuthenticated={handleAuthenticated}

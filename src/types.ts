@@ -79,6 +79,21 @@ export interface Customer {
   updated_at: string
 }
 
+export type RestockType = 'RESTOCK' | 'RETURN' | 'ADJUSTMENT'
+
+export interface RestockLog {
+  id?: number
+  product_id: number
+  product_name: string
+  quantity: number
+  type: RestockType
+  before_stock: number
+  after_stock: number
+  note: string | null
+  timestamp: string
+  cashier_name: string
+}
+
 export interface StoreSettings {
   store_name: string
   owner_name: string

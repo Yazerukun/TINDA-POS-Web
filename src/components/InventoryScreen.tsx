@@ -1,4 +1,4 @@
-import React, { useState, useRef, type ChangeEvent } from 'react'
+import React, { useState, useRef, useEffect, useCallback, type ChangeEvent } from 'react'
 import {
   Plus,
   Search,
@@ -11,10 +11,11 @@ import {
   CheckCircle2,
   RefreshCw,
   X,
-  Layers
+  Layers,
+  History
 } from 'lucide-react'
-import type { Product, Category } from '../types'
-import { money } from '../utils/format'
+import type { Product, Category, RestockLog, RestockType } from '../types'
+import { money, formatDateTime } from '../utils/format'
 import { compressImageFile } from '../utils/image'
 import { db } from '../db'
 
@@ -22,26 +23,68 @@ interface InventoryScreenProps {
   products: Product[]
   categories: Category[]
   onRefresh: () => void
+  cashierName?: string
 }
 
-export function InventoryScreen({ products, categories, onRefresh }: InventoryScreenProps): React.JSX.Element {
+export function InventoryScreen({ products, categories, onRefresh, cashierName }: InventoryScreenProps): React.JSX.Element {
   const [search, setSearch] = useState('')
   const [selectedCat, setSelectedCat] = useState<number | 'ALL'>('ALL')
+  const [selectedSubCat, setSelectedSubCat] = useState<number | 'ALL'>('ALL')
   const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [imageBusy, setImageBusy] = useState(false)
+  const [restockLogs, setRestockLogs] = useState<RestockLog[]>([])
 
   // Dual photo inputs
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const galleryInputRef = useRef<HTMLInputElement>(null)
 
-  // Filtering
+  // Main + Sub category options
+  const mainCategories = categories.filter((c) => c.parent_id === null)
+  const subCategories = selectedCat === 'ALL' ? [] : categories.filter((c) => c.parent_id === selectedCat)
+
+  // Filtering (main category AND subcategory)
   const filtered = products.filter((p) => {
     if (selectedCat !== 'ALL' && p.category_id !== selectedCat) return false
+    if (selectedSubCat !== 'ALL' && p.subcategory_id !== selectedSubCat) return false
     if (!search.trim()) return true
     const q = search.toLowerCase()
     return p.name.toLowerCase().includes(q) || p.sku?.toLowerCase().includes(q) || p.barcode?.includes(q)
   })
+
+  // Live restocking history from Dexie — real data only
+  const loadRestockLogs = useCallback(async () => {
+    try {
+      const logs = await db.restock_logs.orderBy('timestamp').reverse().toArray()
+      setRestockLogs(logs)
+    } catch {
+      setRestockLogs([])
+    }
+  }, [])
+  useEffect(() => {
+    void loadRestockLogs()
+  }, [loadRestockLogs, products])
+
+  const logRestock = async (
+    product: Product,
+    quantity: number,
+    type: RestockType,
+    beforeStock: number,
+    afterStock: number,
+    note: string | null
+  ): Promise<void> => {
+    await db.restock_logs.add({
+      product_id: product.id,
+      product_name: product.name,
+      quantity,
+      type,
+      before_stock: beforeStock,
+      after_stock: afterStock,
+      note,
+      timestamp: new Date().toISOString(),
+      cashier_name: cashierName || 'Unknown Cashier'
+    })
+  }
 
   // Handle Photo Pick
   const handlePhotoPick = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -89,13 +132,18 @@ export function InventoryScreen({ products, categories, onRefresh }: InventorySc
     }
 
     if (editingProduct.id) {
+      const existing = products.find((p) => p.id === editingProduct.id)
       await db.products.update(editingProduct.id, payload)
+      if (existing && payload.stock !== existing.stock) {
+        await logRestock(existing, payload.stock - existing.stock, 'ADJUSTMENT', existing.stock, payload.stock, 'Stock adjusted in product form')
+      }
     } else {
       await db.products.add(payload as Product)
     }
 
     setModalOpen(false)
     setEditingProduct(null)
+    await loadRestockLogs()
     onRefresh()
   }
 
@@ -107,9 +155,15 @@ export function InventoryScreen({ products, categories, onRefresh }: InventorySc
   }
 
   const handleAdjustStock = async (product: Product, delta: number) => {
-    const newStock = Math.max(0, product.stock + delta)
-    await db.products.update(product.id, { stock: newStock, updated_at: new Date().toISOString() })
-    onRefresh()
+    const beforeStock = product.stock
+    const newStock = Math.max(0, beforeStock + delta)
+    const applied = newStock - beforeStock
+    if (applied !== 0) {
+      await db.products.update(product.id, { stock: newStock, updated_at: new Date().toISOString() })
+      await logRestock(product, applied, applied > 0 ? 'RESTOCK' : 'ADJUSTMENT', beforeStock, newStock, null)
+      await loadRestockLogs()
+      onRefresh()
+    }
   }
 
   return (
@@ -148,43 +202,77 @@ export function InventoryScreen({ products, categories, onRefresh }: InventorySc
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="glass-panel rounded-2xl p-3.5 flex flex-col md:flex-row items-center gap-3">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by product name, SKU, or barcode..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
-          />
-        </div>
+      <div className="glass-panel rounded-2xl p-3.5 flex flex-col gap-3">
+        <div className="flex flex-col md:flex-row items-center gap-3">
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by product name, SKU, or barcode..."
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+            />
+          </div>
 
-        <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
-          <button
-            onClick={() => setSelectedCat('ALL')}
-            className={`btn-press whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-semibold ${
-              selectedCat === 'ALL'
-                ? 'bg-emerald-500 text-obsidian-950 font-bold'
-                : 'glass-pill text-slate-300 hover:text-white'
-            }`}
-          >
-            All ({products.length})
-          </button>
-          {categories.filter((c) => c.parent_id === null).map((c) => (
+          <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
             <button
-              key={c.id}
-              onClick={() => setSelectedCat(c.id)}
+              onClick={() => { setSelectedCat('ALL'); setSelectedSubCat('ALL') }}
               className={`btn-press whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-semibold ${
-                selectedCat === c.id
+                selectedCat === 'ALL'
                   ? 'bg-emerald-500 text-obsidian-950 font-bold'
                   : 'glass-pill text-slate-300 hover:text-white'
               }`}
             >
-              {c.name}
+              All ({products.length})
             </button>
-          ))}
+            {mainCategories.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => { setSelectedCat(c.id); setSelectedSubCat('ALL') }}
+                className={`btn-press whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-semibold ${
+                  selectedCat === c.id
+                    ? 'bg-emerald-500 text-obsidian-950 font-bold'
+                    : 'glass-pill text-slate-300 hover:text-white'
+                }`}
+              >
+                {c.name}
+              </button>
+            ))}
+          </div>
         </div>
+
+        {/* Subcategory row (level 2) */}
+        {subCategories.length > 0 && (
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 border-t border-white/[0.06] pt-2">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 shrink-0">
+              Subcategory
+            </span>
+            <button
+              onClick={() => setSelectedSubCat('ALL')}
+              className={`btn-press whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-semibold ${
+                selectedSubCat === 'ALL'
+                  ? 'bg-emerald-500 text-obsidian-950 font-bold'
+                  : 'glass-pill text-slate-300 hover:text-white'
+              }`}
+            >
+              All {categories.find((c) => c.id === selectedCat)?.name ?? ''}
+            </button>
+            {subCategories.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => setSelectedSubCat(s.id)}
+                className={`btn-press whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-semibold ${
+                  selectedSubCat === s.id
+                    ? 'bg-emerald-500 text-obsidian-950 font-bold'
+                    : 'glass-pill text-slate-300 hover:text-white'
+                }`}
+              >
+                {s.name}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Products Table Card */}
@@ -306,6 +394,67 @@ export function InventoryScreen({ products, categories, onRefresh }: InventorySc
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Restocking History — live from Dexie, most recent first */}
+      <div className="glass-panel rounded-3xl border border-white/[0.1] p-5 shadow-2xl space-y-4">
+        <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+          <h3 className="text-sm font-bold text-white flex items-center gap-2">
+            <History className="h-4 w-4 text-emerald-400" />
+            <span>Restocking History</span>
+          </h3>
+          <span className="text-[11px] text-slate-400">{restockLogs.length} records</span>
+        </div>
+
+        {restockLogs.length === 0 ? (
+          <div className="py-8 text-center text-slate-500 text-xs">
+            Wala pa'y natala nga restocking. I-adjust ang stock sa usa ka produkto aron makita kini dinhi.
+          </div>
+        ) : (
+          <div className="max-h-[360px] overflow-y-auto space-y-2 pr-1">
+            {restockLogs.map((log) => (
+              <div
+                key={log.id}
+                className="flex items-center justify-between p-3 rounded-2xl bg-obsidian-900/60 border border-white/[0.06]"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="h-9 w-9 rounded-xl bg-white/[0.04] text-slate-300 flex items-center justify-center shrink-0">
+                    <Layers className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-white truncate">{log.product_name}</p>
+                    <p className="text-[10px] text-slate-500 font-mono mt-0.5">{formatDateTime(log.timestamp)} · {log.cashier_name}</p>
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <div className="flex items-center justify-end gap-2">
+                    <span
+                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${
+                        log.type === 'RESTOCK'
+                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                          : log.type === 'RETURN'
+                          ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
+                          : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                      }`}
+                    >
+                      {log.type}
+                    </span>
+                    <span
+                      className={`text-xs font-black font-mono ${
+                        log.quantity > 0 ? 'text-emerald-400' : 'text-rose-400'
+                      }`}
+                    >
+                      {log.quantity > 0 ? `+${log.quantity}` : log.quantity}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-500 font-mono mt-1">
+                    {log.before_stock} → {log.after_stock}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Add / Edit Product Modal with Dual Photo Mode */}

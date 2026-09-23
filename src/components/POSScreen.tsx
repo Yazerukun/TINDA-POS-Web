@@ -52,7 +52,8 @@ export function POSScreen({
   onResumeCart,
   onCheckout
 }: POSScreenProps): React.JSX.Element {
-  const [selectedCatId, setSelectedCatId] = useState<number | 'ALL'>('ALL')
+  const [selectedMainCatId, setSelectedMainCatId] = useState<number | 'ALL'>('ALL')
+  const [selectedSubCatId, setSelectedSubCatId] = useState<number | 'ALL'>('ALL')
   const [searchQuery, setSearchQuery] = useState('')
   const [discountType, setDiscountType] = useState<DiscountType>('NONE')
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null)
@@ -80,12 +81,13 @@ export function POSScreen({
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  // Filter products by search query and category
+  // Filter products by search query, main category, and subcategory
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
       if (p.status !== 'ACTIVE') return false
-      if (selectedCatId !== 'ALL' && p.category_id !== selectedCatId && p.subcategory_id !== selectedCatId) {
-        return false
+      if (selectedMainCatId !== 'ALL') {
+        if (p.category_id !== selectedMainCatId) return false
+        if (selectedSubCatId !== 'ALL' && p.subcategory_id !== selectedSubCatId) return false
       }
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase()
@@ -96,7 +98,7 @@ export function POSScreen({
       }
       return true
     })
-  }, [products, selectedCatId, searchQuery])
+  }, [products, selectedMainCatId, selectedSubCatId, searchQuery])
 
   // Cart operations
   const addToCart = (product: Product) => {
@@ -230,24 +232,24 @@ export function POSScreen({
         {/* Category Navigation: Understated Horizontal Tab Line with Sliding Gold Indicator */}
         <div className="relative border-b border-white/[0.06] overflow-x-auto scrollbar-none flex items-center gap-6 px-1">
           <button
-            onClick={() => setSelectedCatId('ALL')}
+            onClick={() => { setSelectedMainCatId('ALL'); setSelectedSubCatId('ALL') }}
             className={`group relative py-3 text-xs tracking-[0.15em] uppercase font-sans font-medium transition-colors duration-300 whitespace-nowrap ${
-              selectedCatId === 'ALL' ? 'text-gold-light font-bold' : 'text-stone-400 hover:text-stone-200'
+              selectedMainCatId === 'ALL' ? 'text-gold-light font-bold' : 'text-stone-400 hover:text-stone-200'
             }`}
           >
             All Reserve ({products.filter((p) => p.status === 'ACTIVE').length})
-            {selectedCatId === 'ALL' && (
+            {selectedMainCatId === 'ALL' && (
               <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-amber-300 via-gold to-amber-500 shadow-glow-gold rounded-full" />
             )}
           </button>
 
           {categories.filter((c) => c.parent_id === null).map((cat) => {
             const count = products.filter((p) => p.category_id === cat.id && p.status === 'ACTIVE').length
-            const isSelected = selectedCatId === cat.id
+            const isSelected = selectedMainCatId === cat.id
             return (
               <button
                 key={cat.id}
-                onClick={() => setSelectedCatId(cat.id)}
+                onClick={() => { setSelectedMainCatId(cat.id); setSelectedSubCatId('ALL') }}
                 className={`group relative py-3 text-xs tracking-[0.15em] uppercase font-sans font-medium transition-colors duration-300 whitespace-nowrap ${
                   isSelected ? 'text-gold-light font-bold' : 'text-stone-400 hover:text-stone-200'
                 }`}
@@ -260,6 +262,42 @@ export function POSScreen({
             )
           })}
         </div>
+
+        {/* Subcategory row (level 2) */}
+        {selectedMainCatId !== 'ALL' &&
+          categories.filter((c) => c.parent_id === selectedMainCatId).length > 0 && (
+          <div className="relative overflow-x-auto scrollbar-none flex items-center gap-6 px-1">
+            <button
+              onClick={() => setSelectedSubCatId('ALL')}
+              className={`group relative py-2 text-[11px] tracking-[0.15em] uppercase font-sans font-medium transition-colors duration-300 whitespace-nowrap ${
+                selectedSubCatId === 'ALL' ? 'text-gold-light font-bold' : 'text-stone-500 hover:text-stone-200'
+              }`}
+            >
+              All {categories.find((c) => c.id === selectedMainCatId)?.name ?? ''}
+              {selectedSubCatId === 'ALL' && (
+                <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-gold/60 rounded-full" />
+              )}
+            </button>
+            {categories.filter((c) => c.parent_id === selectedMainCatId).map((sub) => {
+              const count = products.filter((p) => p.subcategory_id === sub.id && p.status === 'ACTIVE').length
+              const isSelected = selectedSubCatId === sub.id
+              return (
+                <button
+                  key={sub.id}
+                  onClick={() => setSelectedSubCatId(sub.id)}
+                  className={`group relative py-2 text-[11px] tracking-[0.15em] uppercase font-sans font-medium transition-colors duration-300 whitespace-nowrap ${
+                    isSelected ? 'text-gold-light font-bold' : 'text-stone-500 hover:text-stone-200'
+                  }`}
+                >
+                  {sub.name} ({count})
+                  {isSelected && (
+                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-amber-300 via-gold to-amber-500 shadow-glow-gold rounded-full" />
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        )}
 
         {/* Product Cards: Framed with Razor-Thin 1px Border, Catalog-Grade Image Containers */}
         {filteredProducts.length === 0 ? (

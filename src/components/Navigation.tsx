@@ -29,7 +29,7 @@ export function Navigation({
 }: NavigationProps): React.JSX.Element {
   const navItems: { id: ActiveTab; label: string; icon: React.ComponentType<{ className?: string }>; badge?: number }[] = [
     { id: 'pos', label: 'Counter', icon: ShoppingBag, badge: cartCount },
-    { id: 'inventory', label: 'Vault', icon: Package },
+    { id: 'inventory', label: 'Inventory', icon: Package },
     { id: 'customers', label: 'Clients', icon: Users },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'settings', label: 'Settings', icon: Settings },

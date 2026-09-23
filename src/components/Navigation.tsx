@@ -1,11 +1,11 @@
-import React from 'react'
 import {
   ShoppingBag,
   Package,
   BarChart3,
   Users,
   Settings,
-  Lock
+  Lock,
+  LogOut
 } from 'lucide-react'
 
 export type ActiveTab = 'pos' | 'inventory' | 'analytics' | 'customers' | 'settings'
@@ -43,19 +43,19 @@ export function Navigation({
         .join('')
         .substring(0, 2)
         .toUpperCase()
-    : 'AV'
+    : 'MA'
 
   return (
     <>
       {/* Top Header - Fixed Clean Luxury Axis */}
-      <header className="sticky top-0 z-40 h-16 w-full flex items-center justify-between px-6 bg-[#090A0D] border-b border-white/10 transition-colors">
+      <header className="sticky top-0 z-40 h-16 w-full flex items-center justify-between px-4 sm:px-6 bg-[#090A0D] border-b border-white/10 transition-colors">
         {/* Left Section: Brand & Status */}
-        <div className="flex items-center gap-4 shrink-0">
-          <div className="flex items-center gap-2.5">
-            <span className="font-serif font-bold text-lg tracking-[0.25em] uppercase text-stone-100">
+        <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+          <div className="flex items-center gap-2">
+            <span className="font-serif font-bold text-base sm:text-lg tracking-[0.2em] sm:tracking-[0.25em] uppercase text-stone-100">
               TINDA
             </span>
-            <span className="text-[10px] tracking-widest text-[#D4AF37] border border-[#D4AF37]/30 px-2 py-0.5 rounded-full uppercase font-mono">
+            <span className="text-[9px] sm:text-[10px] tracking-widest text-[#D4AF37] border border-[#D4AF37]/30 px-2 py-0.5 rounded-full uppercase font-mono">
               RESERVE v1.0
             </span>
           </div>
@@ -99,17 +99,17 @@ export function Navigation({
           })}
         </nav>
 
-        {/* Right Section: Compact Cashier Profile & Lock Button */}
-        <div className="flex items-center gap-2.5 shrink-0">
-          <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-white/5">
+        {/* Right Section: Compact Cashier Profile & Prominent Logout Button */}
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+          <div className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl bg-zinc-900/60 border border-white/5">
             <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-[#D4AF37] text-[#090A0D] text-[11px] font-serif font-bold shadow-sm">
               {cashierInitials}
             </div>
-            <div className="flex flex-col text-left">
+            <div className="hidden sm:flex flex-col text-left">
               <span className="text-[11px] font-medium text-stone-200 leading-tight whitespace-nowrap">
                 {cashierName}
               </span>
-              <span className="text-[11px] text-stone-400 font-mono leading-tight whitespace-nowrap">
+              <span className="text-[10px] text-stone-400 font-mono leading-tight whitespace-nowrap">
                 {cashierRole}
               </span>
             </div>
@@ -117,11 +117,12 @@ export function Navigation({
 
           <button
             onClick={onLockTerminal}
-            title="Lock Terminal / Logout"
-            aria-label="Lock Terminal"
-            className="btn-press flex items-center justify-center h-9 w-9 rounded-xl bg-zinc-900/60 border border-white/5 hover:border-[#D4AF37]/30 hover:text-[#D4AF37] text-stone-400 transition-colors"
+            title="Log Out / Lock Terminal"
+            aria-label="Log Out"
+            className="btn-press flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-red-500/10 border border-red-500/25 hover:bg-red-500/20 hover:border-red-500/40 text-red-400 text-xs font-semibold transition-all"
           >
-            <Lock className="w-4 h-4 shrink-0" />
+            <LogOut className="w-3.5 h-3.5 shrink-0" />
+            <span className="hidden sm:inline">Log Out</span>
           </button>
         </div>
       </header>

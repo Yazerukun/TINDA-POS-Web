@@ -138,6 +138,12 @@ export default function App(): React.JSX.Element {
   }
 
   const handleLockTerminal = () => {
+    try {
+      localStorage.removeItem('tinda_vault_session')
+    } catch {
+      // ignore
+    }
+    setVaultSession(null)
     setIsVaultLocked(true)
   }
 

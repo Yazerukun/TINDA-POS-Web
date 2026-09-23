@@ -35,3 +35,12 @@ export function formatShortDate(iso: string | Date): string {
     day: 'numeric'
   })
 }
+
+export function moneyShort(cents: number | null | undefined): string {
+  if (!cents || isNaN(cents)) return '₱0'
+  const p = cents / 100
+  if (p >= 1_000_000) return `₱${(p / 1_000_000).toFixed(1)}M`
+  if (p >= 1_000) return `₱${(p / 1_000).toFixed(1)}k`
+  return `₱${p.toLocaleString('en-PH', { maximumFractionDigits: 0 })}`
+}
+

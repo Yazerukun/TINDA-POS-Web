@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import type { Product, Category, Transaction, HeldCart, Customer, StoreSettings, CartItem, DiscountType } from './types'
 import { db, DEFAULT_SETTINGS, initDatabase } from './db'
 import { Navigation, type ActiveTab } from './components/Navigation'
+import { DashboardScreen } from './components/DashboardScreen'
 import { POSScreen } from './components/POSScreen'
 import { InventoryScreen } from './components/InventoryScreen'
 import { AnalyticsScreen } from './components/AnalyticsScreen'
@@ -11,7 +12,7 @@ import { CheckoutModal } from './components/CheckoutModal'
 import { VaultAuthModal, type VaultSession } from './components/VaultAuthModal'
 
 export default function App(): React.JSX.Element {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('pos')
+  const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard')
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -147,6 +148,26 @@ export default function App(): React.JSX.Element {
     setIsVaultLocked(true)
   }
 
+  // Quick restock from low-stock alert
+  const handleQuickRestock = async (product: Product, addQty: number) => {
+    try {
+      const newStock = Math.max(0, product.stock + addQty)
+      await db.products.update(product.id, {
+        stock: newStock,
+        updated_at: new Date().toISOString()
+      })
+      await loadData()
+    } catch (e) {
+      console.error('Failed to quick restock:', e)
+    }
+  }
+
+  // Calculate low stock items count
+  const defaultLowStock = settings.default_low_stock ?? 5
+  const lowStockCount = products.filter(
+    (p) => p.stock <= (p.low_stock_threshold !== undefined && p.low_stock_threshold !== null ? p.low_stock_threshold : defaultLowStock)
+  ).length
+
   if (loading) {
     return (
       <div className="min-h-screen bg-obsidian-950 flex flex-col items-center justify-center text-stone-300">
@@ -168,6 +189,7 @@ export default function App(): React.JSX.Element {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         cartCount={cart.reduce((s, i) => s + i.quantity, 0)}
+        lowStockCount={lowStockCount}
         cashierName={vaultSession?.cashierName || 'Master Admin'}
         cashierRole={vaultSession?.cashierRole || 'Administrator'}
         onLockTerminal={handleLockTerminal}
@@ -175,6 +197,17 @@ export default function App(): React.JSX.Element {
 
       {/* Main Screen Router */}
       <main className="flex-1 min-w-0 overflow-y-auto pb-20 md:pb-6">
+        {activeTab === 'dashboard' && (
+          <DashboardScreen
+            products={products}
+            transactions={transactions}
+            customers={customers}
+            settings={settings}
+            onNavigate={(tab) => setActiveTab(tab)}
+            onQuickRestock={handleQuickRestock}
+          />
+        )}
+
         {activeTab === 'pos' && (
           <POSScreen
             products={products}

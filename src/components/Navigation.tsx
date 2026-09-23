@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+  LayoutDashboard,
   ShoppingBag,
   Package,
   BarChart3,
@@ -8,12 +9,13 @@ import {
   LogOut
 } from 'lucide-react'
 
-export type ActiveTab = 'pos' | 'inventory' | 'analytics' | 'customers' | 'settings'
+export type ActiveTab = 'dashboard' | 'pos' | 'inventory' | 'analytics' | 'customers' | 'settings'
 
 interface NavigationProps {
   activeTab: ActiveTab
   setActiveTab: (tab: ActiveTab) => void
   cartCount: number
+  lowStockCount?: number
   cashierName: string
   cashierRole: string
   onLockTerminal: () => void
@@ -23,11 +25,25 @@ export function Navigation({
   activeTab,
   setActiveTab,
   cartCount,
+  lowStockCount,
   cashierName,
   cashierRole,
   onLockTerminal
 }: NavigationProps): React.JSX.Element {
-  const navItems: { id: ActiveTab; label: string; icon: React.ComponentType<{ className?: string }>; badge?: number }[] = [
+  const navItems: {
+    id: ActiveTab
+    label: string
+    icon: React.ComponentType<{ className?: string }>
+    badge?: number
+    badgeClass?: string
+  }[] = [
+    {
+      id: 'dashboard',
+      label: 'Dashboard',
+      icon: LayoutDashboard,
+      badge: lowStockCount && lowStockCount > 0 ? lowStockCount : undefined,
+      badgeClass: 'bg-red-500/20 text-red-300 border border-red-500/30'
+    },
     { id: 'pos', label: 'Counter', icon: ShoppingBag, badge: cartCount },
     { id: 'inventory', label: 'Inventory', icon: Package },
     { id: 'customers', label: 'Clients', icon: Users },
@@ -86,7 +102,7 @@ export function Navigation({
                     <span className="truncate">{item.label}</span>
                   </div>
                   {item.badge !== undefined && item.badge > 0 && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#D4AF37] text-black shrink-0">
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold shrink-0 ${item.badgeClass || 'bg-[#D4AF37] text-black'}`}>
                       {item.badge}
                     </span>
                   )}
@@ -157,7 +173,7 @@ export function Navigation({
       </header>
 
       {/* ── MOBILE BOTTOM BAR (md:hidden) ── */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around border-t border-white/10 px-2 py-2 bg-[#090A0D]/95 backdrop-blur-xl">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 grid grid-cols-6 items-center border-t border-white/10 px-1 py-1.5 bg-[#090A0D]/95 backdrop-blur-xl">
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive = activeTab === item.id
@@ -165,19 +181,21 @@ export function Navigation({
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex flex-col items-center gap-1 py-1 px-2.5 rounded-lg text-[10px] font-medium transition-all ${
-                isActive ? 'text-[#D4AF37] font-semibold' : 'text-stone-400'
+              className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
+                isActive ? 'text-[#D4AF37] font-semibold' : 'text-stone-400 hover:text-stone-300'
               }`}
             >
               <div className="relative">
-                <Icon className="w-4 h-4" />
+                <Icon className="w-4 h-4 shrink-0" />
                 {item.badge !== undefined && item.badge > 0 && (
-                  <span className="absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[8px] font-mono font-bold bg-[#D4AF37] text-black">
+                  <span className={`absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[8px] font-mono font-bold leading-none ${item.badgeClass || 'bg-[#D4AF37] text-black'}`}>
                     {item.badge}
                   </span>
                 )}
               </div>
-              <span className="truncate max-w-[64px] tracking-wider uppercase text-[9px]">{item.label}</span>
+              <span className="truncate max-w-full tracking-tight uppercase text-[8.5px] font-medium leading-none">
+                {item.label}
+              </span>
             </button>
           )
         })}

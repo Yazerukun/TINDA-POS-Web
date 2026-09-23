@@ -17,6 +17,7 @@ export interface Product {
   base_unit: string
   cost_c: number
   default_price_c: number
+  suggested_price_c?: number | null
   stock: number
   low_stock_threshold?: number | null
   expiration_date?: string | null

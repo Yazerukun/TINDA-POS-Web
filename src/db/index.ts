@@ -58,6 +58,9 @@ export class TindaWebDatabase extends Dexie {
       cash_counts: '++id, business_date, created_at',
       z_reads: '++id, date, created_at'
     })
+    this.version(5).stores({
+      products: '++id, name, sku, barcode, category_id, subcategory_id, status, supplier_id, expiration_date, suggested_price_c'
+    })
   }
 }
 

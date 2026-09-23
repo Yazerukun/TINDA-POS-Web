@@ -12,11 +12,15 @@ import {
   RefreshCw,
   X,
   Layers,
-  History
+  History,
+  Sparkles,
+  Check,
+  Globe
 } from 'lucide-react'
-import type { Product, Category, RestockLog, RestockType } from '../types'
+import type { Product, Category, RestockLog, RestockType, PriceReference } from '../types'
 import { money, formatDateTime } from '../utils/format'
 import { compressImageFile } from '../utils/image'
+import { findSuggestedPrice, getSrpComparison, fetchLiveScraplingSrp } from '../utils/srp'
 import { db } from '../db'
 
 interface InventoryScreenProps {
@@ -35,6 +39,13 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
   const [imageBusy, setImageBusy] = useState(false)
   const [restockLogs, setRestockLogs] = useState<RestockLog[]>([])
 
+  // Suggested Price / DTI SRP & Scrapling states
+  const [priceReferences, setPriceReferences] = useState<PriceReference[]>([])
+  const [autoMatching, setAutoMatching] = useState(false)
+  const [scraplingActive, setScraplingActive] = useState(false)
+  const [scraplingSearching, setScraplingSearching] = useState(false)
+  const [scraplingResults, setScraplingResults] = useState<any[]>([])
+
   // Dual photo inputs
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const galleryInputRef = useRef<HTMLInputElement>(null)
@@ -42,6 +53,29 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
   // Main + Sub category options
   const mainCategories = categories.filter((c) => c.parent_id === null)
   const subCategories = selectedCat === 'ALL' ? [] : categories.filter((c) => c.parent_id === selectedCat)
+
+  // Load price references and check Scrapling daemon
+  useEffect(() => {
+    const loadPriceRefs = async () => {
+      try {
+        const refs = await db.price_references.toArray()
+        setPriceReferences(refs)
+      } catch (e) {
+        console.error('Failed to load price references:', e)
+      }
+    }
+    loadPriceRefs()
+
+    // Check Scrapling daemon status
+    fetch('http://127.0.0.1:5174/api/status')
+      .then((r) => r.ok && r.json())
+      .then((data) => {
+        if (data && data.status === 'online') {
+          setScraplingActive(true)
+        }
+      })
+      .catch(() => setScraplingActive(false))
+  }, [])
 
   // Filtering (main category AND subcategory)
   const filtered = products.filter((p) => {
@@ -61,9 +95,10 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
       setRestockLogs([])
     }
   }, [])
+
   useEffect(() => {
     void loadRestockLogs()
-  }, [loadRestockLogs, products])
+  }, [loadRestockLogs])
 
   const logRestock = async (
     product: Product,
@@ -124,6 +159,12 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
       base_unit: editingProduct.base_unit || 'piece',
       cost_c: Math.round((Number(editingProduct.cost_c) || 0) * 100),
       default_price_c: Math.round((Number(editingProduct.default_price_c) || 0) * 100),
+      suggested_price_c:
+        editingProduct.suggested_price_c !== undefined &&
+        editingProduct.suggested_price_c !== null &&
+        editingProduct.suggested_price_c !== ('' as any)
+          ? Math.round(Number(editingProduct.suggested_price_c) * 100)
+          : null,
       stock: Number(editingProduct.stock) || 0,
       image_path: editingProduct.image_path || null,
       status: 'ACTIVE' as const,
@@ -143,6 +184,7 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
 
     setModalOpen(false)
     setEditingProduct(null)
+    setScraplingResults([])
     await loadRestockLogs()
     onRefresh()
   }
@@ -166,39 +208,137 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
     }
   }
 
+  // 1-Click Link SRP for a single product
+  const handleLinkSrp = async (product: Product) => {
+    const ref = findSuggestedPrice(product, priceReferences)
+    if (ref && ref.market_price_c) {
+      await db.products.update(product.id, {
+        suggested_price_c: ref.market_price_c,
+        updated_at: new Date().toISOString()
+      })
+      onRefresh()
+    } else {
+      alert(`Walay nakit-an nga official DTI SRP alang sa "${product.name}". Pwede nimo i-set mano-mano sa Edit modal.`)
+    }
+  }
+
+  // 1-Click Auto-match all products in inventory with DTI SRP
+  const handleAutoMatchAllSrp = async () => {
+    setAutoMatching(true)
+    try {
+      let matchedCount = 0
+      for (const p of products) {
+        if (!p.suggested_price_c) {
+          const ref = findSuggestedPrice(p, priceReferences)
+          if (ref && ref.market_price_c) {
+            await db.products.update(p.id, {
+              suggested_price_c: ref.market_price_c,
+              updated_at: new Date().toISOString()
+            })
+            matchedCount++
+          }
+        }
+      }
+      alert(`Nahuman ang auto-match! ${matchedCount} produkto ang malampusong na-link sa opisyal nga DTI SRP.`)
+      onRefresh()
+    } catch (err) {
+      console.error('Error auto-matching SRP:', err)
+    } finally {
+      setAutoMatching(false)
+    }
+  }
+
+  // Trigger live Scrapling lookup in Add/Edit modal
+  const handleScraplingLookup = async () => {
+    const query = editingProduct?.barcode || editingProduct?.name
+    if (!query) {
+      alert('Palihug ibutang una ang ngalan sa produkto o barcode.')
+      return
+    }
+    setScraplingSearching(true)
+    try {
+      const results = await fetchLiveScraplingSrp(query)
+      if (results && results.length > 0) {
+        setScraplingResults(results)
+      } else {
+        // Fallback to local price references
+        const localMatches = priceReferences.filter((r) =>
+          r.product_name.toLowerCase().includes(query.toLowerCase()) ||
+          (r.barcode && r.barcode.includes(query))
+        )
+        setScraplingResults(localMatches)
+        if (localMatches.length === 0) {
+          alert(`Walay nakit-an nga online/DTI presyo para sa "${query}".`)
+        }
+      }
+    } catch (e) {
+      console.error('Scrapling lookup failed:', e)
+    } finally {
+      setScraplingSearching(false)
+    }
+  }
+
+  // Detect local match while typing in modal
+  const detectedSrp = editingProduct ? findSuggestedPrice(editingProduct, priceReferences) : null
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
-            <Package className="h-6 w-6 text-emerald-400" />
-            <span>Inventory Management</span>
-          </h2>
-          <p className="text-xs text-slate-400">
-            Dali nga pag-monitor sa stock, presyo, ug mga hulagway sa produkto (Dual Photo Mode).
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
+              <Package className="h-6 w-6 text-emerald-400" />
+              <span>Inventory Management</span>
+            </h2>
+            {scraplingActive && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/10 text-amber-300 border border-amber-500/25">
+                <Globe className="w-3 h-3 text-amber-400" />
+                <span>Scrapling SRP Live</span>
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Dali nga pag-monitor sa stock, presyo, DTI Suggested Retail Prices (SRP), ug mga hulagway sa produkto.
           </p>
         </div>
-        <button
-          onClick={() => {
-            setEditingProduct({
-              name: '',
-              sku: '',
-              barcode: '',
-              category_id: categories[0]?.id || null,
-              base_unit: 'piece',
-              cost_c: 0,
-              default_price_c: 0,
-              stock: 10,
-              image_path: null
-            })
-            setModalOpen(true)
-          }}
-          className="btn-press flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-obsidian-950 font-bold text-xs shadow-glow-emerald"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Add New Product</span>
-        </button>
+
+        <div className="flex items-center gap-2.5 flex-wrap">
+          {/* Auto-Match DTI SRP Button */}
+          <button
+            onClick={handleAutoMatchAllSrp}
+            disabled={autoMatching}
+            className="btn-press flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 font-bold text-xs shadow-sm transition-all"
+            title="Auto-match products to DTI SRP using barcodes and names"
+          >
+            <Sparkles className={`h-4 w-4 text-amber-400 ${autoMatching ? 'animate-spin' : ''}`} />
+            <span>{autoMatching ? 'Matching SRP...' : 'Auto-Match DTI SRP'}</span>
+          </button>
+
+          {/* Add New Product Button */}
+          <button
+            onClick={() => {
+              setEditingProduct({
+                name: '',
+                sku: '',
+                barcode: '',
+                category_id: categories[0]?.id || null,
+                base_unit: 'piece',
+                cost_c: 0,
+                default_price_c: 0,
+                suggested_price_c: undefined,
+                stock: 10,
+                image_path: null
+              })
+              setScraplingResults([])
+              setModalOpen(true)
+            }}
+            className="btn-press flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-obsidian-950 font-bold text-xs shadow-glow-emerald"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Add New Product</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter & Search Bar */}
@@ -284,6 +424,7 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
                 <th className="py-3.5 px-4">Photo & Product</th>
                 <th className="py-3.5 px-4">Category</th>
                 <th className="py-3.5 px-4">Cost</th>
+                <th className="py-3.5 px-4">Suggested (SRP)</th>
                 <th className="py-3.5 px-4">Selling Price</th>
                 <th className="py-3.5 px-4">Stock Level</th>
                 <th className="py-3.5 px-4 text-right">Actions</th>
@@ -292,7 +433,7 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
             <tbody className="divide-y divide-white/[0.04]">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-slate-500">
+                  <td colSpan={7} className="py-12 text-center text-slate-500">
                     Walay nakit-an nga produkto.
                   </td>
                 </tr>
@@ -301,6 +442,17 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
                   const isLow = p.stock <= 5 && p.stock > 0
                   const isOut = p.stock <= 0
                   const cat = categories.find((c) => c.id === p.category_id)
+
+                  // Suggested Price resolution: either stored in product or matched from DTI references
+                  const matchedRef = !p.suggested_price_c ? findSuggestedPrice(p, priceReferences) : null
+                  const effectiveSrpC = p.suggested_price_c || (matchedRef ? matchedRef.market_price_c : null)
+                  const srpComparison = getSrpComparison(
+                    p.default_price_c,
+                    effectiveSrpC,
+                    matchedRef?.min_price_c,
+                    matchedRef?.max_price_c
+                  )
+
                   return (
                     <tr key={p.id} className="hover:bg-white/[0.02] transition-colors">
                       {/* Photo & Name */}
@@ -331,7 +483,31 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
                         {money(p.cost_c)}
                       </td>
 
-                      {/* Price */}
+                      {/* Suggested Price (SRP) */}
+                      <td className="py-3 px-4">
+                        {effectiveSrpC && effectiveSrpC > 0 ? (
+                          <div className="flex flex-col gap-1 items-start">
+                            <span className="font-mono font-bold text-amber-300">
+                              {money(effectiveSrpC)}
+                            </span>
+                            <span
+                              className={`inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-mono font-bold tracking-tight ${srpComparison.badgeClass}`}
+                            >
+                              {srpComparison.label}
+                            </span>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => handleLinkSrp(p)}
+                            className="btn-press text-[10px] font-mono text-amber-400/80 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 px-2 py-1 rounded-lg border border-amber-500/25 transition-all"
+                            title="Find & link DTI Suggested Retail Price"
+                          >
+                            + Link SRP
+                          </button>
+                        )}
+                      </td>
+
+                      {/* Selling Price */}
                       <td className="py-3 px-4 font-mono font-bold text-emerald-400">
                         {money(p.default_price_c)}
                       </td>
@@ -371,8 +547,10 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
                               setEditingProduct({
                                 ...p,
                                 cost_c: p.cost_c / 100,
-                                default_price_c: p.default_price_c / 100
+                                default_price_c: p.default_price_c / 100,
+                                suggested_price_c: p.suggested_price_c ? p.suggested_price_c / 100 : undefined
                               })
+                              setScraplingResults([])
                               setModalOpen(true)
                             }}
                             className="btn-press p-1.5 rounded-xl border border-white/[0.08] text-slate-400 hover:text-white hover:bg-white/[0.04]"
@@ -396,7 +574,7 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
         </div>
       </div>
 
-      {/* Restocking History — live from Dexie, most recent first */}
+      {/* Restocking History */}
       <div className="glass-panel rounded-3xl border border-white/[0.1] p-5 shadow-2xl space-y-4">
         <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
           <h3 className="text-sm font-bold text-white flex items-center gap-2">
@@ -447,9 +625,6 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
                       {log.quantity > 0 ? `+${log.quantity}` : log.quantity}
                     </span>
                   </div>
-                  <p className="text-[10px] text-slate-500 font-mono mt-1">
-                    {log.before_stock} → {log.after_stock}
-                  </p>
                 </div>
               </div>
             ))}
@@ -457,56 +632,41 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
         )}
       </div>
 
-      {/* Add / Edit Product Modal with Dual Photo Mode */}
+      {/* Modal: Add or Edit Product */}
       {modalOpen && editingProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/80 backdrop-blur-md animate-fade-in">
-          <div className="w-full max-w-lg glass-panel rounded-3xl border border-white/[0.12] p-6 shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3 mb-4">
-              <h3 className="text-base font-bold text-white">
-                {editingProduct.id ? 'Edit Product' : 'Add New Product'}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="glass-panel w-full max-w-lg rounded-3xl border border-white/[0.12] p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <Package className="h-4 w-4 text-emerald-400" />
+                <span>{editingProduct.id ? 'Edit Product' : 'Add New Product'}</span>
               </h3>
               <button
+                type="button"
                 onClick={() => setModalOpen(false)}
-                className="btn-press text-slate-400 hover:text-white p-1"
+                className="p-1 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.06]"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
             <form onSubmit={handleSaveProduct} className="space-y-4">
-              {/* Dual Photo Mode Upload Section */}
+              {/* Dual Photo Picker */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Product Photo (Dual Mode)</label>
-                {/* Hidden camera input */}
-                <input
-                  ref={cameraInputRef}
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  className="hidden"
-                  onChange={handlePhotoPick}
-                />
-                {/* Hidden gallery input */}
-                <input
-                  ref={galleryInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handlePhotoPick}
-                />
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Product Photo</label>
+                <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" onChange={handlePhotoPick} className="hidden" />
+                <input ref={galleryInputRef} type="file" accept="image/*" onChange={handlePhotoPick} className="hidden" />
 
                 {imageBusy ? (
-                  <div className="flex items-center justify-center gap-2 p-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 text-xs text-emerald-400 font-semibold">
-                    <RefreshCw className="h-4 w-4 animate-spin text-emerald-400" />
-                    <span>Compressing image to 320px WebP...</span>
+                  <div className="flex items-center justify-center p-6 rounded-2xl border border-white/[0.08] bg-obsidian-900/60">
+                    <RefreshCw className="h-5 w-5 text-emerald-400 animate-spin" />
+                    <span className="ml-2 text-xs text-slate-400">Optimizing photo...</span>
                   </div>
                 ) : editingProduct.image_path ? (
-                  <div className="flex items-center gap-3 p-3 rounded-2xl bg-obsidian-900/80 border border-white/[0.08]">
-                    <div className="h-16 w-16 shrink-0 rounded-xl overflow-hidden bg-obsidian-950 border border-white/[0.08]">
-                      <img src={editingProduct.image_path} alt="Preview" className="h-full w-full object-cover" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-white">Photo Attached</p>
+                  <div className="flex items-center gap-3 p-3 rounded-2xl border border-white/[0.08] bg-obsidian-900/60">
+                    <img src={editingProduct.image_path} alt="Preview" className="h-16 w-16 rounded-xl object-cover border border-white/[0.08]" />
+                    <div className="flex-1">
+                      <p className="text-xs font-bold text-white">Attached Image</p>
                       <p className="text-[11px] text-slate-400">Client-side WebP (~15KB) ready</p>
                       <div className="mt-2 flex items-center gap-2">
                         <button
@@ -577,7 +737,7 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
                   required
                   value={editingProduct.name || ''}
                   onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
-                  placeholder="e.g. Coca-Cola 1.5L"
+                  placeholder="e.g. Lucky Me Pancit Canton Kalamansi 60g"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-emerald-500"
                 />
               </div>
@@ -600,11 +760,48 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
                     type="text"
                     value={editingProduct.barcode || ''}
                     onChange={(e) => setEditingProduct({ ...editingProduct, barcode: e.target.value })}
-                    placeholder="480..."
+                    placeholder="4800016644810"
                     className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
+
+              {/* Live Detected DTI SRP Banner */}
+              {detectedSrp && (
+                <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-between gap-3 animate-fade-in">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Sparkles className="h-4 w-4 text-amber-400 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-amber-200 truncate">
+                        Official DTI SRP: ₱{(detectedSrp.market_price_c / 100).toFixed(2)}
+                      </p>
+                      <p className="text-[10px] text-stone-400 truncate">
+                        {detectedSrp.product_name} · {detectedSrp.source_name || 'DTI SRP Guide'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const srpPeso = detectedSrp.market_price_c / 100
+                        setEditingProduct((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                suggested_price_c: srpPeso,
+                                default_price_c: srpPeso
+                              }
+                            : null
+                        )
+                      }}
+                      className="btn-press px-2.5 py-1 rounded-lg bg-amber-500/25 hover:bg-amber-500/35 text-amber-200 border border-amber-500/40 text-[11px] font-bold"
+                    >
+                      Apply SRP
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Category & Unit */}
               <div className="grid grid-cols-2 gap-3">
@@ -633,8 +830,8 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
                 </div>
               </div>
 
-              {/* Cost, Price, Stock */}
-              <div className="grid grid-cols-3 gap-3">
+              {/* Financial Inputs: Cost, SRP, Selling Price, Stock */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Cost (₱)</label>
                   <input
@@ -642,20 +839,44 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
                     step="0.01"
                     value={editingProduct.cost_c ?? ''}
                     onChange={(e) => setEditingProduct({ ...editingProduct, cost_c: parseFloat(e.target.value) || 0 })}
+                    placeholder="0.00"
                     className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-mono text-white focus:outline-none focus:border-emerald-500"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Price (₱) *</label>
+                  <label className="block text-xs font-semibold text-amber-300 mb-1 flex items-center justify-between">
+                    <span>SRP (₱)</span>
+                    <span className="text-[9px] text-amber-400/80 font-mono">DTI</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editingProduct.suggested_price_c ?? ''}
+                    onChange={(e) =>
+                      setEditingProduct({
+                        ...editingProduct,
+                        suggested_price_c: e.target.value ? parseFloat(e.target.value) : undefined
+                      })
+                    }
+                    placeholder="e.g. 10.50"
+                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-amber-500/35 text-xs font-mono font-bold text-amber-300 focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-emerald-400 mb-1">Price (₱) *</label>
                   <input
                     type="number"
                     step="0.01"
                     required
                     value={editingProduct.default_price_c ?? ''}
                     onChange={(e) => setEditingProduct({ ...editingProduct, default_price_c: parseFloat(e.target.value) || 0 })}
+                    placeholder="0.00"
                     className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-mono font-bold text-emerald-400 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
+
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Stock Qty</label>
                   <input
@@ -665,6 +886,64 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
                     className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-mono text-white focus:outline-none focus:border-emerald-500"
                   />
                 </div>
+              </div>
+
+              {/* Scrapling Price Lookup Assistant */}
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={handleScraplingLookup}
+                  disabled={scraplingSearching}
+                  className="w-full py-2 px-3 rounded-xl bg-zinc-900 border border-white/10 hover:border-amber-500/30 text-stone-300 hover:text-amber-200 text-xs font-medium flex items-center justify-center gap-2 transition-all"
+                >
+                  <Globe className={`w-3.5 h-3.5 text-amber-400 ${scraplingSearching ? 'animate-spin' : ''}`} />
+                  <span>{scraplingSearching ? 'Searching DTI/Market SRP via Scrapling...' : 'Search Online SRP (Scrapling Engine)'}</span>
+                </button>
+
+                {/* Scrapling search results list */}
+                {scraplingResults.length > 0 && (
+                  <div className="mt-2.5 p-3 rounded-2xl bg-zinc-950 border border-amber-500/20 space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
+                    <p className="text-[10px] font-mono uppercase tracking-widest text-amber-400">
+                      Scrapling Search Matches ({scraplingResults.length}):
+                    </p>
+                    {scraplingResults.map((item, idx) => {
+                      const itemPeso = (item.market_price_c || 0) / 100
+                      return (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between p-2 rounded-xl bg-white/[0.02] border border-white/5 hover:border-amber-500/30 text-left"
+                        >
+                          <div className="min-w-0 pr-2">
+                            <p className="text-xs font-semibold text-stone-200 truncate">{item.product_name}</p>
+                            <p className="text-[10px] text-stone-500 font-mono truncate">
+                              Barcode: {item.barcode || 'N/A'} · {item.source_name || 'DTI SRP'}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingProduct((prev) =>
+                                prev
+                                  ? {
+                                      ...prev,
+                                      name: prev.name || item.product_name,
+                                      barcode: prev.barcode || item.barcode || prev.barcode,
+                                      suggested_price_c: itemPeso,
+                                      default_price_c: prev.default_price_c || itemPeso
+                                    }
+                                  : null
+                              )
+                              setScraplingResults([])
+                            }}
+                            className="btn-press px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-mono font-bold text-xs shrink-0"
+                          >
+                            ₱{itemPeso.toFixed(2)} Use
+                          </button>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Submit Buttons */}
@@ -678,9 +957,9 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
                 </button>
                 <button
                   type="submit"
-                  className="btn-press flex-1 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-obsidian-950 font-black text-xs shadow-glow-emerald"
+                  className="btn-press flex-1 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-obsidian-950 text-xs font-bold shadow-glow-emerald"
                 >
-                  Save Product
+                  {editingProduct.id ? 'Save Changes' : 'Create Product'}
                 </button>
               </div>
             </form>

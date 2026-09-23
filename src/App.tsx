@@ -161,8 +161,8 @@ export default function App(): React.JSX.Element {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         cartCount={cart.reduce((s, i) => s + i.quantity, 0)}
-        cashierName={vaultSession?.cashierName || 'Master Concierge'}
-        cashierRole={vaultSession?.cashierRole || 'Terminal Lead'}
+        cashierName={vaultSession?.cashierName || 'Store Manager'}
+        cashierRole={vaultSession?.cashierRole || 'Head Cashier'}
         onLockTerminal={handleLockTerminal}
       />
 

@@ -28,9 +28,9 @@ interface CashierProfile {
 }
 
 const CASHIER_PROFILES: CashierProfile[] = [
-  { id: 'c1', name: 'Alfonso V.',   role: 'Master Concierge',           initials: 'AV', pin: '1234' },
-  { id: 'c2', name: 'Isabella M.',  role: 'Senior Inventory Associate',  initials: 'IM', pin: '1234' },
-  { id: 'c3', name: 'Sebastian R.', role: 'Private Client Specialist',   initials: 'SR', pin: '1234' },
+  { id: 'c1', name: 'Alfonso V.',   role: 'Store Manager & Head Cashier', initials: 'AV', pin: '1234' },
+  { id: 'c2', name: 'Isabella M.',  role: 'Senior Inventory Lead',        initials: 'IM', pin: '1234' },
+  { id: 'c3', name: 'Sebastian R.', role: 'Cashier & Sales Associate',     initials: 'SR', pin: '1234' },
 ]
 
 const TERMINAL_ID = 'TRM-8891'
@@ -44,10 +44,10 @@ const GRID_BACKDROP = {
 } as const
 
 const FEATURES = [
-  { icon: Fingerprint, title: 'Concierge-keyed PIN access',    desc: 'Per-staff identity, no shared keys' },
-  { icon: WifiOff,    title: 'Offline-first inventory',        desc: 'Your register works with zero signal' },
-  { icon: ShieldCheck, title: 'End-to-end session records',    desc: 'Every shift is sealed and auditable' },
-  { icon: ServerCog,  title: 'Edge-served on Cloudflare',      desc: 'Global points of presence, near-zero TTFB' },
+  { icon: Fingerprint, title: 'Staff PIN authentication',      desc: 'Individual employee credentials with full audit log' },
+  { icon: WifiOff,    title: 'Offline-first resilience',       desc: 'Full register capability with or without internet' },
+  { icon: ShieldCheck, title: 'Audited register sessions',     desc: 'Every shift, float, and cash transaction recorded' },
+  { icon: ServerCog,  title: 'Edge-served on Cloudflare',      desc: 'Global points of presence, near-zero latency' },
 ] as const
 
 function useClock(): Date {
@@ -85,14 +85,14 @@ function BrandPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
         </div>
         <div className="leading-tight">
           <p className="font-serif text-lg font-bold tracking-[0.2em] text-stone-100 uppercase">TINDA POS</p>
-          <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-gold-muted font-medium">Private Commerce Suite</p>
+          <p className="font-mono text-[9px] tracking-[0.3em] uppercase text-gold-muted font-medium">Business Point of Sale</p>
         </div>
       </div>
 
       <div className="flex-1 flex flex-col justify-center max-w-md">
         <p className="font-mono text-[10px] tracking-[0.32em] uppercase text-gold-light mb-5 flex items-center gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
-          Terminal Handover
+          Terminal Session
         </p>
         <h1 className="font-serif text-4xl xl:text-5xl font-bold leading-[1.12] text-stone-100">
           Open your counter
@@ -100,8 +100,8 @@ function BrandPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
           <span className="text-gold-gradient">with confidence.</span>
         </h1>
         <p className="mt-5 text-sm leading-relaxed text-stone-400">
-          Authorized concierge access to the Tinda inventory. Shift floats, private settlement and client
-          records — sealed under a single terminal session.
+          Authorized personnel access to the store inventory, register shift floats, settlement, and customer
+          records — secured under an active terminal session.
         </p>
 
         <ul className="mt-8 space-y-4">
@@ -121,9 +121,9 @@ function BrandPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
 
       <div className="relative space-y-5">
         <div className="flex flex-wrap gap-2">
-          <Badge icon={Lock}      label="AES-256 sealed" />
-          <Badge icon={Fingerprint} label="Concierge-keyed" />
-          <Badge icon={ServerCog} label="Cloudflare edge" />
+          <Badge icon={Lock}        label="AES-256 sealed" />
+          <Badge icon={Fingerprint} label="Staff-authorized" />
+          <Badge icon={ServerCog}   label="Cloudflare edge" />
         </div>
         <div className="flex items-end justify-between pt-5 border-t border-white/[0.06]">
           <div>
@@ -242,48 +242,55 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
               {step === 'PIN' ? (
                 <div className="animate-fade-in">
 
-                  {/* Cashier selector */}
+                  {/* Staff Identification */}
                   <div className="mb-4 sm:mb-6">
                     <div className="flex items-center justify-between mb-2 sm:mb-3">
                       <label className="text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400">
-                        Authorized Concierge
+                        Staff Identification
                       </label>
                       <UserCheck className="h-3 sm:h-3.5 w-3 sm:w-3.5 text-gold-light/70" />
                     </div>
 
-                    {/* 3 cashier cards — fluid gap & padding */}
-                    <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5">
+                    <div className="flex flex-col gap-1.5 sm:gap-2">
                       {CASHIER_PROFILES.map((profile) => {
                         const isSelected = selectedCashier.id === profile.id
                         return (
                           <button
                             key={profile.id}
                             onClick={() => { setSelectedCashier(profile); setPin('') }}
-                            className={`btn-press group relative flex flex-col items-center
-                                        px-1 py-2 sm:p-3 rounded-xl sm:rounded-2xl border transition-all duration-300
+                            className={`btn-press group relative flex items-center gap-3 sm:gap-3.5
+                                        px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl border
+                                        text-left transition-all duration-300 w-full
                                         ${isSelected
-                                          ? 'bg-amber-500/[0.12] border-gold/50 shadow-glow-gold'
-                                          : 'bg-zinc-950/40 border-white/[0.05] hover:border-gold/25 hover:bg-zinc-900/40'
+                                          ? 'bg-amber-500/[0.10] border-gold/45 shadow-glow-gold'
+                                          : 'bg-zinc-950/40 border-white/[0.05] hover:border-gold/20 hover:bg-zinc-900/50'
                                         }`}
                           >
-                            {/* Avatar */}
-                            <div className={`relative flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center
-                                            rounded-full text-[10px] sm:text-xs font-serif font-bold transition-all
+                            <div className={`relative flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center
+                                            rounded-xl text-[11px] sm:text-xs font-serif font-bold shrink-0 transition-all
                                             ${isSelected
-                                              ? 'bg-gradient-to-br from-amber-300 to-gold text-obsidian-950 shadow-sm'
-                                              : 'bg-zinc-900 text-stone-300 border border-white/10 group-hover:border-gold/30'
+                                              ? 'bg-gradient-to-br from-amber-300 to-gold text-obsidian-950'
+                                              : 'bg-zinc-900/80 text-stone-300 border border-white/[0.08] group-hover:border-gold/25'
                                             }`}>
                               {profile.initials}
                               {isSelected && (
-                                <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-full bg-amber-400 border-2 border-obsidian-950" />
+                                <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-obsidian-950" />
                               )}
                             </div>
-                            <span className="mt-1.5 sm:mt-2 text-[10px] sm:text-xs font-semibold text-stone-200 truncate w-full text-center leading-tight">
-                              {profile.name}
-                            </span>
-                            <span className="text-[8px] sm:text-[9px] font-mono tracking-wider text-stone-400 truncate w-full text-center">
-                              {profile.role.split(' ')[0]}
-                            </span>
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-xs sm:text-[13px] font-semibold leading-tight truncate
+                                            ${isSelected ? 'text-stone-100' : 'text-stone-300 group-hover:text-stone-100'}`}>
+                                {profile.name}
+                              </p>
+                              <p className="text-[9px] sm:text-[10px] font-mono text-stone-500 truncate mt-0.5">
+                                {profile.role}
+                              </p>
+                            </div>
+                            {isSelected && (
+                              <span className="shrink-0 inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 font-mono text-[8px] sm:text-[9px] tracking-widest uppercase text-emerald-400">
+                                Active
+                              </span>
+                            )}
                           </button>
                         )
                       })}
@@ -294,7 +301,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                   <div className="flex flex-col items-center mb-4 sm:mb-6">
                     <div className="flex items-center justify-between w-full mb-2 sm:mb-3">
                       <label className="text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400">
-                        Security Key
+                        Terminal PIN
                       </label>
                       <Fingerprint className="h-3 sm:h-3.5 w-3 sm:w-3.5 text-gold-light/70" />
                     </div>
@@ -315,11 +322,11 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                     </div>
                     {pinError ? (
                       <span className="text-[10px] sm:text-[11px] font-mono text-red-400 mt-2 tracking-wider">
-                        Invalid security code — please try again.
+                        Incorrect security PIN — please re-enter.
                       </span>
                     ) : (
                       <span className="text-[9px] sm:text-[10px] font-mono text-stone-500 mt-2 tracking-wider">
-                        4-digit concierge code
+                        Enter 4-digit staff PIN
                       </span>
                     )}
                   </div>
@@ -373,7 +380,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
 
                   <p className="text-center font-mono text-[9px] sm:text-[10px] text-stone-500 tracking-wider flex items-center justify-center gap-1.5">
                     <Lock className="h-3 w-3 text-stone-600" />
-                    Default passcode <span className="text-gold-light font-bold">1234</span> · sealed on this device
+                    Encrypted Terminal Access · Station {TERMINAL_ID}
                   </p>
                 </div>
               ) : (
@@ -466,7 +473,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                                  flex items-center justify-center gap-1.5"
                     >
                       <ChevronLeft className="h-3.5 w-3.5" />
-                      Switch Concierge
+                      Switch Staff Account
                     </button>
                   </div>
                 </div>

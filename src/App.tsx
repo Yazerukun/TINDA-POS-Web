@@ -162,8 +162,8 @@ export default function App(): React.JSX.Element {
   }
 
   return (
-    <div className="min-h-screen bg-obsidian-950 text-stone-100 flex flex-col selection:bg-amber-400 selection:text-obsidian-950 font-sans">
-      {/* Top Luxury Navigation (Executive Header) */}
+    <div className="min-h-screen bg-obsidian-950 text-stone-100 flex flex-col md:flex-row selection:bg-amber-400 selection:text-obsidian-950 font-sans">
+      {/* Executive Vertical Navigation Sidebar */}
       <Navigation
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -174,7 +174,7 @@ export default function App(): React.JSX.Element {
       />
 
       {/* Main Screen Router */}
-      <main className="flex-1">
+      <main className="flex-1 min-w-0 overflow-y-auto pb-20 md:pb-6">
         {activeTab === 'pos' && (
           <POSScreen
             products={products}

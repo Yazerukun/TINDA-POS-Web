@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { X, ScanLine, CameraOff } from 'lucide-react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
+import { X, ScanLine, CameraOff, Loader2 } from 'lucide-react'
 
 interface BarcodeScannerModalProps {
   open: boolean
@@ -7,86 +7,135 @@ interface BarcodeScannerModalProps {
   onDetect: (code: string) => void
 }
 
-const DETECTOR_FORMATS = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'itf', 'qr_code']
+// Formats supported by native BarcodeDetector
+const NATIVE_FORMATS = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39', 'itf', 'qr_code']
+
+// Check for native BarcodeDetector API (Chrome/Edge 88+)
+const hasNativeBarcodeDetector = (): boolean =>
+  typeof window !== 'undefined' && 'BarcodeDetector' in window
 
 export function BarcodeScannerModal({ open, onClose, onDetect }: BarcodeScannerModalProps): React.JSX.Element | null {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const lastCode = useRef<string | null>(null)
   const lastTime = useRef(0)
-  const [supported] = useState<boolean>(
-    () => typeof window !== 'undefined' && 'BarcodeDetector' in window
-  )
+  const mountedRef = useRef(false)
+
+  const [mode] = useState<'native' | 'zxing' | 'unsupported'>(() => {
+    if (typeof window === 'undefined') return 'unsupported'
+    if (hasNativeBarcodeDetector()) return 'native'
+    // ZXing works in any browser with camera support
+    return 'zxing'
+  })
+
   const [starting, setStarting] = useState(false)
   const [error, setError] = useState('')
+
+  // Emit a detected code with debounce (1.5s same-code cooldown)
+  const emit = useCallback((raw: string) => {
+    const now = Date.now()
+    if (!raw) return
+    if (raw === lastCode.current && now - lastTime.current < 1500) return
+    lastCode.current = raw
+    lastTime.current = now
+    try { navigator.vibrate?.(80) } catch { /* ignore */ }
+    onDetect(raw)
+  }, [onDetect])
 
   useEffect(() => {
     if (!open) return
 
-    if (!supported) {
-      setError('Camera barcode scanning is unavailable in this browser. Use a USB / hardware barcode scanner instead.')
+    if (mode === 'unsupported') {
+      setError('Barcode scanning is not supported in this browser. Use a USB/Bluetooth barcode scanner instead.')
       return
     }
 
-    let mounted = true
+    mountedRef.current = true
     let raf = 0
-
-    const makeDetector = () => {
-      try {
-        return new (window as any).BarcodeDetector({ formats: DETECTOR_FORMATS })
-      } catch {
-        return new (window as any).BarcodeDetector()
-      }
-    }
 
     const start = async () => {
       setStarting(true)
       setError('')
+
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-          audio: false
+          audio: false,
         })
+
+        if (!mountedRef.current) {
+          stream.getTracks().forEach((t) => t.stop())
+          return
+        }
+
         streamRef.current = stream
+
         if (videoRef.current) {
           videoRef.current.srcObject = stream
           await videoRef.current.play()
         }
-        if (!mounted) {
-          stream.getTracks().forEach((t) => t.stop())
-          return
-        }
+
         setStarting(false)
 
-        const detector = makeDetector()
-        const loop = async () => {
-          if (!mounted || !videoRef.current) return
+        if (mode === 'native') {
+          // ── Native BarcodeDetector (Chrome/Edge) ──────────────────────────
+          let detector: any
           try {
-            const codes = await detector.detect(videoRef.current)
-            if (codes && codes.length > 0) {
-              const raw = String(codes[0].rawValue || '').trim()
-              const now = Date.now()
-              if (raw && (raw !== lastCode.current || now - lastTime.current > 1500)) {
-                lastCode.current = raw
-                lastTime.current = now
-                try {
-                  navigator.vibrate?.(80)
-                } catch {
-                  // ignore
-                }
-                onDetect(raw)
-              }
-            }
+            detector = new (window as any).BarcodeDetector({ formats: NATIVE_FORMATS })
           } catch {
-            // detect frame errors are transient
+            detector = new (window as any).BarcodeDetector()
           }
-          if (mounted) raf = requestAnimationFrame(loop)
+
+          const loop = async () => {
+            if (!mountedRef.current || !videoRef.current) return
+            try {
+              const codes = await detector.detect(videoRef.current)
+              if (codes?.length > 0) {
+                emit(String(codes[0].rawValue || '').trim())
+              }
+            } catch { /* transient frame errors */ }
+            if (mountedRef.current) raf = requestAnimationFrame(loop)
+          }
+          raf = requestAnimationFrame(loop)
+
+        } else {
+          // ── ZXing fallback (Firefox, Safari, all other browsers) ───────────
+          const { BrowserMultiFormatReader } = await import('@zxing/browser')
+          const reader = new BrowserMultiFormatReader()
+
+          const loop = async () => {
+            if (!mountedRef.current || !videoRef.current || !canvasRef.current) return
+            const video = videoRef.current
+            const canvas = canvasRef.current
+            const ctx = canvas.getContext('2d')
+            if (!ctx || video.readyState < video.HAVE_ENOUGH_DATA) {
+              if (mountedRef.current) raf = requestAnimationFrame(loop)
+              return
+            }
+            canvas.width = video.videoWidth
+            canvas.height = video.videoHeight
+            ctx.drawImage(video, 0, 0)
+            try {
+              const result = await reader.decodeFromCanvas(canvas)
+              if (result?.getText()) {
+                emit(result.getText().trim())
+              }
+            } catch { /* NotFoundException is normal — no barcode in frame */ }
+            if (mountedRef.current) raf = requestAnimationFrame(loop)
+          }
+          raf = requestAnimationFrame(loop)
         }
-        raf = requestAnimationFrame(loop)
-      } catch {
-        if (mounted) {
-          setStarting(false)
-          setError('Could not access the camera. Check permissions or use a hardware scanner.')
+
+      } catch (err: any) {
+        if (!mountedRef.current) return
+        setStarting(false)
+        if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
+          setError('Camera permission denied. Allow camera access in your browser settings, then try again.')
+        } else if (err?.name === 'NotFoundError') {
+          setError('No camera found. Plug in a camera or use a USB/Bluetooth barcode scanner instead.')
+        } else {
+          setError('Could not access the camera. Check browser permissions and try again.')
         }
       }
     }
@@ -94,14 +143,16 @@ export function BarcodeScannerModal({ open, onClose, onDetect }: BarcodeScannerM
     start()
 
     return () => {
-      mounted = false
+      mountedRef.current = false
       cancelAnimationFrame(raf)
       streamRef.current?.getTracks().forEach((t) => t.stop())
       streamRef.current = null
     }
-  }, [open, supported, onDetect])
+  }, [open, mode, emit])
 
   if (!open) return null
+
+  const isSupported = mode !== 'unsupported'
 
   return (
     <div className="fixed inset-0 z-[60] flex flex-col bg-obsidian-950/95 backdrop-blur-2xl animate-fade-in">
@@ -116,7 +167,7 @@ export function BarcodeScannerModal({ open, onClose, onDetect }: BarcodeScannerM
               Barcode Scan
             </h3>
             <p className="font-mono text-[10px] tracking-widest uppercase text-gold-muted">
-              Point camera at product code
+              {mode === 'native' ? 'Native scanner · Chrome/Edge' : mode === 'zxing' ? 'Universal scanner · All browsers' : 'Hardware scanner required'}
             </p>
           </div>
         </div>
@@ -131,7 +182,7 @@ export function BarcodeScannerModal({ open, onClose, onDetect }: BarcodeScannerM
 
       {/* Camera Stage */}
       <div className="relative flex-1 overflow-hidden bg-black">
-        {supported ? (
+        {isSupported && !error ? (
           <>
             <video
               ref={videoRef}
@@ -139,6 +190,9 @@ export function BarcodeScannerModal({ open, onClose, onDetect }: BarcodeScannerM
               muted
               className="absolute inset-0 h-full w-full object-cover"
             />
+            {/* Hidden canvas for ZXing fallback */}
+            <canvas ref={canvasRef} className="hidden" />
+
             {/* Scan reticle */}
             <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
               <div className="relative h-56 w-56 sm:h-64 sm:w-64 rounded-2xl border-2 border-gold/60 shadow-glow-gold">
@@ -146,33 +200,49 @@ export function BarcodeScannerModal({ open, onClose, onDetect }: BarcodeScannerM
                 <span className="absolute inset-x-2 bottom-0 h-px bg-gradient-to-r from-transparent via-gold to-transparent animate-pulse" />
               </div>
             </div>
+
             {starting && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-obsidian-950/70 text-stone-300">
-                <div className="h-8 w-8 rounded-full border-2 border-gold/40 border-t-gold animate-spin" />
-                <p className="font-mono text-[11px] tracking-widest uppercase">Starting camera...</p>
+                <Loader2 className="h-8 w-8 animate-spin text-gold" />
+                <p className="font-mono text-[11px] tracking-widest uppercase">Starting camera…</p>
               </div>
             )}
           </>
         ) : (
+          /* Error or unsupported state */
           <div className="flex h-full flex-col items-center justify-center gap-4 px-8 text-center">
             <CameraOff className="h-10 w-10 text-stone-600" />
-            <p className="font-mono text-xs text-stone-400 leading-relaxed">{error}</p>
+            <p className="font-mono text-xs text-stone-400 leading-relaxed max-w-xs">
+              {error || 'Camera barcode scanning is not available in this browser.'}
+            </p>
+            {error && (
+              <button
+                onClick={() => {
+                  setError('')
+                  // re-trigger effect by remounting isn't possible here, but
+                  // user can close and reopen after granting permission
+                }}
+                className="font-mono text-[10px] tracking-widest uppercase text-gold-muted border border-gold/30 rounded-lg px-4 py-2 hover:bg-gold/10 transition-colors"
+              >
+                Close & try again
+              </button>
+            )}
           </div>
         )}
       </div>
 
-      {/* Footer hint */}
-      {supported && !error ? (
-        <div className="px-5 py-4 border-t border-white/[0.06]">
+      {/* Footer */}
+      <div className="px-5 py-4 border-t border-white/[0.06]">
+        {!error && isSupported ? (
           <p className="text-center font-mono text-[10px] tracking-widest uppercase text-stone-500">
-            Auto-adds to ticket on successful scan
+            Auto-adds to ticket on successful scan · USB/Bluetooth scanners also work
           </p>
-        </div>
-      ) : (
-        <div className="px-5 py-4 border-t border-white/[0.06]">
-          <p className="text-center font-mono text-[11px] tracking-widest text-red-400">{error}</p>
-        </div>
-      )}
+        ) : (
+          <p className="text-center font-mono text-[11px] tracking-widest text-red-400">
+            {error}
+          </p>
+        )}
+      </div>
     </div>
   )
 }

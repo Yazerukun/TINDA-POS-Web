@@ -61,13 +61,14 @@ export function POSScreen({
   const [scanOpen, setScanOpen] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
-  // Generate luxury invoice sequence on mount or cart change
+  // Generate luxury invoice sequence on mount or when cart empties
   useEffect(() => {
-    if (!activeInvoiceId || cart.length === 0) {
+    if (cart.length === 0) {
       const seq = Math.floor(10000 + Math.random() * 90000)
       setActiveInvoiceId(`#INV-${seq}`)
     }
-  }, [cart.length, activeInvoiceId])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cart.length])
 
   // Global [ ⌘K ] or [ Ctrl+K ] search shortcut listener
   useEffect(() => {

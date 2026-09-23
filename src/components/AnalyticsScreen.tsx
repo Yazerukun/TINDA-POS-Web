@@ -5,36 +5,147 @@ import {
   DollarSign,
   Receipt,
   ArrowUpRight,
+  Coins,
+  FileText,
+  Printer,
   Calendar,
-  Eye,
-  X,
-  Package
+  CheckCircle2,
+  AlertTriangle,
+  Layers,
+  Clock,
+  Sparkles,
+  Save
 } from 'lucide-react'
-import type { Transaction } from '../types'
+import type { Transaction, Expense, Product, StoreSettings, CashCountRecord } from '../types'
+import { db } from '../db'
 import { money, formatDateTime } from '../utils/format'
 
 interface AnalyticsScreenProps {
   transactions: Transaction[]
+  expenses?: Expense[]
+  products?: Product[]
+  settings?: StoreSettings
+  cashierName?: string
 }
 
-export function AnalyticsScreen({ transactions }: AnalyticsScreenProps): React.JSX.Element {
-  const [selectedTx, setSelectedTx] = useState<Transaction | null>(null)
+type AnalyticsTab = 'SALES' | 'CASHCOUNT' | 'READINGS'
 
-  // Metrics computation
+const DENOMINATIONS = [
+  { label: '₱1,000 Bill', cents: 100000, key: '1000' },
+  { label: '₱500 Bill', cents: 50000, key: '500' },
+  { label: '₱200 Bill', cents: 20000, key: '200' },
+  { label: '₱100 Bill', cents: 10000, key: '100' },
+  { label: '₱50 Bill', cents: 5000, key: '50' },
+  { label: '₱20 Bill / Coin', cents: 2000, key: '20' },
+  { label: '₱10 Coin', cents: 1000, key: '10' },
+  { label: '₱5 Coin', cents: 500, key: '5' },
+  { label: '₱1 Coin', cents: 100, key: '1' },
+  { label: '25¢ Coin', cents: 25, key: '0.25' }
+]
+
+export function AnalyticsScreen({
+  transactions,
+  expenses = [],
+  products = [],
+  settings,
+  cashierName = 'Master Admin'
+}: AnalyticsScreenProps): React.JSX.Element {
+  const [activeTab, setActiveTab] = useState<AnalyticsTab>('SALES')
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
+
+  // Cash count state
+  const [counts, setCounts] = useState<Record<string, number>>({
+    '1000': 0,
+    '500': 0,
+    '200': 0,
+    '100': 0,
+    '50': 0,
+    '20': 0,
+    '10': 0,
+    '5': 0,
+    '1': 0,
+    '0.25': 0
+  })
+  const [cashCountSavedMessage, setCashCountSavedMessage] = useState(false)
+
+  // Reading type
+  const [readingType, setReadingType] = useState<'X' | 'Z'>('X')
+
+  // Financial computations
   const metrics = useMemo(() => {
-    const totalSales = transactions.reduce((sum, t) => sum + t.total_c, 0)
-    const totalOrders = transactions.length
-    const avgOrderValue = totalOrders > 0 ? Math.round(totalSales / totalOrders) : 0
-    // Estimated 25% average retail margin on sari-sari items
-    const grossProfit = Math.round(totalSales * 0.25)
+    const validTx = transactions.filter((t) => (t.status || 'COMPLETED') !== 'VOIDED')
+    const totalSales_c = validTx.reduce((sum, t) => sum + t.total_c, 0)
+    const cashSales_c = validTx.filter((t) => t.payment_method === 'CASH').reduce((sum, t) => sum + t.total_c, 0)
+    const gcashSales_c = validTx.filter((t) => t.payment_method === 'GCASH').reduce((sum, t) => sum + t.total_c, 0)
+    const utangSales_c = validTx.filter((t) => t.payment_method === 'UTANG').reduce((sum, t) => sum + t.total_c, 0)
 
-    return { totalSales, totalOrders, avgOrderValue, grossProfit }
-  }, [transactions])
+    // Cost map
+    const costMap = new Map<number, number>()
+    products.forEach((p) => {
+      costMap.set(p.id, p.cost_c || 0)
+    })
+
+    let totalCost_c = 0
+    let totalItemsSold = 0
+
+    validTx.forEach((tx) => {
+      tx.items?.forEach((item) => {
+        totalItemsSold += item.quantity
+        const unitCost = costMap.get(item.product_id) || Math.round(item.unit_price_c * 0.75)
+        totalCost_c += unitCost * item.quantity
+      })
+    })
+
+    const grossProfit_c = totalSales_c - totalCost_c
+    const totalExpenses_c = expenses.reduce((sum, e) => sum + (e.amount_c || 0), 0)
+    const netProfit_c = grossProfit_c - totalExpenses_c
+
+    return {
+      totalSales_c,
+      cashSales_c,
+      gcashSales_c,
+      utangSales_c,
+      totalCost_c,
+      grossProfit_c,
+      totalExpenses_c,
+      netProfit_c,
+      totalOrders: validTx.length,
+      totalItemsSold,
+      avgOrderValue_c: validTx.length > 0 ? Math.round(totalSales_c / validTx.length) : 0
+    }
+  }, [transactions, expenses, products])
+
+  // Physical cash drawer counted total
+  const countedPhysicalCash_c = useMemo(() => {
+    let sum = 0
+    DENOMINATIONS.forEach((d) => {
+      const qty = counts[d.key] || 0
+      sum += qty * d.cents
+    })
+    return sum
+  }, [counts])
+
+  // Today's cash sales & cash expenses
+  const todayCashSales_c = useMemo(() => {
+    return transactions
+      .filter((t) => (t.status || 'COMPLETED') !== 'VOIDED' && t.payment_method === 'CASH' && t.created_at?.startsWith(todayStr))
+      .reduce((sum, t) => sum + t.total_c, 0)
+  }, [transactions, todayStr])
+
+  const todayCashExpenses_c = useMemo(() => {
+    return expenses
+      .filter((e) => e.date === todayStr)
+      .reduce((sum, e) => sum + e.amount_c, 0)
+  }, [expenses, todayStr])
+
+  const expectedCashInDrawer_c = todayCashSales_c - todayCashExpenses_c
+  const cashDiscrepancy_c = countedPhysicalCash_c - expectedCashInDrawer_c
 
   // Top selling products computation
   const topProducts = useMemo(() => {
     const map = new Map<string, { name: string; quantity: number; revenue: number }>()
     for (const t of transactions) {
+      if ((t.status || 'COMPLETED') === 'VOIDED') continue
       for (const item of t.items) {
         const existing = map.get(item.name) || { name: item.name, quantity: 0, revenue: 0 }
         existing.quantity += item.quantity
@@ -45,235 +156,493 @@ export function AnalyticsScreen({ transactions }: AnalyticsScreenProps): React.J
     return Array.from(map.values()).sort((a, b) => b.revenue - a.revenue).slice(0, 5)
   }, [transactions])
 
+  // Save cash count
+  const handleSaveCashCount = async () => {
+    try {
+      await db.cash_counts.add({
+        business_date: todayStr,
+        created_at: new Date().toISOString(),
+        cashier_name: cashierName,
+        denominations: counts,
+        total_c: countedPhysicalCash_c,
+        expected_c: expectedCashInDrawer_c,
+        discrepancy_c: cashDiscrepancy_c,
+        notes: `Physical cash drawer count by ${cashierName}`
+      })
+
+      setCashCountSavedMessage(true)
+      setTimeout(() => setCashCountSavedMessage(false), 3000)
+    } catch (err) {
+      console.error('Failed to save cash count:', err)
+    }
+  }
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fade-in">
       {/* Header */}
-      <div>
-        <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
-          <BarChart3 className="h-6 w-6 text-emerald-400" />
-          <span>Executive Analytics & Sales Reports</span>
-        </h2>
-        <p className="text-xs text-slate-400">
-          Real-time metrics, profit estimates, sales volume, and transaction audits.
-        </p>
-      </div>
-
-      {/* 4 Executive Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Revenue */}
-        <div className="glass-card rounded-3xl p-5 border border-white/[0.08] relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Total Gross Sales</span>
-            <div className="h-8 w-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
-              <DollarSign className="h-4 w-4" />
-            </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+        <div>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-serif font-bold text-white tracking-wide">
+              Store Analytics & Audit Reports
+            </h1>
+            <span className="text-[10px] font-mono tracking-widest text-gold-muted border border-gold/30 px-2 py-0.5 rounded-full uppercase">
+              Financial Intelligence
+            </span>
           </div>
-          <div className="mt-3">
-            <h3 className="text-2xl font-black text-white font-mono tracking-tight">
-              {money(metrics.totalSales)}
-            </h3>
-            <p className="text-[11px] text-emerald-400 flex items-center gap-1 mt-1 font-semibold">
-              <TrendingUp className="h-3 w-3" />
-              <span>Real-time counter total</span>
-            </p>
-          </div>
+          <p className="text-xs text-stone-400 font-mono mt-1">
+            Real-time profit margins, cash drawer audits, and official X/Z register readings
+          </p>
         </div>
 
-        {/* Gross Profit */}
-        <div className="glass-card rounded-3xl p-5 border border-white/[0.08] relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Estimated Gross Profit</span>
-            <div className="h-8 w-8 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center">
-              <ArrowUpRight className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <h3 className="text-2xl font-black text-amber-400 font-mono tracking-tight">
-              {money(metrics.grossProfit)}
-            </h3>
-            <p className="text-[11px] text-slate-400 mt-1">
-              ~25% standard retail markup
-            </p>
-          </div>
-        </div>
+        {/* Tab switchers */}
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-zinc-950 border border-white/10">
+          <button
+            onClick={() => setActiveTab('SALES')}
+            className={`btn-press px-3.5 py-1.5 rounded-xl text-xs font-bold font-mono transition-all ${
+              activeTab === 'SALES'
+                ? 'bg-[#D4AF37] text-black shadow-glow-gold'
+                : 'text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            Sales & Margin
+          </button>
 
-        {/* Total Orders */}
-        <div className="glass-card rounded-3xl p-5 border border-white/[0.08] relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Total Transactions</span>
-            <div className="h-8 w-8 rounded-xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center">
-              <Receipt className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <h3 className="text-2xl font-black text-white font-mono tracking-tight">
-              {metrics.totalOrders}
-            </h3>
-            <p className="text-[11px] text-indigo-300 mt-1 font-medium">
-              Completed checkouts
-            </p>
-          </div>
-        </div>
+          <button
+            onClick={() => setActiveTab('CASHCOUNT')}
+            className={`btn-press px-3.5 py-1.5 rounded-xl text-xs font-bold font-mono transition-all ${
+              activeTab === 'CASHCOUNT'
+                ? 'bg-[#D4AF37] text-black shadow-glow-gold'
+                : 'text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            Cash Drawer Count
+          </button>
 
-        {/* Avg Order Value */}
-        <div className="glass-card rounded-3xl p-5 border border-white/[0.08] relative overflow-hidden">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-400">Average Ticket Size</span>
-            <div className="h-8 w-8 rounded-xl bg-rose-500/15 text-rose-400 flex items-center justify-center">
-              <Calendar className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <h3 className="text-2xl font-black text-white font-mono tracking-tight">
-              {money(metrics.avgOrderValue)}
-            </h3>
-            <p className="text-[11px] text-slate-400 mt-1">
-              Per basket ring-up
-            </p>
-          </div>
+          <button
+            onClick={() => setActiveTab('READINGS')}
+            className={`btn-press px-3.5 py-1.5 rounded-xl text-xs font-bold font-mono transition-all ${
+              activeTab === 'READINGS'
+                ? 'bg-[#D4AF37] text-black shadow-glow-gold'
+                : 'text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            X / Z Readings
+          </button>
         </div>
       </div>
 
-      {/* Two Column Layout: Leaderboard & Recent Transactions */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Top Selling Products (5 cols) */}
-        <div className="lg:col-span-5 glass-panel rounded-3xl p-5 border border-white/[0.1] shadow-2xl space-y-4">
-          <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
-            <h4 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-emerald-400" />
-              <span>Top Revenue Generators</span>
-            </h4>
-            <span className="text-[11px] text-slate-400">Top 5 Products</span>
-          </div>
-
-          {topProducts.length === 0 ? (
-            <div className="py-12 text-center text-slate-500 text-xs">
-              Walay sales history pa sa pagkakaron.
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {topProducts.map((p, idx) => (
-                <div key={idx} className="flex items-center justify-between p-3 rounded-2xl bg-obsidian-900/60 border border-white/[0.06]">
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-400 text-xs font-black">
-                      #{idx + 1}
-                    </span>
-                    <div>
-                      <p className="text-xs font-semibold text-white truncate max-w-[180px]">{p.name}</p>
-                      <p className="text-[10px] text-slate-400 font-mono">{p.quantity} units sold</p>
-                    </div>
-                  </div>
-                  <span className="text-xs font-bold font-mono text-emerald-400">
-                    {money(p.revenue)}
-                  </span>
+      {/* ── TAB 1: SALES & MARGIN ── */}
+      {activeTab === 'SALES' && (
+        <div className="space-y-6">
+          {/* 4 Financial Metric Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="glass-panel rounded-3xl p-5 border border-white/[0.08]">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono tracking-widest text-stone-400 uppercase">Gross Sales</span>
+                <div className="h-8 w-8 rounded-xl bg-gold/15 text-gold-light flex items-center justify-center">
+                  <DollarSign className="h-4 w-4" />
                 </div>
-              ))}
+              </div>
+              <h3 className="mt-3 text-2xl font-serif font-black text-white">
+                {money(metrics.totalSales_c)}
+              </h3>
+              <p className="text-[11px] text-stone-400 mt-1 font-mono">
+                {metrics.totalOrders} completed orders
+              </p>
             </div>
-          )}
-        </div>
 
-        {/* Recent Transactions List (7 cols) */}
-        <div className="lg:col-span-7 glass-panel rounded-3xl p-5 border border-white/[0.1] shadow-2xl space-y-4">
-          <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
-            <h4 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
-              <Receipt className="h-4 w-4 text-indigo-400" />
-              <span>Recent Transaction Logs</span>
-            </h4>
-            <span className="text-[11px] text-slate-400">{transactions.length} records</span>
+            <div className="glass-panel rounded-3xl p-5 border border-white/[0.08]">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono tracking-widest text-stone-400 uppercase">Est. Gross Profit</span>
+                <div className="h-8 w-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+                  <TrendingUp className="h-4 w-4" />
+                </div>
+              </div>
+              <h3 className="mt-3 text-2xl font-serif font-black text-emerald-400">
+                {money(metrics.grossProfit_c)}
+              </h3>
+              <p className="text-[11px] text-stone-400 mt-1 font-mono">
+                Revenue minus item cost
+              </p>
+            </div>
+
+            <div className="glass-panel rounded-3xl p-5 border border-white/[0.08]">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono tracking-widest text-stone-400 uppercase">Total Expenses</span>
+                <div className="h-8 w-8 rounded-xl bg-red-500/15 text-red-400 flex items-center justify-center">
+                  <Receipt className="h-4 w-4" />
+                </div>
+              </div>
+              <h3 className="mt-3 text-2xl font-serif font-black text-red-400">
+                {money(metrics.totalExpenses_c)}
+              </h3>
+              <p className="text-[11px] text-stone-400 mt-1 font-mono">
+                {expenses.length} operating records
+              </p>
+            </div>
+
+            <div className="glass-panel rounded-3xl p-5 border border-white/[0.08]">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono tracking-widest text-stone-400 uppercase">Tinuod nga Net Margin</span>
+                <div className="h-8 w-8 rounded-xl bg-amber-500/15 text-amber-300 flex items-center justify-center">
+                  <Sparkles className="h-4 w-4" />
+                </div>
+              </div>
+              <h3 className="mt-3 text-2xl font-serif font-black text-gold-light">
+                {money(metrics.netProfit_c)}
+              </h3>
+              <p className="text-[11px] text-stone-400 mt-1 font-mono">
+                Gross profit minus all expenses
+              </p>
+            </div>
           </div>
 
-          {transactions.length === 0 ? (
-            <div className="py-12 text-center text-slate-500 text-xs">
-              Walay natala nga transactions pa.
+          {/* Payment Method Distribution */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="glass-panel p-5 rounded-3xl border border-white/[0.08] space-y-3">
+              <span className="text-xs font-mono font-bold text-stone-300 uppercase tracking-wider block">
+                Payment Channel Breakdown
+              </span>
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950 border border-white/5">
+                  <span className="text-xs font-mono text-stone-300">CASH (Physical Drawer)</span>
+                  <span className="font-serif font-bold text-emerald-400">{money(metrics.cashSales_c)}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950 border border-white/5">
+                  <span className="text-xs font-mono text-stone-300">GCASH (Digital E-Wallet)</span>
+                  <span className="font-serif font-bold text-blue-400">{money(metrics.gcashSales_c)}</span>
+                </div>
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950 border border-white/5">
+                  <span className="text-xs font-mono text-stone-300">UTANG (Receivables)</span>
+                  <span className="font-serif font-bold text-amber-400">{money(metrics.utangSales_c)}</span>
+                </div>
+              </div>
             </div>
-          ) : (
-            <div className="max-h-[360px] overflow-y-auto space-y-2 pr-1">
-              {transactions.slice(0, 15).map((t) => (
-                <div
-                  key={t.id}
-                  onClick={() => setSelectedTx(t)}
-                  className="btn-press flex items-center justify-between p-3 rounded-2xl bg-obsidian-900/70 border border-white/[0.06] hover:border-emerald-500/30 cursor-pointer transition-all"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-white/[0.04] text-slate-300 flex items-center justify-center">
-                      <Receipt className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-white">{t.invoice_number}</span>
-                        <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
-                          {t.payment_method}
+
+            {/* Top 5 Best Sellers */}
+            <div className="lg:col-span-2 glass-panel p-5 rounded-3xl border border-white/[0.08] space-y-3">
+              <span className="text-xs font-mono font-bold text-stone-300 uppercase tracking-wider block">
+                Top 5 Best-Selling Products by Revenue
+              </span>
+              {topProducts.length === 0 ? (
+                <p className="text-xs text-stone-500 font-mono py-8 text-center">Walay sales data pa.</p>
+              ) : (
+                <div className="space-y-2">
+                  {topProducts.map((p, i) => (
+                    <div
+                      key={p.name}
+                      className="p-3 rounded-2xl bg-zinc-950 border border-white/5 flex items-center justify-between gap-3 text-xs"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="h-6 w-6 rounded-lg bg-gold/15 text-gold-light font-mono font-bold flex items-center justify-center shrink-0 text-[11px]">
+                          #{i + 1}
                         </span>
+                        <span className="font-semibold text-white truncate">{p.name}</span>
                       </div>
-                      <p className="text-[10px] text-slate-500 font-mono mt-0.5">{formatDateTime(t.created_at)}</p>
+                      <div className="text-right shrink-0 font-mono">
+                        <span className="text-stone-400">{p.quantity} units · </span>
+                        <strong className="text-gold-light font-serif">{money(p.revenue)}</strong>
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs font-black font-mono text-emerald-400">{money(t.total_c)}</p>
-                    <p className="text-[10px] text-slate-400">{t.items.length} items</p>
-                  </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Transaction Details Modal */}
-      {selectedTx && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/80 backdrop-blur-md animate-fade-in">
-          <div className="w-full max-w-md glass-panel rounded-3xl border border-white/[0.12] p-6 shadow-2xl animate-slide-up space-y-4">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
-              <div>
-                <h3 className="text-base font-bold text-white">{selectedTx.invoice_number}</h3>
-                <p className="text-xs text-slate-400">{formatDateTime(selectedTx.created_at)}</p>
+      {/* ── TAB 2: CASH DRAWER COUNT ── */}
+      {activeTab === 'CASHCOUNT' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left 2 Cols: Denomination Input Table */}
+            <div className="lg:col-span-2 glass-panel p-5 rounded-3xl border border-white/[0.08] space-y-4">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <div>
+                  <h3 className="text-sm font-bold text-white">Philippine Peso Denomination Counter</h3>
+                  <p className="text-[10px] font-mono text-stone-400 mt-0.5">
+                    Count physical bills and coins inside the cash register drawer
+                  </p>
+                </div>
+
+                <button
+                  onClick={() =>
+                    setCounts({
+                      '1000': 0,
+                      '500': 0,
+                      '200': 0,
+                      '100': 0,
+                      '50': 0,
+                      '20': 0,
+                      '10': 0,
+                      '5': 0,
+                      '1': 0,
+                      '0.25': 0
+                    })
+                  }
+                  className="btn-press text-xs font-mono text-stone-400 hover:text-stone-200"
+                >
+                  Clear Count
+                </button>
               </div>
-              <button
-                onClick={() => setSelectedTx(null)}
-                className="btn-press text-slate-400 hover:text-white p-1"
-              >
-                <X className="h-5 w-5" />
-              </button>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {DENOMINATIONS.map((d) => {
+                  const qty = counts[d.key] || 0
+                  const subtotal = qty * d.cents
+                  return (
+                    <div
+                      key={d.key}
+                      className="p-3 rounded-2xl bg-zinc-950 border border-white/5 flex items-center justify-between gap-3"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-white font-mono">{d.label}</p>
+                        <p className="text-[10px] font-mono text-gold-muted mt-0.5">
+                          = {money(subtotal)}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCounts((prev) => ({
+                              ...prev,
+                              [d.key]: Math.max(0, (prev[d.key] || 0) - 1)
+                            }))
+                          }
+                          className="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 text-stone-300 font-bold flex items-center justify-center text-sm"
+                        >
+                          -
+                        </button>
+                        <input
+                          type="number"
+                          min="0"
+                          value={qty || ''}
+                          placeholder="0"
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value, 10) || 0
+                            setCounts((prev) => ({ ...prev, [d.key]: Math.max(0, val) }))
+                          }}
+                          className="w-14 h-8 bg-black border border-white/15 rounded-lg text-center font-mono text-xs text-stone-100 focus:outline-none focus:border-[#D4AF37]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCounts((prev) => ({
+                              ...prev,
+                              [d.key]: (prev[d.key] || 0) + 1
+                            }))
+                          }
+                          className="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 text-stone-300 font-bold flex items-center justify-center text-sm"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
 
-            {/* Receipt Content */}
-            <div className="p-4 rounded-2xl bg-obsidian-900/90 border border-white/[0.06] text-xs font-mono space-y-2">
-              <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1 divide-y divide-white/[0.04]">
-                {selectedTx.items.map((it, idx) => (
-                  <div key={idx} className="flex justify-between pt-1 text-slate-200">
-                    <span className="truncate pr-2">{it.name}</span>
-                    <span className="shrink-0">{it.quantity}x {money(it.unit_price_c)}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="border-t border-white/[0.08] pt-2 space-y-1 text-slate-300">
-                <div className="flex justify-between">
-                  <span>Subtotal:</span>
-                  <span>{money(selectedTx.subtotal_c)}</span>
+            {/* Right Col: Drawer Audit Reconciliation */}
+            <div className="glass-panel p-5 rounded-3xl border border-white/[0.08] space-y-5 flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="border-b border-white/10 pb-3">
+                  <h3 className="text-sm font-bold text-white">Drawer Audit Summary</h3>
+                  <p className="text-[10px] font-mono text-stone-400 mt-0.5">Shift Cash Reconciliation</p>
                 </div>
-                {selectedTx.discount_c > 0 && (
-                  <div className="flex justify-between text-amber-400">
-                    <span>Discount:</span>
-                    <span>-{money(selectedTx.discount_c)}</span>
+
+                <div className="space-y-3 font-mono text-xs">
+                  <div className="p-3.5 rounded-2xl bg-zinc-950 border border-white/10">
+                    <p className="text-[10px] text-stone-400 uppercase">Actual Physical Cash Counted</p>
+                    <p className="text-2xl font-serif font-black text-gold-light mt-1">
+                      {money(countedPhysicalCash_c)}
+                    </p>
                   </div>
+
+                  <div className="flex justify-between text-stone-400 pt-1">
+                    <span>Today's Cash Sales:</span>
+                    <span className="text-stone-200">{money(todayCashSales_c)}</span>
+                  </div>
+
+                  <div className="flex justify-between text-red-400">
+                    <span>Today's Cash Expenses:</span>
+                    <span>-{money(todayCashExpenses_c)}</span>
+                  </div>
+
+                  <div className="flex justify-between text-stone-300 font-semibold border-t border-white/10 pt-2">
+                    <span>Expected Cash in Kaha:</span>
+                    <span>{money(expectedCashInDrawer_c)}</span>
+                  </div>
+                </div>
+
+                {/* Over / Short Discrepancy Alert */}
+                <div
+                  className={`p-3.5 rounded-2xl border text-xs font-mono space-y-1 ${
+                    cashDiscrepancy_c === 0
+                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                      : cashDiscrepancy_c > 0
+                      ? 'bg-blue-500/10 border-blue-500/30 text-blue-300'
+                      : 'bg-red-500/10 border-red-500/30 text-red-400'
+                  }`}
+                >
+                  <p className="font-bold flex items-center gap-1.5 uppercase text-[11px]">
+                    {cashDiscrepancy_c === 0 ? (
+                      <>
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                        <span>Kaha is 100% Balanced</span>
+                      </>
+                    ) : cashDiscrepancy_c > 0 ? (
+                      <>
+                        <Coins className="w-4 h-4 text-blue-400" />
+                        <span>Cash Over: +{money(cashDiscrepancy_c)}</span>
+                      </>
+                    ) : (
+                      <>
+                        <AlertTriangle className="w-4 h-4 text-red-400" />
+                        <span>Cash Short: {money(cashDiscrepancy_c)}</span>
+                      </>
+                    )}
+                  </p>
+                  <p className="text-[10px] text-stone-400">
+                    {cashDiscrepancy_c === 0
+                      ? 'Ang pisikal nga kwarta match sa halin sa tindahan.'
+                      : cashDiscrepancy_c > 0
+                      ? 'Adunay sobra nga kwarta sa kaha kumpara sa recorded cash sales.'
+                      : 'Kulang ang kwarta sa kaha kumpara sa expected sales. Palihug susiha ang resibo o sinsilyo.'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2 pt-4 border-t border-white/10">
+                {cashCountSavedMessage && (
+                  <p className="text-xs text-emerald-400 font-mono text-center font-bold animate-pulse">
+                    ✓ Cash count record saved successfully!
+                  </p>
                 )}
-                <div className="flex justify-between font-bold text-white text-sm pt-1 border-t border-white/[0.04]">
-                  <span>Total Amount:</span>
-                  <span className="text-emerald-400">{money(selectedTx.total_c)}</span>
-                </div>
-                <div className="flex justify-between text-slate-400 text-[11px]">
-                  <span>Payment:</span>
-                  <span>{selectedTx.payment_method}</span>
-                </div>
+                <button
+                  onClick={handleSaveCashCount}
+                  className="btn-press w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-[#D4AF37] hover:from-amber-300 hover:to-gold text-black text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-glow-gold"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>Save Cash Count Record</span>
+                </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── TAB 3: X / Z READINGS ── */}
+      {activeTab === 'READINGS' && (
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setReadingType('X')}
+              className={`btn-press px-4 py-2 rounded-xl text-xs font-bold font-mono transition-all ${
+                readingType === 'X'
+                  ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40'
+                  : 'bg-white/5 text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              X-Reading (Mid-Day Audit)
+            </button>
+            <button
+              onClick={() => setReadingType('Z')}
+              className={`btn-press px-4 py-2 rounded-xl text-xs font-bold font-mono transition-all ${
+                readingType === 'Z'
+                  ? 'bg-amber-500/20 text-gold-light border border-gold/40'
+                  : 'bg-white/5 text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              Z-Reading (End of Day Store Closure)
+            </button>
 
             <button
-              onClick={() => setSelectedTx(null)}
-              className="btn-press w-full py-2.5 rounded-xl bg-obsidian-850 border border-white/[0.1] text-xs font-bold text-white"
+              onClick={() => window.print()}
+              className="btn-press ml-auto px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-stone-200 text-xs font-bold font-mono flex items-center gap-1.5"
             >
-              Close
+              <Printer className="w-4 h-4" />
+              <span>Print Reading</span>
             </button>
+          </div>
+
+          {/* Printable Thermal Paper Reading Card */}
+          <div className="max-w-md mx-auto bg-white text-black p-6 rounded-2xl shadow-2xl font-mono text-xs space-y-4">
+            <div className="text-center border-b border-black pb-3 space-y-1">
+              <h2 className="text-base font-black uppercase tracking-wider">
+                {settings?.store_name || 'TINDA POS'}
+              </h2>
+              <p className="text-[11px]">{settings?.address || 'Philippines'}</p>
+              <p className="text-[11px] font-bold mt-1">
+                {readingType === 'X' ? '*** X-READING (MID-SHIFT) ***' : '*** Z-READING (DAILY CLOSING) ***'}
+              </p>
+              <p className="text-[10px] text-gray-600">Generated: {formatDateTime(new Date().toISOString())}</p>
+              <p className="text-[10px] text-gray-600">Cashier: {cashierName}</p>
+            </div>
+
+            <div className="space-y-1.5 border-b border-black pb-3">
+              <div className="flex justify-between font-bold">
+                <span>GROSS SALES:</span>
+                <span>{money(metrics.totalSales_c)}</span>
+              </div>
+              <div className="flex justify-between text-gray-700">
+                <span>Total Orders Count:</span>
+                <span>{metrics.totalOrders}</span>
+              </div>
+              <div className="flex justify-between text-gray-700">
+                <span>Total Items Sold:</span>
+                <span>{metrics.totalItemsSold} pcs</span>
+              </div>
+              <div className="flex justify-between text-gray-700">
+                <span>Average Basket:</span>
+                <span>{money(metrics.avgOrderValue_c)}</span>
+              </div>
+            </div>
+
+            <div className="space-y-1.5 border-b border-black pb-3">
+              <p className="font-bold uppercase text-[11px]">Payment Breakdown:</p>
+              <div className="flex justify-between">
+                <span>CASH SALES:</span>
+                <span>{money(metrics.cashSales_c)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>GCASH SALES:</span>
+                <span>{money(metrics.gcashSales_c)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>UTANG (Credit):</span>
+                <span>{money(metrics.utangSales_c)}</span>
+              </div>
+            </div>
+
+            <div className="space-y-1.5 border-b border-black pb-3">
+              <p className="font-bold uppercase text-[11px]">Financial Margins:</p>
+              <div className="flex justify-between">
+                <span>Cost of Goods (COGS):</span>
+                <span>{money(metrics.totalCost_c)}</span>
+              </div>
+              <div className="flex justify-between font-bold">
+                <span>GROSS PROFIT:</span>
+                <span>{money(metrics.grossProfit_c)}</span>
+              </div>
+              <div className="flex justify-between text-red-600">
+                <span>Operating Expenses:</span>
+                <span>-{money(metrics.totalExpenses_c)}</span>
+              </div>
+              <div className="flex justify-between font-black text-sm pt-1 border-t border-dashed border-gray-400">
+                <span>NET STORE PROFIT:</span>
+                <span>{money(metrics.netProfit_c)}</span>
+              </div>
+            </div>
+
+            <div className="text-center text-[10px] text-gray-500 pt-2">
+              <p>*** END OF {readingType}-READING REPORT ***</p>
+              <p className="mt-1">TINDA POS Web · Enterprise Engine</p>
+            </div>
           </div>
         </div>
       )}

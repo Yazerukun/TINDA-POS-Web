@@ -13,9 +13,14 @@ import {
   ShieldAlert,
   CheckCircle2,
   Clock,
-  ArrowUpRight
+  ArrowUpRight,
+  Sparkles,
+  CalendarClock,
+  Receipt,
+  Truck,
+  TrendingDown
 } from 'lucide-react'
-import type { Product, Transaction, Customer, StoreSettings } from '../types'
+import type { Product, Transaction, Customer, StoreSettings, Expense } from '../types'
 import { money, moneyShort, formatDateTime } from '../utils/format'
 import type { ActiveTab } from './Navigation'
 
@@ -23,18 +28,24 @@ interface DashboardScreenProps {
   products: Product[]
   transactions: Transaction[]
   customers: Customer[]
+  expenses?: Expense[]
   settings: StoreSettings
   onNavigate: (tab: ActiveTab) => void
   onQuickRestock?: (product: Product, addQty: number) => void
+  onOpenPriceGuide?: () => void
+  onOpenExpiration?: () => void
 }
 
 export function DashboardScreen({
   products,
   transactions,
   customers,
+  expenses = [],
   settings,
   onNavigate,
-  onQuickRestock
+  onQuickRestock,
+  onOpenPriceGuide,
+  onOpenExpiration
 }: DashboardScreenProps): React.JSX.Element {
   // Today's date string prefix: YYYY-MM-DD
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
@@ -174,139 +185,192 @@ export function DashboardScreen({
         </div>
       )}
 
-      {/* ── 2. HERO FINANCIAL SUMMARY CARDS ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* ── 2. HERO FINANCIAL SUMMARY CARDS (5-GRID) ── */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5">
         {/* Today's Net Sales */}
         <div className="glass-card rounded-2xl p-4 sm:p-5 border border-gold/25 relative overflow-hidden flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono tracking-widest uppercase text-stone-400 font-medium">
+            <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 font-medium">
               Today's Net Sales
             </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[9px] font-mono font-bold text-emerald-400 uppercase">
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[9px] font-mono font-bold text-emerald-400 uppercase">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
               Live
             </span>
           </div>
           <div className="mt-3">
-            <p className="font-serif text-2xl sm:text-3xl font-bold text-gold-light tabular-nums">
+            <p className="font-serif text-xl sm:text-2xl font-bold text-gold-light tabular-nums">
               {money(todayGrossSales_c)}
             </p>
             <p className="text-[10px] text-stone-500 font-mono mt-1">
-              {todayTransactions.length} orders · {todayItemsSold} units sold
+              {todayTransactions.length} orders · {todayItemsSold} sold
             </p>
           </div>
         </div>
 
-        {/* Estimated Profit */}
+        {/* Estimated Net Profit */}
         <div className="glass-card rounded-2xl p-4 sm:p-5 border border-white/[0.08] flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono tracking-widest uppercase text-stone-400 font-medium">
-              Est. Profit Today
+            <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 font-medium">
+              Net Profit Today
             </span>
             <TrendingUp className="h-4 w-4 text-emerald-400" />
           </div>
           <div className="mt-3">
-            <p className="font-serif text-2xl sm:text-3xl font-bold text-emerald-400 tabular-nums">
-              {money(todayProfit_c)}
+            <p className="font-serif text-xl sm:text-2xl font-bold text-emerald-400 tabular-nums">
+              {money(todayProfit_c - (expenses.filter(e => e.date === todayStr).reduce((s, e) => s + e.amount_c, 0)))}
             </p>
             <p className="text-[10px] text-stone-500 font-mono mt-1">
-              Net margin after cost of goods
+              After COGS & expenses
             </p>
           </div>
         </div>
 
-        {/* Total Utang / Receivables */}
-        <div className="glass-card rounded-2xl p-4 sm:p-5 border border-white/[0.08] flex flex-col justify-between">
+        {/* Today's Store Expenses */}
+        <button
+          onClick={() => onNavigate('expenses')}
+          className="btn-press glass-card rounded-2xl p-4 sm:p-5 border border-white/[0.08] hover:border-red-500/30 text-left flex flex-col justify-between transition-all"
+        >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono tracking-widest uppercase text-stone-400 font-medium">
+            <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 font-medium">
+              Today Expenses
+            </span>
+            <Receipt className="h-4 w-4 text-red-400" />
+          </div>
+          <div className="mt-3">
+            <p className="font-serif text-xl sm:text-2xl font-bold text-red-400 tabular-nums">
+              {money(expenses.filter(e => e.date === todayStr).reduce((s, e) => s + e.amount_c, 0))}
+            </p>
+            <p className="text-[10px] text-stone-500 font-mono mt-1">
+              Operating outflow
+            </p>
+          </div>
+        </button>
+
+        {/* Total Utang / Receivables */}
+        <button
+          onClick={() => onNavigate('customers')}
+          className="btn-press glass-card rounded-2xl p-4 sm:p-5 border border-white/[0.08] hover:border-amber-500/30 text-left flex flex-col justify-between transition-all"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 font-medium">
               Client Utang
             </span>
             <Wallet className="h-4 w-4 text-amber-400" />
           </div>
           <div className="mt-3">
-            <p className={`font-serif text-2xl sm:text-3xl font-bold tabular-nums ${totalUtang_c > 0 ? 'text-amber-400' : 'text-stone-300'}`}>
+            <p className={`font-serif text-xl sm:text-2xl font-bold tabular-nums ${totalUtang_c > 0 ? 'text-amber-400' : 'text-stone-300'}`}>
               {money(totalUtang_c)}
             </p>
             <p className="text-[10px] text-stone-500 font-mono mt-1">
               {customers.filter((c) => c.balance_c > 0).length} clients with balance
             </p>
           </div>
-        </div>
+        </button>
 
         {/* Total Active Inventory */}
-        <div className="glass-card rounded-2xl p-4 sm:p-5 border border-white/[0.08] flex flex-col justify-between">
+        <button
+          onClick={() => onNavigate('inventory')}
+          className="btn-press glass-card rounded-2xl p-4 sm:p-5 border border-white/[0.08] hover:border-indigo-500/30 text-left col-span-2 sm:col-span-1 flex flex-col justify-between transition-all"
+        >
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono tracking-widest uppercase text-stone-400 font-medium">
+            <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 font-medium">
               Active Catalog
             </span>
             <Package className="h-4 w-4 text-indigo-400" />
           </div>
           <div className="mt-3">
-            <p className="font-serif text-2xl sm:text-3xl font-bold text-white tabular-nums">
+            <p className="font-serif text-xl sm:text-2xl font-bold text-white tabular-nums">
               {products.length}
             </p>
             <p className="text-[10px] text-stone-500 font-mono mt-1">
               {totalAlertCount > 0 ? `${totalAlertCount} need attention` : 'All healthy'}
             </p>
           </div>
-        </div>
+        </button>
       </div>
 
-      {/* ── 3. FAST ACTION SHORTCUTS (4-GRID) ── */}
+      {/* ── 3. FAST ACTION SHORTCUTS (6-GRID) ── */}
       <div>
         <p className="mb-2.5 text-[10px] font-mono uppercase tracking-[0.25em] text-stone-500 font-bold">
-          Quick Operations
+          Quick Operations & Store Utilities
         </p>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           <button
             onClick={() => onNavigate('pos')}
-            className="btn-press flex items-center gap-3 p-3.5 rounded-2xl bg-amber-500/[0.08] border border-gold/30 hover:border-gold hover:bg-amber-500/[0.14] transition-all text-left"
+            className="btn-press flex items-center gap-2.5 p-3 rounded-2xl bg-amber-500/[0.08] border border-gold/30 hover:border-gold hover:bg-amber-500/[0.14] transition-all text-left"
           >
-            <div className="h-10 w-10 rounded-xl bg-gold/20 flex items-center justify-center text-amber-300 shrink-0 shadow-sm">
-              <ShoppingCart className="h-5 w-5" />
+            <div className="h-9 w-9 rounded-xl bg-gold/20 flex items-center justify-center text-amber-300 shrink-0">
+              <ShoppingCart className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-white truncate">Open Counter</p>
-              <p className="text-[10px] text-gold-muted font-mono truncate">Start New Sale</p>
+              <p className="text-xs font-bold text-white truncate">Counter</p>
+              <p className="text-[9px] text-gold-muted font-mono truncate">Start Sale</p>
             </div>
           </button>
 
           <button
             onClick={() => onNavigate('inventory')}
-            className="btn-press flex items-center gap-3 p-3.5 rounded-2xl bg-zinc-950/60 border border-white/[0.08] hover:border-gold/40 hover:bg-zinc-900/60 transition-all text-left"
+            className="btn-press flex items-center gap-2.5 p-3 rounded-2xl bg-zinc-950/60 border border-white/[0.08] hover:border-gold/40 hover:bg-zinc-900/60 transition-all text-left"
           >
-            <div className="h-10 w-10 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-300 shrink-0">
-              <PlusCircle className="h-5 w-5" />
+            <div className="h-9 w-9 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-300 shrink-0">
+              <PlusCircle className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-white truncate">Add Products</p>
-              <p className="text-[10px] text-stone-400 font-mono truncate">Restock Stock</p>
+              <p className="text-xs font-bold text-white truncate">Inventory</p>
+              <p className="text-[9px] text-stone-400 font-mono truncate">Restock</p>
             </div>
           </button>
 
           <button
-            onClick={() => onNavigate('customers')}
-            className="btn-press flex items-center gap-3 p-3.5 rounded-2xl bg-zinc-950/60 border border-white/[0.08] hover:border-gold/40 hover:bg-zinc-900/60 transition-all text-left"
+            onClick={() => onOpenPriceGuide && onOpenPriceGuide()}
+            className="btn-press flex items-center gap-2.5 p-3 rounded-2xl bg-emerald-500/[0.08] border border-emerald-500/30 hover:border-emerald-400 hover:bg-emerald-500/[0.14] transition-all text-left"
           >
-            <div className="h-10 w-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-300 shrink-0">
-              <Users className="h-5 w-5" />
+            <div className="h-9 w-9 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-300 shrink-0">
+              <Sparkles className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-white truncate">Clients &amp; Utang</p>
-              <p className="text-[10px] text-stone-400 font-mono truncate">Collect Balances</p>
+              <p className="text-xs font-bold text-emerald-300 truncate">Bantay Presyo</p>
+              <p className="text-[9px] text-emerald-400/80 font-mono truncate">DTI SRP</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => onNavigate('expenses')}
+            className="btn-press flex items-center gap-2.5 p-3 rounded-2xl bg-zinc-950/60 border border-white/[0.08] hover:border-red-400 hover:bg-zinc-900/60 transition-all text-left"
+          >
+            <div className="h-9 w-9 rounded-xl bg-red-500/20 flex items-center justify-center text-red-400 shrink-0">
+              <Receipt className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-white truncate">Expenses</p>
+              <p className="text-[9px] text-stone-400 font-mono truncate">Record Outflow</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => onOpenExpiration && onOpenExpiration()}
+            className="btn-press flex items-center gap-2.5 p-3 rounded-2xl bg-zinc-950/60 border border-white/[0.08] hover:border-amber-400 hover:bg-zinc-900/60 transition-all text-left"
+          >
+            <div className="h-9 w-9 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-300 shrink-0">
+              <CalendarClock className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-white truncate">Shelf Life</p>
+              <p className="text-[9px] text-stone-400 font-mono truncate">Expiry Watch</p>
             </div>
           </button>
 
           <button
             onClick={() => onNavigate('analytics')}
-            className="btn-press flex items-center gap-3 p-3.5 rounded-2xl bg-zinc-950/60 border border-white/[0.08] hover:border-gold/40 hover:bg-zinc-900/60 transition-all text-left"
+            className="btn-press flex items-center gap-2.5 p-3 rounded-2xl bg-zinc-950/60 border border-white/[0.08] hover:border-gold/40 hover:bg-zinc-900/60 transition-all text-left"
           >
-            <div className="h-10 w-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-300 shrink-0">
-              <BarChart3 className="h-5 w-5" />
+            <div className="h-9 w-9 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-300 shrink-0">
+              <BarChart3 className="h-4 w-4" />
             </div>
             <div className="min-w-0">
               <p className="text-xs font-bold text-white truncate">Reports</p>
-              <p className="text-[10px] text-stone-400 font-mono truncate">Sales Trends</p>
+              <p className="text-[9px] text-stone-400 font-mono truncate">X/Z Readings</p>
             </div>
           </button>
         </div>

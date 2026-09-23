@@ -18,6 +18,9 @@ export interface Product {
   cost_c: number
   default_price_c: number
   stock: number
+  low_stock_threshold?: number | null
+  expiration_date?: string | null
+  supplier_id?: number | null
   image_path: string | null
   status: 'ACTIVE' | 'ARCHIVED'
   created_at: string
@@ -66,6 +69,10 @@ export interface Transaction {
   change_c: number
   customer_id: number | null
   cashier_name: string
+  status?: 'COMPLETED' | 'VOIDED' | 'REFUNDED'
+  void_reason?: string
+  voided_at?: string
+  voided_by?: string
 }
 
 export interface Customer {
@@ -115,4 +122,83 @@ export interface UserAccount {
   status: 'ACTIVE' | 'DISABLED'
   created_at: string
 }
+
+export interface ExpenseCategory {
+  id?: number
+  name: string
+}
+
+export interface Expense {
+  id?: number
+  category: string
+  amount_c: number
+  date: string
+  description: string
+  cashier_name?: string
+  created_at: string
+}
+
+export interface Supplier {
+  id?: number
+  name: string
+  contact_person?: string
+  phone?: string
+  address?: string
+  notes?: string
+  status: 'ACTIVE' | 'INACTIVE'
+  created_at: string
+  updated_at?: string
+}
+
+export interface PriceReferenceInput {
+  barcode: string
+  product_name: string
+  brand: string
+  variant?: string
+  unit: string
+  market_price_c: number
+  min_price_c?: number
+  max_price_c?: number
+  currency?: string
+  source_name?: string
+  source_type?: string
+  source_url?: string
+  location?: string
+  effective_date?: string
+  image_url?: string
+  category?: string
+}
+
+export interface PriceReference extends PriceReferenceInput {
+  id?: number
+}
+
+export interface CashCountRecord {
+  id?: number
+  business_date: string
+  created_at: string
+  cashier_name: string
+  denominations: Record<string, number>
+  total_c: number
+  expected_c?: number
+  discrepancy_c?: number
+  notes?: string
+}
+
+export interface ZReadRecord {
+  id?: number
+  date: string
+  created_at: string
+  cashier_name: string
+  total_sales_c: number
+  cash_sales_c: number
+  gcash_sales_c: number
+  utang_sales_c: number
+  gross_profit_c: number
+  total_expenses_c: number
+  net_profit_c: number
+  transaction_count: number
+  items_sold_count: number
+}
+
 

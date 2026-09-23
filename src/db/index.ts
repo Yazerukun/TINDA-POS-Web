@@ -1,5 +1,21 @@
 import Dexie, { type Table } from 'dexie'
-import type { Product, Category, Transaction, HeldCart, Customer, StoreSettings, RestockLog, UserAccount } from '../types'
+import type {
+  Product,
+  Category,
+  Transaction,
+  HeldCart,
+  Customer,
+  StoreSettings,
+  RestockLog,
+  UserAccount,
+  Expense,
+  ExpenseCategory,
+  Supplier,
+  PriceReference,
+  CashCountRecord,
+  ZReadRecord
+} from '../types'
+import { SEED_PRICE_REFERENCES } from '../data/seedPriceReferences'
 
 export class TindaWebDatabase extends Dexie {
   products!: Table<Product, number>
@@ -10,6 +26,12 @@ export class TindaWebDatabase extends Dexie {
   settings!: Table<{ key: string; value: any }, string>
   restock_logs!: Table<RestockLog, number>
   users!: Table<UserAccount, number>
+  expenses!: Table<Expense, number>
+  expense_categories!: Table<ExpenseCategory, number>
+  suppliers!: Table<Supplier, number>
+  price_references!: Table<PriceReference, number>
+  cash_counts!: Table<CashCountRecord, number>
+  z_reads!: Table<ZReadRecord, number>
 
   constructor() {
     super('TindaWebDB')
@@ -26,6 +48,15 @@ export class TindaWebDatabase extends Dexie {
     })
     this.version(3).stores({
       users: '++id, username, role, status'
+    })
+    this.version(4).stores({
+      products: '++id, name, sku, barcode, category_id, subcategory_id, status, supplier_id, expiration_date',
+      expenses: '++id, category, date, cashier_name',
+      expense_categories: '++id, &name',
+      suppliers: '++id, name, status',
+      price_references: '++id, barcode, product_name, brand, category',
+      cash_counts: '++id, business_date, created_at',
+      z_reads: '++id, date, created_at'
     })
   }
 }
@@ -70,20 +101,96 @@ export async function initDatabase(): Promise<void> {
     console.error('Failed to initialize users table:', err)
   }
 
+  // Seed standard categories if empty
   const catCount = await db.categories.count()
-  if (catCount > 0) return
+  if (catCount === 0) {
+    const beverageId = await db.categories.add({ id: 1, name: 'Beverages', parent_id: null, sort_order: 1 })
+    await db.categories.add({ id: 2, name: 'Snacks & Biscuits', parent_id: null, sort_order: 2 })
+    await db.categories.add({ id: 3, name: 'Canned Goods', parent_id: null, sort_order: 3 })
+    await db.categories.add({ id: 4, name: 'Instant Noodles', parent_id: null, sort_order: 4 })
+    await db.categories.add({ id: 5, name: 'Personal Care', parent_id: null, sort_order: 5 })
 
-  // Seed standard categories
-  const beverageId = await db.categories.add({ id: 1, name: 'Beverages', parent_id: null, sort_order: 1 })
-  const snacksId = await db.categories.add({ id: 2, name: 'Snacks & Biscuits', parent_id: null, sort_order: 2 })
-  const cannedId = await db.categories.add({ id: 3, name: 'Canned Goods', parent_id: null, sort_order: 3 })
-  const instantId = await db.categories.add({ id: 4, name: 'Instant Noodles', parent_id: null, sort_order: 4 })
-  const personalId = await db.categories.add({ id: 5, name: 'Personal Care', parent_id: null, sort_order: 5 })
+    // Seed subcategories
+    await db.categories.add({ id: 6, name: 'Soft Drinks', parent_id: beverageId, sort_order: 1 })
+    await db.categories.add({ id: 7, name: 'Coffee & Tea', parent_id: beverageId, sort_order: 2 })
+  }
 
-  // Seed subcategories
-  const softDrinksId = await db.categories.add({ id: 6, name: 'Soft Drinks', parent_id: beverageId, sort_order: 1 })
-  const coffeeId = await db.categories.add({ id: 7, name: 'Coffee & Tea', parent_id: beverageId, sort_order: 2 })
+  // Save default settings if not exists
+  const hasSettings = await db.settings.get('store_settings')
+  if (!hasSettings) {
+    await db.settings.put({ key: 'store_settings', value: DEFAULT_SETTINGS })
+  }
 
-  // Save default settings
-  await db.settings.put({ key: 'store_settings', value: DEFAULT_SETTINGS })
+  // Seed standard expense categories if empty
+  const expCatCount = await db.expense_categories.count()
+  if (expCatCount === 0) {
+    const defaultExpCats = [
+      'Rent',
+      'Electricity',
+      'Water',
+      'Ice',
+      'Plastic & Packaging',
+      'Labor & Wages',
+      'Store Supplies',
+      'Meals & Food',
+      'Delivery / Transpo',
+      'Miscellaneous'
+    ]
+    for (const name of defaultExpCats) {
+      await db.expense_categories.add({ name })
+    }
+  }
+
+  // Seed initial vendor/suppliers if empty
+  const supCount = await db.suppliers.count()
+  if (supCount === 0) {
+    await db.suppliers.bulkAdd([
+      {
+        name: 'Puregold Price Club',
+        contact_person: 'Wholesale Desk',
+        phone: '0917-123-4567',
+        address: 'National Highway, City Proper',
+        notes: 'Groceries, canned goods, detergents, snacks, toiletries',
+        status: 'ACTIVE',
+        created_at: new Date().toISOString()
+      },
+      {
+        name: 'San Miguel Brewery & Foods',
+        contact_person: 'Agent Mark',
+        phone: '0918-234-5678',
+        address: 'Provincial Distributor Warehouse',
+        notes: 'Beer, gin, Magnolia poultry & dairy, San Mig Coffee',
+        status: 'ACTIVE',
+        created_at: new Date().toISOString()
+      },
+      {
+        name: 'Coca-Cola Beverages PH',
+        contact_person: 'Route Agent',
+        phone: '0922-345-6789',
+        address: 'Bottling Sales Center',
+        notes: 'Coke Kasalo, Mismo, Royal, Sprite, Wilkins, Minute Maid',
+        status: 'ACTIVE',
+        created_at: new Date().toISOString()
+      },
+      {
+        name: 'Local Bagsakan / Wet Market Wholesaler',
+        contact_person: 'Kuya Edgar',
+        phone: '0939-567-8901',
+        address: 'Public Market Stalls 12-14',
+        notes: 'Eggs, onion, garlic, sugar, cooking oil, rice sacks',
+        status: 'ACTIVE',
+        created_at: new Date().toISOString()
+      }
+    ])
+  }
+
+  // Seed DTI SRP Price References if empty
+  try {
+    const priceRefCount = await db.price_references.count()
+    if (priceRefCount === 0 && SEED_PRICE_REFERENCES && SEED_PRICE_REFERENCES.length > 0) {
+      await db.price_references.bulkAdd(SEED_PRICE_REFERENCES as any)
+    }
+  } catch (err) {
+    console.error('Failed to seed price references:', err)
+  }
 }

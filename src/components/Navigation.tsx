@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -6,10 +6,27 @@ import {
   BarChart3,
   Users,
   Settings,
-  LogOut
+  LogOut,
+  Receipt,
+  Truck,
+  TrendingDown,
+  Sparkles,
+  CalendarClock,
+  Menu,
+  X,
+  ChevronRight
 } from 'lucide-react'
 
-export type ActiveTab = 'dashboard' | 'pos' | 'inventory' | 'analytics' | 'customers' | 'settings'
+export type ActiveTab =
+  | 'dashboard'
+  | 'pos'
+  | 'inventory'
+  | 'customers'
+  | 'transactions'
+  | 'expenses'
+  | 'suppliers'
+  | 'analytics'
+  | 'settings'
 
 interface NavigationProps {
   activeTab: ActiveTab
@@ -19,6 +36,8 @@ interface NavigationProps {
   cashierName: string
   cashierRole: string
   onLockTerminal: () => void
+  onOpenPriceGuide?: () => void
+  onOpenExpiration?: () => void
 }
 
 export function Navigation({
@@ -28,9 +47,14 @@ export function Navigation({
   lowStockCount,
   cashierName,
   cashierRole,
-  onLockTerminal
+  onLockTerminal,
+  onOpenPriceGuide,
+  onOpenExpiration
 }: NavigationProps): React.JSX.Element {
-  const navItems: {
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
+
+  // Primary store operations nav
+  const storeNavItems: {
     id: ActiveTab
     label: string
     icon: React.ComponentType<{ className?: string }>
@@ -45,9 +69,20 @@ export function Navigation({
       badgeClass: 'bg-red-500/20 text-red-300 border border-red-500/30'
     },
     { id: 'pos', label: 'Counter', icon: ShoppingBag, badge: cartCount },
+    { id: 'transactions', label: 'Transactions', icon: Receipt },
     { id: 'inventory', label: 'Inventory', icon: Package },
-    { id: 'customers', label: 'Clients', icon: Users },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { id: 'customers', label: 'Clients / Utang', icon: Users },
+  ]
+
+  // Business management nav
+  const businessNavItems: {
+    id: ActiveTab
+    label: string
+    icon: React.ComponentType<{ className?: string }>
+  }[] = [
+    { id: 'expenses', label: 'Expenses', icon: TrendingDown },
+    { id: 'suppliers', label: 'Suppliers', icon: Truck },
+    { id: 'analytics', label: 'Analytics & Z-Read', icon: BarChart3 },
     { id: 'settings', label: 'Settings', icon: Settings },
   ]
 
@@ -61,13 +96,18 @@ export function Navigation({
         .toUpperCase()
     : 'MA'
 
+  const handleMobileSelectTab = (tab: ActiveTab) => {
+    setActiveTab(tab)
+    setMobileDrawerOpen(false)
+  }
+
   return (
     <>
       {/* ── DESKTOP & TABLET VERTICAL SIDEBAR (md:flex) ── */}
-      <aside className="hidden md:flex flex-col w-60 xl:w-64 h-screen sticky top-0 shrink-0 bg-[#090A0D] border-r border-white/10 p-4 justify-between z-30 transition-all select-none">
+      <aside className="hidden md:flex flex-col w-60 xl:w-64 h-screen sticky top-0 shrink-0 bg-[#090A0D] border-r border-white/10 p-4 justify-between z-30 transition-all select-none overflow-y-auto custom-scrollbar">
         {/* Brand & Logo Header */}
-        <div>
-          <div className="flex items-center gap-3 px-2 py-3 border-b border-white/[0.08]">
+        <div className="space-y-5">
+          <div className="flex items-center gap-3 px-2 py-2 border-b border-white/[0.08]">
             <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-b from-amber-200/20 via-gold/15 to-transparent border border-gold/40 shadow-glow-gold shrink-0">
               <span className="font-serif text-lg font-bold tracking-widest text-gold-light">T</span>
               <div className="absolute -inset-0.5 rounded-xl bg-gold/10 blur-[4px] -z-10" />
@@ -82,39 +122,110 @@ export function Navigation({
             </div>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="mt-5 space-y-1.5">
-            {navItems.map((item) => {
-              const Icon = item.icon
-              const isActive = activeTab === item.id
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`btn-press w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs tracking-wider uppercase font-medium transition-all duration-200 text-left ${
-                    isActive
-                      ? 'bg-amber-500/10 text-[#D4AF37] border border-[#D4AF37]/35 shadow-glow-gold font-bold'
-                      : 'text-stone-400 hover:text-stone-200 hover:bg-white/[0.04] border border-transparent'
-                  }`}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <Icon className="w-4 h-4 shrink-0 text-inherit" />
-                    <span className="truncate">{item.label}</span>
-                  </div>
-                  {item.badge !== undefined && item.badge > 0 && (
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold shrink-0 ${item.badgeClass || 'bg-[#D4AF37] text-black'}`}>
-                      {item.badge}
-                    </span>
-                  )}
-                </button>
-              )
-            })}
-          </nav>
+          {/* Group 1: Store Operations */}
+          <div>
+            <div className="px-3 pb-2 text-[10px] font-mono uppercase tracking-[0.18em] text-stone-500">
+              Store Operations
+            </div>
+            <nav className="space-y-1">
+              {storeNavItems.map((item) => {
+                const Icon = item.icon
+                const isActive = activeTab === item.id
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveTab(item.id)}
+                    className={`btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium transition-all duration-200 text-left ${
+                      isActive
+                        ? 'bg-amber-500/10 text-[#D4AF37] border border-[#D4AF37]/35 shadow-glow-gold font-bold'
+                        : 'text-stone-400 hover:text-stone-200 hover:bg-white/[0.04] border border-transparent'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Icon className="w-4 h-4 shrink-0 text-inherit" />
+                      <span className="truncate">{item.label}</span>
+                    </div>
+                    {item.badge !== undefined && item.badge > 0 && (
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold shrink-0 ${
+                          item.badgeClass || 'bg-[#D4AF37] text-black'
+                        }`}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
+            </nav>
+          </div>
+
+          {/* Group 2: Business & Finance */}
+          <div>
+            <div className="px-3 pb-2 text-[10px] font-mono uppercase tracking-[0.18em] text-stone-500">
+              Management
+            </div>
+            <nav className="space-y-1">
+              {businessNavItems.map((item) => {
+                const Icon = item.icon
+                const isActive = activeTab === item.id
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveTab(item.id)}
+                    className={`btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium transition-all duration-200 text-left ${
+                      isActive
+                        ? 'bg-amber-500/10 text-[#D4AF37] border border-[#D4AF37]/35 shadow-glow-gold font-bold'
+                        : 'text-stone-400 hover:text-stone-200 hover:bg-white/[0.04] border border-transparent'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Icon className="w-4 h-4 shrink-0 text-inherit" />
+                      <span className="truncate">{item.label}</span>
+                    </div>
+                  </button>
+                )
+              })}
+            </nav>
+          </div>
+
+          {/* Group 3: Fast Tools (SRP & Expiration) */}
+          {(onOpenPriceGuide || onOpenExpiration) && (
+            <div>
+              <div className="px-3 pb-2 text-[10px] font-mono uppercase tracking-[0.18em] text-stone-500">
+                Fast Tools
+              </div>
+              <div className="space-y-1">
+                {onOpenPriceGuide && (
+                  <button
+                    onClick={onOpenPriceGuide}
+                    className="btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium text-amber-300/80 hover:text-amber-200 bg-amber-500/[0.04] hover:bg-amber-500/[0.08] border border-amber-500/20 text-left transition-all"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Sparkles className="w-4 h-4 shrink-0 text-amber-400" />
+                      <span className="truncate">Bantay Presyo</span>
+                    </div>
+                    <span className="text-[10px] font-mono bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">SRP</span>
+                  </button>
+                )}
+                {onOpenExpiration && (
+                  <button
+                    onClick={onOpenExpiration}
+                    className="btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium text-rose-300/80 hover:text-rose-200 bg-rose-500/[0.04] hover:bg-rose-500/[0.08] border border-rose-500/20 text-left transition-all"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <CalendarClock className="w-4 h-4 shrink-0 text-rose-400" />
+                      <span className="truncate">Expiry Watch</span>
+                    </div>
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer: User Profile & Log Out */}
-        <div className="space-y-3 pt-4 border-t border-white/[0.08]">
-          {/* Staff Info Card */}
+        <div className="space-y-3 pt-4 border-t border-white/[0.08] mt-4">
           <div className="flex items-center gap-3 p-2.5 rounded-xl bg-zinc-950/60 border border-white/5">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-[#D4AF37] text-obsidian-950 text-xs font-serif font-bold shadow-sm">
               {cashierInitials}
@@ -129,7 +240,6 @@ export function Navigation({
             </div>
           </div>
 
-          {/* Full Log Out Button */}
           <button
             onClick={onLockTerminal}
             title="Log Out Terminal"
@@ -173,33 +283,265 @@ export function Navigation({
       </header>
 
       {/* ── MOBILE BOTTOM BAR (md:hidden) ── */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 grid grid-cols-6 items-center border-t border-white/10 px-1 py-1.5 bg-[#090A0D]/95 backdrop-blur-xl">
-        {navItems.map((item) => {
-          const Icon = item.icon
-          const isActive = activeTab === item.id
-          return (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
-                isActive ? 'text-[#D4AF37] font-semibold' : 'text-stone-400 hover:text-stone-300'
-              }`}
-            >
-              <div className="relative">
-                <Icon className="w-4 h-4 shrink-0" />
-                {item.badge !== undefined && item.badge > 0 && (
-                  <span className={`absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[8px] font-mono font-bold leading-none ${item.badgeClass || 'bg-[#D4AF37] text-black'}`}>
-                    {item.badge}
-                  </span>
-                )}
-              </div>
-              <span className="truncate max-w-full tracking-tight uppercase text-[8.5px] font-medium leading-none">
-                {item.label}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 grid grid-cols-5 items-center border-t border-white/10 px-1 py-1.5 bg-[#090A0D]/95 backdrop-blur-xl">
+        <button
+          onClick={() => setActiveTab('dashboard')}
+          className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
+            activeTab === 'dashboard' ? 'text-[#D4AF37] font-semibold' : 'text-stone-400 hover:text-stone-300'
+          }`}
+        >
+          <div className="relative">
+            <LayoutDashboard className="w-4 h-4 shrink-0" />
+            {lowStockCount !== undefined && lowStockCount > 0 && (
+              <span className="absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[8px] font-mono font-bold leading-none bg-red-500 text-white">
+                {lowStockCount}
               </span>
-            </button>
-          )
-        })}
+            )}
+          </div>
+          <span className="truncate max-w-full tracking-tight uppercase text-[9px] font-medium leading-none">
+            Dash
+          </span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('pos')}
+          className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
+            activeTab === 'pos' ? 'text-[#D4AF37] font-semibold' : 'text-stone-400 hover:text-stone-300'
+          }`}
+        >
+          <div className="relative">
+            <ShoppingBag className="w-4 h-4 shrink-0" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[8px] font-mono font-bold leading-none bg-[#D4AF37] text-black">
+                {cartCount}
+              </span>
+            )}
+          </div>
+          <span className="truncate max-w-full tracking-tight uppercase text-[9px] font-medium leading-none">
+            Counter
+          </span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('transactions')}
+          className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
+            activeTab === 'transactions' ? 'text-[#D4AF37] font-semibold' : 'text-stone-400 hover:text-stone-300'
+          }`}
+        >
+          <Receipt className="w-4 h-4 shrink-0" />
+          <span className="truncate max-w-full tracking-tight uppercase text-[9px] font-medium leading-none">
+            Sales
+          </span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('inventory')}
+          className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
+            activeTab === 'inventory' ? 'text-[#D4AF37] font-semibold' : 'text-stone-400 hover:text-stone-300'
+          }`}
+        >
+          <Package className="w-4 h-4 shrink-0" />
+          <span className="truncate max-w-full tracking-tight uppercase text-[9px] font-medium leading-none">
+            Stocks
+          </span>
+        </button>
+
+        <button
+          onClick={() => setMobileDrawerOpen(true)}
+          className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
+            mobileDrawerOpen || ['customers', 'expenses', 'suppliers', 'analytics', 'settings'].includes(activeTab)
+              ? 'text-[#D4AF37] font-semibold'
+              : 'text-stone-400 hover:text-stone-300'
+          }`}
+        >
+          <Menu className="w-4 h-4 shrink-0" />
+          <span className="truncate max-w-full tracking-tight uppercase text-[9px] font-medium leading-none">
+            More
+          </span>
+        </button>
       </nav>
+
+      {/* ── MOBILE "MORE" DRAWER BOTTOM SHEET (md:hidden) ── */}
+      {mobileDrawerOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div
+            className="flex-1"
+            onClick={() => setMobileDrawerOpen(false)}
+          />
+          <div className="bg-[#0e1015] border-t border-white/10 rounded-t-2xl p-5 max-h-[85vh] overflow-y-auto space-y-5 animate-slide-up shadow-2xl">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="font-serif font-bold text-sm tracking-wider uppercase text-gold">TINDA APPS</span>
+                <span className="text-[10px] font-mono text-stone-500 uppercase tracking-widest">Directory</span>
+              </div>
+              <button
+                onClick={() => setMobileDrawerOpen(false)}
+                className="p-1 rounded-lg hover:bg-white/10 text-stone-400"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Quick Actions / Fast Tools */}
+            {(onOpenPriceGuide || onOpenExpiration) && (
+              <div>
+                <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-stone-500 mb-2">Fast Tools</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {onOpenPriceGuide && (
+                    <button
+                      onClick={() => {
+                        setMobileDrawerOpen(false)
+                        onOpenPriceGuide()
+                      }}
+                      className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-left flex flex-col justify-between"
+                    >
+                      <Sparkles className="w-5 h-5 text-amber-400 mb-1" />
+                      <div>
+                        <div className="text-xs font-bold uppercase tracking-wider">Bantay Presyo</div>
+                        <div className="text-[10px] text-amber-300/70 font-mono">172+ DTI SRP Items</div>
+                      </div>
+                    </button>
+                  )}
+                  {onOpenExpiration && (
+                    <button
+                      onClick={() => {
+                        setMobileDrawerOpen(false)
+                        onOpenExpiration()
+                      }}
+                      className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-200 text-left flex flex-col justify-between"
+                    >
+                      <CalendarClock className="w-5 h-5 text-rose-400 mb-1" />
+                      <div>
+                        <div className="text-xs font-bold uppercase tracking-wider">Expiry Watch</div>
+                        <div className="text-[10px] text-rose-300/70 font-mono">Perishable Alerts</div>
+                      </div>
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Additional Modules */}
+            <div>
+              <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-stone-500 mb-2">Store Management</p>
+              <div className="space-y-1.5">
+                <button
+                  onClick={() => handleMobileSelectTab('customers')}
+                  className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
+                    activeTab === 'customers'
+                      ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
+                      : 'bg-zinc-950/50 border-white/5 text-stone-300 hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Users className="w-4 h-4 text-emerald-400" />
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wider">Clients / Utang Ledger</div>
+                      <div className="text-[10px] text-stone-500">Track customer credit & balances</div>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-stone-600" />
+                </button>
+
+                <button
+                  onClick={() => handleMobileSelectTab('expenses')}
+                  className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
+                    activeTab === 'expenses'
+                      ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
+                      : 'bg-zinc-950/50 border-white/5 text-stone-300 hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <TrendingDown className="w-4 h-4 text-rose-400" />
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wider">Expenses Tracker</div>
+                      <div className="text-[10px] text-stone-500">Operating costs & net profit math</div>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-stone-600" />
+                </button>
+
+                <button
+                  onClick={() => handleMobileSelectTab('suppliers')}
+                  className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
+                    activeTab === 'suppliers'
+                      ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
+                      : 'bg-zinc-950/50 border-white/5 text-stone-300 hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Truck className="w-4 h-4 text-sky-400" />
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wider">Suppliers Directory</div>
+                      <div className="text-[10px] text-stone-500">Vendor contacts & delivery notes</div>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-stone-600" />
+                </button>
+
+                <button
+                  onClick={() => handleMobileSelectTab('analytics')}
+                  className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
+                    activeTab === 'analytics'
+                      ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
+                      : 'bg-zinc-950/50 border-white/5 text-stone-300 hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <BarChart3 className="w-4 h-4 text-indigo-400" />
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wider">Analytics & Z-Read</div>
+                      <div className="text-[10px] text-stone-500">Cash drawer audit & closure readings</div>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-stone-600" />
+                </button>
+
+                <button
+                  onClick={() => handleMobileSelectTab('settings')}
+                  className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
+                    activeTab === 'settings'
+                      ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
+                      : 'bg-zinc-950/50 border-white/5 text-stone-300 hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Settings className="w-4 h-4 text-amber-400" />
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wider">Settings & Backup</div>
+                      <div className="text-[10px] text-stone-500">Store config, JSON export & user accounts</div>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-stone-600" />
+                </button>
+              </div>
+            </div>
+
+            {/* User Profile & Log Out */}
+            <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-gold/20 border border-gold/40 flex items-center justify-center font-bold text-xs text-gold">
+                  {cashierInitials}
+                </div>
+                <div className="text-xs">
+                  <div className="font-semibold text-stone-200">{cashierName}</div>
+                  <div className="text-[10px] text-stone-500">{cashierRole}</div>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setMobileDrawerOpen(false)
+                  onLockTerminal()
+                }}
+                className="px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-semibold flex items-center gap-1.5"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Log Out</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }

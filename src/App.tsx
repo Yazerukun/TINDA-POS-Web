@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import type { Product, Category, Transaction, HeldCart, Customer, StoreSettings, CartItem, DiscountType } from './types'
+import type { Product, Category, Transaction, HeldCart, Customer, StoreSettings, CartItem, DiscountType, Expense } from './types'
 import { db, DEFAULT_SETTINGS, initDatabase } from './db'
 import { Navigation, type ActiveTab } from './components/Navigation'
 import { DashboardScreen } from './components/DashboardScreen'
@@ -8,6 +8,11 @@ import { InventoryScreen } from './components/InventoryScreen'
 import { AnalyticsScreen } from './components/AnalyticsScreen'
 import { CustomersScreen } from './components/CustomersScreen'
 import { SettingsScreen } from './components/SettingsScreen'
+import { TransactionsScreen } from './components/TransactionsScreen'
+import { ExpensesScreen } from './components/ExpensesScreen'
+import { SuppliersScreen } from './components/SuppliersScreen'
+import { PriceGuideModal } from './components/PriceGuideModal'
+import { ExpirationTrackerModal } from './components/ExpirationTrackerModal'
 import { CheckoutModal } from './components/CheckoutModal'
 import { VaultAuthModal, type VaultSession } from './components/VaultAuthModal'
 
@@ -17,10 +22,15 @@ export default function App(): React.JSX.Element {
   const [categories, setCategories] = useState<Category[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [customers, setCustomers] = useState<Customer[]>([])
+  const [expenses, setExpenses] = useState<Expense[]>([])
   const [settings, setSettings] = useState<StoreSettings>(DEFAULT_SETTINGS)
   const [cart, setCart] = useState<CartItem[]>([])
   const [heldCarts, setHeldCarts] = useState<HeldCart[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Fast Tools Modal States
+  const [isPriceGuideOpen, setIsPriceGuideOpen] = useState(false)
+  const [isExpirationOpen, setIsExpirationOpen] = useState(false)
 
   // Vault Session / Cashier Authentication State (Screen 1 vs Screen 2)
   const [vaultSession, setVaultSession] = useState<VaultSession | null>(() => {
@@ -47,13 +57,14 @@ export default function App(): React.JSX.Element {
   const loadData = useCallback(async () => {
     try {
       await initDatabase()
-      const [allProducts, allCategories, allTx, allCust, savedSettings, savedHeld] = await Promise.all([
+      const [allProducts, allCategories, allTx, allCust, savedSettings, savedHeld, allExpenses] = await Promise.all([
         db.products.toArray(),
         db.categories.toArray(),
         db.transactions.orderBy('id').reverse().toArray(),
         db.customers.toArray(),
         db.settings.get('store_settings'),
-        db.held_carts.toArray()
+        db.held_carts.toArray(),
+        db.expenses.orderBy('date').reverse().toArray()
       ])
 
       setProducts(allProducts)
@@ -64,6 +75,7 @@ export default function App(): React.JSX.Element {
         setSettings(savedSettings.value)
       }
       setHeldCarts(savedHeld)
+      setExpenses(allExpenses)
     } catch (e) {
       console.error('Failed to load database:', e)
     } finally {
@@ -182,9 +194,15 @@ export default function App(): React.JSX.Element {
     )
   }
 
+  const isUserAdmin =
+    vaultSession?.isAdmin ??
+    (vaultSession?.userRole === 'ADMIN' ||
+      vaultSession?.cashierRole?.toLowerCase().includes('admin') ||
+      !vaultSession)
+
   return (
     <div className="min-h-screen bg-obsidian-950 text-stone-100 flex flex-col md:flex-row selection:bg-amber-400 selection:text-obsidian-950 font-sans">
-      {/* Executive Vertical Navigation Sidebar */}
+      {/* Executive Vertical Navigation Sidebar & Mobile Bottom Nav */}
       <Navigation
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -193,6 +211,8 @@ export default function App(): React.JSX.Element {
         cashierName={vaultSession?.cashierName || 'Master Admin'}
         cashierRole={vaultSession?.cashierRole || 'Administrator'}
         onLockTerminal={handleLockTerminal}
+        onOpenPriceGuide={() => setIsPriceGuideOpen(true)}
+        onOpenExpiration={() => setIsExpirationOpen(true)}
       />
 
       {/* Main Screen Router */}
@@ -202,9 +222,12 @@ export default function App(): React.JSX.Element {
             products={products}
             transactions={transactions}
             customers={customers}
+            expenses={expenses}
             settings={settings}
             onNavigate={(tab) => setActiveTab(tab)}
             onQuickRestock={handleQuickRestock}
+            onOpenPriceGuide={() => setIsPriceGuideOpen(true)}
+            onOpenExpiration={() => setIsExpirationOpen(true)}
           />
         )}
 
@@ -222,6 +245,16 @@ export default function App(): React.JSX.Element {
           />
         )}
 
+        {activeTab === 'transactions' && (
+          <TransactionsScreen
+            transactions={transactions}
+            settings={settings}
+            onTransactionVoided={loadData}
+            isAdmin={isUserAdmin}
+            currentCashierName={vaultSession?.cashierName || 'Master Admin'}
+          />
+        )}
+
         {activeTab === 'inventory' && (
           <InventoryScreen
             products={products}
@@ -231,14 +264,28 @@ export default function App(): React.JSX.Element {
           />
         )}
 
-        {activeTab === 'analytics' && (
-          <AnalyticsScreen transactions={transactions} />
-        )}
-
         {activeTab === 'customers' && (
           <CustomersScreen
             customers={customers}
             onRefresh={loadData}
+          />
+        )}
+
+        {activeTab === 'expenses' && (
+          <ExpensesScreen
+            cashierName={vaultSession?.cashierName || 'Master Admin'}
+            onExpensesChanged={loadData}
+          />
+        )}
+
+        {activeTab === 'suppliers' && (
+          <SuppliersScreen />
+        )}
+
+        {activeTab === 'analytics' && (
+          <AnalyticsScreen
+            transactions={transactions}
+            cashierName={vaultSession?.cashierName || 'Master Admin'}
           />
         )}
 
@@ -247,7 +294,7 @@ export default function App(): React.JSX.Element {
             settings={settings}
             onSaveSettings={handleSaveSettings}
             onRefreshAll={loadData}
-            isAdmin={vaultSession?.isAdmin ?? (vaultSession?.userRole === 'ADMIN' || vaultSession?.cashierRole?.includes('Admin') || !vaultSession)}
+            isAdmin={isUserAdmin}
             currentCashierName={vaultSession?.cashierName}
           />
         )}
@@ -278,6 +325,22 @@ export default function App(): React.JSX.Element {
           onComplete={handleTransactionComplete}
         />
       )}
+
+      {/* DTI SRP Bantay Presyo Modal */}
+      <PriceGuideModal
+        isOpen={isPriceGuideOpen}
+        onClose={() => setIsPriceGuideOpen(false)}
+        existingProducts={products}
+        onProductAdded={loadData}
+      />
+
+      {/* Expiration Tracker & Perishable Watch Modal */}
+      <ExpirationTrackerModal
+        isOpen={isExpirationOpen}
+        onClose={() => setIsExpirationOpen(false)}
+        products={products}
+        onProductsUpdated={loadData}
+      />
     </div>
   )
 }

@@ -103,3 +103,16 @@ export interface StoreSettings {
   default_low_stock: number
   currency_symbol: string
 }
+
+export type UserRole = 'ADMIN' | 'CASHIER' | 'INVENTORY_LEAD'
+
+export interface UserAccount {
+  id?: number
+  username: string
+  name: string
+  role: UserRole
+  pin: string
+  status: 'ACTIVE' | 'DISABLED'
+  created_at: string
+}
+

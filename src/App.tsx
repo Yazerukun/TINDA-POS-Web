@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import type { Product, Category, Transaction, HeldCart, Customer, StoreSettings, CartItem, DiscountType } from './types'
-import { db, DEFAULT_SETTINGS } from './db'
+import { db, DEFAULT_SETTINGS, initDatabase } from './db'
 import { Navigation, type ActiveTab } from './components/Navigation'
 import { POSScreen } from './components/POSScreen'
 import { InventoryScreen } from './components/InventoryScreen'
@@ -45,6 +45,7 @@ export default function App(): React.JSX.Element {
   // Load all data from Dexie
   const loadData = useCallback(async () => {
     try {
+      await initDatabase()
       const [allProducts, allCategories, allTx, allCust, savedSettings, savedHeld] = await Promise.all([
         db.products.toArray(),
         db.categories.toArray(),
@@ -161,8 +162,8 @@ export default function App(): React.JSX.Element {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         cartCount={cart.reduce((s, i) => s + i.quantity, 0)}
-        cashierName={vaultSession?.cashierName || 'Store Manager'}
-        cashierRole={vaultSession?.cashierRole || 'Head Cashier'}
+        cashierName={vaultSession?.cashierName || 'Master Admin'}
+        cashierRole={vaultSession?.cashierRole || 'Administrator'}
         onLockTerminal={handleLockTerminal}
       />
 
@@ -207,6 +208,8 @@ export default function App(): React.JSX.Element {
             settings={settings}
             onSaveSettings={handleSaveSettings}
             onRefreshAll={loadData}
+            isAdmin={vaultSession?.isAdmin ?? (vaultSession?.userRole === 'ADMIN' || vaultSession?.cashierRole?.includes('Admin') || !vaultSession)}
+            currentCashierName={vaultSession?.cashierName}
           />
         )}
       </main>

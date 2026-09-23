@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie'
-import type { Product, Category, Transaction, HeldCart, Customer, StoreSettings, RestockLog } from '../types'
+import type { Product, Category, Transaction, HeldCart, Customer, StoreSettings, RestockLog, UserAccount } from '../types'
 
 export class TindaWebDatabase extends Dexie {
   products!: Table<Product, number>
@@ -9,6 +9,7 @@ export class TindaWebDatabase extends Dexie {
   customers!: Table<Customer, number>
   settings!: Table<{ key: string; value: any }, string>
   restock_logs!: Table<RestockLog, number>
+  users!: Table<UserAccount, number>
 
   constructor() {
     super('TindaWebDB')
@@ -22,6 +23,9 @@ export class TindaWebDatabase extends Dexie {
     })
     this.version(2).stores({
       restock_logs: '++id, product_id, timestamp'
+    })
+    this.version(3).stores({
+      users: '++id, username, role, status'
     })
   }
 }
@@ -39,6 +43,33 @@ export const DEFAULT_SETTINGS: StoreSettings = {
 }
 
 export async function initDatabase(): Promise<void> {
+  // Ensure default Master Admin exists uniquely
+  try {
+    const existingAdmin = await db.users.where('username').equalsIgnoreCase('admin').first()
+    if (!existingAdmin) {
+      await db.users.add({
+        username: 'admin',
+        name: 'Master Admin',
+        role: 'ADMIN',
+        pin: '1234',
+        status: 'ACTIVE',
+        created_at: new Date().toISOString()
+      })
+    } else {
+      // Clean up any duplicate admin entries
+      const allAdmins = await db.users.where('username').equalsIgnoreCase('admin').toArray()
+      if (allAdmins.length > 1) {
+        for (let i = 1; i < allAdmins.length; i++) {
+          if (allAdmins[i].id) {
+            await db.users.delete(allAdmins[i].id!)
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Failed to initialize users table:', err)
+  }
+
   const catCount = await db.categories.count()
   if (catCount > 0) return
 

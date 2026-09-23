@@ -1,16 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import {
-  KeyRound, ShieldCheck, UserCheck, Delete, ArrowRight,
-  Lock, Clock, Fingerprint, WifiOff, ServerCog, Banknote, ChevronLeft
+  KeyRound, ShieldCheck, Delete, ArrowRight,
+  Lock, Clock, Fingerprint, WifiOff, ServerCog, Banknote, ChevronLeft, User, LogIn
 } from 'lucide-react'
 import { money } from '../utils/format'
+import { db } from '../db'
+import type { UserAccount, UserRole } from '../types'
 
 export interface VaultSession {
+  userId?: number
   cashierName: string
   cashierRole: string
+  userRole: UserRole
   openingFloat_c: number
   sessionStartTime: string
   terminalId: string
+  isAdmin: boolean
 }
 
 interface VaultAuthModalProps {
@@ -18,20 +23,6 @@ interface VaultAuthModalProps {
   onAuthenticated: (session: VaultSession) => void
   currentCashier?: string
 }
-
-interface CashierProfile {
-  id: string
-  name: string
-  role: string
-  initials: string
-  pin: string
-}
-
-const CASHIER_PROFILES: CashierProfile[] = [
-  { id: 'c1', name: 'Alfonso V.',   role: 'Store Manager & Head Cashier', initials: 'AV', pin: '1234' },
-  { id: 'c2', name: 'Isabella M.',  role: 'Senior Inventory Lead',        initials: 'IM', pin: '1234' },
-  { id: 'c3', name: 'Sebastian R.', role: 'Cashier & Sales Associate',     initials: 'SR', pin: '1234' },
-]
 
 const TERMINAL_ID = 'TRM-8891'
 
@@ -44,10 +35,10 @@ const GRID_BACKDROP = {
 } as const
 
 const FEATURES = [
-  { icon: Fingerprint, title: 'Staff PIN authentication',      desc: 'Individual employee credentials with full audit log' },
-  { icon: WifiOff,    title: 'Offline-first resilience',       desc: 'Full register capability with or without internet' },
-  { icon: ShieldCheck, title: 'Audited register sessions',     desc: 'Every shift, float, and cash transaction recorded' },
-  { icon: ServerCog,  title: 'Edge-served on Cloudflare',      desc: 'Global points of presence, near-zero latency' },
+  { icon: Fingerprint, title: 'Staff PIN authentication',  desc: 'Individual employee credentials with full audit log' },
+  { icon: WifiOff,    title: 'Offline-first resilience',   desc: 'Full register capability with or without internet' },
+  { icon: ShieldCheck, title: 'Audited register sessions', desc: 'Every shift, float, and cash transaction recorded' },
+  { icon: ServerCog,  title: 'Edge-served on Cloudflare',  desc: 'Global points of presence, near-zero latency' },
 ] as const
 
 function useClock(): Date {
@@ -141,35 +132,101 @@ function BrandPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
 }
 
 export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps): React.JSX.Element | null {
-  const [step, setStep]                     = useState<'PIN' | 'FLOAT'>('PIN')
-  const [selectedCashier, setSelectedCashier] = useState<CashierProfile>(CASHIER_PROFILES[0])
-  const [pin, setPin]                       = useState('')
-  const [pinError, setPinError]             = useState(false)
-  const [openingFloat, setOpeningFloat]     = useState(200000) // ₱2,000.00 in centavos
+  const [step, setStep] = useState<'LOGIN' | 'FLOAT'>('LOGIN')
+  const [username, setUsername] = useState('')
+  const [pin, setPin] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isVerifying, setIsVerifying] = useState(false)
+  const [authenticatedUser, setAuthenticatedUser] = useState<UserAccount | null>(null)
+  const [openingFloat, setOpeningFloat] = useState(200000) // ₱2,000.00 in centavos
   const [customFloatInput, setCustomFloatInput] = useState('2000')
+
+  const usernameInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (isOpen && step === 'LOGIN') {
+      setTimeout(() => {
+        usernameInputRef.current?.focus()
+      }, 100)
+    }
+  }, [isOpen, step])
 
   if (!isOpen) return null
 
-  const handleKeyPress = (num: string) => {
-    if (pin.length < 4) {
-      const nextPin = pin + num
+  const handleKeypadPress = (digit: string) => {
+    if (pin.length < 6) {
+      const nextPin = pin + digit
       setPin(nextPin)
-      setPinError(false)
-      if (nextPin.length === 4) {
-        setTimeout(() => {
-          if (nextPin === selectedCashier.pin || nextPin === '1234' || nextPin === '0000') {
-            setStep('FLOAT')
-          } else {
-            setPinError(true)
-            setTimeout(() => setPin(''), 500)
-          }
-        }, 180)
-      }
+      setErrorMessage('')
     }
   }
 
-  const handleDelete = () => { setPin((p) => p.slice(0, -1)); setPinError(false) }
-  const handleClear  = () => { setPin(''); setPinError(false) }
+  const handleDeletePin = () => {
+    setPin((prev) => prev.slice(0, -1))
+    setErrorMessage('')
+  }
+
+  const handleClearPin = () => {
+    setPin('')
+    setErrorMessage('')
+  }
+
+  const handleLoginSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    const trimmedUser = username.trim()
+    if (!trimmedUser) {
+      setErrorMessage('Please enter your username or staff ID.')
+      usernameInputRef.current?.focus()
+      return
+    }
+    if (!pin) {
+      setErrorMessage('Please enter your 4-digit security PIN.')
+      return
+    }
+
+    setIsVerifying(true)
+    setErrorMessage('')
+
+    try {
+      // Find matching user from Dexie database
+      let user = await db.users.where('username').equalsIgnoreCase(trimmedUser).first()
+
+      // Fallback for default master admin on initial launch
+      if (!user && (trimmedUser.toLowerCase() === 'admin' || trimmedUser.toLowerCase() === 'master')) {
+        const existingAdmin = await db.users.where('username').equalsIgnoreCase('admin').first()
+        if (!existingAdmin) {
+          const newAdmin: UserAccount = {
+            username: 'admin',
+            name: 'Master Admin',
+            role: 'ADMIN',
+            pin: '1234',
+            status: 'ACTIVE',
+            created_at: new Date().toISOString()
+          }
+          await db.users.add(newAdmin)
+          user = newAdmin
+        } else {
+          user = existingAdmin
+        }
+      }
+
+      if (!user || user.status !== 'ACTIVE' || user.pin !== pin) {
+        setErrorMessage('Authentication failed. Invalid username or PIN.')
+        setPin('')
+        setIsVerifying(false)
+        return
+      }
+
+      // Successful authentication
+      setAuthenticatedUser(user)
+      setIsVerifying(false)
+      setStep('FLOAT')
+    } catch (err) {
+      console.error('Login error:', err)
+      setErrorMessage('A database error occurred. Please try again.')
+      setIsVerifying(false)
+    }
+  }
 
   const handlePresetFloat = (pesos: number) => {
     setOpeningFloat(pesos * 100)
@@ -183,15 +240,30 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
   }
 
   const handleConfirmSession = () => {
-    onAuthenticated({
-      cashierName: selectedCashier.name,
-      cashierRole: selectedCashier.role,
+    if (!authenticatedUser) return
+    const session: VaultSession = {
+      userId: authenticatedUser.id,
+      cashierName: authenticatedUser.name,
+      cashierRole: authenticatedUser.role === 'ADMIN' ? 'Master Admin' : authenticatedUser.role === 'INVENTORY_LEAD' ? 'Inventory Lead' : 'Cashier',
+      userRole: authenticatedUser.role,
       openingFloat_c: openingFloat,
       sessionStartTime: new Date().toISOString(),
       terminalId: TERMINAL_ID,
-    })
+      isAdmin: authenticatedUser.role === 'ADMIN'
+    }
+    onAuthenticated(session)
     setPin('')
-    setStep('PIN')
+    setUsername('')
+    setStep('LOGIN')
+    setAuthenticatedUser(null)
+  }
+
+  const handleSwitchAccount = () => {
+    setStep('LOGIN')
+    setPin('')
+    setAuthenticatedUser(null)
+    setErrorMessage('')
+    setTimeout(() => usernameInputRef.current?.focus(), 150)
   }
 
   return (
@@ -212,7 +284,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
         <main className="flex flex-col items-center justify-center w-full min-h-full
                          px-4 py-8 sm:px-8 sm:py-10 lg:py-12">
 
-          {/* Card — fluid width, max bounded, never clips on tiny screens */}
+          {/* Card */}
           <div className="w-full max-w-[min(440px,100%)] glass-vault rounded-2xl sm:rounded-3xl
                           border border-gold/25 shadow-vault text-stone-100 animate-fade-in">
 
@@ -226,176 +298,174 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                 </div>
                 <div className="leading-tight">
                   <p className="font-serif text-xs sm:text-sm font-bold tracking-[0.18em] uppercase text-stone-100">TINDA POS</p>
-                  <p className="font-mono text-[7px] sm:text-[8px] tracking-[0.22em] uppercase text-gold-muted font-medium">Secure Access</p>
+                  <p className="font-mono text-[7px] sm:text-[8px] tracking-[0.22em] uppercase text-gold-muted font-medium">Terminal Sign In</p>
                 </div>
               </div>
               <span className="inline-flex items-center gap-1 sm:gap-1.5 rounded-full glass-pill
                                px-2 py-1 sm:px-3 sm:py-1.5
                                font-mono text-[9px] sm:text-[10px] tracking-[0.18em] uppercase text-gold-light">
-                {step === 'PIN' ? <KeyRound className="h-3 w-3" /> : <Banknote className="h-3 w-3" />}
-                {step === 'PIN' ? 'Step 1 · Access' : 'Step 2 · Float'}
+                {step === 'LOGIN' ? <KeyRound className="h-3 w-3" /> : <Banknote className="h-3 w-3" />}
+                {step === 'LOGIN' ? 'Step 1 · Credential' : 'Step 2 · Float'}
               </span>
             </div>
 
             {/* Card body */}
             <div className="px-5 pb-5 pt-4 sm:px-7 sm:pb-7 sm:pt-6">
-              {step === 'PIN' ? (
-                <div className="animate-fade-in">
-
-                  {/* Staff Identification */}
-                  <div className="mb-4 sm:mb-6">
-                    <div className="flex items-center justify-between mb-2 sm:mb-3">
-                      <label className="text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400">
-                        Staff Identification
-                      </label>
-                      <UserCheck className="h-3 sm:h-3.5 w-3 sm:w-3.5 text-gold-light/70" />
-                    </div>
-
-                    <div className="flex flex-col gap-1.5 sm:gap-2">
-                      {CASHIER_PROFILES.map((profile) => {
-                        const isSelected = selectedCashier.id === profile.id
-                        return (
-                          <button
-                            key={profile.id}
-                            onClick={() => { setSelectedCashier(profile); setPin('') }}
-                            className={`btn-press group relative flex items-center gap-3 sm:gap-3.5
-                                        px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl border
-                                        text-left transition-all duration-300 w-full
-                                        ${isSelected
-                                          ? 'bg-amber-500/[0.10] border-gold/45 shadow-glow-gold'
-                                          : 'bg-zinc-950/40 border-white/[0.05] hover:border-gold/20 hover:bg-zinc-900/50'
-                                        }`}
-                          >
-                            <div className={`relative flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center
-                                            rounded-xl text-[11px] sm:text-xs font-serif font-bold shrink-0 transition-all
-                                            ${isSelected
-                                              ? 'bg-gradient-to-br from-amber-300 to-gold text-obsidian-950'
-                                              : 'bg-zinc-900/80 text-stone-300 border border-white/[0.08] group-hover:border-gold/25'
-                                            }`}>
-                              {profile.initials}
-                              {isSelected && (
-                                <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-obsidian-950" />
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className={`text-xs sm:text-[13px] font-semibold leading-tight truncate
-                                            ${isSelected ? 'text-stone-100' : 'text-stone-300 group-hover:text-stone-100'}`}>
-                                {profile.name}
-                              </p>
-                              <p className="text-[9px] sm:text-[10px] font-mono text-stone-500 truncate mt-0.5">
-                                {profile.role}
-                              </p>
-                            </div>
-                            {isSelected && (
-                              <span className="shrink-0 inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 font-mono text-[8px] sm:text-[9px] tracking-widest uppercase text-emerald-400">
-                                Active
-                              </span>
-                            )}
-                          </button>
-                        )
-                      })}
+              {step === 'LOGIN' ? (
+                <form onSubmit={handleLoginSubmit} className="animate-fade-in">
+                  {/* Username / Staff ID Input */}
+                  <div className="mb-4">
+                    <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1.5">
+                      Username / Staff ID
+                    </label>
+                    <div className="relative flex items-center">
+                      <div className="absolute left-3.5 text-stone-400 pointer-events-none">
+                        <User className="h-4 w-4" />
+                      </div>
+                      <input
+                        ref={usernameInputRef}
+                        type="text"
+                        value={username}
+                        onChange={(e) => {
+                          setUsername(e.target.value)
+                          setErrorMessage('')
+                        }}
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        spellCheck="false"
+                        placeholder="Enter username (e.g. admin)"
+                        className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-medium tracking-wide placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                      />
                     </div>
                   </div>
 
-                  {/* PIN dots */}
-                  <div className="flex flex-col items-center mb-4 sm:mb-6">
-                    <div className="flex items-center justify-between w-full mb-2 sm:mb-3">
+                  {/* Terminal PIN Input with Visual Mask */}
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-1.5">
                       <label className="text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400">
-                        Terminal PIN
+                        Security PIN
                       </label>
-                      <Fingerprint className="h-3 sm:h-3.5 w-3 sm:w-3.5 text-gold-light/70" />
+                      <Fingerprint className="h-3.5 w-3.5 text-gold-light/70" />
                     </div>
-                    <div className={`flex items-center gap-3 sm:gap-4 transition-transform duration-200 ${pinError ? 'translate-x-1 animate-pulse text-burgundy' : ''}`}>
-                      {[0, 1, 2, 3].map((idx) => {
-                        const isFilled = pin.length > idx
-                        return (
-                          <div
-                            key={idx}
-                            className={`h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full transition-all duration-300
-                                        ${isFilled
-                                          ? 'bg-gradient-to-br from-amber-200 to-gold shadow-glow-gold scale-110'
-                                          : 'border border-white/20 bg-zinc-950/50'
-                                        }`}
-                          />
-                        )
-                      })}
+
+                    <div className="relative flex items-center justify-between px-4 py-2.5 sm:py-3 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus-within:border-gold/60">
+                      <div className="flex items-center gap-3">
+                        {[0, 1, 2, 3].map((idx) => {
+                          const isFilled = pin.length > idx
+                          return (
+                            <div
+                              key={idx}
+                              className={`h-3 w-3 sm:h-3.5 sm:w-3.5 rounded-full transition-all duration-200 ${
+                                isFilled
+                                  ? 'bg-gradient-to-br from-amber-200 to-gold shadow-glow-gold scale-110'
+                                  : 'border border-white/20 bg-zinc-900/60'
+                              }`}
+                            />
+                          )
+                        })}
+                      </div>
+
+                      {/* Direct physical keyboard input for PIN */}
+                      <input
+                        type="password"
+                        maxLength={6}
+                        value={pin}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/[^0-9]/g, '')
+                          setPin(val)
+                          setErrorMessage('')
+                        }}
+                        placeholder="Type PIN"
+                        className="w-24 text-right bg-transparent text-xs font-mono tracking-widest text-gold-light focus:outline-none placeholder-stone-600"
+                      />
                     </div>
-                    {pinError ? (
-                      <span className="text-[10px] sm:text-[11px] font-mono text-red-400 mt-2 tracking-wider">
-                        Incorrect security PIN — please re-enter.
-                      </span>
-                    ) : (
-                      <span className="text-[9px] sm:text-[10px] font-mono text-stone-500 mt-2 tracking-wider">
-                        Enter 4-digit staff PIN
-                      </span>
+
+                    {errorMessage && (
+                      <p className="text-[11px] font-mono text-red-400 mt-2 tracking-wide text-center animate-pulse">
+                        {errorMessage}
+                      </p>
                     )}
                   </div>
 
-                  {/* Keypad — fluid, fills card width */}
-                  <div className="grid grid-cols-3 gap-2 sm:gap-2.5 w-full max-w-[280px] sm:max-w-[300px] mx-auto mb-4 sm:mb-5">
+                  {/* Keypad for Touchscreen & POS Desks */}
+                  <div className="grid grid-cols-3 gap-2 sm:gap-2.5 w-full max-w-[280px] sm:max-w-[300px] mx-auto mb-4">
                     {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
                       <button
+                        type="button"
                         key={digit}
-                        onClick={() => handleKeyPress(digit)}
-                        className="btn-press flex items-center justify-center rounded-xl sm:rounded-2xl
-                                   bg-zinc-950/40 hover:bg-gold/[0.1] border border-white/[0.07] hover:border-gold/40
-                                   text-stone-100 font-mono font-semibold transition-all duration-200 active:scale-95
-                                   text-lg sm:text-xl
-                                   py-3 sm:py-3.5"
+                        onClick={() => handleKeypadPress(digit)}
+                        className="btn-press flex items-center justify-center rounded-xl
+                                   bg-zinc-950/50 hover:bg-gold/[0.12] border border-white/[0.08] hover:border-gold/40
+                                   text-stone-100 font-mono font-semibold transition-all duration-150 active:scale-95
+                                   text-lg sm:text-xl py-2.5 sm:py-3"
                       >
                         {digit}
                       </button>
                     ))}
-                    {/* CLR */}
+                    {/* Clear */}
                     <button
-                      onClick={handleClear}
-                      className="btn-press flex items-center justify-center rounded-xl sm:rounded-2xl
-                                 bg-zinc-950/40 hover:bg-white/[0.06] border border-white/[0.07]
+                      type="button"
+                      onClick={handleClearPin}
+                      className="btn-press flex items-center justify-center rounded-xl
+                                 bg-zinc-950/50 hover:bg-white/[0.08] border border-white/[0.08]
                                  text-[9px] sm:text-[10px] font-mono tracking-widest text-stone-400 hover:text-stone-200
-                                 transition-all uppercase py-3 sm:py-3.5"
+                                 transition-all uppercase py-2.5 sm:py-3"
                     >
                       Clr
                     </button>
                     {/* 0 */}
                     <button
-                      onClick={() => handleKeyPress('0')}
-                      className="btn-press flex items-center justify-center rounded-xl sm:rounded-2xl
-                                 bg-zinc-950/40 hover:bg-gold/[0.1] border border-white/[0.07] hover:border-gold/40
-                                 text-stone-100 font-mono font-semibold transition-all duration-200 active:scale-95
-                                 text-lg sm:text-xl
-                                 py-3 sm:py-3.5"
+                      type="button"
+                      onClick={() => handleKeypadPress('0')}
+                      className="btn-press flex items-center justify-center rounded-xl
+                                 bg-zinc-950/50 hover:bg-gold/[0.12] border border-white/[0.08] hover:border-gold/40
+                                 text-stone-100 font-mono font-semibold transition-all duration-150 active:scale-95
+                                 text-lg sm:text-xl py-2.5 sm:py-3"
                     >
                       0
                     </button>
-                    {/* Delete */}
+                    {/* Backspace */}
                     <button
-                      onClick={handleDelete}
-                      className="btn-press flex items-center justify-center rounded-xl sm:rounded-2xl
-                                 bg-zinc-950/40 hover:bg-white/[0.06] border border-white/[0.07]
-                                 text-stone-400 hover:text-stone-200 transition-all py-3 sm:py-3.5"
+                      type="button"
+                      onClick={handleDeletePin}
+                      className="btn-press flex items-center justify-center rounded-xl
+                                 bg-zinc-950/50 hover:bg-white/[0.08] border border-white/[0.08]
+                                 text-stone-400 hover:text-stone-200 transition-all py-2.5 sm:py-3"
                     >
                       <Delete className="h-4 w-4 sm:h-5 sm:w-5" />
                     </button>
                   </div>
 
-                  <p className="text-center font-mono text-[9px] sm:text-[10px] text-stone-500 tracking-wider flex items-center justify-center gap-1.5">
+                  {/* Sign In Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={isVerifying}
+                    className="btn-gold w-full py-3 sm:py-3.5 px-4 rounded-xl sm:rounded-2xl
+                               flex items-center justify-center gap-2
+                               text-xs font-bold tracking-[0.2em] uppercase shadow-glow-gold transition-all"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    <span>{isVerifying ? 'Authenticating...' : 'Sign In to Terminal'}</span>
+                  </button>
+
+                  <p className="mt-4 text-center font-mono text-[9px] sm:text-[10px] text-stone-500 tracking-wider flex items-center justify-center gap-1.5">
                     <Lock className="h-3 w-3 text-stone-600" />
                     Encrypted Terminal Access · Station {TERMINAL_ID}
                   </p>
-                </div>
+                </form>
               ) : (
                 /* Step 2: Float */
                 <div className="animate-fade-in">
-                  <div className="flex items-center gap-2.5 p-3 rounded-xl sm:rounded-2xl bg-amber-500/[0.08] border border-gold/25 mb-4 sm:mb-6">
-                    <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full bg-gold/20 flex items-center justify-center text-amber-300 shrink-0">
-                      <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <div className="flex items-center gap-3 p-3 rounded-xl sm:rounded-2xl bg-amber-500/[0.08] border border-gold/25 mb-4 sm:mb-6">
+                    <div className="h-9 w-9 rounded-full bg-gold/20 flex items-center justify-center text-amber-300 shrink-0 font-serif font-bold text-xs">
+                      {authenticatedUser?.name?.substring(0, 2).toUpperCase() || 'AD'}
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-stone-200 truncate">
-                        Authenticated: <span className="text-gold-light">{selectedCashier.name}</span>
+                        Authenticated: <span className="text-gold-light">{authenticatedUser?.name}</span>
                       </p>
                       <p className="text-[9px] sm:text-[10px] font-mono tracking-wider text-stone-400">
-                        {selectedCashier.role} · Station {selectedCashier.id.toUpperCase()}
+                        {authenticatedUser?.role === 'ADMIN' ? 'Master Admin · Full Access' : `${authenticatedUser?.role} · Register Staff`}
                       </p>
                     </div>
                   </div>
@@ -426,6 +496,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                         return (
                           <button
                             key={amount}
+                            type="button"
                             onClick={() => handlePresetFloat(amount)}
                             className={`btn-press py-2 px-1 rounded-lg sm:rounded-xl
                                         text-[10px] sm:text-xs font-mono font-semibold border transition-all
@@ -457,23 +528,25 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
 
                   <div className="flex flex-col gap-2 sm:gap-2.5">
                     <button
+                      type="button"
                       onClick={handleConfirmSession}
                       className="btn-gold w-full py-3 sm:py-3.5 px-4 sm:px-6 rounded-xl sm:rounded-2xl
                                  flex items-center justify-center gap-2
                                  text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase shadow-glow-gold"
                     >
-                      <span>Confirm &amp; Open Inventory Session</span>
+                      <span>Confirm &amp; Open Register</span>
                       <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     </button>
 
                     <button
-                      onClick={() => setStep('PIN')}
+                      type="button"
+                      onClick={handleSwitchAccount}
                       className="w-full py-2 sm:py-2.5 text-[10px] sm:text-[11px] font-mono tracking-wider
                                  text-stone-400 hover:text-stone-200 transition-colors uppercase text-center
                                  flex items-center justify-center gap-1.5"
                     >
                       <ChevronLeft className="h-3.5 w-3.5" />
-                      Switch Staff Account
+                      Switch Account
                     </button>
                   </div>
                 </div>

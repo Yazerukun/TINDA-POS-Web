@@ -101,8 +101,36 @@ export function POSScreen({
     })
   }, [products, selectedMainCatId, selectedSubCatId, searchQuery])
 
-  // Cart operations
+  // Compute real-time items in current ticket to deduct from shelf reserve
+  const cartQtyMap = useMemo(() => {
+    const map = new Map<number, number>()
+    for (const item of cart) {
+      map.set(item.product.id, (map.get(item.product.id) || 0) + item.quantity)
+    }
+    return map
+  }, [cart])
+
+  // Transient state for real-time visual pulse & floating "-1" badge
+  const [deductedProductId, setDeductedProductId] = useState<number | null>(null)
+  const deductTimerRef = useRef<NodeJS.Timeout | null>(null)
+
+  const triggerRealtimeDeduct = (productId: number) => {
+    if (deductTimerRef.current) clearTimeout(deductTimerRef.current)
+    setDeductedProductId(productId)
+    deductTimerRef.current = setTimeout(() => {
+      setDeductedProductId(null)
+    }, 600)
+  }
+
+  // Cart operations with real-time stock validation
   const addToCart = (product: Product) => {
+    const inCart = cartQtyMap.get(product.id) || 0
+    if (inCart >= product.stock) {
+      return // stock completely reserved in ticket
+    }
+
+    triggerRealtimeDeduct(product.id)
+
     setCart((prev) => {
       const existingIdx = prev.findIndex((i) => i.product.id === product.id)
       if (existingIdx >= 0) {
@@ -130,6 +158,17 @@ export function POSScreen({
 
   const updateQuantity = (productId: number, delta: number) => {
     setCart((prev) => {
+      const item = prev.find((i) => i.product.id === productId)
+      if (!item) return prev
+
+      if (delta > 0) {
+        const prod = products.find((p) => p.id === productId) || item.product
+        if (item.quantity >= prod.stock) {
+          return prev // already reached max available stock
+        }
+        triggerRealtimeDeduct(productId)
+      }
+
       return prev
         .map((i) => {
           if (i.product.id !== productId) return i
@@ -314,8 +353,12 @@ export function POSScreen({
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
             {filteredProducts.map((p) => {
-              const isLowStock = p.stock <= 5 && p.stock > 0
-              const isOutOfStock = p.stock <= 0
+              const inCartQty = cartQtyMap.get(p.id) || 0
+              const remainingStock = Math.max(0, p.stock - inCartQty)
+              const isOutOfStock = remainingStock <= 0
+              const isLowStock = remainingStock <= 5 && remainingStock > 0
+              const isJustDeducted = deductedProductId === p.id
+
               return (
                 <button
                   key={p.id}
@@ -324,9 +367,19 @@ export function POSScreen({
                   className={`btn-press group relative flex flex-col text-left rounded-2xl glass-card p-3.5 border transition-all duration-300 overflow-hidden ${
                     isOutOfStock
                       ? 'opacity-35 cursor-not-allowed border-rose-950/40 bg-zinc-950/30'
+                      : isJustDeducted
+                      ? 'border-emerald-500/80 bg-emerald-500/[0.05] scale-[0.98] shadow-[0_0_20px_rgba(16,185,129,0.25)]'
                       : 'border-white/[0.05] hover:border-gold/35 hover:-translate-y-1 hover:shadow-glow-gold active:scale-98'
                   }`}
                 >
+                  {/* Real-time -1 Stock Pop Badge */}
+                  {isJustDeducted && (
+                    <div className="absolute top-2 left-2 z-20 flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500 text-obsidian-950 font-mono text-[10px] font-extrabold shadow-lg animate-bounce pointer-events-none">
+                      <span>-1</span>
+                      <span className="text-[8px] uppercase tracking-wider">stock</span>
+                    </div>
+                  )}
+
                   {/* Ultra-Crisp Catalog-Grade Image Container with Soft Inner Shadow */}
                   <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-obsidian-950 border border-white/[0.04] mb-3 flex items-center justify-center shadow-inner">
                     {p.image_path ? (
@@ -339,17 +392,32 @@ export function POSScreen({
                       <Package className="h-9 w-9 text-stone-600 group-hover:text-gold-light transition-colors" />
                     )}
 
-                    {/* Stock Status Badge */}
+                    {/* In-Ticket Indicator Tag */}
+                    {inCartQty > 0 && !isJustDeducted && (
+                      <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-gold/90 text-obsidian-950 font-mono text-[9px] font-bold shadow-md z-10 tracking-wider">
+                        {inCartQty} IN CART
+                      </span>
+                    )}
+
+                    {/* Real-Time Stock Status Badge */}
                     <span
-                      className={`absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[9px] font-mono tracking-wider uppercase font-semibold ${
+                      className={`absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[9px] font-mono tracking-wider uppercase font-semibold transition-all duration-300 ${
                         isOutOfStock
-                          ? 'bg-burgundy/90 text-stone-200 border border-burgundy'
+                          ? p.stock > 0
+                            ? 'bg-rose-950/90 text-rose-200 border border-rose-700/60'
+                            : 'bg-burgundy/90 text-stone-200 border border-burgundy'
                           : isLowStock
                           ? 'bg-amber-500/20 text-gold-light border border-gold/40'
-                          : 'bg-zinc-950/80 text-stone-400 border border-white/[0.08] backdrop-blur-md'
+                          : 'bg-zinc-950/80 text-stone-300 border border-white/[0.08] backdrop-blur-md'
                       }`}
                     >
-                      {isOutOfStock ? 'Depleted' : `Reserve: ${p.stock}`}
+                      {isOutOfStock
+                        ? p.stock > 0
+                          ? `Max in cart (${p.stock})`
+                          : 'Depleted'
+                        : isLowStock
+                        ? `Low: ${remainingStock} left`
+                        : `Stock: ${remainingStock}`}
                     </span>
                   </div>
 
@@ -371,7 +439,15 @@ export function POSScreen({
                         {money(p.default_price_c)}
                       </span>
 
-                      <div className="h-6 w-6 rounded-lg bg-zinc-900/80 border border-white/[0.08] text-stone-400 flex items-center justify-center group-hover:bg-gold group-hover:text-obsidian-950 group-hover:border-gold transition-all duration-300">
+                      <div
+                        className={`h-6 w-6 rounded-lg border flex items-center justify-center transition-all duration-300 ${
+                          isOutOfStock
+                            ? 'bg-zinc-900 border-white/[0.04] text-stone-600'
+                            : isJustDeducted
+                            ? 'bg-emerald-500 text-obsidian-950 border-emerald-400'
+                            : 'bg-zinc-900/80 border-white/[0.08] text-stone-400 group-hover:bg-gold group-hover:text-obsidian-950 group-hover:border-gold'
+                        }`}
+                      >
                         <Plus className="h-3.5 w-3.5" />
                       </div>
                     </div>
@@ -500,8 +576,10 @@ export function POSScreen({
                     {item.quantity}
                   </span>
                   <button
+                    disabled={item.quantity >= (products.find((p) => p.id === item.product.id)?.stock ?? item.product.stock)}
                     onClick={() => updateQuantity(item.product.id, 1)}
-                    className="btn-press h-5 w-5 rounded-lg flex items-center justify-center text-stone-400 hover:text-stone-100 hover:bg-white/[0.06]"
+                    className="btn-press h-5 w-5 rounded-lg flex items-center justify-center text-stone-400 hover:text-stone-100 hover:bg-white/[0.06] disabled:opacity-25 disabled:cursor-not-allowed"
+                    title={item.quantity >= (products.find((p) => p.id === item.product.id)?.stock ?? item.product.stock) ? 'Max stock reached' : 'Add 1'}
                   >
                     <Plus className="h-3 w-3" />
                   </button>

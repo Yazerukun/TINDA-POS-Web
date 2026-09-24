@@ -487,7 +487,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                 <div className="leading-tight">
                   <p className="font-serif text-xs sm:text-sm font-bold tracking-[0.18em] uppercase text-stone-100">TINDA POS</p>
                   <p className="font-mono text-[7px] sm:text-[8px] tracking-[0.22em] uppercase text-gold-muted font-medium">
-                    {step === 'SIGNUP' ? 'Store Registration' : 'Terminal Sign In'}
+                    {step === 'SIGNUP' ? 'Store Sign Up' : 'Terminal Sign In'}
                   </p>
                 </div>
               </div>
@@ -495,11 +495,11 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                                px-2 py-1 sm:px-3 sm:py-1.5
                                font-mono text-[9px] sm:text-[10px] tracking-[0.18em] uppercase text-gold-light">
                 {step === 'LOGIN' ? <KeyRound className="h-3 w-3" /> : step === 'SIGNUP' ? <UserPlus className="h-3 w-3" /> : <Banknote className="h-3 w-3" />}
-                {step === 'LOGIN' ? 'Step 1 · Credential' : step === 'SIGNUP' ? 'Register Store' : 'Step 2 · Float'}
+                {step === 'LOGIN' ? 'Step 1 · Credential' : step === 'SIGNUP' ? 'Sign Up' : 'Step 2 · Float'}
               </span>
             </div>
 
-            {/* Quick Mode Switcher Tabs for Mobile & Desktop */}
+            {/* Mode Switcher Tabs (Unified Sign In / Sign Up) */}
             {step !== 'FLOAT' && (
               <div className="px-5 pt-4 sm:px-7">
                 <div className="grid grid-cols-2 p-1 rounded-xl bg-zinc-950/80 border border-white/[0.08]">
@@ -531,7 +531,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                     }`}
                   >
                     <UserPlus className="w-3.5 h-3.5" />
-                    <span>Register Store</span>
+                    <span>Sign Up</span>
                   </button>
                 </div>
               </div>
@@ -668,21 +668,6 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                     <UserPlus className="h-4 w-4" />
                     <span>{isVerifying ? 'Registering Store...' : 'Register Store & Enter Shift'}</span>
                   </button>
-
-                  {/* Back to Login */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setStep('LOGIN')
-                      setErrorMessage('')
-                    }}
-                    className="w-full py-1.5 text-[10px] sm:text-[11px] font-mono tracking-wider
-                               text-stone-400 hover:text-stone-200 transition-colors uppercase text-center
-                               flex items-center justify-center gap-1.5"
-                  >
-                    <ChevronLeft className="h-3.5 w-3.5" />
-                    Already have an account? Sign In
-                  </button>
                 </form>
               ) : step === 'LOGIN' ? (
                 <form onSubmit={handleLoginSubmit} className="animate-fade-in">
@@ -818,31 +803,6 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                   >
                     <LogIn className="h-4 w-4" />
                     <span>{isVerifying ? 'Authenticating...' : 'Sign In to Terminal'}</span>
-                  </button>
-
-                  {/* Create New Account Button */}
-                  <div className="relative my-3 sm:my-3.5 flex items-center justify-center">
-                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/[0.08]" /></div>
-                    <span className="relative px-3 bg-[#0d0f12] font-mono text-[9px] uppercase tracking-widest text-stone-500">or</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setErrorMessage('')
-                      setSignupStoreName('')
-                      setSignupName('')
-                      setSignupUsername('')
-                      setSignupEmail('')
-                      setSignupPin('')
-                      setSignupConfirmPin('')
-                      setStep('SIGNUP')
-                    }}
-                    className="w-full py-2.5 sm:py-3 px-4 rounded-xl border border-gold/30 bg-gold/[0.06] hover:bg-gold/[0.12] hover:border-gold/60
-                               flex items-center justify-center gap-2 text-gold-light font-mono text-xs font-semibold tracking-wider transition-all"
-                  >
-                    <UserPlus className="h-4 w-4" />
-                    <span>+ Create New Account / Sign Up</span>
                   </button>
 
                   <p className="mt-4 text-center font-mono text-[9px] sm:text-[10px] text-stone-500 tracking-wider flex items-center justify-center gap-1.5">

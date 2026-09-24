@@ -24,6 +24,7 @@ export interface Product {
   supplier_id?: number | null
   image_path: string | null
   status: 'ACTIVE' | 'ARCHIVED'
+  store_name?: string
   created_at: string
   updated_at: string
 }
@@ -45,6 +46,7 @@ export interface HeldCart {
   discount_type: DiscountType
   custom_discount_c?: number
   notes?: string
+  store_name?: string
 }
 
 export interface TransactionItem {
@@ -70,6 +72,7 @@ export interface Transaction {
   change_c: number
   customer_id: number | null
   cashier_name: string
+  store_name?: string
   status?: 'COMPLETED' | 'VOIDED' | 'REFUNDED'
   void_reason?: string
   voided_at?: string
@@ -83,6 +86,7 @@ export interface Customer {
   balance_c: number // Utang balance in cents
   credit_limit_c: number
   notes: string
+  store_name?: string
   created_at: string
   updated_at: string
 }
@@ -100,6 +104,7 @@ export interface RestockLog {
   note: string | null
   timestamp: string
   cashier_name: string
+  store_name?: string
 }
 
 export interface StoreSettings {
@@ -140,6 +145,7 @@ export interface Expense {
   date: string
   description: string
   cashier_name?: string
+  store_name?: string
   created_at: string
 }
 
@@ -151,6 +157,7 @@ export interface Supplier {
   address?: string
   notes?: string
   status: 'ACTIVE' | 'INACTIVE'
+  store_name?: string
   created_at: string
   updated_at?: string
 }
@@ -188,6 +195,7 @@ export interface CashCountRecord {
   expected_c?: number
   discrepancy_c?: number
   notes?: string
+  store_name?: string
 }
 
 export interface ZReadRecord {
@@ -204,7 +212,10 @@ export interface ZReadRecord {
   net_profit_c: number
   transaction_count: number
   items_sold_count: number
-}export interface ProAccessState {
+  store_name?: string
+}
+
+export interface ProAccessState {
   pro_expires_at: number // unix timestamp ms
   tokens: number
   last_ad_watched_at: number // unix timestamp ms

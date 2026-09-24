@@ -26,6 +26,7 @@ interface AnalyticsScreenProps {
   products?: Product[]
   settings?: StoreSettings
   cashierName?: string
+  storeName?: string
 }
 
 type AnalyticsTab = 'SALES' | 'CASHCOUNT' | 'READINGS'
@@ -48,7 +49,8 @@ export function AnalyticsScreen({
   expenses = [],
   products = [],
   settings,
-  cashierName = 'Master Admin'
+  cashierName = 'Master Admin',
+  storeName = 'PLATFORM_HQ'
 }: AnalyticsScreenProps): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<AnalyticsTab>('SALES')
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
@@ -167,7 +169,8 @@ export function AnalyticsScreen({
         total_c: countedPhysicalCash_c,
         expected_c: expectedCashInDrawer_c,
         discrepancy_c: cashDiscrepancy_c,
-        notes: `Physical cash drawer count by ${cashierName}`
+        notes: `Physical cash drawer count by ${cashierName}`,
+        store_name: storeName
       })
 
       setCashCountSavedMessage(true)

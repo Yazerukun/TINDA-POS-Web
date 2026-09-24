@@ -23,6 +23,7 @@ interface PriceGuideModalProps {
   onClose: () => void
   onProductAdded?: () => void
   existingProducts: Product[]
+  storeName?: string
 }
 
 const CATEGORIES = [
@@ -40,7 +41,8 @@ export function PriceGuideModal({
   isOpen,
   onClose,
   onProductAdded,
-  existingProducts
+  existingProducts,
+  storeName = 'PLATFORM_HQ'
 }: PriceGuideModalProps): React.JSX.Element | null {
   const [references, setReferences] = useState<PriceReference[]>([])
   const [search, setSearch] = useState('')
@@ -153,6 +155,7 @@ export function PriceGuideModal({
         supplier_id: null,
         image_path: ref.image_url || null,
         status: 'ACTIVE',
+        store_name: storeName,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })

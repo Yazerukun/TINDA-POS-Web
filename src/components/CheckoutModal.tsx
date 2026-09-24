@@ -16,6 +16,7 @@ interface CheckoutModalProps {
   selectedCustomerId: number | null
   presetTender_c?: number
   cashierName?: string
+  storeName?: string
   settings?: StoreSettings
   terminalId: string
   onClose: () => void
@@ -32,6 +33,7 @@ export function CheckoutModal({
   selectedCustomerId,
   presetTender_c,
   cashierName = 'Master Concierge',
+  storeName = 'PLATFORM_HQ',
   settings,
   terminalId,
   onClose,
@@ -86,7 +88,8 @@ export function CheckoutModal({
         amount_tendered_c: paymentMethod === 'CASH' ? tendered_c : total_c,
         change_c: paymentMethod === 'CASH' ? change_c : 0,
         customer_id: customerId,
-        cashier_name: cashierName
+        cashier_name: cashierName,
+        store_name: storeName
       }
 
       const txId = await db.transactions.add(newTx as Transaction)

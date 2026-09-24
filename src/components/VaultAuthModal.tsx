@@ -370,7 +370,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
       const id = await db.users.add(newUser)
       newUser.id = Number(id)
 
-      // Also update store settings in db.settings
+      // Also update store settings in db.settings scoped to this store
       try {
         const cur = await db.settings.get('store_settings')
         const updatedSettings = {
@@ -379,7 +379,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
           owner_name: trimmedName,
           contact_number: trimmedEmail
         }
-        await db.settings.put({ key: 'store_settings', value: updatedSettings })
+        await db.settings.put({ key: `store_settings_${trimmedStore}`, value: updatedSettings })
       } catch (e) {
         console.warn('Failed to update store settings during signup:', e)
       }
@@ -414,6 +414,23 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
       authenticatedUser.email?.toLowerCase() === 'skorts188@gmail.com' ||
       (authenticatedUser.role === 'ADMIN' && authenticatedUser.pin === 'muyco155')
 
+    // Determine canonical store name
+    let userStoreName = authenticatedUser.store_name
+    if (!userStoreName) {
+      if (isMaster) {
+        userStoreName = 'PLATFORM_HQ'
+      } else if (authenticatedUser.owner_username) {
+        userStoreName = `${authenticatedUser.owner_username}_store`
+      } else {
+        userStoreName = authenticatedUser.name ? `${authenticatedUser.name}'s Store` : 'DEFAULT_STORE'
+      }
+    }
+
+    // Persist store_name if missing on account
+    if (!authenticatedUser.store_name && authenticatedUser.id) {
+      db.users.update(authenticatedUser.id, { store_name: userStoreName }).catch(() => {})
+    }
+
     const session: VaultSession = {
       userId: authenticatedUser.id,
       cashierName: isMaster ? 'Master Admin Ian' : authenticatedUser.name,
@@ -431,7 +448,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
       isAdmin: authenticatedUser.role === 'ADMIN',
       isMasterAdmin: isMaster,
       username: authenticatedUser.username,
-      storeName: authenticatedUser.store_name
+      storeName: userStoreName
     }
     // Detect if this is a brand-new account (created in the last 10 seconds = just signed up)
     const isNewAccount = !!authenticatedUser.created_at &&

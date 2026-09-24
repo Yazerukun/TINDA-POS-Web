@@ -19,11 +19,13 @@ import { money, formatDateTime } from '../utils/format'
 
 interface ExpensesScreenProps {
   cashierName?: string
+  storeName?: string
   onExpensesChanged?: () => void
 }
 
 export function ExpensesScreen({
   cashierName = 'Master Admin',
+  storeName = 'PLATFORM_HQ',
   onExpensesChanged
 }: ExpensesScreenProps): React.JSX.Element {
   const [expenses, setExpenses] = useState<Expense[]>([])
@@ -51,7 +53,10 @@ export function ExpensesScreen({
         db.expenses.orderBy('id').reverse().toArray(),
         db.expense_categories.toArray()
       ])
-      setExpenses(allExpenses)
+      const scopedExpenses = allExpenses.filter(
+        (e) => e.store_name === storeName || (!e.store_name && storeName === 'PLATFORM_HQ')
+      )
+      setExpenses(scopedExpenses)
       setCategories(allCats)
       if (allCats.length > 0 && newCategory === 'Miscellaneous') {
         setNewCategory(allCats[0].name)
@@ -61,7 +66,7 @@ export function ExpensesScreen({
     } finally {
       setLoading(false)
     }
-  }, [newCategory])
+  }, [newCategory, storeName])
 
   useEffect(() => {
     loadData()
@@ -117,6 +122,7 @@ export function ExpensesScreen({
         date: newDate || todayStr,
         description: newDescription.trim(),
         cashier_name: cashierName,
+        store_name: storeName,
         created_at: new Date().toISOString()
       })
 

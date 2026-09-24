@@ -87,35 +87,85 @@ export default function App(): React.JSX.Element {
     setActiveTab('master-control')
   }
 
-  // Load all data from Dexie
+  // Active Store for multi-tenant isolation
+  const activeStoreName = masqueradeSession
+    ? masqueradeSession.activeStore
+    : vaultSession?.isMasterAdmin
+    ? (vaultSession.storeName || 'PLATFORM_HQ')
+    : (vaultSession?.storeName || 'DEFAULT_STORE')
+
+  // Load all data from Dexie scoped to active store
   const loadData = useCallback(async () => {
     try {
       await initDatabase()
-      const [allProducts, allCategories, allTx, allCust, savedSettings, savedHeld, allExpenses] = await Promise.all([
+      const [allProducts, allCategories, allTx, allCust, scopedSettingsRec, defaultSettingsRec, savedHeld, allExpenses, allUsers] = await Promise.all([
         db.products.toArray(),
         db.categories.toArray(),
         db.transactions.orderBy('id').reverse().toArray(),
         db.customers.toArray(),
+        db.settings.get(`store_settings_${activeStoreName}`),
         db.settings.get('store_settings'),
         db.held_carts.toArray(),
-        db.expenses.orderBy('date').reverse().toArray()
+        db.expenses.orderBy('date').reverse().toArray(),
+        db.users.toArray()
       ])
 
-      setProducts(allProducts)
-      setCategories(allCategories)
-      setTransactions(allTx)
-      setCustomers(allCust)
-      if (savedSettings?.value) {
-        setSettings(savedSettings.value)
+      // Auto-migrate untagged transactions or expenses based on cashier name
+      const userStoreMap = new Map<string, string>()
+      allUsers.forEach((u) => {
+        const sName = u.store_name || (u.username === 'skorts188@gmail.com' ? 'PLATFORM_HQ' : `${u.name}'s Store`)
+        if (u.name) userStoreMap.set(u.name.toLowerCase(), sName)
+        if (u.username) userStoreMap.set(u.username.toLowerCase(), sName)
+      })
+
+      for (const tx of allTx) {
+        if (!tx.store_name) {
+          const matchedStore = (tx.cashier_name && userStoreMap.get(tx.cashier_name.toLowerCase())) || 'PLATFORM_HQ'
+          tx.store_name = matchedStore
+          db.transactions.update(tx.id, { store_name: matchedStore }).catch(() => {})
+        }
       }
-      setHeldCarts(savedHeld)
-      setExpenses(allExpenses)
+
+      for (const exp of allExpenses) {
+        if (!exp.store_name) {
+          const matchedStore = (exp.cashier_name && userStoreMap.get(exp.cashier_name.toLowerCase())) || 'PLATFORM_HQ'
+          exp.store_name = matchedStore
+          if (exp.id) db.expenses.update(exp.id, { store_name: matchedStore }).catch(() => {})
+        }
+      }
+
+      // Filter data strictly by active store
+      const filteredTx = allTx.filter((tx) => tx.store_name === activeStoreName)
+      const filteredExpenses = allExpenses.filter((e) => e.store_name === activeStoreName)
+      const filteredCustomers = allCust.filter(
+        (c) => c.store_name === activeStoreName || (!c.store_name && activeStoreName === 'PLATFORM_HQ')
+      )
+      const filteredHeld = savedHeld.filter(
+        (h) => h.store_name === activeStoreName || (!h.store_name && activeStoreName === 'PLATFORM_HQ')
+      )
+      const filteredProducts = allProducts.filter(
+        (p) => p.store_name === activeStoreName || (!p.store_name && (activeStoreName === 'PLATFORM_HQ' || allUsers.length <= 1))
+      )
+
+      setProducts(filteredProducts)
+      setCategories(allCategories)
+      setTransactions(filteredTx)
+      setCustomers(filteredCustomers)
+
+      const effectiveSettings = scopedSettingsRec?.value || defaultSettingsRec?.value || {
+        ...DEFAULT_SETTINGS,
+        store_name: activeStoreName !== 'PLATFORM_HQ' ? activeStoreName : DEFAULT_SETTINGS.store_name
+      }
+      setSettings(effectiveSettings)
+
+      setHeldCarts(filteredHeld)
+      setExpenses(filteredExpenses)
     } catch (e) {
       console.error('Failed to load database:', e)
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [activeStoreName])
 
   useEffect(() => {
     loadData()
@@ -140,7 +190,8 @@ export default function App(): React.JSX.Element {
       created_at: new Date().toISOString(),
       items: cart,
       customer_id: null,
-      discount_type: 'NONE'
+      discount_type: 'NONE',
+      store_name: activeStoreName
     }
     await db.held_carts.add(newHeld)
     setCart([])
@@ -180,6 +231,7 @@ export default function App(): React.JSX.Element {
 
   // Save Settings
   const handleSaveSettings = async (newSettings: StoreSettings) => {
+    await db.settings.put({ key: `store_settings_${activeStoreName}`, value: newSettings })
     await db.settings.put({ key: 'store_settings', value: newSettings })
     setSettings(newSettings)
   }
@@ -227,6 +279,8 @@ export default function App(): React.JSX.Element {
       // ignore
     }
     proAccess.toggleOwnerBypass(false)
+    setCart([])
+    setMasqueradeSession(null)
     setVaultSession(null)
     setIsVaultLocked(true)
   }
@@ -423,6 +477,7 @@ export default function App(): React.JSX.Element {
             categories={categories}
             onRefresh={loadData}
             cashierName={vaultSession?.cashierName}
+            storeName={activeStoreName}
           />
         )}
 
@@ -430,6 +485,7 @@ export default function App(): React.JSX.Element {
           <CustomersScreen
             customers={customers}
             onRefresh={loadData}
+            storeName={activeStoreName}
           />
         )}
 
@@ -437,6 +493,7 @@ export default function App(): React.JSX.Element {
           <ExpensesScreen
             cashierName={vaultSession?.cashierName || 'Master Admin'}
             onExpensesChanged={loadData}
+            storeName={activeStoreName}
           />
         )}
 
@@ -448,6 +505,7 @@ export default function App(): React.JSX.Element {
           <AnalyticsScreen
             transactions={transactions}
             cashierName={vaultSession?.cashierName || 'Master Admin'}
+            storeName={activeStoreName}
           />
         )}
 
@@ -458,7 +516,7 @@ export default function App(): React.JSX.Element {
             onRefreshAll={loadData}
             isAdmin={isUserAdmin}
             currentCashierName={vaultSession?.cashierName}
-            currentSessionStoreName={vaultSession?.storeName}
+            currentSessionStoreName={activeStoreName}
             isMasterAdmin={vaultSession?.isMasterAdmin || false}
           />
         )}
@@ -492,6 +550,7 @@ export default function App(): React.JSX.Element {
           selectedCustomerId={checkoutData.customerId || null}
           presetTender_c={checkoutData.quickTender_c}
           cashierName={vaultSession?.cashierName}
+          storeName={activeStoreName}
           settings={settings}
           terminalId={vaultSession?.terminalId || 'TRM-8891'}
           onClose={() => setCheckoutData(null)}
@@ -505,6 +564,7 @@ export default function App(): React.JSX.Element {
         onClose={() => setIsPriceGuideOpen(false)}
         existingProducts={products}
         onProductAdded={loadData}
+        storeName={activeStoreName}
       />
 
       {/* Expiration Tracker & Perishable Watch Modal */}

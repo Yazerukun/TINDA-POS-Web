@@ -28,9 +28,16 @@ interface InventoryScreenProps {
   categories: Category[]
   onRefresh: () => void
   cashierName?: string
+  storeName?: string
 }
 
-export function InventoryScreen({ products, categories, onRefresh, cashierName }: InventoryScreenProps): React.JSX.Element {
+export function InventoryScreen({
+  products,
+  categories,
+  onRefresh,
+  cashierName,
+  storeName = 'PLATFORM_HQ'
+}: InventoryScreenProps): React.JSX.Element {
   const [search, setSearch] = useState('')
   const [selectedCat, setSelectedCat] = useState<number | 'ALL'>('ALL')
   const [selectedSubCat, setSelectedSubCat] = useState<number | 'ALL'>('ALL')
@@ -77,11 +84,14 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
   const loadRestockLogs = useCallback(async () => {
     try {
       const logs = await db.restock_logs.orderBy('timestamp').reverse().toArray()
-      setRestockLogs(logs)
+      const scopedLogs = logs.filter(
+        (l) => l.store_name === storeName || (!l.store_name && storeName === 'PLATFORM_HQ')
+      )
+      setRestockLogs(scopedLogs)
     } catch {
       setRestockLogs([])
     }
-  }, [])
+  }, [storeName])
 
   useEffect(() => {
     void loadRestockLogs()
@@ -104,7 +114,8 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
       after_stock: afterStock,
       note,
       timestamp: new Date().toISOString(),
-      cashier_name: cashierName || 'Unknown Cashier'
+      cashier_name: cashierName || 'Unknown Cashier',
+      store_name: storeName
     })
   }
 
@@ -155,6 +166,7 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
       stock: Number(editingProduct.stock) || 0,
       image_path: editingProduct.image_path || null,
       status: 'ACTIVE' as const,
+      store_name: editingProduct.store_name || storeName,
       created_at: editingProduct.created_at || now,
       updated_at: now
     }

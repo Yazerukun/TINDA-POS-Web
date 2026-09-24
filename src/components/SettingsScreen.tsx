@@ -66,19 +66,9 @@ export function SettingsScreen({
     try {
       let allUsers = await db.users.toArray()
 
-      // SECURITY: Master Admin sees all; store owners only see users belonging to their own store
-      if (!isMasterAdmin && currentSessionStoreName) {
-        allUsers = allUsers.filter(u =>
-          // Show staff created under this store — exclude other stores' owners
-          (u.store_name === currentSessionStoreName && !u.is_owner) ||
-          // Also show the owner account itself
-          (u.store_name === currentSessionStoreName && u.is_owner && u.username !== 'skorts188@gmail.com')
-        )
-      } else if (!isMasterAdmin) {
-        // No store name in session — show nothing to be safe
-        allUsers = []
-      }
-      // Master admin sees all users (unfiltered)
+      // STRICT MULTI-TENANT ISOLATION: Only show staff belonging to the active store
+      const targetStore = currentSessionStoreName || (isMasterAdmin ? 'PLATFORM_HQ' : settings.store_name)
+      allUsers = allUsers.filter(u => u.store_name === targetStore)
 
       setUsers(allUsers)
     } catch (err) {
@@ -171,7 +161,7 @@ export function SettingsScreen({
         pin: trimmedPin,
         status: 'ACTIVE',
         created_at: new Date().toISOString(),
-        store_name: settings.store_name,
+        store_name: currentSessionStoreName || settings.store_name,
         owner_username: currentCashierName,
         is_owner: false
       })

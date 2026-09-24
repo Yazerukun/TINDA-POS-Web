@@ -7,9 +7,10 @@ import { db } from '../db'
 interface CustomersScreenProps {
   customers: Customer[]
   onRefresh: () => void
+  storeName?: string
 }
 
-export function CustomersScreen({ customers, onRefresh }: CustomersScreenProps): React.JSX.Element {
+export function CustomersScreen({ customers, onRefresh, storeName = 'PLATFORM_HQ' }: CustomersScreenProps): React.JSX.Element {
   const [search, setSearch] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [paymentModalCustomer, setPaymentModalCustomer] = useState<Customer | null>(null)
@@ -33,6 +34,7 @@ export function CustomersScreen({ customers, onRefresh }: CustomersScreenProps):
       balance_c: 0,
       credit_limit_c: Math.round(Number(newCust.credit_limit || 0) * 100),
       notes: newCust.notes.trim(),
+      store_name: storeName,
       created_at: now,
       updated_at: now
     } as Customer)

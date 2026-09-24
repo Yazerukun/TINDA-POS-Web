@@ -483,6 +483,7 @@ export default function App(): React.JSX.Element {
         totalAdsWatched={proAccess.state.total_ads_watched}
         tokens={proAccess.state.tokens}
         onGrantReward={proAccess.grantRewardMinutes}
+        onRedeemPackage={proAccess.redeemPackage}
         onExpireTest={proAccess.expireNowForTesting}
         ownerBypass={proAccess.state.owner_bypass}
         onToggleOwnerBypass={proAccess.toggleOwnerBypass}

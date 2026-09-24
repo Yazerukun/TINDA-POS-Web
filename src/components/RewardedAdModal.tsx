@@ -14,7 +14,11 @@ import {
   Gift,
   Coins,
   RefreshCw,
-  ExternalLink
+  ExternalLink,
+  Wallet,
+  Calendar,
+  ArrowRight,
+  Lock
 } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import { useAdBlocker } from '../services/adBlocker'
@@ -37,6 +41,7 @@ interface RewardedAdModalProps {
   totalAdsWatched: number
   tokens: number
   onGrantReward: (minutes: number) => void
+  onRedeemPackage?: (tokensCost: number, hoursToGrant: number) => Promise<boolean>
   onExpireTest: () => void
   ownerBypass: boolean
   onToggleOwnerBypass: (enabled: boolean) => void
@@ -56,6 +61,7 @@ export function RewardedAdModal({
   totalAdsWatched,
   tokens,
   onGrantReward,
+  onRedeemPackage,
   onExpireTest,
   ownerBypass,
   onToggleOwnerBypass,
@@ -67,13 +73,9 @@ export function RewardedAdModal({
   const [adSuccessMessage, setAdSuccessMessage] = useState<string | null>(null)
   const [showDevTools, setShowDevTools] = useState(false)
   const [activeAdUrl, setActiveAdUrl] = useState<string>(MONETAG_DIRECT_LINKS[0])
+  const [redeemingPackage, setRedeemingPackage] = useState<number | null>(null)
   const adTimerRef = useRef<NodeJS.Timeout | null>(null)
   const adStartTimeRef = useRef<number>(0)
-
-  // Derived token/day info
-  const tokensAfterWatch = tokens + 1
-  const daysEarned = Math.floor(tokens / 3)
-  const daysAfterWatch = Math.floor(tokensAfterWatch / 3)
 
   // Real-time AdBlocker detection
   const { isBlocked: isAdBlockerActive, isChecking: isCheckingAdBlocker, checkAdBlocker } = useAdBlocker()
@@ -87,7 +89,37 @@ export function RewardedAdModal({
 
   if (!open) return null
 
-  // Start watching ad (fixed: 1 ad = +1 token = +8 hours)
+  // Redeem / convert banked tokens into active shift time
+  const handleRedeem = async (tokensCost: number, hoursToGrant: number) => {
+    if (!onRedeemPackage) return
+    setRedeemingPackage(tokensCost)
+    try {
+      const ok = await onRedeemPackage(tokensCost, hoursToGrant)
+      if (ok) {
+        const days = hoursToGrant / 24
+        setAdSuccessMessage(
+          days >= 1
+            ? `🎉 Activated +${days} Day${days > 1 ? 's' : ''} (${hoursToGrant}h) Shift Pass!`
+            : `🎉 Activated +${hoursToGrant}h Shift Pass!`
+        )
+        try {
+          confetti({
+            particleCount: 50,
+            spread: 60,
+            colors: ['#D4AF37', '#10B981', '#F59E0B'],
+            origin: { y: 0.5 }
+          })
+        } catch {}
+        setTimeout(() => setAdSuccessMessage(null), 3500)
+      } else {
+        alert('Insufficient tokens! Watch more sponsor ads to earn tokens.')
+      }
+    } finally {
+      setRedeemingPackage(null)
+    }
+  }
+
+  // Start watching ad (fixed: 1 ad = +1 token)
   const handleStartWatch = () => {
     if (!canWatchAd) return
     if (isAdBlockerActive && !isMasterAdmin) {
@@ -157,14 +189,9 @@ export function RewardedAdModal({
     }
 
     setIsPlayingAd(false)
-    onGrantReward(480) // 480 min = 8 hours per ad; proAccess ignores this and uses fixed 8h
+    onGrantReward(0) // Credits +1 Token to wallet in proAccess
     const newTokens = tokens + 1
-    const newDays = Math.floor(newTokens / 3)
-    if (newDays > daysEarned) {
-      setAdSuccessMessage(`🎉 +1 Token earned! ${newTokens} tokens = ${newDays} day${newDays !== 1 ? 's' : ''} access unlocked!`)
-    } else {
-      setAdSuccessMessage(`✅ +1 Token earned! ${newTokens}/3 tokens — ${3 - newTokens % 3} more ad${(3 - newTokens % 3) !== 1 ? 's' : ''} for next day`)
-    }
+    setAdSuccessMessage(`🎉 +1 Token earned! Balance: ${newTokens} Tokens. Select a shift package below to activate.`)
 
     try {
       confetti({
@@ -177,7 +204,7 @@ export function RewardedAdModal({
 
     setTimeout(() => {
       setAdSuccessMessage(null)
-    }, 4000)
+    }, 4500)
   }
 
   // Attempt to cancel early
@@ -288,25 +315,29 @@ export function RewardedAdModal({
 
           {/* Modal Header */}
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-11 w-11 rounded-2xl bg-gold/15 border border-gold/30 flex items-center justify-center text-gold-light shrink-0">
+            <div
+              className={`h-11 w-11 rounded-2xl flex items-center justify-center shrink-0 border ${
+                isPro
+                  ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+                  : tokens >= 1
+                  ? 'bg-gold/15 border-gold/30 text-gold-light'
+                  : 'bg-rose-950/40 border-rose-800/40 text-rose-400'
+              }`}
+            >
               <Zap className="w-6 h-6" />
             </div>
             <div>
               <h3 className="font-serif font-bold text-base tracking-wide text-stone-100 uppercase">
-                {!isFullyUnlocked
-                  ? 'Collect 3 Tokens to Unlock'
-                  : remainingSeconds <= 0
-                  ? '⏰ Time Expired — Extend Access'
-                  : '✅ Features Unlocked'}
+                {isPro
+                  ? '🟢 Store Shift Pass Active'
+                  : tokens >= 1
+                  ? '⚡ Choose Pass to Activate'
+                  : '🔒 Store Shift Pass Inactive'}
               </h3>
               <p className="text-xs text-stone-400 font-sans">
-                {!isFullyUnlocked
-                  ? `Watch ${3 - tokens} more ad${3 - tokens !== 1 ? 's' : ''} to unlock all features. (${tokens}/3 tokens)`
-                  : remainingSeconds <= 0
-                  ? 'Your access time ran out. Watch an ad to extend — each ad adds time (max 60 days).'
-                  : blockedFeatureName
-                  ? `"${blockedFeatureName}" needs active access. Watch an ad to extend your time.`
-                  : 'Watch ads to stack more time. Max 60 days accumulation.'}
+                {blockedFeatureName
+                  ? `Access to "${blockedFeatureName}" requires an active store shift pass.`
+                  : 'Earn tokens via sponsor ads, then redeem whenever your shift starts.'}
               </p>
             </div>
           </div>
@@ -328,10 +359,7 @@ export function RewardedAdModal({
                   Ad Blocker Detected (Brave Shield / uBlock / AdBlock)
                 </p>
                 <p className="text-stone-300 mt-1 leading-relaxed">
-                  TINDA POS is 100% free supported by sponsor ads. Please whitelist or disable your Ad Blocker / Brave Shields on this site to unlock Pro features.
-                </p>
-                <p className="text-stone-400 mt-1 italic text-[11px]">
-                  (Palihug i-disable o i-pause imong Ad Blocker aron maka-watch ug sponsor ad ug ma-unlock imong Pro shift.)
+                  TINDA POS is 100% free supported by sponsor ads. Please whitelist or disable your Ad Blocker on this site to earn tokens.
                 </p>
                 <button
                   type="button"
@@ -346,119 +374,240 @@ export function RewardedAdModal({
             </div>
           )}
 
-          {/* Current Pro Status Card */}
-          <div
-            className={`p-4 rounded-2xl border mb-5 flex items-center justify-between ${
-              isPro
-                ? 'bg-amber-500/[0.06] border-gold/30'
-                : 'bg-rose-950/20 border-rose-800/40'
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className={`h-8 w-8 rounded-xl flex items-center justify-center ${
-                  isPro ? 'bg-gold/20 text-gold-light' : 'bg-rose-950 text-rose-300'
-                }`}
-              >
-                <Clock className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 block">
-                  CURRENT PRO SESSION
+          {/* ── 3-STAT STORE PASS DASHBOARD ── */}
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {/* Stat 1: Shift Timer */}
+            <div
+              className={`p-3 rounded-2xl border flex flex-col justify-between ${
+                isPro
+                  ? 'bg-amber-500/[0.06] border-gold/30'
+                  : 'bg-rose-950/20 border-rose-800/30'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono tracking-wider uppercase text-stone-400">
+                  Shift Timer
                 </span>
+                <Clock className={`w-3.5 h-3.5 ${isPro ? 'text-gold-light' : 'text-rose-400'}`} />
+              </div>
+              <div className="my-1">
                 <span
-                  className={`font-mono text-sm font-bold tracking-wider ${
+                  className={`font-mono text-xs sm:text-sm font-bold tracking-tight block truncate ${
                     isPro ? 'text-gold-light' : 'text-rose-400'
                   }`}
                 >
                   {formattedTime}
                 </span>
               </div>
+              <div className="flex items-center gap-1.5">
+                <span
+                  className={`w-1.5 h-1.5 rounded-full ${
+                    isPro ? 'bg-emerald-400 animate-pulse' : 'bg-rose-500'
+                  }`}
+                />
+                <span className="text-[10px] font-mono font-medium text-stone-300 uppercase">
+                  {isPro ? 'Active' : 'Expired'}
+                </span>
+              </div>
             </div>
 
-            <div className="text-right">
-              <span className="text-[10px] font-mono text-stone-400 block mb-1">
-                TOKEN PROGRESS
-              </span>
-              {isFullyUnlocked ? (
-                <span className="font-mono text-xs font-bold text-emerald-400 flex items-center justify-end gap-1">
-                  <span>🔓</span>
-                  <span>FULLY UNLOCKED</span>
+            {/* Stat 2: Token Wallet Balance */}
+            <div className="p-3 rounded-2xl border bg-zinc-900/60 border-white/[0.08] flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono tracking-wider uppercase text-stone-400">
+                  Token Wallet
                 </span>
-              ) : (
-                <div className="flex items-center justify-end gap-1">
-                  {[0, 1, 2].map(i => (
-                    <div
-                      key={i}
-                      className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                        tokens > i
-                          ? 'bg-gold border-gold text-obsidian-950'
-                          : 'border-stone-600 bg-transparent'
-                      }`}
-                    >
-                      {tokens > i && <span className="text-[8px] font-bold">✓</span>}
-                    </div>
-                  ))}
-                  <span className="text-[10px] font-mono text-stone-400 ml-1">{tokens}/3</span>
-                </div>
-              )}
+                <Wallet className="w-3.5 h-3.5 text-gold" />
+              </div>
+              <div className="my-1 flex items-baseline gap-1">
+                <span className="font-mono text-base sm:text-lg font-extrabold text-stone-100">
+                  {tokens}
+                </span>
+                <span className="text-[10px] font-mono text-gold-light">TOKENS</span>
+              </div>
+              <div className="text-[10px] font-mono text-stone-400 truncate">
+                {tokens > 0 ? '● Ready to spend' : '○ 0 balance'}
+              </div>
+            </div>
+
+            {/* Stat 3: Banked Days */}
+            <div className="p-3 rounded-2xl border bg-zinc-900/60 border-white/[0.08] flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono tracking-wider uppercase text-stone-400">
+                  Banked Days
+                </span>
+                <Calendar className="w-3.5 h-3.5 text-amber-300" />
+              </div>
+              <div className="my-1 flex items-baseline gap-1">
+                <span className="font-mono text-base sm:text-lg font-extrabold text-amber-200">
+                  {(tokens / 3).toFixed(1)}
+                </span>
+                <span className="text-[10px] font-mono text-stone-400">DAYS</span>
+              </div>
+              <div className="text-[10px] font-mono text-stone-400 truncate">
+                3 tokens = 1 day
+              </div>
             </div>
           </div>
 
-          {/* Watch Ad — Single Fixed Reward */}
-          <div className="mb-5">
-            <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 block px-1 mb-2.5">
-              HOW IT WORKS
-            </span>
-
-            {/* Token → Day chart */}
-            <div className="grid grid-cols-3 gap-1.5 mb-3">
-              {[
-                { tokens: 3, days: 1 },
-                { tokens: 6, days: 2 },
-                { tokens: 9, days: 3 }
-              ].map(({ tokens: t, days: d }) => (
-                <div
-                  key={t}
-                  className={`p-2 rounded-xl border text-center ${
-                    tokens >= t
-                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                      : 'bg-zinc-900/60 border-white/[0.06] text-stone-500'
-                  }`}
-                >
-                  <div className="text-[10px] font-mono font-bold">{t} tokens</div>
-                  <div className="text-[9px] mt-0.5">{d} day{d > 1 ? 's' : ''}</div>
-                </div>
-              ))}
+          {/* ── REDEEM TOKENS / CHOOSE SHIFT TIME ── */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between px-1 mb-2">
+              <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400">
+                CHOOSE SHIFT PASS DURATION
+              </span>
+              <span className="text-[10px] font-mono text-gold-light font-bold">
+                Wallet: {tokens} Tokens
+              </span>
             </div>
 
-            {/* Single Watch Button */}
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-zinc-900/60 border border-gold/20 hover:border-gold/40 transition-all">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-gold/15 border border-gold/30 flex items-center justify-center text-gold-light text-xs font-mono font-bold">
-                  1 AD
-                </div>
+            <div className="grid grid-cols-2 gap-2">
+              {/* Option 1: 1 Token -> +8 Hours */}
+              <div
+                className={`p-3 rounded-2xl border flex flex-col justify-between transition-all ${
+                  tokens >= 1
+                    ? 'bg-zinc-900/80 border-gold/30 hover:border-gold/60'
+                    : 'bg-zinc-950/40 border-white/[0.05] opacity-60'
+                }`}
+              >
                 <div>
-                  <h4 className="text-xs font-semibold text-stone-200">
-                    +1 Token &nbsp;·&nbsp; +8 Hours
+                  <span className="text-[10px] font-mono font-bold text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                    1 TOKEN
+                  </span>
+                  <h4 className="text-xs font-bold text-stone-100 mt-1.5">
+                    +8 Hours
                   </h4>
                   <p className="text-[10px] text-stone-400 font-sans">
-                    {daysAfterWatch > daysEarned
-                      ? `🎉 This unlocks Day ${daysAfterWatch}!`
-                      : `${tokensAfterWatch % 3 === 0 ? 3 : tokensAfterWatch % 3}/3 tokens toward Day ${daysAfterWatch + 1}`}
+                    Half-Day Single Shift
                   </p>
                 </div>
+                <button
+                  disabled={tokens < 1 || redeemingPackage === 1}
+                  onClick={() => handleRedeem(1, 8)}
+                  className="mt-2.5 w-full py-1.5 px-2 rounded-xl text-[11px] font-mono font-bold tracking-wider uppercase flex items-center justify-center gap-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/30"
+                >
+                  <span>{tokens >= 1 ? 'Redeem 1 Token' : 'Need 1 Token'}</span>
+                </button>
               </div>
 
-              <button
-                disabled={!canWatchAd || (isAdBlockerActive && !isMasterAdmin)}
-                onClick={handleStartWatch}
-                className="btn-gold px-4 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-1.5 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              {/* Option 2: 3 Tokens -> +24 Hours (1 Day) */}
+              <div
+                className={`relative p-3 rounded-2xl border flex flex-col justify-between transition-all ${
+                  tokens >= 3
+                    ? 'bg-gradient-to-b from-amber-500/[0.08] to-zinc-900/80 border-gold/40 hover:border-gold shadow-sm'
+                    : 'bg-zinc-950/40 border-white/[0.05] opacity-60'
+                }`}
               >
-                <Play className="w-3 h-3 fill-current" />
-                <span>Watch</span>
-              </button>
+                <div className="absolute -top-2 right-2 px-1.5 py-0.5 rounded-full bg-gold text-obsidian-950 text-[9px] font-mono font-black uppercase tracking-wider">
+                  Best Value
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono font-bold text-gold-light bg-gold/15 px-2 py-0.5 rounded-full border border-gold/30">
+                    3 TOKENS
+                  </span>
+                  <h4 className="text-xs font-bold text-stone-100 mt-1.5">
+                    +24 Hours (1 Day)
+                  </h4>
+                  <p className="text-[10px] text-stone-400 font-sans">
+                    Full 24h Operating Day
+                  </p>
+                </div>
+                <button
+                  disabled={tokens < 3 || redeemingPackage === 3}
+                  onClick={() => handleRedeem(3, 24)}
+                  className="mt-2.5 w-full py-1.5 px-2 rounded-xl text-[11px] font-mono font-bold tracking-wider uppercase flex items-center justify-center gap-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed btn-gold shadow-sm"
+                >
+                  <span>{tokens >= 3 ? 'Redeem 3 Tokens' : `Need ${3 - tokens} More`}</span>
+                </button>
+              </div>
+
+              {/* Option 3: 6 Tokens -> +48 Hours (2 Days) */}
+              <div
+                className={`p-3 rounded-2xl border flex flex-col justify-between transition-all ${
+                  tokens >= 6
+                    ? 'bg-zinc-900/80 border-gold/30 hover:border-gold/60'
+                    : 'bg-zinc-950/40 border-white/[0.05] opacity-60'
+                }`}
+              >
+                <div>
+                  <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                    6 TOKENS
+                  </span>
+                  <h4 className="text-xs font-bold text-stone-100 mt-1.5">
+                    +48 Hours (2 Days)
+                  </h4>
+                  <p className="text-[10px] text-stone-400 font-sans">
+                    Weekend 2-Day Pass
+                  </p>
+                </div>
+                <button
+                  disabled={tokens < 6 || redeemingPackage === 6}
+                  onClick={() => handleRedeem(6, 48)}
+                  className="mt-2.5 w-full py-1.5 px-2 rounded-xl text-[11px] font-mono font-bold tracking-wider uppercase flex items-center justify-center gap-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30"
+                >
+                  <span>{tokens >= 6 ? 'Redeem 6 Tokens' : `Need ${6 - tokens} More`}</span>
+                </button>
+              </div>
+
+              {/* Option 4: 9 Tokens -> +72 Hours (3 Days) */}
+              <div
+                className={`p-3 rounded-2xl border flex flex-col justify-between transition-all ${
+                  tokens >= 9
+                    ? 'bg-zinc-900/80 border-gold/30 hover:border-gold/60'
+                    : 'bg-zinc-950/40 border-white/[0.05] opacity-60'
+                }`}
+              >
+                <div>
+                  <span className="text-[10px] font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20">
+                    9 TOKENS
+                  </span>
+                  <h4 className="text-xs font-bold text-stone-100 mt-1.5">
+                    +72 Hours (3 Days)
+                  </h4>
+                  <p className="text-[10px] text-stone-400 font-sans">
+                    Multi-Day Retail Pass
+                  </p>
+                </div>
+                <button
+                  disabled={tokens < 9 || redeemingPackage === 9}
+                  onClick={() => handleRedeem(9, 72)}
+                  className="mt-2.5 w-full py-1.5 px-2 rounded-xl text-[11px] font-mono font-bold tracking-wider uppercase flex items-center justify-center gap-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30"
+                >
+                  <span>{tokens >= 9 ? 'Redeem 9 Tokens' : `Need ${9 - tokens} More`}</span>
+                </button>
+              </div>
             </div>
+          </div>
+
+          {/* ── EARN TOKENS (WATCH SPONSOR AD) ── */}
+          <div className="mb-4 p-3.5 rounded-2xl bg-zinc-900/90 border border-gold/25 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-gold/15 border border-gold/30 flex items-center justify-center text-gold-light shrink-0">
+                <Play className="w-4 h-4 fill-current" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <h4 className="text-xs font-bold text-stone-100">
+                    Watch Sponsor Ad
+                  </h4>
+                  <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded-full border border-emerald-500/20">
+                    +1 Token
+                  </span>
+                </div>
+                <p className="text-[10px] text-stone-400 mt-0.5">
+                  Opens sponsor in new tab. Earns +1 Token to wallet.
+                </p>
+              </div>
+            </div>
+
+            <button
+              disabled={!canWatchAd || (isAdBlockerActive && !isMasterAdmin)}
+              onClick={handleStartWatch}
+              className="btn-gold px-4 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-1.5 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+            >
+              <Play className="w-3.5 h-3.5 fill-current" />
+              <span>Watch</span>
+            </button>
           </div>
 
           {/* Cooldown Notice */}

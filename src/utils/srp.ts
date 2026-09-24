@@ -34,7 +34,7 @@ export function findSuggestedPrice(
   // 2. Fuzzy / Keyword Name Match
   if (product.name && product.name.trim()) {
     const nameLower = product.name.toLowerCase().trim()
-    
+
     // Direct exact or includes
     const directMatch = priceReferences.find(
       (r) =>
@@ -114,26 +114,4 @@ export function getSrpComparison(
     diffC,
     badgeClass: 'bg-sky-500/15 text-sky-400 border border-sky-500/30'
   }
-}
-
-/**
- * Tries to query local Scrapling SRP daemon (http://127.0.0.1:5174/api/srp?q=...)
- */
-export async function fetchLiveScraplingSrp(query: string): Promise<any[] | null> {
-  if (!query || !query.trim()) return null
-  try {
-    const controller = new AbortController()
-    const timer = setTimeout(() => controller.abort(), 1800)
-    const resp = await fetch(`http://127.0.0.1:5174/api/srp?q=${encodeURIComponent(query.trim())}`, {
-      signal: controller.signal
-    })
-    clearTimeout(timer)
-    if (resp.ok) {
-      const data = await resp.json()
-      return data.items || []
-    }
-  } catch {
-    // Daemon offline or unreachable, ignore
-  }
-  return null
 }

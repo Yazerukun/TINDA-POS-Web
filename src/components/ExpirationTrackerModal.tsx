@@ -269,9 +269,9 @@ export function ExpirationTrackerModal({
           {filteredItems.length === 0 ? (
             <div className="py-20 text-center space-y-2">
               <Calendar className="h-10 w-10 text-stone-600 mx-auto" />
-              <p className="text-sm font-bold text-stone-400">Walay produkto nga nag-match</p>
+              <p className="text-sm font-bold text-stone-400">No products match this filter</p>
               <p className="text-xs font-mono text-stone-500">
-                Pili-a ang "All Items" o pag-set ug expiration date sa ubang produkto.
+                Select "All Items" or set expiration dates for products in Inventory.
               </p>
             </div>
           ) : (

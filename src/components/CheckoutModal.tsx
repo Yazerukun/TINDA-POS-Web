@@ -54,11 +54,11 @@ export function CheckoutModal({
   const handleCharge = async () => {
     if (processing) return
     if (paymentMethod === 'UTANG' && !customerId) {
-      alert('Palihug pagpili og client account para sa Client Credit / Utang ledger.')
+      alert('Please select a customer account for Store Credit.')
       return
     }
     if (isInsufficient) {
-      alert('Kulang ang gibayad nga kwarta. Palihug susiha ang tender amount.')
+      alert('Insufficient tender amount. Please enter an amount equal to or greater than the total.')
       return
     }
 
@@ -181,7 +181,7 @@ export function CheckoutModal({
               </p>
               {completedTx.payment_method === 'CASH' && completedTx.change_c > 0 && (
                 <div className="mt-2.5 px-3.5 py-1 rounded-full bg-zinc-950/80 border border-gold/30 text-xs font-mono font-medium text-stone-300">
-                  Sukli / Client Return:{' '}
+                  Change:{' '}
                   <span className="text-gold-light font-bold font-mono">
                     {money(completedTx.change_c)}
                   </span>
@@ -265,7 +265,7 @@ export function CheckoutModal({
                 {[
                   { id: 'CASH', label: 'Cash Tender', icon: Banknote },
                   { id: 'GCASH', label: 'E-Transfer', icon: CreditCard },
-                  { id: 'UTANG', label: 'Credit Ledger', icon: UserCheck }
+                  { id: 'UTANG', label: 'Store Credit', icon: UserCheck }
                 ].map((m) => {
                   const isSelected = paymentMethod === m.id
                   const Icon = m.icon
@@ -292,14 +292,14 @@ export function CheckoutModal({
             {paymentMethod === 'UTANG' && (
               <div className="p-3.5 rounded-2xl bg-amber-500/[0.08] border border-gold/30 space-y-2">
                 <label className="block text-[10px] font-mono tracking-wider uppercase text-gold-light font-bold">
-                  ASSIGN TO PRIVATE CLIENT ACCOUNT (UTANG)
+                  ASSIGN TO CUSTOMER ACCOUNT (STORE CREDIT)
                 </label>
                 <select
                   value={customerId || ''}
                   onChange={(e) => setCustomerId(e.target.value ? Number(e.target.value) : null)}
                   className="w-full bg-zinc-950 border border-gold/30 rounded-xl px-3 py-2 text-xs font-mono text-stone-100 focus:outline-none focus:border-gold"
                 >
-                  <option value="">-- Choose Client Profile --</option>
+                  <option value="">-- Choose Customer Profile --</option>
                   {customers.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name} — Current Balance: ₱{(c.balance_c / 100).toFixed(2)}
@@ -364,7 +364,7 @@ export function CheckoutModal({
                 {/* Live Change Calculation */}
                 <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950/60 border border-white/[0.05]">
                   <span className="text-xs font-mono uppercase tracking-wider text-stone-400">
-                    Change / Sukli:
+                    Change Due:
                   </span>
                   <span
                     className={`text-base font-serif font-bold ${

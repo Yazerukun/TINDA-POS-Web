@@ -158,7 +158,7 @@ export function DashboardScreen({
                 )}
               </div>
               <p className="text-xs text-slate-400 mt-1">
-                Adunay mga produkto nga nahurot na o hapit na mahurot (threshold: {lowThreshold} units). Pag-restock aron dili mabalda ang halin.
+                Some products are out of stock or running low (threshold: {lowThreshold} units). Restock promptly to maintain sales flow.
               </p>
             </div>
           </div>
@@ -176,7 +176,7 @@ export function DashboardScreen({
           <div className="flex items-center gap-2.5">
             <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
             <span className="text-xs font-medium text-emerald-200">
-              Maayong kahimtang! Ang tanang {products.length} active inventory items anaa sa igong stock levels.
+              Healthy stock status! All {products.length} active inventory items are at adequate stock levels.
             </span>
           </div>
           <span className="hidden sm:inline text-[11px] font-mono text-emerald-400 font-bold uppercase">
@@ -254,7 +254,7 @@ export function DashboardScreen({
         >
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 font-medium">
-              Client Utang
+              Customer Credit
             </span>
             <Wallet className="h-4 w-4 text-amber-400" />
           </div>
@@ -263,7 +263,7 @@ export function DashboardScreen({
               {money(totalUtang_c)}
             </p>
             <p className="text-[10px] text-stone-500 font-mono mt-1">
-              {customers.filter((c) => c.balance_c > 0).length} clients with balance
+              {customers.filter((c) => c.balance_c > 0).length} customers with balance
             </p>
           </div>
         </button>
@@ -330,7 +330,7 @@ export function DashboardScreen({
               <Sparkles className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-emerald-300 truncate">Bantay Presyo</p>
+              <p className="text-xs font-bold text-emerald-300 truncate">DTI Price Guide</p>
               <p className="text-[9px] text-emerald-400/80 font-mono truncate">DTI SRP</p>
             </div>
           </button>
@@ -499,9 +499,9 @@ export function DashboardScreen({
           {todayTransactions.length === 0 ? (
             <div className="py-8 text-center space-y-2">
               <ShoppingCart className="h-8 w-8 text-stone-600 mx-auto" />
-              <p className="text-xs text-stone-400">Walay halin nga na-record karon pa.</p>
+              <p className="text-xs text-stone-400">No sales recorded yet today.</p>
               <p className="text-[10px] text-stone-600 font-mono">
-                Ang mga halin gikan sa Counter screen mo-appear dinhi.
+                Sales completed at the POS Counter will appear here.
               </p>
             </div>
           ) : (

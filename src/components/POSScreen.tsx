@@ -308,7 +308,7 @@ export function POSScreen({
               No Inventory Found
             </p>
             <p className="text-xs text-stone-500 mt-1 max-w-sm font-sans">
-              Walay nakit-an nga produkto sa imong search o filter. Sulayi pag-usab o i-clear ang keyword.
+              No products found matching your search or category filter. Try clearing keywords.
             </p>
           </div>
         ) : (

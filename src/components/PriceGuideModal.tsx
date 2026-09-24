@@ -227,8 +227,8 @@ export function PriceGuideModal({
           ) : filteredReferences.length === 0 ? (
             <div className="h-64 flex flex-col items-center justify-center space-y-2 text-stone-500 text-center">
               <Barcode className="h-10 w-10 text-stone-600" />
-              <p className="text-sm font-bold text-stone-400">Walay produkto nga nag-match</p>
-              <p className="text-xs font-mono">Suwayi pag-search gamit ang brand (e.g. "Silver Swan", "Bear Brand", "Pancit Canton")</p>
+              <p className="text-sm font-bold text-stone-400">No products match your search</p>
+              <p className="text-xs font-mono">Try searching with a brand or product name (e.g. "Silver Swan", "Bear Brand", "Pancit Canton")</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">

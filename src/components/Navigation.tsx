@@ -71,7 +71,7 @@ export function Navigation({
     { id: 'pos', label: 'Counter', icon: ShoppingBag, badge: cartCount },
     { id: 'transactions', label: 'Transactions', icon: Receipt },
     { id: 'inventory', label: 'Inventory', icon: Package },
-    { id: 'customers', label: 'Clients / Utang', icon: Users },
+    { id: 'customers', label: 'Customers & Credit', icon: Users },
   ]
 
   // Business management nav
@@ -203,7 +203,7 @@ export function Navigation({
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <Sparkles className="w-4 h-4 shrink-0 text-amber-400" />
-                      <span className="truncate">Bantay Presyo</span>
+                      <span className="truncate">DTI Price Guide</span>
                     </div>
                     <span className="text-[10px] font-mono bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">SRP</span>
                   </button>
@@ -397,7 +397,7 @@ export function Navigation({
                     >
                       <Sparkles className="w-5 h-5 text-amber-400 mb-1" />
                       <div>
-                        <div className="text-xs font-bold uppercase tracking-wider">Bantay Presyo</div>
+                        <div className="text-xs font-bold uppercase tracking-wider">DTI Price Guide</div>
                         <div className="text-[10px] text-amber-300/70 font-mono">172+ DTI SRP Items</div>
                       </div>
                     </button>
@@ -436,7 +436,7 @@ export function Navigation({
                   <div className="flex items-center gap-3">
                     <Users className="w-4 h-4 text-emerald-400" />
                     <div>
-                      <div className="text-xs font-semibold uppercase tracking-wider">Clients / Utang Ledger</div>
+                      <div className="text-xs font-semibold uppercase tracking-wider">Customer Credit Ledger</div>
                       <div className="text-[10px] text-stone-500">Track customer credit & balances</div>
                     </div>
                   </div>

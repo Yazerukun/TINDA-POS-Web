@@ -14,13 +14,12 @@ import {
   Layers,
   History,
   Sparkles,
-  Check,
-  Globe
+  Check
 } from 'lucide-react'
 import type { Product, Category, RestockLog, RestockType, PriceReference } from '../types'
 import { money, formatDateTime } from '../utils/format'
 import { compressImageFile } from '../utils/image'
-import { findSuggestedPrice, getSrpComparison, fetchLiveScraplingSrp } from '../utils/srp'
+import { findSuggestedPrice, getSrpComparison } from '../utils/srp'
 import { db } from '../db'
 
 interface InventoryScreenProps {
@@ -39,12 +38,9 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
   const [imageBusy, setImageBusy] = useState(false)
   const [restockLogs, setRestockLogs] = useState<RestockLog[]>([])
 
-  // Suggested Price / DTI SRP & Scrapling states
+  // Suggested Price / DTI SRP states
   const [priceReferences, setPriceReferences] = useState<PriceReference[]>([])
   const [autoMatching, setAutoMatching] = useState(false)
-  const [scraplingActive, setScraplingActive] = useState(false)
-  const [scraplingSearching, setScraplingSearching] = useState(false)
-  const [scraplingResults, setScraplingResults] = useState<any[]>([])
 
   // Dual photo inputs
   const cameraInputRef = useRef<HTMLInputElement>(null)
@@ -54,7 +50,7 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
   const mainCategories = categories.filter((c) => c.parent_id === null)
   const subCategories = selectedCat === 'ALL' ? [] : categories.filter((c) => c.parent_id === selectedCat)
 
-  // Load price references and check Scrapling daemon
+  // Load price references
   useEffect(() => {
     const loadPriceRefs = async () => {
       try {
@@ -65,16 +61,6 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
       }
     }
     loadPriceRefs()
-
-    // Check Scrapling daemon status
-    fetch('http://127.0.0.1:5174/api/status')
-      .then((r) => r.ok && r.json())
-      .then((data) => {
-        if (data && data.status === 'online') {
-          setScraplingActive(true)
-        }
-      })
-      .catch(() => setScraplingActive(false))
   }, [])
 
   // Filtering (main category AND subcategory)
@@ -86,7 +72,7 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
     return p.name.toLowerCase().includes(q) || p.sku?.toLowerCase().includes(q) || p.barcode?.includes(q)
   })
 
-  // Live restocking history from Dexie — real data only
+  // Live restocking history from Dexie
   const loadRestockLogs = useCallback(async () => {
     try {
       const logs = await db.restock_logs.orderBy('timestamp').reverse().toArray()
@@ -184,13 +170,12 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
 
     setModalOpen(false)
     setEditingProduct(null)
-    setScraplingResults([])
     await loadRestockLogs()
     onRefresh()
   }
 
   const handleDeleteProduct = async (id: number) => {
-    if (confirm('Sigurado ka ba nga i-delete kini nga produkto?')) {
+    if (confirm('Are you sure you want to delete this product?')) {
       await db.products.delete(id)
       onRefresh()
     }
@@ -218,7 +203,7 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
       })
       onRefresh()
     } else {
-      alert(`Walay nakit-an nga official DTI SRP alang sa "${product.name}". Pwede nimo i-set mano-mano sa Edit modal.`)
+      alert(`No official DTI SRP found for "${product.name}". You can set the suggested price manually in the Edit modal.`)
     }
   }
 
@@ -239,42 +224,12 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
           }
         }
       }
-      alert(`Nahuman ang auto-match! ${matchedCount} produkto ang malampusong na-link sa opisyal nga DTI SRP.`)
+      alert(`Auto-match complete! ${matchedCount} product(s) successfully linked to official DTI SRP.`)
       onRefresh()
     } catch (err) {
       console.error('Error auto-matching SRP:', err)
     } finally {
       setAutoMatching(false)
-    }
-  }
-
-  // Trigger live Scrapling lookup in Add/Edit modal
-  const handleScraplingLookup = async () => {
-    const query = editingProduct?.barcode || editingProduct?.name
-    if (!query) {
-      alert('Palihug ibutang una ang ngalan sa produkto o barcode.')
-      return
-    }
-    setScraplingSearching(true)
-    try {
-      const results = await fetchLiveScraplingSrp(query)
-      if (results && results.length > 0) {
-        setScraplingResults(results)
-      } else {
-        // Fallback to local price references
-        const localMatches = priceReferences.filter((r) =>
-          r.product_name.toLowerCase().includes(query.toLowerCase()) ||
-          (r.barcode && r.barcode.includes(query))
-        )
-        setScraplingResults(localMatches)
-        if (localMatches.length === 0) {
-          alert(`Walay nakit-an nga online/DTI presyo para sa "${query}".`)
-        }
-      }
-    } catch (e) {
-      console.error('Scrapling lookup failed:', e)
-    } finally {
-      setScraplingSearching(false)
     }
   }
 
@@ -291,15 +246,9 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
               <Package className="h-6 w-6 text-emerald-400" />
               <span>Inventory Management</span>
             </h2>
-            {scraplingActive && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/10 text-amber-300 border border-amber-500/25">
-                <Globe className="w-3 h-3 text-amber-400" />
-                <span>Scrapling SRP Live</span>
-              </span>
-            )}
           </div>
           <p className="text-xs text-slate-400 mt-0.5">
-            Dali nga pag-monitor sa stock, presyo, DTI Suggested Retail Prices (SRP), ug mga hulagway sa produkto.
+            Monitor stock levels, retail pricing, official DTI Suggested Retail Prices (SRP), and product photos.
           </p>
         </div>
 
@@ -330,7 +279,6 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
                 stock: 10,
                 image_path: null
               })
-              setScraplingResults([])
               setModalOpen(true)
             }}
             className="btn-press flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-obsidian-950 font-bold text-xs shadow-glow-emerald"
@@ -382,7 +330,7 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
           </div>
         </div>
 
-        {/* Subcategory row (level 2) */}
+        {/* Subcategory row */}
         {subCategories.length > 0 && (
           <div className="flex items-center gap-2 overflow-x-auto pb-1 border-t border-white/[0.06] pt-2">
             <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 shrink-0">
@@ -434,7 +382,7 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-slate-500">
-                    Walay nakit-an nga produkto.
+                    No products found matching your search or filters.
                   </td>
                 </tr>
               ) : (
@@ -500,7 +448,7 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
                           <button
                             onClick={() => handleLinkSrp(p)}
                             className="btn-press text-[10px] font-mono text-amber-400/80 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 px-2 py-1 rounded-lg border border-amber-500/25 transition-all"
-                            title="Find & link DTI Suggested Retail Price"
+                            title="Find and link official DTI Suggested Retail Price"
                           >
                             + Link SRP
                           </button>
@@ -550,7 +498,6 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
                                 default_price_c: p.default_price_c / 100,
                                 suggested_price_c: p.suggested_price_c ? p.suggested_price_c / 100 : undefined
                               })
-                              setScraplingResults([])
                               setModalOpen(true)
                             }}
                             className="btn-press p-1.5 rounded-xl border border-white/[0.08] text-slate-400 hover:text-white hover:bg-white/[0.04]"
@@ -586,7 +533,7 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
 
         {restockLogs.length === 0 ? (
           <div className="py-8 text-center text-slate-500 text-xs">
-            Wala pa'y natala nga restocking. I-adjust ang stock sa usa ka produkto aron makita kini dinhi.
+            No restocking records yet. Adjust stock on any item to view its history here.
           </div>
         ) : (
           <div className="max-h-[360px] overflow-y-auto space-y-2 pr-1">
@@ -886,64 +833,6 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
                     className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-mono text-white focus:outline-none focus:border-emerald-500"
                   />
                 </div>
-              </div>
-
-              {/* Scrapling Price Lookup Assistant */}
-              <div className="pt-1">
-                <button
-                  type="button"
-                  onClick={handleScraplingLookup}
-                  disabled={scraplingSearching}
-                  className="w-full py-2 px-3 rounded-xl bg-zinc-900 border border-white/10 hover:border-amber-500/30 text-stone-300 hover:text-amber-200 text-xs font-medium flex items-center justify-center gap-2 transition-all"
-                >
-                  <Globe className={`w-3.5 h-3.5 text-amber-400 ${scraplingSearching ? 'animate-spin' : ''}`} />
-                  <span>{scraplingSearching ? 'Searching DTI/Market SRP via Scrapling...' : 'Search Online SRP (Scrapling Engine)'}</span>
-                </button>
-
-                {/* Scrapling search results list */}
-                {scraplingResults.length > 0 && (
-                  <div className="mt-2.5 p-3 rounded-2xl bg-zinc-950 border border-amber-500/20 space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
-                    <p className="text-[10px] font-mono uppercase tracking-widest text-amber-400">
-                      Scrapling Search Matches ({scraplingResults.length}):
-                    </p>
-                    {scraplingResults.map((item, idx) => {
-                      const itemPeso = (item.market_price_c || 0) / 100
-                      return (
-                        <div
-                          key={idx}
-                          className="flex items-center justify-between p-2 rounded-xl bg-white/[0.02] border border-white/5 hover:border-amber-500/30 text-left"
-                        >
-                          <div className="min-w-0 pr-2">
-                            <p className="text-xs font-semibold text-stone-200 truncate">{item.product_name}</p>
-                            <p className="text-[10px] text-stone-500 font-mono truncate">
-                              Barcode: {item.barcode || 'N/A'} · {item.source_name || 'DTI SRP'}
-                            </p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setEditingProduct((prev) =>
-                                prev
-                                  ? {
-                                      ...prev,
-                                      name: prev.name || item.product_name,
-                                      barcode: prev.barcode || item.barcode || prev.barcode,
-                                      suggested_price_c: itemPeso,
-                                      default_price_c: prev.default_price_c || itemPeso
-                                    }
-                                  : null
-                              )
-                              setScraplingResults([])
-                            }}
-                            className="btn-press px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-mono font-bold text-xs shrink-0"
-                          >
-                            ₱{itemPeso.toFixed(2)} Use
-                          </button>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
               </div>
 
               {/* Submit Buttons */}

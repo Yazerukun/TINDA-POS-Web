@@ -181,9 +181,9 @@ export function SuppliersScreen(): React.JSX.Element {
       ) : filteredSuppliers.length === 0 ? (
         <div className="py-16 text-center space-y-2 glass-panel rounded-3xl border border-white/[0.08]">
           <Truck className="h-10 w-10 text-stone-600 mx-auto" />
-          <p className="text-sm font-bold text-stone-300">Walay supplier nga nakit-an</p>
+          <p className="text-sm font-bold text-stone-300">No suppliers found</p>
           <p className="text-xs text-stone-500 font-mono">
-            I-click ang "+ New Supplier" aron mag-dugang ug distributor partner.
+            Click "+ New Supplier" to add a distributor or vendor partner.
           </p>
         </div>
       ) : (

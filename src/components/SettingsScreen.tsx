@@ -103,7 +103,7 @@ export function SettingsScreen({
   }
 
   const handleResetData = async () => {
-    if (confirm('Sigurado ka ba nga i-clear ang TANANG data? Products, sales, customers, held tickets, ug restocking history ang mawala — walay demo items nga ibalik.')) {
+    if (confirm('Are you sure you want to clear ALL data? Products, sales, customers, held tickets, and restock history will be permanently deleted.')) {
       await db.products.clear()
       await db.categories.clear()
       await db.transactions.clear()
@@ -115,7 +115,7 @@ export function SettingsScreen({
       await initDatabase()
       onRefreshAll()
       loadUsers()
-      alert('Database cleared! Sugdi ug idugang ang imong kaugalingong mga produkto ug users.')
+      alert('Database cleared! You can now start adding your own products and staff accounts.')
     }
   }
 
@@ -223,7 +223,7 @@ export function SettingsScreen({
           <span>Store Settings &amp; Administration</span>
         </h2>
         <p className="text-xs text-slate-400">
-          I-configure ang impormasyon sa tindahan, manage og mga staff accounts, ug offline backup archives.
+          Configure store profile, manage staff accounts, and download offline backup archives.
         </p>
       </div>
 
@@ -256,7 +256,7 @@ export function SettingsScreen({
               <span>Staff &amp; Cashier Accounts</span>
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Master Admin ray maka-create ug maka-manage sa mga accounts. Dili makita ang mga pangalan sa login screen para protektado.
+              Only Master Admin can create and manage staff accounts. Account names are hidden on the login screen for security.
             </p>
           </div>
 
@@ -284,7 +284,7 @@ export function SettingsScreen({
             <p className="text-xs text-slate-400 font-mono py-4 text-center">Loading accounts...</p>
           ) : users.length === 0 ? (
             <div className="text-center py-6 text-slate-500 text-xs font-mono">
-              Walay users nakit-an. Default Master Admin ang gigamit.
+              No users found. Using default Master Admin account.
             </div>
           ) : (
             users.map((u) => {
@@ -613,7 +613,7 @@ export function SettingsScreen({
             <span>Universal .tinda-backup Archive</span>
           </h3>
           <p className="text-xs text-slate-400 mt-0.5">
-            100% interoperable tali sa Android APK ug niining Web version.
+            100% interoperable between Android APK and this Web version.
           </p>
         </div>
 
@@ -626,7 +626,7 @@ export function SettingsScreen({
                 <span>Export .tinda-backup</span>
               </h4>
               <p className="text-[11px] text-slate-400 mt-1">
-                I-download ang tibuok database (products, sales, customers, litrato) isip single backup file.
+                Download the complete store database (products, sales, customers, photos) as a single offline backup file.
               </p>
             </div>
             <button
@@ -645,7 +645,7 @@ export function SettingsScreen({
                 <span>Restore .tinda-backup</span>
               </h4>
               <p className="text-[11px] text-slate-400 mt-1">
-                I-load ang daan nga backup gikan sa imong Android phone o laing browser.
+                Load an existing backup file from your Android phone or another browser.
               </p>
             </div>
             <input
@@ -667,7 +667,7 @@ export function SettingsScreen({
 
         {/* Reset Database */}
         <div className="pt-3 border-t border-white/[0.06] flex justify-between items-center">
-          <span className="text-xs text-slate-500">I-clear ang tibuok data sa tindahan (products, sales, customers, held tickets, restocking history).</span>
+          <span className="text-xs text-slate-500">Clear entire store database (products, sales, customers, held tickets, restocking history).</span>
           <button
             onClick={handleResetData}
             className="btn-press px-3 py-1.5 rounded-xl border border-white/[0.08] text-slate-400 hover:text-white text-xs font-semibold flex items-center gap-1.5"

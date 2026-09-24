@@ -179,7 +179,7 @@ export function TransactionsScreen({
               <option value="ALL">All Payments</option>
               <option value="CASH">CASH</option>
               <option value="GCASH">GCASH</option>
-              <option value="UTANG">UTANG (Credit)</option>
+              <option value="UTANG">Store Credit</option>
             </select>
 
             <select
@@ -246,9 +246,9 @@ export function TransactionsScreen({
         {filteredTransactions.length === 0 ? (
           <div className="py-20 text-center space-y-2">
             <Receipt className="h-10 w-10 text-stone-600 mx-auto" />
-            <p className="text-sm font-bold text-stone-300">Walay transaction nga nag-match</p>
+            <p className="text-sm font-bold text-stone-300">No transactions match your search</p>
             <p className="text-xs text-stone-500 font-mono">
-              Ang mga resibo gikan sa POS Counter screen direkta nga mo-appear dinhi.
+              Receipts from completed POS counter sales will appear here.
             </p>
           </div>
         ) : (
@@ -487,18 +487,18 @@ export function TransactionsScreen({
             </div>
 
             <p className="text-xs text-stone-400 leading-relaxed">
-              Kining maong aksyon mo-kanselar sa resibo ug <strong>awtomatikong mo-uli sa tanang stocks</strong> balik sa inventory. Dili na kini mabalik.
+              This action will void the transaction and <strong>automatically return all items</strong> back to inventory. This cannot be undone.
             </p>
 
             <div>
               <label className="text-[11px] font-mono font-bold text-stone-400 block mb-1">
-                Rason sa Pag-void (Reason):
+                Reason for Voiding:
               </label>
               <input
                 type="text"
                 value={voidReason}
                 onChange={(e) => setVoidReason(e.target.value)}
-                placeholder="Rason ngano gi-void..."
+                placeholder="Reason why this transaction is voided..."
                 className="w-full h-10 px-3 rounded-xl bg-black border border-white/15 text-xs text-stone-100 focus:outline-none focus:border-red-400"
               />
             </div>

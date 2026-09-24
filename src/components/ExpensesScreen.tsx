@@ -302,9 +302,9 @@ export function ExpensesScreen({
         ) : filteredExpenses.length === 0 ? (
           <div className="py-16 text-center space-y-2">
             <Receipt className="h-10 w-10 text-stone-600 mx-auto" />
-            <p className="text-sm font-bold text-stone-300">Walay na-record nga expenses niining panahona</p>
+            <p className="text-sm font-bold text-stone-300">No expenses recorded for this period</p>
             <p className="text-xs text-stone-500 font-mono">
-              I-click ang "+ New Expense" aron mag-record sa mga gasto sa tindahan.
+              Click "+ New Expense" to record store operating expenses.
             </p>
           </div>
         ) : (

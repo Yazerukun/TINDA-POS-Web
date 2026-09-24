@@ -46,7 +46,7 @@ export function CustomersScreen({ customers, onRefresh }: CustomersScreenProps):
     if (!paymentModalCustomer) return
     const amt_c = Math.round((parseFloat(paymentAmountInput) || 0) * 100)
     if (amt_c <= 0) {
-      alert('Palihug pagsulod og saktong kantidad sa bayad.')
+      alert('Please enter a valid payment amount.')
       return
     }
 
@@ -68,10 +68,10 @@ export function CustomersScreen({ customers, onRefresh }: CustomersScreenProps):
         <div>
           <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
             <Users className="h-6 w-6 text-amber-400" />
-            <span>Customer Store Credit (Utang Ledger)</span>
+            <span>Customer Store Credit Ledger</span>
           </h2>
           <p className="text-xs text-slate-400">
-            Pagsubay sa pautang, credit limits, ug pagtala sa bayad sa mga suki.
+            Track customer store credit, balances, credit limits, and record debt payments.
           </p>
         </div>
         <button
@@ -91,7 +91,7 @@ export function CustomersScreen({ customers, onRefresh }: CustomersScreenProps):
             {money(totalOutstandingUtang)}
           </p>
           <p className="text-[11px] text-slate-400 mt-1">
-            Across {customers.filter((c) => c.balance_c > 0).length} customers nga naay active balances
+            Across {customers.filter((c) => c.balance_c > 0).length} customers with active credit balances
           </p>
         </div>
         <div className="h-12 w-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
@@ -117,7 +117,7 @@ export function CustomersScreen({ customers, onRefresh }: CustomersScreenProps):
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-slate-500">
-                    Walay nakit-an nga customer.
+                    No customers found.
                   </td>
                 </tr>
               ) : (
@@ -171,7 +171,7 @@ export function CustomersScreen({ customers, onRefresh }: CustomersScreenProps):
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/80 backdrop-blur-md animate-fade-in">
           <div className="w-full max-w-sm glass-panel rounded-3xl border border-white/[0.12] p-6 shadow-2xl animate-slide-up space-y-4">
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
-              <h3 className="text-base font-bold text-white">Record Utang Payment</h3>
+              <h3 className="text-base font-bold text-white">Record Credit Payment</h3>
               <button onClick={() => setPaymentModalCustomer(null)} className="btn-press text-slate-400 hover:text-white p-1">
                 <X className="h-5 w-5" />
               </button>
@@ -180,11 +180,11 @@ export function CustomersScreen({ customers, onRefresh }: CustomersScreenProps):
               <p className="text-xs text-slate-400">Customer</p>
               <p className="text-sm font-bold text-white">{paymentModalCustomer.name}</p>
               <p className="text-xs text-amber-400 mt-1 font-mono">
-                Current Utang: {money(paymentModalCustomer.balance_c)}
+                Current Balance: {money(paymentModalCustomer.balance_c)}
               </p>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Kantidad sa Gibayad (₱)</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1">Payment Amount (₱)</label>
               <input
                 type="number"
                 step="any"
@@ -206,7 +206,7 @@ export function CustomersScreen({ customers, onRefresh }: CustomersScreenProps):
                 onClick={handleRecordPayment}
                 className="btn-press flex-1 py-2 rounded-xl bg-emerald-500 text-obsidian-950 text-xs font-black shadow-glow-emerald"
               >
-                Confirm Bayad
+                Confirm Payment
               </button>
             </div>
           </div>

@@ -284,7 +284,7 @@ export function AnalyticsScreen({
 
             <div className="glass-panel rounded-3xl p-5 border border-white/[0.08]">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono tracking-widest text-stone-400 uppercase">Tinuod nga Net Margin</span>
+                <span className="text-[10px] font-mono tracking-widest text-stone-400 uppercase">True Net Margin</span>
                 <div className="h-8 w-8 rounded-xl bg-amber-500/15 text-amber-300 flex items-center justify-center">
                   <Sparkles className="h-4 w-4" />
                 </div>
@@ -314,7 +314,7 @@ export function AnalyticsScreen({
                   <span className="font-serif font-bold text-blue-400">{money(metrics.gcashSales_c)}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950 border border-white/5">
-                  <span className="text-xs font-mono text-stone-300">UTANG (Receivables)</span>
+                  <span className="text-xs font-mono text-stone-300">STORE CREDIT (Receivables)</span>
                   <span className="font-serif font-bold text-amber-400">{money(metrics.utangSales_c)}</span>
                 </div>
               </div>
@@ -326,7 +326,7 @@ export function AnalyticsScreen({
                 Top 5 Best-Selling Products by Revenue
               </span>
               {topProducts.length === 0 ? (
-                <p className="text-xs text-stone-500 font-mono py-8 text-center">Walay sales data pa.</p>
+                <p className="text-xs text-stone-500 font-mono py-8 text-center">No sales data yet.</p>
               ) : (
                 <div className="space-y-2">
                   {topProducts.map((p, i) => (
@@ -474,7 +474,7 @@ export function AnalyticsScreen({
                   </div>
 
                   <div className="flex justify-between text-stone-300 font-semibold border-t border-white/10 pt-2">
-                    <span>Expected Cash in Kaha:</span>
+                    <span>Expected Cash in Drawer:</span>
                     <span>{money(expectedCashInDrawer_c)}</span>
                   </div>
                 </div>
@@ -493,7 +493,7 @@ export function AnalyticsScreen({
                     {cashDiscrepancy_c === 0 ? (
                       <>
                         <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                        <span>Kaha is 100% Balanced</span>
+                        <span>Drawer is 100% Balanced</span>
                       </>
                     ) : cashDiscrepancy_c > 0 ? (
                       <>
@@ -509,10 +509,10 @@ export function AnalyticsScreen({
                   </p>
                   <p className="text-[10px] text-stone-400">
                     {cashDiscrepancy_c === 0
-                      ? 'Ang pisikal nga kwarta match sa halin sa tindahan.'
+                      ? 'Physical cash matches recorded store sales perfectly.'
                       : cashDiscrepancy_c > 0
-                      ? 'Adunay sobra nga kwarta sa kaha kumpara sa recorded cash sales.'
-                      : 'Kulang ang kwarta sa kaha kumpara sa expected sales. Palihug susiha ang resibo o sinsilyo.'}
+                      ? 'Cash drawer has an overage compared to recorded cash sales.'
+                      : 'Cash drawer is short compared to expected sales. Please verify receipts and change.'}
                   </p>
                 </div>
               </div>
@@ -614,7 +614,7 @@ export function AnalyticsScreen({
                 <span>{money(metrics.gcashSales_c)}</span>
               </div>
               <div className="flex justify-between">
-                <span>UTANG (Credit):</span>
+                <span>Store Credit (Receivables):</span>
                 <span>{money(metrics.utangSales_c)}</span>
               </div>
             </div>

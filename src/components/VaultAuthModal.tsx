@@ -132,7 +132,7 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
   const date = now.toLocaleDateString('en-PH', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
 
   return (
-    <aside className="flex flex-col justify-between p-8 sm:p-10 lg:p-14 border-b lg:border-b-0 lg:border-r border-gold/20 bg-[#0a0a0c]/80 relative overflow-hidden backdrop-blur-2xl">
+    <aside className="flex flex-col justify-between p-8 sm:p-10 lg:p-14 border-b lg:border-b-0 lg:border-r border-gold/20 bg-[#0a0a0c]/80 relative overflow-hidden backdrop-blur-2xl min-h-screen">
       {/* Background ambient lighting */}
       <div className="absolute top-0 right-0 h-[420px] w-[420px] rounded-full bg-amber-500/[0.07] blur-[130px] pointer-events-none animate-float-slow" />
       <div className="absolute bottom-0 left-0 h-[380px] w-[380px] rounded-full bg-gold/[0.06] blur-[120px] pointer-events-none animate-float-reverse" />
@@ -222,6 +222,8 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
 
 export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps): React.JSX.Element | null {
   const [step, setStep] = useState<'LOGIN' | 'SIGNUP' | 'FLOAT'>('LOGIN')
+  const [authMode, setAuthMode] = useState<'PIN' | 'PASSWORD'>('PIN')
+  const [showPassword, setShowPassword] = useState(false)
   const [username, setUsername] = useState('')
   const [pin, setPin] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
@@ -246,6 +248,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
   const usernameInputRef = useRef<HTMLInputElement>(null)
   const signupStoreInputRef = useRef<HTMLInputElement>(null)
   const pinInputRef = useRef<HTMLInputElement>(null)
+  const passwordInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (isOpen) {
@@ -297,12 +300,17 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
       return
     }
     if (!pin) {
-      setErrorMessage('Please enter your 4-digit security PIN.')
+      setErrorMessage(authMode === 'PIN' ? 'Please enter your 4-digit security PIN.' : 'Please enter your password.')
+      if (authMode === 'PIN') pinInputRef.current?.focus()
+      else passwordInputRef.current?.focus()
       return
     }
 
     setIsVerifying(true)
     setErrorMessage('')
+
+    // Smooth loading animation delay
+    await new Promise((resolve) => setTimeout(resolve, 600))
 
     try {
       const lower = trimmedUser.toLowerCase()
@@ -592,10 +600,31 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
         <HeroPanel terminalId={TERMINAL_ID} />
 
         {/* Right Column (Auth Card) */}
-        <main className="flex flex-col items-center justify-center w-full min-h-full px-4 py-8 sm:px-8 sm:py-12 relative z-10 my-auto">
+        <main className="flex flex-col items-center justify-center w-full min-h-screen p-4 sm:p-8 lg:p-12 relative z-10">
 
           {/* Modern Dark Glassmorphism Card with Soft Gold Border Highlight */}
-          <div className="w-full max-w-md sm:max-w-[460px] glass-vault rounded-3xl border border-gold/30 shadow-vault text-stone-100 animate-fade-in relative overflow-hidden backdrop-blur-3xl bg-zinc-950/85">
+          <div className="w-full max-w-[430px] glass-vault rounded-3xl border border-gold/35 shadow-vault text-stone-100 animate-fade-in relative overflow-hidden backdrop-blur-3xl bg-zinc-950/90 my-auto">
+
+            {/* Elegant Luxury Verification Loading Overlay */}
+            {isVerifying && (
+              <div className="absolute inset-0 z-40 bg-zinc-950/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+                <div className="relative flex items-center justify-center mb-4">
+                  <div className="w-16 h-16 rounded-2xl border border-gold/40 bg-zinc-900/90 flex items-center justify-center shadow-glow-gold relative overflow-hidden">
+                    <img src="/tinda-pos-crest.png" alt="Loading" className="w-10 h-10 object-contain animate-pulse" />
+                    <div className="absolute inset-0 border-2 border-gold/70 border-t-transparent rounded-2xl animate-spin" />
+                  </div>
+                </div>
+                <p className="font-serif text-base font-bold tracking-widest uppercase text-gold-light animate-pulse">
+                  Authenticating Session
+                </p>
+                <p className="font-mono text-[10px] text-stone-400 tracking-widest uppercase mt-1">
+                  Validating Terminal Credentials
+                </p>
+                <div className="w-44 h-1.5 bg-zinc-800 rounded-full mt-4 overflow-hidden border border-white/[0.08]">
+                  <div className="h-full bg-gradient-to-r from-amber-400 via-gold to-amber-200 rounded-full w-2/3 animate-pulse" />
+                </div>
+              </div>
+            )}
 
             {/* Subtle top card gold highlight beam */}
             <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
@@ -665,10 +694,10 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
               {/* ────────────────── SIGN IN VIEW ────────────────── */}
               {step === 'LOGIN' && (
                 <form onSubmit={handleLoginSubmit} className="animate-fade-in space-y-4">
-                  {/* Staff ID field (placeholder 09912255156, profile icon) */}
+                  {/* Staff ID field */}
                   <div>
                     <label className="block text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1.5 flex items-center justify-between">
-                      <span>Staff ID</span>
+                      <span>Staff ID / Username</span>
                       <span className="text-gold-light/60 font-semibold">*Required</span>
                     </label>
                     <div className="relative flex items-center">
@@ -686,55 +715,118 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                         autoCapitalize="none"
                         autoCorrect="off"
                         spellCheck="false"
-                        placeholder="09912255156"
+                        placeholder="Enter Staff ID or Username"
                         className="w-full pl-11 pr-4 h-11 sm:h-12 rounded-2xl bg-zinc-950/80 border border-gold/30 focus:border-gold/80 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-medium tracking-wide placeholder-stone-600 focus:outline-none transition-all shadow-inner"
                       />
                     </div>
                   </div>
 
-                  {/* PIN Input (4-digit slot with glowing gold dots, fingerprint icon) */}
+                  {/* Security Credential Header with Segmented Mode Switcher (PIN vs Password) */}
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
-                      <label className="text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400">
-                        PIN Code
+                      <label className="text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 flex items-center gap-1.5">
+                        <KeyRound className="h-3.5 w-3.5 text-gold-light" />
+                        <span>{authMode === 'PIN' ? 'PIN Code' : 'Password'}</span>
                       </label>
-                      <Fingerprint className="h-4 w-4 text-gold-light" />
+                      <div className="flex items-center p-0.5 rounded-xl bg-zinc-900 border border-white/[0.08] shadow-inner">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAuthMode('PIN')
+                            setPin((p) => p.replace(/\D/g, '').slice(0, 4))
+                            setErrorMessage('')
+                          }}
+                          className={`px-2.5 py-1 rounded-lg text-[10px] font-mono tracking-wider uppercase transition-all flex items-center gap-1 ${
+                            authMode === 'PIN'
+                              ? 'bg-gradient-to-r from-gold/30 to-amber-500/20 text-gold-light font-bold border border-gold/50 shadow-glow-gold'
+                              : 'text-stone-400 hover:text-stone-200'
+                          }`}
+                        >
+                          <Fingerprint className="h-3 w-3" />
+                          <span>PIN</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAuthMode('PASSWORD')
+                            setErrorMessage('')
+                            setTimeout(() => passwordInputRef.current?.focus(), 50)
+                          }}
+                          className={`px-2.5 py-1 rounded-lg text-[10px] font-mono tracking-wider uppercase transition-all flex items-center gap-1 ${
+                            authMode === 'PASSWORD'
+                              ? 'bg-gradient-to-r from-gold/30 to-amber-500/20 text-gold-light font-bold border border-gold/50 shadow-glow-gold'
+                              : 'text-stone-400 hover:text-stone-200'
+                          }`}
+                        >
+                          <Lock className="h-3 w-3" />
+                          <span>Password</span>
+                        </button>
+                      </div>
                     </div>
 
-                    {/* 4-digit circular indicator slots */}
-                    <div
-                      onClick={() => pinInputRef.current?.focus()}
-                      className="cursor-pointer flex items-center justify-center gap-5 py-3 px-4 rounded-2xl bg-zinc-950/80 border border-gold/30 focus-within:border-gold/80 transition-all shadow-inner"
-                    >
-                      {[0, 1, 2, 3].map((idx) => {
-                        const isFilled = pin.length > idx
-                        return (
-                          <div
-                            key={idx}
-                            className={`h-4 w-4 rounded-full transition-all duration-300 ${
-                              isFilled
-                                ? 'bg-gradient-to-br from-amber-200 to-gold shadow-glow-gold scale-125'
-                                : 'border-2 border-white/20 bg-zinc-900/60'
-                            }`}
-                          />
-                        )
-                      })}
+                    {authMode === 'PIN' ? (
+                      /* 4-digit circular indicator slots */
+                      <div
+                        onClick={() => pinInputRef.current?.focus()}
+                        className="cursor-pointer flex items-center justify-center gap-5 py-3 px-4 rounded-2xl bg-zinc-950/80 border border-gold/30 focus-within:border-gold/80 transition-all shadow-inner w-full"
+                      >
+                        {[0, 1, 2, 3].map((idx) => {
+                          const isFilled = pin.length > idx
+                          return (
+                            <div
+                              key={idx}
+                              className={`h-4 w-4 rounded-full transition-all duration-300 ${
+                                isFilled
+                                  ? 'bg-gradient-to-br from-amber-200 to-gold shadow-glow-gold scale-125'
+                                  : 'border-2 border-white/20 bg-zinc-900/60'
+                              }`}
+                            />
+                          )
+                        })}
 
-                      {/* Hidden keyboard input to capture physical typing */}
-                      <input
-                        ref={pinInputRef}
-                        type="password"
-                        maxLength={4}
-                        value={pin}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/[^0-9]/g, '')
-                          setPin(val)
-                          setErrorMessage('')
-                        }}
-                        className="sr-only"
-                        autoComplete="off"
-                      />
-                    </div>
+                        {/* Hidden keyboard input to capture physical typing */}
+                        <input
+                          ref={pinInputRef}
+                          type="password"
+                          maxLength={4}
+                          value={pin}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/[^0-9]/g, '')
+                            setPin(val)
+                            setErrorMessage('')
+                          }}
+                          className="sr-only"
+                          autoComplete="off"
+                        />
+                      </div>
+                    ) : (
+                      /* Password Text Input */
+                      <div className="relative flex items-center">
+                        <div className="absolute left-4 text-stone-400 pointer-events-none">
+                          <Lock className="h-4 w-4 text-gold/80" />
+                        </div>
+                        <input
+                          ref={passwordInputRef}
+                          type={showPassword ? 'text' : 'password'}
+                          value={pin}
+                          onChange={(e) => {
+                            setPin(e.target.value)
+                            setErrorMessage('')
+                          }}
+                          placeholder="Enter account password"
+                          className="w-full pl-11 pr-11 h-11 sm:h-12 rounded-2xl bg-zinc-950/80 border border-gold/30 focus:border-gold/80 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-medium tracking-wide placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3.5 p-1 rounded-lg text-stone-400 hover:text-gold-light transition-colors"
+                          tabIndex={-1}
+                          title={showPassword ? 'Hide password' : 'Show password'}
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* Error Alert Display */}
@@ -744,58 +836,69 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                     </div>
                   )}
 
-                  {/* Numeric Keypad: Functional 3x4 layout (1-9, Clear, 0, Backspace) styled as tactile dark keys with gold characters */}
-                  <div className="pt-1">
-                    <div className="grid grid-cols-3 gap-2.5 max-w-[280px] sm:max-w-[300px] mx-auto">
-                      {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
+                  {/* Numeric Keypad: Functional 3x4 layout (1-9, Clear, 0, Backspace) aligned with full card width */}
+                  {authMode === 'PIN' && (
+                    <div className="pt-1">
+                      <div className="grid grid-cols-3 gap-2 sm:gap-2.5 w-full">
+                        {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
+                          <button
+                            type="button"
+                            key={digit}
+                            onClick={() => handleKeypadPress(digit)}
+                            className="btn-press flex items-center justify-center rounded-2xl bg-zinc-900/90 hover:bg-gold/20 border border-white/[0.08] hover:border-gold/50 text-gold-light font-mono font-bold text-2xl py-3 w-full transition-all shadow-sm active:scale-95 text-center"
+                          >
+                            {digit}
+                          </button>
+                        ))}
+
+                        {/* Clear Button */}
                         <button
                           type="button"
-                          key={digit}
-                          onClick={() => handleKeypadPress(digit)}
-                          className="btn-press flex items-center justify-center rounded-2xl bg-zinc-900/90 hover:bg-gold/20 border border-white/[0.08] hover:border-gold/50 text-gold-light font-mono font-bold text-2xl py-3 transition-all shadow-sm active:scale-95 text-center"
+                          onClick={handleClearPin}
+                          className="btn-press flex items-center justify-center rounded-2xl bg-zinc-900/90 hover:bg-white/10 border border-white/[0.08] text-[11px] font-mono tracking-widest text-stone-400 hover:text-stone-200 uppercase py-3 w-full transition-all active:scale-95"
                         >
-                          {digit}
+                          Clear
                         </button>
-                      ))}
 
-                      {/* Clear Button */}
-                      <button
-                        type="button"
-                        onClick={handleClearPin}
-                        className="btn-press flex items-center justify-center rounded-2xl bg-zinc-900/90 hover:bg-white/10 border border-white/[0.08] text-[11px] font-mono tracking-widest text-stone-400 hover:text-stone-200 uppercase py-3 transition-all active:scale-95"
-                      >
-                        Clear
-                      </button>
+                        {/* 0 Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleKeypadPress('0')}
+                          className="btn-press flex items-center justify-center rounded-2xl bg-zinc-900/90 hover:bg-gold/20 border border-white/[0.08] hover:border-gold/50 text-gold-light font-mono font-bold text-2xl py-3 w-full transition-all shadow-sm active:scale-95 text-center"
+                        >
+                          0
+                        </button>
 
-                      {/* 0 Button */}
-                      <button
-                        type="button"
-                        onClick={() => handleKeypadPress('0')}
-                        className="btn-press flex items-center justify-center rounded-2xl bg-zinc-900/90 hover:bg-gold/20 border border-white/[0.08] hover:border-gold/50 text-gold-light font-mono font-bold text-2xl py-3 transition-all shadow-sm active:scale-95 text-center"
-                      >
-                        0
-                      </button>
-
-                      {/* Backspace Button */}
-                      <button
-                        type="button"
-                        onClick={handleDeletePin}
-                        className="btn-press flex items-center justify-center rounded-2xl bg-zinc-900/90 hover:bg-white/10 border border-white/[0.08] text-stone-400 hover:text-gold-light py-3 transition-all active:scale-95"
-                      >
-                        <Delete className="h-5 w-5" />
-                      </button>
+                        {/* Backspace Button */}
+                        <button
+                          type="button"
+                          onClick={handleDeletePin}
+                          className="btn-press flex items-center justify-center rounded-2xl bg-zinc-900/90 hover:bg-white/10 border border-white/[0.08] text-stone-400 hover:text-gold-light py-3 w-full transition-all active:scale-95"
+                        >
+                          <Delete className="h-5 w-5" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Full-width gold CTA button: "SIGN IN TO TERMINAL" with lock and arrow icons */}
                   <button
                     type="submit"
                     disabled={isVerifying}
-                    className="btn-gold w-full h-12 rounded-2xl flex items-center justify-center gap-2.5 text-xs sm:text-sm font-bold tracking-[0.2em] uppercase shadow-glow-gold hover:shadow-glow-amber transition-all mt-2"
+                    className="btn-gold w-full h-12 rounded-2xl flex items-center justify-center gap-2.5 text-xs sm:text-sm font-bold tracking-[0.2em] uppercase shadow-glow-gold hover:shadow-glow-amber transition-all mt-2 disabled:opacity-75"
                   >
-                    <Lock className="h-4 w-4 text-obsidian-950" />
-                    <span>{isVerifying ? 'AUTHENTICATING...' : 'SIGN IN TO TERMINAL'}</span>
-                    <ArrowRight className="h-4 w-4 text-obsidian-950" />
+                    {isVerifying ? (
+                      <>
+                        <div className="w-4 h-4 rounded-full border-2 border-obsidian-950 border-t-transparent animate-spin" />
+                        <span>AUTHENTICATING...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="h-4 w-4 text-obsidian-950" />
+                        <span>SIGN IN TO TERMINAL</span>
+                        <ArrowRight className="h-4 w-4 text-obsidian-950" />
+                      </>
+                    )}
                   </button>
 
                   <div className="pt-1 text-center">

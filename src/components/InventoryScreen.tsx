@@ -20,6 +20,7 @@ import type { Product, Category, RestockLog, RestockType, PriceReference } from 
 import { money, formatDateTime } from '../utils/format'
 import { compressImageFile } from '../utils/image'
 import { findSuggestedPrice, getSrpComparison } from '../utils/srp'
+import { syncOnlinePriceCatalog } from '../services/onlinePriceSync'
 import { db } from '../db'
 
 interface InventoryScreenProps {
@@ -207,14 +208,24 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
     }
   }
 
-  // 1-Click Auto-match all products in inventory with DTI SRP
+  // 1-Click Auto-match all products in inventory with DTI & Market SRP
   const handleAutoMatchAllSrp = async () => {
     setAutoMatching(true)
     try {
+      // 1. Attempt cloud edge sync first to get latest prices
+      let latestRefs = priceReferences
+      try {
+        await syncOnlinePriceCatalog()
+        latestRefs = await db.price_references.toArray()
+        setPriceReferences(latestRefs)
+      } catch (e) {
+        console.warn('Online sync during auto-match skipped, using local catalog:', e)
+      }
+
       let matchedCount = 0
       for (const p of products) {
         if (!p.suggested_price_c) {
-          const ref = findSuggestedPrice(p, priceReferences)
+          const ref = findSuggestedPrice(p, latestRefs)
           if (ref && ref.market_price_c) {
             await db.products.update(p.id, {
               suggested_price_c: ref.market_price_c,
@@ -224,7 +235,7 @@ export function InventoryScreen({ products, categories, onRefresh, cashierName }
           }
         }
       }
-      alert(`Auto-match complete! ${matchedCount} product(s) successfully linked to official DTI SRP.`)
+      alert(`Auto-match complete! ${matchedCount} product(s) linked to official DTI & Market SRP.`)
       onRefresh()
     } catch (err) {
       console.error('Error auto-matching SRP:', err)

@@ -8,11 +8,15 @@ import {
   X,
   ExternalLink,
   Tag,
-  Store
+  Store,
+  Cloud,
+  RefreshCw,
+  CheckCircle2
 } from 'lucide-react'
 import type { Product, PriceReference } from '../types'
 import { db } from '../db'
 import { money } from '../utils/format'
+import { syncOnlinePriceCatalog } from '../services/onlinePriceSync'
 
 interface PriceGuideModalProps {
   isOpen: boolean
@@ -43,6 +47,8 @@ export function PriceGuideModal({
   const [selectedCategory, setSelectedCategory] = useState('ALL')
   const [loading, setLoading] = useState(true)
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set())
+  const [syncing, setSyncing] = useState(false)
+  const [syncMessage, setSyncMessage] = useState<string | null>(null)
 
   // Escape key listener to close modal
   useEffect(() => {
@@ -54,30 +60,38 @@ export function PriceGuideModal({
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isOpen, onClose])
 
+  const loadRefs = async () => {
+    setLoading(true)
+    try {
+      const rows = await db.price_references.toArray()
+      setReferences(rows)
+    } catch (err) {
+      console.error('Failed to load price references:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // Load from Dexie price_references
   useEffect(() => {
     if (!isOpen) return
-    let active = true
-
-    const loadRefs = async () => {
-      setLoading(true)
-      try {
-        const rows = await db.price_references.toArray()
-        if (active) {
-          setReferences(rows)
-        }
-      } catch (err) {
-        console.error('Failed to load price references:', err)
-      } finally {
-        if (active) setLoading(false)
-      }
-    }
-
     loadRefs()
-    return () => {
-      active = false
-    }
   }, [isOpen])
+
+  const handleSyncOnline = async () => {
+    setSyncing(true)
+    setSyncMessage(null)
+    try {
+      const res = await syncOnlinePriceCatalog()
+      setSyncMessage(res.message)
+      await loadRefs()
+      setTimeout(() => setSyncMessage(null), 5000)
+    } catch (err: any) {
+      setSyncMessage(err.message || 'Sync failed')
+    } finally {
+      setSyncing(false)
+    }
+  }
 
   // Existing barcodes and names lookup set
   const existingBarcodeSet = useMemo(() => {
@@ -98,11 +112,17 @@ export function PriceGuideModal({
         const text = `${ref.product_name} ${ref.brand} ${ref.category || ''}`.toLowerCase()
         if (selectedCategory === 'NOODLES' && !text.includes('noodle') && !text.includes('canton') && !text.includes('mami')) return false
         if (selectedCategory === 'CANNED' && !text.includes('sardine') && !text.includes('tuna') && !text.includes('corned') && !text.includes('meat') && !text.includes('sausage')) return false
-        if (selectedCategory === 'BEVERAGES' && !text.includes('coffee') && !text.includes('coke') && !text.includes('drink') && !text.includes('tea') && !text.includes('juice')) return false
+        if (selectedCategory === 'BEVERAGES') {
+          const isBev = text.includes('beverage') || text.includes('coffee') || text.includes('coke') || text.includes('sakto') || text.includes('kasalo') || text.includes('litro') || text.includes('mismo') || text.includes('royal') || text.includes('sprite') || text.includes('rc cola') || text.includes('pepsi') || text.includes('dew') || text.includes('sting') || text.includes('cobra') || text.includes('beer') || text.includes('san miguel') || text.includes('red horse') || text.includes('ginebra') || text.includes('tanduay') || text.includes('emperador') || text.includes('alfonso') || text.includes('drink') || text.includes('tea') || text.includes('juice') || text.includes('water') || text.includes('soda')
+          if (!isBev) return false
+        }
         if (selectedCategory === 'DAIRY' && !text.includes('milk') && !text.includes('cheese') && !text.includes('butter')) return false
         if (selectedCategory === 'CONDIMENTS' && !text.includes('sauce') && !text.includes('vinegar') && !text.includes('oil') && !text.includes('patis') && !text.includes('toyo') && !text.includes('ketchup')) return false
         if (selectedCategory === 'HOUSEHOLD' && !text.includes('soap') && !text.includes('tide') && !text.includes('ariel') && !text.includes('surf') && !text.includes('detergent') && !text.includes('safeguard') && !text.includes('downy')) return false
-        if (selectedCategory === 'SNACKS' && !text.includes('biscuit') && !text.includes('snack') && !text.includes('cookie') && !text.includes('wafer') && !text.includes('cracker')) return false
+        if (selectedCategory === 'SNACKS') {
+          const isSnack = text.includes('snack') || text.includes('biscuit') || text.includes('cookie') || text.includes('wafer') || text.includes('cracker') || text.includes('chippy') || text.includes('piattos') || text.includes('nova') || text.includes('vcut') || text.includes('mang juan') || text.includes('oishi') || text.includes('nagaraya')
+          if (!isSnack) return false
+        }
       }
 
       if (!q) return true
@@ -171,23 +191,42 @@ export function PriceGuideModal({
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="btn-press h-9 w-9 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 flex items-center justify-center text-stone-400 hover:text-white transition-colors"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleSyncOnline}
+              disabled={syncing}
+              className="btn-press flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 font-mono text-xs font-bold transition-all shadow-sm"
+              title="Sync latest prices from DTI & Retail Cloud"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin text-amber-400' : 'text-amber-400'}`} />
+              <span>{syncing ? 'Syncing...' : 'Sync Cloud Prices'}</span>
+            </button>
+
+            <button
+              onClick={onClose}
+              className="btn-press h-9 w-9 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 flex items-center justify-center text-stone-400 hover:text-white transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
         {/* Search & Filters */}
         <div className="p-4 border-b border-white/[0.08] bg-black/40 space-y-3 shrink-0">
+          {syncMessage && (
+            <div className="p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-semibold flex items-center gap-2 animate-fade-in">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>{syncMessage}</span>
+            </div>
+          )}
+
           <div className="relative">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by brand, product name, or barcode (e.g. Lucky Me, Nescafe, Century Tuna, 48000166...)"
+              placeholder="Search brand or item (e.g. Coke Sakto, Coke Kasalo, Coke Litro, Royal, Sprite, Bear Brand...)"
               className="w-full h-11 pl-10 pr-4 rounded-xl bg-zinc-950 border border-white/15 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#D4AF37]"
             />
           </div>

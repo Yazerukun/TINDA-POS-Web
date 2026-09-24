@@ -187,13 +187,21 @@ export async function initDatabase(): Promise<void> {
     ])
   }
 
-  // Seed DTI SRP Price References if empty
+  // Seed or upgrade DTI & Market Price References
   try {
     const priceRefCount = await db.price_references.count()
     if (priceRefCount === 0 && SEED_PRICE_REFERENCES && SEED_PRICE_REFERENCES.length > 0) {
       await db.price_references.bulkAdd(SEED_PRICE_REFERENCES as any)
+    } else if (priceRefCount < SEED_PRICE_REFERENCES.length) {
+      // Upsert any missing references
+      for (const item of SEED_PRICE_REFERENCES) {
+        const exists = await db.price_references.where('barcode').equals(item.barcode).first()
+        if (!exists) {
+          await db.price_references.add(item as any)
+        }
+      }
     }
   } catch (err) {
-    console.error('Failed to seed price references:', err)
+    console.error('Failed to seed or update price references:', err)
   }
 }

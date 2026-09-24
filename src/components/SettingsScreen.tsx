@@ -95,9 +95,9 @@ export function SettingsScreen({
     try {
       const allUsers = await db.users.toArray()
 
-      // STRICT MULTI-TENANT ISOLATION: Only show staff belonging to the active store
-      const targetStore = currentSessionStoreName || (isMasterAdmin ? 'PLATFORM_HQ' : settings.store_name)
-      const storeUsers = allUsers.filter(u => u.store_name === targetStore)
+      // Show staff: If Master Admin is in global mode (not masquerading), show all accounts; otherwise isolate to active store
+      const targetStore = currentSessionStoreName || (isMasterAdmin ? null : settings.store_name)
+      const storeUsers = targetStore ? allUsers.filter(u => u.store_name === targetStore) : allUsers
       setUsers(storeUsers)
 
       // Identify currently logged in user
@@ -596,6 +596,11 @@ export function SettingsScreen({
                         }`}>
                           {u.role === 'ADMIN' ? 'Master Admin' : u.role === 'INVENTORY_LEAD' ? 'Inventory Lead' : 'Cashier'}
                         </span>
+                        {u.store_name && (
+                          <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-gold/10 text-gold-light border border-gold/30">
+                            {u.store_name}
+                          </span>
+                        )}
                         {u.status === 'DISABLED' && (
                           <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30 uppercase">
                             Disabled

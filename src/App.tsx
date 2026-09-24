@@ -92,6 +92,17 @@ export default function App(): React.JSX.Element {
     loadData()
   }, [loadData])
 
+  // On page refresh: if a session is already saved, restore that user's pro state
+  useEffect(() => {
+    if (vaultSession && !vaultSession.isMasterAdmin && vaultSession.userId) {
+      const userId = vaultSession.userId ?? vaultSession.username ?? 'guest'
+      proAccess.loadStateForUser(userId)
+    } else if (vaultSession?.isMasterAdmin) {
+      proAccess.toggleOwnerBypass(true)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // run once on mount only
+
   // Hold Cart functionality
   const handleHoldCart = async () => {
     if (cart.length === 0) return
@@ -145,7 +156,7 @@ export default function App(): React.JSX.Element {
   }
 
   // Handle Vault Session Onboarding
-  const handleAuthenticated = (session: VaultSession, isNewAccount = false) => {
+  const handleAuthenticated = async (session: VaultSession, isNewAccount = false) => {
     setVaultSession(session)
     setIsVaultLocked(false)
     try {
@@ -155,16 +166,27 @@ export default function App(): React.JSX.Element {
     }
 
     if (session.isMasterAdmin) {
-      // Platform Master Admin (skorts188@gmail.com): Zero ads, lifetime access
-      proAccess.toggleOwnerBypass(true)
+      // Platform Master Admin: lifetime bypass, no ads ever
+      await proAccess.toggleOwnerBypass(true)
     } else {
-      // Store owners and cashiers must watch ads to unlock Pro features
-      proAccess.toggleOwnerBypass(false)
-      // Always open ad gate for new signups; for existing users only if not already Pro
-      if (isNewAccount || !proAccess.isPro) {
+      // Load THIS user's own pro access state (per userId)
+      const userId = session.userId ?? session.username ?? 'guest'
+      const userState = await proAccess.loadStateForUser(userId)
+
+      // Reset bypass in case previous session was master admin
+      // (loadStateForUser already sets state, but bypass could be stale)
+      const needsAds = isNewAccount ||
+        userState.tokens < 3 ||
+        userState.pro_expires_at <= Date.now()
+
+      if (needsAds) {
         setTimeout(() => {
-          proAccess.openRewardModal('Welcome! Watch 3 ads to permanently unlock all features 🎯')
-        }, 300)
+          proAccess.openRewardModal(
+            isNewAccount
+              ? 'Welcome! Watch 3 ads to unlock all features 🎯'
+              : 'Watch ads to extend your access time ⏰'
+          )
+        }, 350)
       }
     }
   }

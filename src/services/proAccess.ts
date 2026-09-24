@@ -3,9 +3,9 @@ import { db } from '../db'
 import type { ProAccessState } from '../types'
 
 const STORAGE_KEY = 'tinda_pro_access'
-const DEFAULT_COOLDOWN_SECONDS = 20
+const DEFAULT_COOLDOWN_SECONDS = 30
 
-// Default state: 30 minutes initial grace period for new users
+// Default state: 00:00:00 (Locked by default - requires watching ads to unlock)
 function getInitialState(): ProAccessState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -16,9 +16,9 @@ function getInitialState(): ProAccessState {
     console.warn('Error reading pro access from storage:', e)
   }
 
-  // Initial welcome grace: 30 minutes of full access
+  // Initial state: strictly locked (0 ms)
   const initial: ProAccessState = {
-    pro_expires_at: Date.now() + 30 * 60 * 1000,
+    pro_expires_at: 0,
     tokens: 0,
     last_ad_watched_at: 0,
     total_ads_watched: 0,

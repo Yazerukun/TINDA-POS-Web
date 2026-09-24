@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { Clock } from 'lucide-react'
 import type { Product, Category, Transaction, HeldCart, Customer, StoreSettings, CartItem, DiscountType, Expense } from './types'
 import { db, DEFAULT_SETTINGS, initDatabase } from './db'
 import { Navigation, type ActiveTab } from './components/Navigation'
@@ -151,6 +152,12 @@ export default function App(): React.JSX.Element {
     } catch {
       // ignore
     }
+    // Direct user to watch ads first if their Pro time bank is 00:00:00 (locked)
+    if (!proAccess.isPro) {
+      setTimeout(() => {
+        proAccess.openRewardModal('Welcome! Watch ads to unlock your Pro shift features')
+      }, 300)
+    }
   }
 
   const handleLockTerminal = () => {
@@ -253,7 +260,36 @@ export default function App(): React.JSX.Element {
       />
 
       {/* Main Screen Router */}
-      <main className="flex-1 min-w-0 overflow-y-auto pb-20 md:pb-6">
+      <main className="flex-1 min-w-0 overflow-y-auto pb-20 md:pb-6 flex flex-col">
+        {/* Desktop Top Status Bar with real-time shift time limit */}
+        <div className="hidden md:flex items-center justify-between px-6 py-2.5 bg-obsidian-950/80 backdrop-blur-md border-b border-white/[0.06] sticky top-0 z-30">
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-[11px] tracking-widest uppercase text-stone-400">
+              Terminal <span className="text-gold-light font-bold">{vaultSession?.terminalId || 'TRM-8891'}</span>
+            </span>
+            <span className="text-stone-600">•</span>
+            <span className="font-mono text-[11px] text-stone-400">
+              Cashier: <span className="text-stone-200 font-semibold">{vaultSession?.cashierName || 'Staff'}</span> ({vaultSession?.cashierRole || 'Staff'})
+            </span>
+          </div>
+
+          <button
+            onClick={() => proAccess.openRewardModal('Account Pro Access')}
+            className={`flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-mono font-bold transition-all ${
+              proAccess.isPro
+                ? 'bg-amber-500/10 border-gold/40 text-gold-light hover:border-gold shadow-glow-gold'
+                : 'bg-rose-950/60 border-rose-700/60 text-rose-300 hover:border-rose-500 animate-pulse'
+            }`}
+          >
+            <Clock className="w-3.5 h-3.5 text-gold-muted" />
+            <span>Shift Time Limit:</span>
+            <span className="font-mono font-extrabold tracking-wider">{proAccess.formattedTime}</span>
+            <span className="text-[10px] text-gold underline ml-1">
+              {proAccess.isPro ? '+ Extend' : '⚡ Watch Ads to Unlock'}
+            </span>
+          </button>
+        </div>
+
         {activeTab === 'dashboard' && (
           <DashboardScreen
             products={products}

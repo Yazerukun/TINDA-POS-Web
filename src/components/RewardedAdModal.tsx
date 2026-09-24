@@ -295,7 +295,7 @@ export function RewardedAdModal({
               SELECT REWARD OPTION
             </span>
 
-            {/* Option 1: 1 Ad -> +30 Mins */}
+            {/* Option 1: 1 Ad -> +1 Hour */}
             <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-900/60 border border-white/[0.06] hover:border-gold/30 transition-all">
               <div className="flex items-center gap-3">
                 <div className="h-9 w-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-300 text-xs font-mono font-bold">
@@ -303,36 +303,10 @@ export function RewardedAdModal({
                 </div>
                 <div>
                   <h4 className="text-xs font-semibold text-stone-200">
-                    +30 Minutes Pro Access
-                  </h4>
-                  <p className="text-[10px] text-stone-400 font-sans">
-                    Quick unlock for brief inventory or price check
-                  </p>
-                </div>
-              </div>
-
-              <button
-                disabled={!canWatchAd}
-                onClick={() => handleStartWatch(30)}
-                className="btn-gold px-3.5 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-1.5 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <Play className="w-3 h-3 fill-current" />
-                <span>Watch</span>
-              </button>
-            </div>
-
-            {/* Option 2: 2 Ads -> +1 Hour */}
-            <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-900/60 border border-white/[0.06] hover:border-gold/30 transition-all">
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-xl bg-gold/15 border border-gold/30 flex items-center justify-center text-gold-light text-xs font-mono font-bold">
-                  2 ADS
-                </div>
-                <div>
-                  <h4 className="text-xs font-semibold text-stone-200">
                     +1 Hour Standard Shift
                   </h4>
                   <p className="text-[10px] text-stone-400 font-sans">
-                    Recommended for daytime cashier shifts
+                    Recommended unlock for standard retail counter operations
                   </p>
                 </div>
               </div>
@@ -347,18 +321,18 @@ export function RewardedAdModal({
               </button>
             </div>
 
-            {/* Option 3: 3 Ads -> +2 Hours */}
+            {/* Option 2: 2 Ads -> +2 Hours */}
             <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-900/60 border border-white/[0.06] hover:border-gold/30 transition-all">
               <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 text-xs font-mono font-bold">
-                  3 ADS
+                <div className="h-9 w-9 rounded-xl bg-gold/15 border border-gold/30 flex items-center justify-center text-gold-light text-xs font-mono font-bold">
+                  2 ADS
                 </div>
                 <div>
                   <h4 className="text-xs font-semibold text-stone-200">
-                    +2 Hours Full Day Power Pass
+                    +2 Hours Extended Shift
                   </h4>
                   <p className="text-[10px] text-stone-400 font-sans">
-                    Stack up to 2 hours of uninterrupted Pro features
+                    Extended daytime cashier & inventory audit shift
                   </p>
                 </div>
               </div>
@@ -366,6 +340,32 @@ export function RewardedAdModal({
               <button
                 disabled={!canWatchAd}
                 onClick={() => handleStartWatch(120)}
+                className="btn-gold px-3.5 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-1.5 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <Play className="w-3 h-3 fill-current" />
+                <span>Watch</span>
+              </button>
+            </div>
+
+            {/* Option 3: 3 Ads -> +3 Hours */}
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-900/60 border border-white/[0.06] hover:border-gold/30 transition-all">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 text-xs font-mono font-bold">
+                  3 ADS
+                </div>
+                <div>
+                  <h4 className="text-xs font-semibold text-stone-200">
+                    +3 Hours Full Day Power Pass
+                  </h4>
+                  <p className="text-[10px] text-stone-400 font-sans">
+                    Uninterrupted Pro features for full operating day
+                  </p>
+                </div>
+              </div>
+
+              <button
+                disabled={!canWatchAd}
+                onClick={() => handleStartWatch(180)}
                 className="btn-gold px-3.5 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-1.5 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <Play className="w-3 h-3 fill-current" />

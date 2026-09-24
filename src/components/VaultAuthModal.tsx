@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import {
   KeyRound, ShieldCheck, Delete, ArrowRight,
-  Lock, Clock, Fingerprint, WifiOff, ServerCog, Banknote, ChevronLeft, User, LogIn
+  Lock, Clock, Fingerprint, WifiOff, ServerCog, Banknote, ChevronLeft, User, LogIn, UserPlus
 } from 'lucide-react'
 import { money } from '../utils/format'
 import { db } from '../db'
@@ -132,7 +132,7 @@ function BrandPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
 }
 
 export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps): React.JSX.Element | null {
-  const [step, setStep] = useState<'LOGIN' | 'FLOAT'>('LOGIN')
+  const [step, setStep] = useState<'LOGIN' | 'SIGNUP' | 'FLOAT'>('LOGIN')
   const [username, setUsername] = useState('')
   const [pin, setPin] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
@@ -141,13 +141,23 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
   const [openingFloat, setOpeningFloat] = useState(200000) // ₱2,000.00 in centavos
   const [customFloatInput, setCustomFloatInput] = useState('2000')
 
+  // Sign Up form state
+  const [signupName, setSignupName] = useState('')
+  const [signupUsername, setSignupUsername] = useState('')
+  const [signupRole, setSignupRole] = useState<UserRole>('CASHIER')
+  const [signupPin, setSignupPin] = useState('')
+  const [signupConfirmPin, setSignupConfirmPin] = useState('')
+
   const usernameInputRef = useRef<HTMLInputElement>(null)
+  const signupNameInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (isOpen && step === 'LOGIN') {
-      setTimeout(() => {
-        usernameInputRef.current?.focus()
-      }, 100)
+    if (isOpen) {
+      if (step === 'LOGIN') {
+        setTimeout(() => usernameInputRef.current?.focus(), 100)
+      } else if (step === 'SIGNUP') {
+        setTimeout(() => signupNameInputRef.current?.focus(), 100)
+      }
     }
   }, [isOpen, step])
 
@@ -228,6 +238,66 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
     }
   }
 
+  const handleSignupSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    const trimmedName = signupName.trim()
+    const trimmedUser = signupUsername.trim().toLowerCase()
+
+    if (!trimmedName) {
+      setErrorMessage('Please enter your full name.')
+      signupNameInputRef.current?.focus()
+      return
+    }
+    if (!trimmedUser || trimmedUser.length < 3) {
+      setErrorMessage('Username must be at least 3 characters.')
+      return
+    }
+    if (!/^[a-z0-9_-]+$/.test(trimmedUser)) {
+      setErrorMessage('Username can only contain lowercase letters, numbers, and dashes.')
+      return
+    }
+    if (signupPin.length !== 4) {
+      setErrorMessage('PIN must be exactly 4 digits.')
+      return
+    }
+    if (signupPin !== signupConfirmPin) {
+      setErrorMessage('PIN confirmation does not match.')
+      return
+    }
+
+    setIsVerifying(true)
+    setErrorMessage('')
+
+    try {
+      const existing = await db.users.where('username').equalsIgnoreCase(trimmedUser).first()
+      if (existing) {
+        setErrorMessage(`Username "${trimmedUser}" is already taken.`)
+        setIsVerifying(false)
+        return
+      }
+
+      const newUser: UserAccount = {
+        username: trimmedUser,
+        name: trimmedName,
+        role: signupRole,
+        pin: signupPin,
+        status: 'ACTIVE',
+        created_at: new Date().toISOString()
+      }
+
+      const id = await db.users.add(newUser)
+      newUser.id = Number(id)
+
+      setAuthenticatedUser(newUser)
+      setIsVerifying(false)
+      setStep('FLOAT')
+    } catch (err) {
+      console.error('Signup error:', err)
+      setErrorMessage('Failed to create account. Please try again.')
+      setIsVerifying(false)
+    }
+  }
+
   const handlePresetFloat = (pesos: number) => {
     setOpeningFloat(pesos * 100)
     setCustomFloatInput(pesos.toString())
@@ -254,6 +324,10 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
     onAuthenticated(session)
     setPin('')
     setUsername('')
+    setSignupName('')
+    setSignupUsername('')
+    setSignupPin('')
+    setSignupConfirmPin('')
     setStep('LOGIN')
     setAuthenticatedUser(null)
   }
@@ -298,20 +372,164 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                 </div>
                 <div className="leading-tight">
                   <p className="font-serif text-xs sm:text-sm font-bold tracking-[0.18em] uppercase text-stone-100">TINDA POS</p>
-                  <p className="font-mono text-[7px] sm:text-[8px] tracking-[0.22em] uppercase text-gold-muted font-medium">Terminal Sign In</p>
+                  <p className="font-mono text-[7px] sm:text-[8px] tracking-[0.22em] uppercase text-gold-muted font-medium">
+                    {step === 'SIGNUP' ? 'Staff Registration' : 'Terminal Sign In'}
+                  </p>
                 </div>
               </div>
               <span className="inline-flex items-center gap-1 sm:gap-1.5 rounded-full glass-pill
                                px-2 py-1 sm:px-3 sm:py-1.5
                                font-mono text-[9px] sm:text-[10px] tracking-[0.18em] uppercase text-gold-light">
-                {step === 'LOGIN' ? <KeyRound className="h-3 w-3" /> : <Banknote className="h-3 w-3" />}
-                {step === 'LOGIN' ? 'Step 1 · Credential' : 'Step 2 · Float'}
+                {step === 'LOGIN' ? <KeyRound className="h-3 w-3" /> : step === 'SIGNUP' ? <UserPlus className="h-3 w-3" /> : <Banknote className="h-3 w-3" />}
+                {step === 'LOGIN' ? 'Step 1 · Credential' : step === 'SIGNUP' ? 'Register' : 'Step 2 · Float'}
               </span>
             </div>
 
             {/* Card body */}
             <div className="px-5 pb-5 pt-4 sm:px-7 sm:pb-7 sm:pt-6">
-              {step === 'LOGIN' ? (
+              {step === 'SIGNUP' ? (
+                <form onSubmit={handleSignupSubmit} className="animate-fade-in space-y-3 sm:space-y-3.5">
+                  {/* Full Name */}
+                  <div>
+                    <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
+                      Full Staff Name
+                    </label>
+                    <input
+                      ref={signupNameInputRef}
+                      type="text"
+                      value={signupName}
+                      onChange={(e) => {
+                        setSignupName(e.target.value)
+                        setErrorMessage('')
+                      }}
+                      placeholder="e.g. Maria Santos"
+                      className="w-full px-3.5 py-2 sm:py-2.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-medium placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                    />
+                  </div>
+
+                  {/* Username / Staff ID */}
+                  <div>
+                    <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
+                      Staff ID / Username
+                    </label>
+                    <input
+                      type="text"
+                      value={signupUsername}
+                      onChange={(e) => {
+                        setSignupUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))
+                        setErrorMessage('')
+                      }}
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                      spellCheck="false"
+                      placeholder="e.g. maria_cashier"
+                      className="w-full px-3.5 py-2 sm:py-2.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-mono placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                    />
+                  </div>
+
+                  {/* Role Selection */}
+                  <div>
+                    <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
+                      Assigned Role
+                    </label>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {[
+                        { role: 'CASHIER' as UserRole, label: 'Cashier', desc: 'Front POS' },
+                        { role: 'INVENTORY_LEAD' as UserRole, label: 'Inventory', desc: 'Stocks' },
+                        { role: 'ADMIN' as UserRole, label: 'Admin', desc: 'Full Mgr' }
+                      ].map((r) => {
+                        const isSelected = signupRole === r.role
+                        return (
+                          <button
+                            key={r.role}
+                            type="button"
+                            onClick={() => setSignupRole(r.role)}
+                            className={`p-2 rounded-xl text-center border transition-all ${
+                              isSelected
+                                ? 'bg-amber-500/20 border-gold text-gold-light shadow-glow-gold'
+                                : 'bg-zinc-950/40 border-white/[0.07] text-stone-400 hover:border-gold/30 hover:bg-zinc-900/40'
+                            }`}
+                          >
+                            <div className="text-[11px] font-semibold text-stone-200">{r.label}</div>
+                            <div className="text-[8px] font-mono uppercase text-stone-400">{r.desc}</div>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  {/* 4-Digit PIN & Confirm PIN */}
+                  <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+                    <div>
+                      <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
+                        4-Digit PIN
+                      </label>
+                      <input
+                        type="password"
+                        inputMode="numeric"
+                        maxLength={4}
+                        value={signupPin}
+                        onChange={(e) => {
+                          setSignupPin(e.target.value.replace(/[^0-9]/g, ''))
+                          setErrorMessage('')
+                        }}
+                        placeholder="••••"
+                        className="w-full text-center px-3 py-2 sm:py-2.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 text-gold-light font-mono text-sm tracking-widest focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
+                        Confirm PIN
+                      </label>
+                      <input
+                        type="password"
+                        inputMode="numeric"
+                        maxLength={4}
+                        value={signupConfirmPin}
+                        onChange={(e) => {
+                          setSignupConfirmPin(e.target.value.replace(/[^0-9]/g, ''))
+                          setErrorMessage('')
+                        }}
+                        placeholder="••••"
+                        className="w-full text-center px-3 py-2 sm:py-2.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 text-gold-light font-mono text-sm tracking-widest focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {errorMessage && (
+                    <p className="text-[11px] font-mono text-red-400 tracking-wide text-center animate-pulse">
+                      {errorMessage}
+                    </p>
+                  )}
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={isVerifying}
+                    className="btn-gold w-full py-2.5 sm:py-3 px-4 rounded-xl sm:rounded-2xl
+                               flex items-center justify-center gap-2
+                               text-xs font-bold tracking-[0.2em] uppercase shadow-glow-gold transition-all mt-1"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    <span>{isVerifying ? 'Creating Account...' : 'Register & Enter Shift'}</span>
+                  </button>
+
+                  {/* Back to Login */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep('LOGIN')
+                      setErrorMessage('')
+                    }}
+                    className="w-full py-1.5 text-[10px] sm:text-[11px] font-mono tracking-wider
+                               text-stone-400 hover:text-stone-200 transition-colors uppercase text-center
+                               flex items-center justify-center gap-1.5"
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                    Already have an account? Sign In
+                  </button>
+                </form>
+              ) : step === 'LOGIN' ? (
                 <form onSubmit={handleLoginSubmit} className="animate-fade-in">
                   {/* Username / Staff ID Input */}
                   <div className="mb-4">
@@ -446,6 +664,30 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                   >
                     <LogIn className="h-4 w-4" />
                     <span>{isVerifying ? 'Authenticating...' : 'Sign In to Terminal'}</span>
+                  </button>
+
+                  {/* Create New Account Button */}
+                  <div className="relative my-3 sm:my-3.5 flex items-center justify-center">
+                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/[0.08]" /></div>
+                    <span className="relative px-3 bg-[#0d0f12] font-mono text-[9px] uppercase tracking-widest text-stone-500">or</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setErrorMessage('')
+                      setSignupName('')
+                      setSignupUsername('')
+                      setSignupRole('CASHIER')
+                      setSignupPin('')
+                      setSignupConfirmPin('')
+                      setStep('SIGNUP')
+                    }}
+                    className="w-full py-2.5 sm:py-3 px-4 rounded-xl border border-gold/30 bg-gold/[0.06] hover:bg-gold/[0.12] hover:border-gold/60
+                               flex items-center justify-center gap-2 text-gold-light font-mono text-xs font-semibold tracking-wider transition-all"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    <span>+ Create New Account / Sign Up</span>
                   </button>
 
                   <p className="mt-4 text-center font-mono text-[9px] sm:text-[10px] text-stone-500 tracking-wider flex items-center justify-center gap-1.5">

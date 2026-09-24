@@ -426,28 +426,29 @@ export default function App(): React.JSX.Element {
           </div>
         )}
 
-        {/* Desktop Top Status Bar with real-time shift time limit */}
-        <div className="hidden md:flex items-center justify-between px-6 py-2.5 bg-obsidian-950/80 backdrop-blur-md border-b border-white/[0.06] sticky top-0 z-30">
-          <div className="flex items-center gap-3">
-            <span className="font-mono text-[11px] tracking-widest uppercase text-stone-400">
+        {/* Desktop & Tablet Top Status Bar with real-time shift time limit */}
+        <div className="hidden md:flex items-center justify-between px-4 lg:px-6 py-2.5 bg-obsidian-950/80 backdrop-blur-md border-b border-white/[0.06] sticky top-0 z-30 min-w-0 gap-3">
+          <div className="flex items-center gap-2 lg:gap-3 min-w-0 truncate">
+            <span className="font-mono text-[11px] tracking-widest uppercase text-stone-400 shrink-0">
               Terminal <span className="text-gold-light font-bold">{vaultSession?.terminalId || 'TRM-8891'}</span>
             </span>
-            <span className="text-stone-600">•</span>
+            <span className="text-stone-600 shrink-0">•</span>
             <button
               type="button"
               onClick={() => setIsProfileModalOpen(true)}
-              className="flex items-center gap-2 font-mono text-[11px] text-stone-400 hover:text-white transition-colors cursor-pointer"
+              className="flex items-center gap-2 font-mono text-[11px] text-stone-400 hover:text-white transition-colors cursor-pointer min-w-0 truncate"
               title="View & Edit Account Profile"
             >
               {vaultSession?.avatarUrl ? (
                 <img
                   src={vaultSession.avatarUrl}
                   alt={vaultSession?.cashierName || 'Cashier'}
-                  className="w-5 h-5 rounded-full object-cover border border-amber-400/40"
+                  className="w-5 h-5 rounded-full object-cover border border-amber-400/40 shrink-0"
                 />
               ) : null}
-              <span>
-                Cashier: <span className="text-stone-200 font-semibold">{vaultSession?.cashierName || 'Staff'}</span> ({vaultSession?.cashierRole || 'Staff'})
+              <span className="truncate">
+                Cashier: <span className="text-stone-200 font-semibold">{vaultSession?.cashierName || 'Staff'}</span>
+                <span className="hidden lg:inline text-stone-400 font-normal"> ({vaultSession?.cashierRole || 'Staff'})</span>
               </span>
             </button>
           </div>
@@ -455,26 +456,27 @@ export default function App(): React.JSX.Element {
           {vaultSession?.isMasterAdmin ? (
             <button
               onClick={() => handleSelectTab('master-control')}
-              className="flex items-center gap-2 px-3.5 py-1 rounded-full border border-gold/60 bg-gradient-to-r from-amber-500/20 via-gold/15 to-amber-500/20 text-gold-light text-xs font-mono font-bold shadow-glow-gold hover:border-gold transition-all"
+              className="flex items-center gap-2 px-3 py-1 rounded-full border border-gold/60 bg-gradient-to-r from-amber-500/20 via-gold/15 to-amber-500/20 text-gold-light text-xs font-mono font-bold shadow-glow-gold hover:border-gold transition-all shrink-0"
             >
-              <Crown className="w-3.5 h-3.5 text-gold" />
-              <span>SUPER ADMIN · ZERO ADS</span>
-              <span className="text-[10px] text-gold underline ml-1">Control Panel →</span>
+              <Crown className="w-3.5 h-3.5 text-gold shrink-0" />
+              <span className="hidden lg:inline">SUPER ADMIN · ZERO ADS</span>
+              <span className="lg:hidden">SUPER ADMIN</span>
+              <span className="text-[10px] text-gold underline ml-1">Control →</span>
             </button>
           ) : (
             <button
               onClick={() => proAccess.openRewardModal('Account Pro Access')}
-              className={`flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-mono font-bold transition-all ${
+              className={`flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-mono font-bold transition-all shrink-0 ${
                 proAccess.isPro
                   ? 'bg-amber-500/10 border-gold/40 text-gold-light hover:border-gold shadow-glow-gold'
                   : 'bg-rose-950/60 border-rose-700/60 text-rose-300 hover:border-rose-500 animate-pulse'
               }`}
             >
-              <Clock className="w-3.5 h-3.5 text-gold-muted" />
-              <span>Shift Time Limit:</span>
+              <Clock className="w-3.5 h-3.5 text-gold-muted shrink-0" />
+              <span className="hidden lg:inline">Shift Time Limit:</span>
               <span className="font-mono font-extrabold tracking-wider">{proAccess.formattedTime}</span>
               <span className="text-[10px] text-gold underline ml-1">
-                {proAccess.isPro ? '+ Extend' : '⚡ Watch Ads to Unlock'}
+                {proAccess.isPro ? '+ Extend' : '⚡ Unlock'}
               </span>
             </button>
           )}

@@ -375,51 +375,59 @@ export function Navigation({
         </div>
       </aside>
 
-      {/* ── MOBILE TOP BAR (md:hidden) ── */}
-      <header className="md:hidden sticky top-0 z-40 h-14 w-full flex items-center justify-between px-4 bg-[#090A0D]/95 backdrop-blur-xl border-b border-white/10">
-        <div className="flex items-center gap-2">
-          <img
-            src="/tinda-pos-crest.png"
-            alt="TINDA POS"
-            className="w-8 h-8 rounded-lg object-contain border border-gold/40 p-0.5 bg-zinc-950 shadow-glow-gold"
-          />
-          <span className="font-serif font-bold text-base tracking-[0.2em] uppercase text-stone-100">
-            TINDA
-          </span>
-          <span className="text-[9px] tracking-widest text-[#D4AF37] border border-[#D4AF37]/30 px-1.5 py-0.5 rounded-full uppercase font-mono">
-            POS
-          </span>
+      {/* ── MOBILE TOP BAR (md:hidden) — Auto-responsive for all Android, iPhone & Foldables ── */}
+      <header className="md:hidden sticky top-0 z-40 h-13 w-full flex items-center justify-between px-3 sm:px-4 bg-[#090A0D]/95 backdrop-blur-xl border-b border-white/10 gap-2 select-none">
+        {/* Left: Brand logo & name */}
+        <div className="flex items-center gap-2 shrink-0 min-w-0">
+          <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-zinc-950/90 border border-gold/40 shadow-glow-gold p-0.5 shrink-0 overflow-hidden">
+            <img
+              src="/tinda-pos-crest.png"
+              alt="TINDA POS"
+              className="w-full h-full object-contain"
+            />
+            <div className="absolute -inset-0.5 rounded-xl bg-gold/10 blur-[3px] -z-10" />
+          </div>
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="font-serif font-bold text-sm sm:text-base tracking-[0.18em] uppercase text-stone-100 truncate">
+              TINDA
+            </span>
+            <span className="text-[8px] sm:text-[9px] tracking-widest text-[#D4AF37] border border-[#D4AF37]/30 px-1 py-0.2 rounded-full uppercase font-mono shrink-0">
+              POS
+            </span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Real-time Pro Pill or Master Admin Badge for Mobile */}
+        {/* Right: Actions, timer, profile, and logout */}
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Real-time Pro Pill or Master Admin Badge */}
           {isMasterAdmin ? (
             <button
               onClick={() => setActiveTab('master-control')}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-gold/60 bg-gold/20 text-gold-light font-mono text-[11px] font-bold shadow-glow-gold"
+              className="flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full border border-gold/60 bg-gold/20 text-gold-light font-mono text-[10px] sm:text-[11px] font-bold shadow-glow-gold shrink-0 transition-transform active:scale-95"
             >
-              <Crown className="w-3.5 h-3.5 text-gold" />
+              <Crown className="w-3 h-3 text-gold shrink-0" />
               <span>MASTER</span>
             </button>
           ) : (
             <button
               onClick={onOpenProModal}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-mono font-bold transition-all ${
+              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full border text-[10px] sm:text-[11px] font-mono font-bold transition-all shrink-0 active:scale-95 ${
                 isPro
                   ? 'bg-amber-500/10 border-gold/40 text-gold-light'
                   : 'bg-rose-950/60 border-rose-700/60 text-rose-300 animate-pulse'
               }`}
             >
-              <Clock className="w-3 h-3 text-gold-muted" />
+              <Clock className="w-3 h-3 text-gold-muted shrink-0" />
               <span>{proFormattedTime}</span>
             </button>
           )}
 
+          {/* Cashier profile avatar */}
           <button
             type="button"
             onClick={onOpenProfile}
-            className="flex items-center gap-2 px-2 py-1 rounded-lg bg-zinc-900/60 border border-white/5 hover:border-gold/40 transition-all text-left"
-            title="View & Edit Profile"
+            className="flex items-center gap-1.5 p-1 sm:px-2 sm:py-1 rounded-lg bg-zinc-900/60 border border-white/5 hover:border-gold/40 transition-all shrink-0 cursor-pointer"
+            title={`View profile (${cashierName})`}
           >
             {avatarUrl ? (
               <img
@@ -432,15 +440,16 @@ export function Navigation({
                 {cashierInitials}
               </div>
             )}
-            <span className="text-[11px] text-stone-300 font-medium truncate max-w-[80px]">
+            <span className="hidden sm:inline text-[11px] text-stone-300 font-medium truncate max-w-[70px]">
               {cashierName.split(' ')[0]}
             </span>
           </button>
 
+          {/* Logout button */}
           <button
             onClick={onLockTerminal}
-            title="Log Out"
-            className="btn-press flex items-center justify-center h-8 w-8 rounded-lg bg-red-500/10 border border-red-500/25 text-red-400"
+            title="Log Out Terminal"
+            className="btn-press flex items-center justify-center h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-red-500/10 border border-red-500/25 text-red-400 shrink-0 transition-all hover:bg-red-500/20"
           >
             <LogOut className="w-3.5 h-3.5" />
           </button>

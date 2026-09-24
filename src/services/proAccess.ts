@@ -85,9 +85,14 @@ export function useProAccess() {
     return Math.max(0, Math.floor((state.pro_expires_at - now) / 1000))
   }, [state.pro_expires_at, state.owner_bypass, now])
 
+  // 3-token permanent unlock: collect 3 tokens from watching 3 ads
+  const isFullyUnlocked = useMemo(() => {
+    return state.owner_bypass || state.tokens >= 3
+  }, [state.owner_bypass, state.tokens])
+
   const isPro = useMemo(() => {
-    return state.owner_bypass || remainingSeconds > 0
-  }, [state.owner_bypass, remainingSeconds])
+    return state.owner_bypass || remainingSeconds > 0 || isFullyUnlocked
+  }, [state.owner_bypass, remainingSeconds, isFullyUnlocked])
 
   // 20-second cooldown calculation
   const cooldownRemaining = useMemo(() => {
@@ -179,6 +184,7 @@ export function useProAccess() {
   return {
     state,
     isPro,
+    isFullyUnlocked,
     remainingSeconds,
     formattedTime,
     cooldownRemaining,

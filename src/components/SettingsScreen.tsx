@@ -29,6 +29,8 @@ interface SettingsScreenProps {
   onRefreshAll: () => void
   isAdmin?: boolean
   currentCashierName?: string
+  currentSessionStoreName?: string
+  isMasterAdmin?: boolean
 }
 
 export function SettingsScreen({
@@ -36,7 +38,9 @@ export function SettingsScreen({
   onSaveSettings,
   onRefreshAll,
   isAdmin = true,
-  currentCashierName
+  currentCashierName,
+  currentSessionStoreName,
+  isMasterAdmin = false
 }: SettingsScreenProps): React.JSX.Element {
   const [form, setForm] = useState<StoreSettings>(settings)
   const [saved, setSaved] = useState(false)
@@ -60,14 +64,29 @@ export function SettingsScreen({
 
   const loadUsers = useCallback(async () => {
     try {
-      const allUsers = await db.users.toArray()
+      let allUsers = await db.users.toArray()
+
+      // SECURITY: Master Admin sees all; store owners only see users belonging to their own store
+      if (!isMasterAdmin && currentSessionStoreName) {
+        allUsers = allUsers.filter(u =>
+          // Show staff created under this store — exclude other stores' owners
+          (u.store_name === currentSessionStoreName && !u.is_owner) ||
+          // Also show the owner account itself
+          (u.store_name === currentSessionStoreName && u.is_owner && u.username !== 'skorts188@gmail.com')
+        )
+      } else if (!isMasterAdmin) {
+        // No store name in session — show nothing to be safe
+        allUsers = []
+      }
+      // Master admin sees all users (unfiltered)
+
       setUsers(allUsers)
     } catch (err) {
       console.error('Error loading users:', err)
     } finally {
       setLoadingUsers(false)
     }
-  }, [])
+  }, [isMasterAdmin, currentSessionStoreName])
 
   useEffect(() => {
     loadUsers()

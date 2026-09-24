@@ -24,6 +24,7 @@ interface RewardedAdModalProps {
   blockedFeatureName?: string
   formattedTime: string
   isPro: boolean
+  isFullyUnlocked: boolean
   remainingSeconds: number
   cooldownRemaining: number
   canWatchAd: boolean
@@ -42,6 +43,7 @@ export function RewardedAdModal({
   blockedFeatureName,
   formattedTime,
   isPro,
+  isFullyUnlocked,
   remainingSeconds,
   cooldownRemaining,
   canWatchAd,
@@ -260,9 +262,11 @@ export function RewardedAdModal({
                 Unlock Full Features
               </h3>
               <p className="text-xs text-stone-400 font-sans">
-                {blockedFeatureName
-                  ? `Access to "${blockedFeatureName}" requires an active Pro session.`
-                  : 'Watch quick sponsor ads to extend your Pro access.'}
+                {isFullyUnlocked
+                  ? '🔓 All features permanently unlocked! You can still watch ads for Pro time.'
+                  : blockedFeatureName
+                  ? `"${blockedFeatureName}" requires Pro access. Watch ${3 - tokens} more ad${3 - tokens !== 1 ? 's' : ''} to permanently unlock all features.`
+                  : `Watch 3 ads to permanently unlock all features. ${tokens}/3 tokens collected.`}
               </p>
             </div>
           </div>
@@ -333,13 +337,31 @@ export function RewardedAdModal({
             </div>
 
             <div className="text-right">
-              <span className="text-[10px] font-mono text-stone-400 block">
-                REWARD TOKENS
+              <span className="text-[10px] font-mono text-stone-400 block mb-1">
+                TOKEN PROGRESS
               </span>
-              <span className="font-mono text-xs font-semibold text-stone-200 flex items-center justify-end gap-1">
-                <Coins className="w-3.5 h-3.5 text-gold" />
-                <span>{tokens} Earned</span>
-              </span>
+              {isFullyUnlocked ? (
+                <span className="font-mono text-xs font-bold text-emerald-400 flex items-center justify-end gap-1">
+                  <span>🔓</span>
+                  <span>FULLY UNLOCKED</span>
+                </span>
+              ) : (
+                <div className="flex items-center justify-end gap-1">
+                  {[0, 1, 2].map(i => (
+                    <div
+                      key={i}
+                      className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                        tokens > i
+                          ? 'bg-gold border-gold text-obsidian-950'
+                          : 'border-stone-600 bg-transparent'
+                      }`}
+                    >
+                      {tokens > i && <span className="text-[8px] font-bold">✓</span>}
+                    </div>
+                  ))}
+                  <span className="text-[10px] font-mono text-stone-400 ml-1">{tokens}/3</span>
+                </div>
+              )}
             </div>
           </div>
 

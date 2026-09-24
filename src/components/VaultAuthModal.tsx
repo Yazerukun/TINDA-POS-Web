@@ -23,7 +23,7 @@ export interface VaultSession {
 
 interface VaultAuthModalProps {
   isOpen: boolean
-  onAuthenticated: (session: VaultSession) => void
+  onAuthenticated: (session: VaultSession, isNewAccount?: boolean) => void
   currentCashier?: string
 }
 
@@ -433,7 +433,10 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
       username: authenticatedUser.username,
       storeName: authenticatedUser.store_name
     }
-    onAuthenticated(session)
+    // Detect if this is a brand-new account (created in the last 10 seconds = just signed up)
+    const isNewAccount = !!authenticatedUser.created_at &&
+      (Date.now() - new Date(authenticatedUser.created_at).getTime()) < 10_000
+    onAuthenticated(session, isNewAccount)
     setPin('')
     setUsername('')
     setSignupStoreName('')

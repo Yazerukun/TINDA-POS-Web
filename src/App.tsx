@@ -145,7 +145,7 @@ export default function App(): React.JSX.Element {
   }
 
   // Handle Vault Session Onboarding
-  const handleAuthenticated = (session: VaultSession) => {
+  const handleAuthenticated = (session: VaultSession, isNewAccount = false) => {
     setVaultSession(session)
     setIsVaultLocked(false)
     try {
@@ -160,9 +160,10 @@ export default function App(): React.JSX.Element {
     } else {
       // Store owners and cashiers must watch ads to unlock Pro features
       proAccess.toggleOwnerBypass(false)
-      if (!proAccess.isPro) {
+      // Always open ad gate for new signups; for existing users only if not already Pro
+      if (isNewAccount || !proAccess.isPro) {
         setTimeout(() => {
-          proAccess.openRewardModal('Welcome! Watch ads to unlock your Pro shift features')
+          proAccess.openRewardModal('Welcome! Watch 3 ads to permanently unlock all features 🎯')
         }, 300)
       }
     }
@@ -390,6 +391,8 @@ export default function App(): React.JSX.Element {
             onRefreshAll={loadData}
             isAdmin={isUserAdmin}
             currentCashierName={vaultSession?.cashierName}
+            currentSessionStoreName={vaultSession?.storeName}
+            isMasterAdmin={vaultSession?.isMasterAdmin || false}
           />
         )}
 
@@ -451,6 +454,7 @@ export default function App(): React.JSX.Element {
         blockedFeatureName={proAccess.pendingFeatureName}
         formattedTime={proAccess.formattedTime}
         isPro={proAccess.isPro}
+        isFullyUnlocked={proAccess.isFullyUnlocked}
         remainingSeconds={proAccess.remainingSeconds}
         cooldownRemaining={proAccess.cooldownRemaining}
         canWatchAd={proAccess.canWatchAd}

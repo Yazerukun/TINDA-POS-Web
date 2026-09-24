@@ -19,7 +19,10 @@ import {
 import confetti from 'canvas-confetti'
 import { useAdBlocker } from '../services/adBlocker'
 
-const MONETAG_DIRECT_LINK = 'https://omg10.com/4/11879014'
+const MONETAG_DIRECT_LINKS = [
+  'https://omg10.com/4/11879014',
+  'https://omg10.com/4/11879016'
+]
 
 interface RewardedAdModalProps {
   open: boolean
@@ -63,6 +66,7 @@ export function RewardedAdModal({
   const [isMuted, setIsMuted] = useState(false)
   const [adSuccessMessage, setAdSuccessMessage] = useState<string | null>(null)
   const [showDevTools, setShowDevTools] = useState(false)
+  const [activeAdUrl, setActiveAdUrl] = useState<string>(MONETAG_DIRECT_LINKS[0])
   const adTimerRef = useRef<NodeJS.Timeout | null>(null)
   const adStartTimeRef = useRef<number>(0)
 
@@ -91,9 +95,13 @@ export function RewardedAdModal({
       return
     }
 
+    // Rotate between the available direct links (11879014 and 11879016)
+    const chosenLink = MONETAG_DIRECT_LINKS[totalAdsWatched % MONETAG_DIRECT_LINKS.length]
+    setActiveAdUrl(chosenLink)
+
     // Launch Monetag Direct Link in a new tab upon user click
     try {
-      window.open(MONETAG_DIRECT_LINK, '_blank', 'noopener,noreferrer')
+      window.open(chosenLink, '_blank', 'noopener,noreferrer')
     } catch (e) {
       console.warn('Popup blocked, fallback button available inside modal', e)
     }
@@ -239,7 +247,7 @@ export function RewardedAdModal({
               </div>
 
               <a
-                href={MONETAG_DIRECT_LINK}
+                href={activeAdUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-gold px-4 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-2 shadow-lg hover:scale-105 transition-all"
@@ -250,7 +258,7 @@ export function RewardedAdModal({
 
               <div className="flex items-center gap-2 text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-full">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Monetag Direct Link Zone (11879014)</span>
+                <span>Monetag Direct Link Zone ({activeAdUrl.split('/').pop() || '11879014'})</span>
               </div>
             </div>
 

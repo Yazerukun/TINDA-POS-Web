@@ -16,7 +16,9 @@ import {
   X,
   ChevronRight,
   Clock,
-  Zap
+  Zap,
+  Crown,
+  ShieldCheck
 } from 'lucide-react'
 
 export type ActiveTab =
@@ -29,6 +31,7 @@ export type ActiveTab =
   | 'suppliers'
   | 'analytics'
   | 'settings'
+  | 'master-control'
 
 interface NavigationProps {
   activeTab: ActiveTab
@@ -42,6 +45,7 @@ interface NavigationProps {
   onOpenExpiration?: () => void
   proFormattedTime?: string
   isPro?: boolean
+  isMasterAdmin?: boolean
   onOpenProModal?: () => void
 }
 
@@ -57,6 +61,7 @@ export function Navigation({
   onOpenExpiration,
   proFormattedTime = '00:00:00',
   isPro = true,
+  isMasterAdmin = false,
   onOpenProModal
 }: NavigationProps): React.JSX.Element {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
@@ -230,51 +235,99 @@ export function Navigation({
               </div>
             </div>
           )}
+          {/* Master Admin Platform Console */}
+          {isMasterAdmin && (
+            <div>
+              <div className="px-3 pb-2 text-[10px] font-mono uppercase tracking-[0.18em] text-gold-light flex items-center gap-1.5 font-bold">
+                <Crown className="w-3.5 h-3.5 text-gold" />
+                <span>Super Admin</span>
+              </div>
+              <button
+                onClick={() => setActiveTab('master-control')}
+                className={`btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-bold transition-all duration-200 text-left ${
+                  activeTab === 'master-control'
+                    ? 'bg-gradient-to-r from-amber-500/25 to-gold/20 text-gold-light border border-gold shadow-glow-gold'
+                    : 'bg-amber-500/[0.08] text-amber-200 border border-gold/30 hover:border-gold hover:bg-amber-500/15'
+                }`}
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <ShieldCheck className="w-4 h-4 text-gold-light shrink-0" />
+                  <span className="truncate">Master Control</span>
+                </div>
+                <span className="px-1.5 py-0.5 rounded-md bg-gold/20 text-[9px] font-mono text-gold-light font-extrabold border border-gold/40">
+                  ROOT
+                </span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Footer: Pro Access HUD & User Profile & Log Out */}
         <div className="space-y-3 pt-4 border-t border-white/[0.08] mt-4">
-          {/* Real-Time Pro Access Time Limit Status Card */}
-          <div
-            onClick={onOpenProModal}
-            role="button"
-            tabIndex={0}
-            className={`cursor-pointer group p-2.5 rounded-2xl border transition-all duration-300 ${
-              isPro
-                ? 'bg-amber-500/[0.05] border-gold/30 hover:border-gold hover:bg-amber-500/[0.09]'
-                : 'bg-rose-950/25 border-rose-700/50 hover:border-rose-500 animate-pulse'
-            }`}
-          >
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="flex items-center gap-1.5 text-[9px] font-mono tracking-widest uppercase font-semibold text-stone-400">
-                <Clock className={`w-3 h-3 ${isPro ? 'text-gold-light' : 'text-rose-400'}`} />
-                <span>{isPro ? 'PRO ACCESS' : 'FREE MODE'}</span>
-              </span>
-              <span
-                className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-bold uppercase ${
-                  isPro
-                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                    : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                }`}
-              >
-                {isPro ? 'ACTIVE' : 'EXPIRED'}
-              </span>
+          {/* Real-Time Pro Access Time Limit Status Card / Master License Card */}
+          {isMasterAdmin ? (
+            <div
+              onClick={() => setActiveTab('master-control')}
+              role="button"
+              tabIndex={0}
+              className="cursor-pointer group p-2.5 rounded-2xl border border-gold/40 bg-gradient-to-r from-amber-500/15 via-gold/10 to-amber-500/10 shadow-glow-gold transition-all"
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="flex items-center gap-1.5 text-[9px] font-mono tracking-widest uppercase font-bold text-gold-light">
+                  <Crown className="w-3.5 h-3.5 text-gold" />
+                  <span>MASTER LICENSE</span>
+                </span>
+                <span className="text-[8px] font-mono px-1.5 py-0.5 rounded font-extrabold uppercase bg-gold/20 text-gold-light border border-gold/40">
+                  AD-FREE
+                </span>
+              </div>
+              <div className="flex items-center justify-between font-mono text-[11px] text-stone-300">
+                <span className="text-gold-light font-bold">LIFETIME ACCESS</span>
+                <span className="text-[10px] text-gold underline">Console →</span>
+              </div>
             </div>
+          ) : (
+            <div
+              onClick={onOpenProModal}
+              role="button"
+              tabIndex={0}
+              className={`cursor-pointer group p-2.5 rounded-2xl border transition-all duration-300 ${
+                isPro
+                  ? 'bg-amber-500/[0.05] border-gold/30 hover:border-gold hover:bg-amber-500/[0.09]'
+                  : 'bg-rose-950/25 border-rose-700/50 hover:border-rose-500 animate-pulse'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="flex items-center gap-1.5 text-[9px] font-mono tracking-widest uppercase font-semibold text-stone-400">
+                  <Clock className={`w-3 h-3 ${isPro ? 'text-gold-light' : 'text-rose-400'}`} />
+                  <span>{isPro ? 'PRO ACCESS' : 'FREE MODE'}</span>
+                </span>
+                <span
+                  className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-bold uppercase ${
+                    isPro
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                      : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                  }`}
+                >
+                  {isPro ? 'ACTIVE' : 'EXPIRED'}
+                </span>
+              </div>
 
-            <div className="flex items-center justify-between">
-              <span
-                className={`font-mono text-xs font-bold tracking-wider ${
-                  isPro ? 'text-gold-light' : 'text-rose-400'
-                }`}
-              >
-                {proFormattedTime}
-              </span>
+              <div className="flex items-center justify-between">
+                <span
+                  className={`font-mono text-xs font-bold tracking-wider ${
+                    isPro ? 'text-gold-light' : 'text-rose-400'
+                  }`}
+                >
+                  {proFormattedTime}
+                </span>
 
-              <span className="text-[10px] font-mono text-gold-muted group-hover:text-gold-light transition-colors underline decoration-gold/40">
-                {isPro ? '+ Extend' : '⚡ Unlock'}
-              </span>
+                <span className="text-[10px] font-mono text-gold-muted group-hover:text-gold-light transition-colors underline decoration-gold/40">
+                  {isPro ? '+ Extend' : '⚡ Unlock'}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="flex items-center gap-3 p-2.5 rounded-xl bg-zinc-950/60 border border-white/5">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-[#D4AF37] text-obsidian-950 text-xs font-serif font-bold shadow-sm">
@@ -313,18 +366,28 @@ export function Navigation({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Real-time Pro Pill for Mobile */}
-          <button
-            onClick={onOpenProModal}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-mono font-bold transition-all ${
-              isPro
-                ? 'bg-amber-500/10 border-gold/40 text-gold-light'
-                : 'bg-rose-950/60 border-rose-700/60 text-rose-300 animate-pulse'
-            }`}
-          >
-            <Clock className="w-3 h-3 text-gold-muted" />
-            <span>{proFormattedTime}</span>
-          </button>
+          {/* Real-time Pro Pill or Master Admin Badge for Mobile */}
+          {isMasterAdmin ? (
+            <button
+              onClick={() => setActiveTab('master-control')}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-gold/60 bg-gold/20 text-gold-light font-mono text-[11px] font-bold shadow-glow-gold"
+            >
+              <Crown className="w-3.5 h-3.5 text-gold" />
+              <span>MASTER</span>
+            </button>
+          ) : (
+            <button
+              onClick={onOpenProModal}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-mono font-bold transition-all ${
+                isPro
+                  ? 'bg-amber-500/10 border-gold/40 text-gold-light'
+                  : 'bg-rose-950/60 border-rose-700/60 text-rose-300 animate-pulse'
+              }`}
+            >
+              <Clock className="w-3 h-3 text-gold-muted" />
+              <span>{proFormattedTime}</span>
+            </button>
+          )}
 
           <div className="flex items-center gap-2 px-2 py-1 rounded-lg bg-zinc-900/60 border border-white/5">
             <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-[#D4AF37] text-black text-[10px] font-serif font-bold">
@@ -412,7 +475,7 @@ export function Navigation({
         <button
           onClick={() => setMobileDrawerOpen(true)}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
-            mobileDrawerOpen || ['customers', 'expenses', 'suppliers', 'analytics', 'settings'].includes(activeTab)
+            mobileDrawerOpen || ['customers', 'expenses', 'suppliers', 'analytics', 'settings', 'master-control'].includes(activeTab)
               ? 'text-[#D4AF37] font-semibold'
               : 'text-stone-400 hover:text-stone-300'
           }`}
@@ -445,34 +508,60 @@ export function Navigation({
               </button>
             </div>
 
-            {/* Mobile Drawer Pro Access Card */}
-            <div
-              onClick={() => {
-                setMobileDrawerOpen(false)
-                onOpenProModal?.()
-              }}
-              role="button"
-              className={`p-3 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
-                isPro
-                  ? 'bg-amber-500/[0.08] border-gold/30'
-                  : 'bg-rose-950/30 border-rose-700/60 animate-pulse'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Clock className={`w-4 h-4 ${isPro ? 'text-gold-light' : 'text-rose-400'}`} />
-                <div>
-                  <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 block leading-tight">
-                    {isPro ? 'PRO ACCESS ACTIVE' : 'PRO EXPIRED (FREE MODE)'}
-                  </span>
-                  <span className={`font-mono text-xs font-bold ${isPro ? 'text-gold-light' : 'text-rose-400'}`}>
-                    {proFormattedTime}
-                  </span>
+            {/* Mobile Drawer Pro Access Card or Master Console Card */}
+            {isMasterAdmin ? (
+              <div
+                onClick={() => {
+                  setMobileDrawerOpen(false)
+                  setActiveTab('master-control')
+                }}
+                role="button"
+                className="p-3 rounded-2xl border border-gold/50 bg-gradient-to-r from-amber-500/15 via-gold/10 to-amber-500/15 flex items-center justify-between cursor-pointer shadow-glow-gold transition-all"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Crown className="w-4 h-4 text-gold-light" />
+                  <div>
+                    <span className="text-[10px] font-mono tracking-widest uppercase text-gold block leading-tight font-bold">
+                      SUPER ADMIN ROOT ACCESS
+                    </span>
+                    <span className="font-mono text-xs font-bold text-stone-100">
+                      Master Control Console
+                    </span>
+                  </div>
                 </div>
+                <span className="text-[11px] font-mono font-bold text-gold underline">
+                  Open →
+                </span>
               </div>
-              <span className="text-[11px] font-mono font-bold text-gold underline">
-                {isPro ? '+ Extend' : '⚡ Unlock'}
-              </span>
-            </div>
+            ) : (
+              <div
+                onClick={() => {
+                  setMobileDrawerOpen(false)
+                  onOpenProModal?.()
+                }}
+                role="button"
+                className={`p-3 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
+                  isPro
+                    ? 'bg-amber-500/[0.08] border-gold/30'
+                    : 'bg-rose-950/30 border-rose-700/60 animate-pulse'
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Clock className={`w-4 h-4 ${isPro ? 'text-gold-light' : 'text-rose-400'}`} />
+                  <div>
+                    <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 block leading-tight">
+                      {isPro ? 'PRO ACCESS ACTIVE' : 'PRO EXPIRED (FREE MODE)'}
+                    </span>
+                    <span className={`font-mono text-xs font-bold ${isPro ? 'text-gold-light' : 'text-rose-400'}`}>
+                      {proFormattedTime}
+                    </span>
+                  </div>
+                </div>
+                <span className="text-[11px] font-mono font-bold text-gold underline">
+                  {isPro ? '+ Extend' : '⚡ Unlock'}
+                </span>
+              </div>
+            )}
 
             {/* Quick Actions / Fast Tools */}
             {(onOpenPriceGuide || onOpenExpiration) && (

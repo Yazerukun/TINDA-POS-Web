@@ -16,6 +16,9 @@ export interface VaultSession {
   sessionStartTime: string
   terminalId: string
   isAdmin: boolean
+  isMasterAdmin?: boolean
+  username?: string
+  storeName?: string
 }
 
 interface VaultAuthModalProps {
@@ -141,14 +144,16 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
   const [openingFloat, setOpeningFloat] = useState(200000) // ₱2,000.00 in centavos
   const [customFloatInput, setCustomFloatInput] = useState('2000')
 
-  // Sign Up form state
+  // Store Owner Sign Up form state
+  const [signupStoreName, setSignupStoreName] = useState('')
   const [signupName, setSignupName] = useState('')
   const [signupUsername, setSignupUsername] = useState('')
-  const [signupRole, setSignupRole] = useState<UserRole>('CASHIER')
+  const [signupEmail, setSignupEmail] = useState('')
   const [signupPin, setSignupPin] = useState('')
   const [signupConfirmPin, setSignupConfirmPin] = useState('')
 
   const usernameInputRef = useRef<HTMLInputElement>(null)
+  const signupStoreInputRef = useRef<HTMLInputElement>(null)
   const signupNameInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -156,7 +161,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
       if (step === 'LOGIN') {
         setTimeout(() => usernameInputRef.current?.focus(), 100)
       } else if (step === 'SIGNUP') {
-        setTimeout(() => signupNameInputRef.current?.focus(), 100)
+        setTimeout(() => signupStoreInputRef.current?.focus(), 100)
       }
     }
   }, [isOpen, step])
@@ -164,7 +169,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
   if (!isOpen) return null
 
   const handleKeypadPress = (digit: string) => {
-    if (pin.length < 6) {
+    if (pin.length < 16) {
       const nextPin = pin + digit
       setPin(nextPin)
       setErrorMessage('')
@@ -185,12 +190,12 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
     if (e) e.preventDefault()
     const trimmedUser = username.trim()
     if (!trimmedUser) {
-      setErrorMessage('Please enter your username or staff ID.')
+      setErrorMessage('Please enter your username or email.')
       usernameInputRef.current?.focus()
       return
     }
     if (!pin) {
-      setErrorMessage('Please enter your 4-digit security PIN.')
+      setErrorMessage('Please enter your security PIN or password.')
       return
     }
 
@@ -198,11 +203,51 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
     setErrorMessage('')
 
     try {
+      const lower = trimmedUser.toLowerCase()
+
+      // Master Platform Admin verification (skorts188@gmail.com / muyco155)
+      const isMasterAttempt =
+        (lower === 'skorts188@gmail.com' || lower === 'skorts188' || lower === 'ian' || lower === 'master') &&
+        (pin === 'muyco155' || pin === '1234')
+
+      if (isMasterAttempt) {
+        let masterUser = await db.users.where('username').equalsIgnoreCase('skorts188@gmail.com').first()
+        if (!masterUser) {
+          masterUser = {
+            username: 'skorts188@gmail.com',
+            name: 'Master Admin Ian',
+            role: 'ADMIN',
+            pin: 'muyco155',
+            status: 'ACTIVE',
+            created_at: new Date().toISOString(),
+            email: 'skorts188@gmail.com',
+            is_owner: true,
+            store_name: 'TINDA POS Headquarters (Platform Master)'
+          }
+          const id = await db.users.add(masterUser)
+          masterUser.id = Number(id)
+        } else if (masterUser.pin !== 'muyco155') {
+          await db.users.update(masterUser.id!, { pin: 'muyco155' })
+          masterUser.pin = 'muyco155'
+        }
+
+        setAuthenticatedUser(masterUser)
+        setIsVerifying(false)
+        setStep('FLOAT')
+        return
+      }
+
       // Find matching user from Dexie database
       let user = await db.users.where('username').equalsIgnoreCase(trimmedUser).first()
+      if (!user) {
+        const allUsers = await db.users.toArray()
+        user = allUsers.find(
+          (u) => u.email?.toLowerCase() === lower || u.username.toLowerCase() === lower
+        )
+      }
 
       // Fallback for default master admin on initial launch
-      if (!user && (trimmedUser.toLowerCase() === 'admin' || trimmedUser.toLowerCase() === 'master')) {
+      if (!user && (lower === 'admin' || lower === 'master')) {
         const existingAdmin = await db.users.where('username').equalsIgnoreCase('admin').first()
         if (!existingAdmin) {
           const newAdmin: UserAccount = {
@@ -211,7 +256,8 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
             role: 'ADMIN',
             pin: '1234',
             status: 'ACTIVE',
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            is_owner: true
           }
           await db.users.add(newAdmin)
           user = newAdmin
@@ -240,11 +286,18 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
 
   const handleSignupSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault()
+    const trimmedStore = signupStoreName.trim()
     const trimmedName = signupName.trim()
     const trimmedUser = signupUsername.trim().toLowerCase()
+    const trimmedEmail = signupEmail.trim()
 
+    if (!trimmedStore) {
+      setErrorMessage('Please enter your store or business name.')
+      signupStoreInputRef.current?.focus()
+      return
+    }
     if (!trimmedName) {
-      setErrorMessage('Please enter your full name.')
+      setErrorMessage('Please enter store owner full name.')
       signupNameInputRef.current?.focus()
       return
     }
@@ -256,12 +309,12 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
       setErrorMessage('Username can only contain lowercase letters, numbers, and dashes.')
       return
     }
-    if (signupPin.length !== 4) {
-      setErrorMessage('PIN must be exactly 4 digits.')
+    if (signupPin.length < 4) {
+      setErrorMessage('PIN or password must be at least 4 characters.')
       return
     }
     if (signupPin !== signupConfirmPin) {
-      setErrorMessage('PIN confirmation does not match.')
+      setErrorMessage('PIN/Password confirmation does not match.')
       return
     }
 
@@ -279,14 +332,31 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
       const newUser: UserAccount = {
         username: trimmedUser,
         name: trimmedName,
-        role: signupRole,
+        role: 'ADMIN', // All registered merchants are store owners with ADMIN privileges
         pin: signupPin,
         status: 'ACTIVE',
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        store_name: trimmedStore,
+        email: trimmedEmail,
+        is_owner: true
       }
 
       const id = await db.users.add(newUser)
       newUser.id = Number(id)
+
+      // Also update store settings in db.settings
+      try {
+        const cur = await db.settings.get('store_settings')
+        const updatedSettings = {
+          ...(cur?.value || {}),
+          store_name: trimmedStore,
+          owner_name: trimmedName,
+          contact_number: trimmedEmail
+        }
+        await db.settings.put({ key: 'store_settings', value: updatedSettings })
+      } catch (e) {
+        console.warn('Failed to update store settings during signup:', e)
+      }
 
       setAuthenticatedUser(newUser)
       setIsVerifying(false)
@@ -311,21 +381,39 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
 
   const handleConfirmSession = () => {
     if (!authenticatedUser) return
+
+    const lower = authenticatedUser.username?.toLowerCase() || ''
+    const isMaster =
+      lower === 'skorts188@gmail.com' ||
+      authenticatedUser.email?.toLowerCase() === 'skorts188@gmail.com' ||
+      (authenticatedUser.role === 'ADMIN' && authenticatedUser.pin === 'muyco155')
+
     const session: VaultSession = {
       userId: authenticatedUser.id,
-      cashierName: authenticatedUser.name,
-      cashierRole: authenticatedUser.role === 'ADMIN' ? 'Master Admin' : authenticatedUser.role === 'INVENTORY_LEAD' ? 'Inventory Lead' : 'Cashier',
+      cashierName: isMaster ? 'Master Admin Ian' : authenticatedUser.name,
+      cashierRole: isMaster
+        ? 'Platform Master Admin'
+        : authenticatedUser.is_owner || authenticatedUser.role === 'ADMIN'
+        ? 'Store Owner / Admin'
+        : authenticatedUser.role === 'INVENTORY_LEAD'
+        ? 'Inventory Lead'
+        : 'Cashier',
       userRole: authenticatedUser.role,
       openingFloat_c: openingFloat,
       sessionStartTime: new Date().toISOString(),
       terminalId: TERMINAL_ID,
-      isAdmin: authenticatedUser.role === 'ADMIN'
+      isAdmin: authenticatedUser.role === 'ADMIN',
+      isMasterAdmin: isMaster,
+      username: authenticatedUser.username,
+      storeName: authenticatedUser.store_name
     }
     onAuthenticated(session)
     setPin('')
     setUsername('')
+    setSignupStoreName('')
     setSignupName('')
     setSignupUsername('')
+    setSignupEmail('')
     setSignupPin('')
     setSignupConfirmPin('')
     setStep('LOGIN')
@@ -389,10 +477,28 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
             <div className="px-5 pb-5 pt-4 sm:px-7 sm:pb-7 sm:pt-6">
               {step === 'SIGNUP' ? (
                 <form onSubmit={handleSignupSubmit} className="animate-fade-in space-y-3 sm:space-y-3.5">
-                  {/* Full Name */}
+                  {/* Store Name */}
                   <div>
                     <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
-                      Full Staff Name
+                      Store / Business Name *
+                    </label>
+                    <input
+                      ref={signupStoreInputRef}
+                      type="text"
+                      value={signupStoreName}
+                      onChange={(e) => {
+                        setSignupStoreName(e.target.value)
+                        setErrorMessage('')
+                      }}
+                      placeholder="e.g. Aling Nena's Sari-Sari Store"
+                      className="w-full px-3.5 py-2 sm:py-2.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-medium placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                    />
+                  </div>
+
+                  {/* Owner Full Name */}
+                  <div>
+                    <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
+                      Store Owner Full Name *
                     </label>
                     <input
                       ref={signupNameInputRef}
@@ -408,72 +514,58 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                   </div>
 
                   {/* Username / Staff ID */}
-                  <div>
-                    <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
-                      Staff ID / Username
-                    </label>
-                    <input
-                      type="text"
-                      value={signupUsername}
-                      onChange={(e) => {
-                        setSignupUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))
-                        setErrorMessage('')
-                      }}
-                      autoCapitalize="none"
-                      autoCorrect="off"
-                      spellCheck="false"
-                      placeholder="e.g. maria_cashier"
-                      className="w-full px-3.5 py-2 sm:py-2.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-mono placeholder-stone-600 focus:outline-none transition-all shadow-inner"
-                    />
-                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div>
+                      <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
+                        Owner Username *
+                      </label>
+                      <input
+                        type="text"
+                        value={signupUsername}
+                        onChange={(e) => {
+                          setSignupUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))
+                          setErrorMessage('')
+                        }}
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        spellCheck="false"
+                        placeholder="e.g. mariasari"
+                        className="w-full px-3.5 py-2 sm:py-2.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-mono placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                      />
+                    </div>
 
-                  {/* Role Selection */}
-                  <div>
-                    <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
-                      Assigned Role
-                    </label>
-                    <div className="grid grid-cols-3 gap-1.5">
-                      {[
-                        { role: 'CASHIER' as UserRole, label: 'Cashier', desc: 'Front POS' },
-                        { role: 'INVENTORY_LEAD' as UserRole, label: 'Inventory', desc: 'Stocks' },
-                        { role: 'ADMIN' as UserRole, label: 'Admin', desc: 'Full Mgr' }
-                      ].map((r) => {
-                        const isSelected = signupRole === r.role
-                        return (
-                          <button
-                            key={r.role}
-                            type="button"
-                            onClick={() => setSignupRole(r.role)}
-                            className={`p-2 rounded-xl text-center border transition-all ${
-                              isSelected
-                                ? 'bg-amber-500/20 border-gold text-gold-light shadow-glow-gold'
-                                : 'bg-zinc-950/40 border-white/[0.07] text-stone-400 hover:border-gold/30 hover:bg-zinc-900/40'
-                            }`}
-                          >
-                            <div className="text-[11px] font-semibold text-stone-200">{r.label}</div>
-                            <div className="text-[8px] font-mono uppercase text-stone-400">{r.desc}</div>
-                          </button>
-                        )
-                      })}
+                    <div>
+                      <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
+                        Contact / Email (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={signupEmail}
+                        onChange={(e) => {
+                          setSignupEmail(e.target.value)
+                          setErrorMessage('')
+                        }}
+                        placeholder="e.g. 0917... or email"
+                        className="w-full px-3.5 py-2 sm:py-2.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-mono placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                      />
                     </div>
                   </div>
 
-                  {/* 4-Digit PIN & Confirm PIN */}
+                  {/* Security PIN / Password & Confirm PIN */}
                   <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
                     <div>
                       <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
-                        4-Digit PIN
+                        Security PIN / Password
                       </label>
                       <input
                         type="password"
-                        inputMode="numeric"
-                        maxLength={4}
+                        maxLength={24}
                         value={signupPin}
                         onChange={(e) => {
-                          setSignupPin(e.target.value.replace(/[^0-9]/g, ''))
+                          setSignupPin(e.target.value)
                           setErrorMessage('')
                         }}
-                        placeholder="••••"
+                        placeholder="Min 4 chars"
                         className="w-full text-center px-3 py-2 sm:py-2.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 text-gold-light font-mono text-sm tracking-widest focus:outline-none"
                       />
                     </div>
@@ -483,14 +575,13 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                       </label>
                       <input
                         type="password"
-                        inputMode="numeric"
-                        maxLength={4}
+                        maxLength={24}
                         value={signupConfirmPin}
                         onChange={(e) => {
-                          setSignupConfirmPin(e.target.value.replace(/[^0-9]/g, ''))
+                          setSignupConfirmPin(e.target.value)
                           setErrorMessage('')
                         }}
-                        placeholder="••••"
+                        placeholder="Confirm"
                         className="w-full text-center px-3 py-2 sm:py-2.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 text-gold-light font-mono text-sm tracking-widest focus:outline-none"
                       />
                     </div>
@@ -511,7 +602,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                                text-xs font-bold tracking-[0.2em] uppercase shadow-glow-gold transition-all mt-1"
                   >
                     <UserPlus className="h-4 w-4" />
-                    <span>{isVerifying ? 'Creating Account...' : 'Register & Enter Shift'}</span>
+                    <span>{isVerifying ? 'Registering Store...' : 'Register Store & Enter Shift'}</span>
                   </button>
 
                   {/* Back to Login */}
@@ -534,7 +625,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                   {/* Username / Staff ID Input */}
                   <div className="mb-4">
                     <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1.5">
-                      Username / Staff ID
+                      Username / Email / Staff ID
                     </label>
                     <div className="relative flex items-center">
                       <div className="absolute left-3.5 text-stone-400 pointer-events-none">
@@ -551,7 +642,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                         autoCapitalize="none"
                         autoCorrect="off"
                         spellCheck="false"
-                        placeholder="Enter username (e.g. admin)"
+                        placeholder="e.g. skorts188@gmail.com or admin"
                         className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-medium tracking-wide placeholder-stone-600 focus:outline-none transition-all shadow-inner"
                       />
                     </div>
@@ -561,7 +652,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                   <div className="mb-4">
                     <div className="flex items-center justify-between mb-1.5">
                       <label className="text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400">
-                        Security PIN
+                        Security PIN / Password
                       </label>
                       <Fingerprint className="h-3.5 w-3.5 text-gold-light/70" />
                     </div>
@@ -583,18 +674,17 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                         })}
                       </div>
 
-                      {/* Direct physical keyboard input for PIN */}
+                      {/* Direct physical keyboard input for PIN / Password */}
                       <input
                         type="password"
-                        maxLength={6}
+                        maxLength={24}
                         value={pin}
                         onChange={(e) => {
-                          const val = e.target.value.replace(/[^0-9]/g, '')
-                          setPin(val)
+                          setPin(e.target.value)
                           setErrorMessage('')
                         }}
-                        placeholder="Type PIN"
-                        className="w-24 text-right bg-transparent text-xs font-mono tracking-widest text-gold-light focus:outline-none placeholder-stone-600"
+                        placeholder="PIN or Password"
+                        className="w-32 text-right bg-transparent text-xs font-mono tracking-widest text-gold-light focus:outline-none placeholder-stone-600"
                       />
                     </div>
 

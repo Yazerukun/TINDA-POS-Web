@@ -122,6 +122,10 @@ export interface UserAccount {
   pin: string
   status: 'ACTIVE' | 'DISABLED'
   created_at: string
+  store_name?: string
+  owner_username?: string
+  is_owner?: boolean
+  email?: string
 }
 
 export interface ExpenseCategory {

@@ -151,7 +151,10 @@ export function SettingsScreen({
         role: newUserRole,
         pin: trimmedPin,
         status: 'ACTIVE',
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        store_name: settings.store_name,
+        owner_username: currentCashierName,
+        is_owner: false
       })
 
       setUserSuccessMessage(`User "${trimmedName}" successfully created!`)

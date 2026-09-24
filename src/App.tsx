@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Clock } from 'lucide-react'
+import { Clock, Crown } from 'lucide-react'
 import type { Product, Category, Transaction, HeldCart, Customer, StoreSettings, CartItem, DiscountType, Expense } from './types'
 import { db, DEFAULT_SETTINGS, initDatabase } from './db'
 import { Navigation, type ActiveTab } from './components/Navigation'
@@ -17,6 +17,7 @@ import { ExpirationTrackerModal } from './components/ExpirationTrackerModal'
 import { CheckoutModal } from './components/CheckoutModal'
 import { VaultAuthModal, type VaultSession } from './components/VaultAuthModal'
 import { RewardedAdModal } from './components/RewardedAdModal'
+import { MasterControlScreen } from './components/MasterControlScreen'
 import { useProAccess } from './services/proAccess'
 
 export default function App(): React.JSX.Element {
@@ -152,11 +153,18 @@ export default function App(): React.JSX.Element {
     } catch {
       // ignore
     }
-    // Direct user to watch ads first if their Pro time bank is 00:00:00 (locked)
-    if (!proAccess.isPro) {
-      setTimeout(() => {
-        proAccess.openRewardModal('Welcome! Watch ads to unlock your Pro shift features')
-      }, 300)
+
+    if (session.isMasterAdmin) {
+      // Platform Master Admin (skorts188@gmail.com): Zero ads, lifetime access
+      proAccess.toggleOwnerBypass(true)
+    } else {
+      // Store owners and cashiers must watch ads to unlock Pro features
+      proAccess.toggleOwnerBypass(false)
+      if (!proAccess.isPro) {
+        setTimeout(() => {
+          proAccess.openRewardModal('Welcome! Watch ads to unlock your Pro shift features')
+        }, 300)
+      }
     }
   }
 
@@ -166,6 +174,7 @@ export default function App(): React.JSX.Element {
     } catch {
       // ignore
     }
+    proAccess.toggleOwnerBypass(false)
     setVaultSession(null)
     setIsVaultLocked(true)
   }
@@ -256,6 +265,7 @@ export default function App(): React.JSX.Element {
         onOpenExpiration={handleOpenExpiration}
         proFormattedTime={proAccess.formattedTime}
         isPro={proAccess.isPro}
+        isMasterAdmin={vaultSession?.isMasterAdmin || false}
         onOpenProModal={() => proAccess.openRewardModal('Account Pro Access')}
       />
 
@@ -273,21 +283,32 @@ export default function App(): React.JSX.Element {
             </span>
           </div>
 
-          <button
-            onClick={() => proAccess.openRewardModal('Account Pro Access')}
-            className={`flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-mono font-bold transition-all ${
-              proAccess.isPro
-                ? 'bg-amber-500/10 border-gold/40 text-gold-light hover:border-gold shadow-glow-gold'
-                : 'bg-rose-950/60 border-rose-700/60 text-rose-300 hover:border-rose-500 animate-pulse'
-            }`}
-          >
-            <Clock className="w-3.5 h-3.5 text-gold-muted" />
-            <span>Shift Time Limit:</span>
-            <span className="font-mono font-extrabold tracking-wider">{proAccess.formattedTime}</span>
-            <span className="text-[10px] text-gold underline ml-1">
-              {proAccess.isPro ? '+ Extend' : '⚡ Watch Ads to Unlock'}
-            </span>
-          </button>
+          {vaultSession?.isMasterAdmin ? (
+            <button
+              onClick={() => handleSelectTab('master-control')}
+              className="flex items-center gap-2 px-3.5 py-1 rounded-full border border-gold/60 bg-gradient-to-r from-amber-500/20 via-gold/15 to-amber-500/20 text-gold-light text-xs font-mono font-bold shadow-glow-gold hover:border-gold transition-all"
+            >
+              <Crown className="w-3.5 h-3.5 text-gold" />
+              <span>SUPER ADMIN · ZERO ADS</span>
+              <span className="text-[10px] text-gold underline ml-1">Control Panel →</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => proAccess.openRewardModal('Account Pro Access')}
+              className={`flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-mono font-bold transition-all ${
+                proAccess.isPro
+                  ? 'bg-amber-500/10 border-gold/40 text-gold-light hover:border-gold shadow-glow-gold'
+                  : 'bg-rose-950/60 border-rose-700/60 text-rose-300 hover:border-rose-500 animate-pulse'
+              }`}
+            >
+              <Clock className="w-3.5 h-3.5 text-gold-muted" />
+              <span>Shift Time Limit:</span>
+              <span className="font-mono font-extrabold tracking-wider">{proAccess.formattedTime}</span>
+              <span className="text-[10px] text-gold underline ml-1">
+                {proAccess.isPro ? '+ Extend' : '⚡ Watch Ads to Unlock'}
+              </span>
+            </button>
+          )}
         </div>
 
         {activeTab === 'dashboard' && (
@@ -369,6 +390,14 @@ export default function App(): React.JSX.Element {
             onRefreshAll={loadData}
             isAdmin={isUserAdmin}
             currentCashierName={vaultSession?.cashierName}
+          />
+        )}
+
+        {activeTab === 'master-control' && (
+          <MasterControlScreen
+            currentCashierName={vaultSession?.cashierName}
+            isMasterAdmin={vaultSession?.isMasterAdmin || false}
+            onRefreshAll={loadData}
           />
         )}
       </main>

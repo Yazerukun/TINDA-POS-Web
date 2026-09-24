@@ -89,6 +89,67 @@ body {
   border-color: rgba(212, 175, 55, 0.2);
 }
 
+/* Ambient Fluid Background Animations */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(35px, -30px) scale(1.08);
+  }
+  66% {
+    transform: translate(-30px, 25px) scale(0.94);
+  }
+}
+
+@keyframes float-reverse {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(-40px, 35px) scale(1.1);
+  }
+  66% {
+    transform: translate(30px, -25px) scale(0.92);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes grid-drift {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 52px 52px;
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 16s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: float-reverse 20s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 8s ease-in-out infinite;
+}
+
+.bg-grid-drift {
+  animation: grid-drift 28s linear infinite;
+}
+
 /* Apple Fluid Button Press */
 .btn-press {
   transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);

@@ -473,7 +473,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                          px-4 py-8 sm:px-8 sm:py-10 lg:py-12">
 
           {/* Card */}
-          <div className="w-full max-w-[min(440px,100%)] glass-vault rounded-2xl sm:rounded-3xl
+          <div className="w-full max-w-md sm:max-w-[460px] lg:max-w-[480px] glass-vault rounded-2xl sm:rounded-3xl
                           border border-gold/25 shadow-vault text-stone-100 animate-fade-in">
 
             {/* Card header */}
@@ -543,7 +543,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                 <form onSubmit={handleSignupSubmit} className="animate-fade-in space-y-3 sm:space-y-3.5">
                   {/* Store Name */}
                   <div>
-                    <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
+                    <label className="block text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-stone-400 mb-1.5 h-4 flex items-center">
                       Store / Business Name *
                     </label>
                     <input
@@ -555,13 +555,13 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                         setErrorMessage('')
                       }}
                       placeholder="e.g. Aling Nena's Sari-Sari Store"
-                      className="w-full px-3.5 py-2 sm:py-2.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-medium placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                      className="w-full h-11 sm:h-12 px-3.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-medium placeholder-stone-600 focus:outline-none transition-all shadow-inner"
                     />
                   </div>
 
                   {/* Owner Full Name */}
                   <div>
-                    <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
+                    <label className="block text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-stone-400 mb-1.5 h-4 flex items-center">
                       Store Owner Full Name *
                     </label>
                     <input
@@ -573,15 +573,16 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                         setErrorMessage('')
                       }}
                       placeholder="e.g. Maria Santos"
-                      className="w-full px-3.5 py-2 sm:py-2.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-medium placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                      className="w-full h-11 sm:h-12 px-3.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-medium placeholder-stone-600 focus:outline-none transition-all shadow-inner"
                     />
                   </div>
 
-                  {/* Username / Staff ID */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {/* Username & Contact (Aligned 2-Col on Tablet/Laptop, 1-Col on Phones) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
-                        Owner Username *
+                      <label className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-stone-400 mb-1.5 h-4 flex items-center justify-between">
+                        <span>Owner Username</span>
+                        <span className="text-amber-400">*</span>
                       </label>
                       <input
                         type="text"
@@ -594,13 +595,14 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                         autoCorrect="off"
                         spellCheck="false"
                         placeholder="e.g. mariasari"
-                        className="w-full px-3.5 py-2 sm:py-2.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-mono placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                        className="w-full h-11 sm:h-12 px-3.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-mono placeholder-stone-600 focus:outline-none transition-all shadow-inner"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
-                        Contact / Email (Optional)
+                      <label className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-stone-400 mb-1.5 h-4 flex items-center justify-between">
+                        <span>Contact Info</span>
+                        <span className="text-[9px] text-stone-500 normal-case">(optional)</span>
                       </label>
                       <input
                         type="text"
@@ -610,16 +612,17 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                           setErrorMessage('')
                         }}
                         placeholder="e.g. 0917... or email"
-                        className="w-full px-3.5 py-2 sm:py-2.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-mono placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                        className="w-full h-11 sm:h-12 px-3.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-mono placeholder-stone-600 focus:outline-none transition-all shadow-inner"
                       />
                     </div>
                   </div>
 
-                  {/* Security PIN / Password & Confirm PIN */}
-                  <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+                  {/* Security PIN & Confirm PIN (Precision 2-Column Alignment) */}
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
-                        Security PIN / Password
+                      <label className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-stone-400 mb-1.5 h-4 flex items-center justify-between">
+                        <span>Security PIN</span>
+                        <span className="text-amber-400">*</span>
                       </label>
                       <input
                         type="password"
@@ -630,12 +633,13 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                           setErrorMessage('')
                         }}
                         placeholder="Min 4 chars"
-                        className="w-full text-center px-3 py-2 sm:py-2.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 text-gold-light font-mono text-sm tracking-widest focus:outline-none"
+                        className="w-full h-11 sm:h-12 text-center px-3.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 text-gold-light font-mono text-sm tracking-widest focus:outline-none shadow-inner"
                       />
                     </div>
                     <div>
-                      <label className="block text-[9px] sm:text-[10px] font-mono tracking-[0.22em] uppercase text-stone-400 mb-1">
-                        Confirm PIN
+                      <label className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-stone-400 mb-1.5 h-4 flex items-center justify-between">
+                        <span>Confirm PIN</span>
+                        <span className="text-amber-400">*</span>
                       </label>
                       <input
                         type="password"
@@ -646,7 +650,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                           setErrorMessage('')
                         }}
                         placeholder="Confirm"
-                        className="w-full text-center px-3 py-2 sm:py-2.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 text-gold-light font-mono text-sm tracking-widest focus:outline-none"
+                        className="w-full h-11 sm:h-12 text-center px-3.5 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 text-gold-light font-mono text-sm tracking-widest focus:outline-none shadow-inner"
                       />
                     </div>
                   </div>
@@ -661,9 +665,9 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                   <button
                     type="submit"
                     disabled={isVerifying}
-                    className="btn-gold w-full py-2.5 sm:py-3 px-4 rounded-xl sm:rounded-2xl
+                    className="btn-gold w-full h-11 sm:h-12 px-4 rounded-xl sm:rounded-2xl
                                flex items-center justify-center gap-2
-                               text-xs font-bold tracking-[0.2em] uppercase shadow-glow-gold transition-all mt-1"
+                               text-xs font-bold tracking-[0.2em] uppercase shadow-glow-gold transition-all mt-2"
                   >
                     <UserPlus className="h-4 w-4" />
                     <span>{isVerifying ? 'Registering Store...' : 'Register Store & Enter Shift'}</span>

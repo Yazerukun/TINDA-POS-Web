@@ -1,5 +1,12 @@
 {
   "name": "tindapos-web",
   "pages_build_output_dir": "./dist",
-  "compatibility_date": "2024-09-23"
+  "compatibility_date": "2024-09-23",
+  "d1_databases": [
+    {
+      "binding": "TINDAPOS_DB",
+      "database_name": "tindapos-db",
+      "database_id": "f20ce7bc-cdb1-4554-b7c4-e3e506bef679"
+    }
+  ]
 }

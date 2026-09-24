@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import { db } from '../db'
 import type { UserAccount, UserRole, StoreSettings, ProAccessState } from '../types'
+import { fetchAllCloudUsers } from '../services/cloudSync'
 
 interface MasterControlScreenProps {
   currentCashierName?: string
@@ -76,6 +77,30 @@ export function MasterControlScreen({
     setLoading(true)
     try {
       const allUsers = await db.users.toArray()
+
+      // Merge in cloud users that may not exist on this device's local IndexedDB
+      try {
+        const cloudUsers = await fetchAllCloudUsers()
+        const localUsernames = new Set(allUsers.map((u) => u.username?.toLowerCase()))
+        const cloudOnlyUsers = (cloudUsers as Array<Record<string, unknown>>)
+          .filter((cu) => !localUsernames.has((cu.username as string)?.toLowerCase()))
+          .map((cu) => ({
+            id: -(Math.floor(Math.random() * 999999)), // negative = cloud-only (no local ID)
+            username: cu.username as string,
+            name: cu.name as string,
+            email: cu.email as string | undefined,
+            role: cu.role as string,
+            pin: '', // never expose pin from cloud
+            status: cu.status as string,
+            store_name: cu.store_name as string | undefined,
+            is_owner: Boolean(cu.is_owner),
+            avatar_url: cu.avatar_url as string | undefined,
+            created_at: cu.created_at as string,
+            _cloud_only: true,
+          }))
+        allUsers.push(...(cloudOnlyUsers as typeof allUsers))
+      } catch { /* silently ignore if cloud is unreachable */ }
+
       setUsers(allUsers)
 
       const txCount = await db.transactions.count()

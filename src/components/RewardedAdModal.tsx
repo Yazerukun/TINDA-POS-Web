@@ -305,13 +305,15 @@ export function RewardedAdModal({
       ) : (
         /* ── REWARD SELECTION / PRO EXPIRY MODAL ── */
         <div className="relative w-full max-w-lg rounded-3xl bg-zinc-950 border border-white/[0.08] shadow-vault p-6 text-left overflow-hidden">
-          {/* Close button */}
-          <button
-            onClick={onClose}
-            className="absolute top-5 right-5 text-stone-400 hover:text-stone-200 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          {/* Close button — only shown when user has active pro OR is master admin */}
+          {(isPro || isMasterAdmin) && (
+            <button
+              onClick={onClose}
+              className="absolute top-5 right-5 text-stone-400 hover:text-stone-200 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
 
           {/* Modal Header */}
           <div className="flex items-center gap-3 mb-4">
@@ -341,6 +343,19 @@ export function RewardedAdModal({
               </p>
             </div>
           </div>
+
+          {/* Expired alert — shown when shift pass is expired and user is not master admin */}
+          {!isPro && !isMasterAdmin && (
+            <div className="mb-4 p-3.5 rounded-2xl bg-rose-950/40 border border-rose-700/50 flex items-start gap-3 animate-fade-in">
+              <span className="text-rose-400 text-lg shrink-0">⚠️</span>
+              <div className="text-xs">
+                <p className="font-semibold text-rose-200">Store Shift Pass Expired</p>
+                <p className="text-stone-300 mt-0.5 leading-relaxed">
+                  Watch a sponsor ad below to earn tokens, then select a shift pass duration to reactivate your store access.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Success Banner if just credited */}
           {adSuccessMessage && (
@@ -621,7 +636,7 @@ export function RewardedAdModal({
           {/* Footer Notice */}
           <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between">
             <span className="text-[10px] text-stone-500 font-sans">
-              Free Sales Counter always remains 100% active. Max stack: 60 days.
+              Watch one sponsor ad to earn 1 token. Redeem tokens to unlock your store shift.
             </span>
 
             {isMasterAdmin && (

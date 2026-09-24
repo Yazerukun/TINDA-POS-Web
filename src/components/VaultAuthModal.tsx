@@ -22,6 +22,7 @@ import {
 import { money } from '../utils/format'
 import { db } from '../db'
 import type { UserAccount, UserRole } from '../types'
+import { syncUserToCloud } from '../services/cloudSync'
 
 export interface VaultSession {
   userId?: number
@@ -466,6 +467,20 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
 
       const id = await db.users.add(newUser)
       newUser.id = Number(id)
+
+      // Fire-and-forget: sync new account to Cloudflare D1 cloud
+      syncUserToCloud({
+        username: newUser.username,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+        pin: newUser.pin,
+        status: (newUser as Record<string, unknown>).status as string ?? 'ACTIVE',
+        store_name: newUser.store_name,
+        is_owner: (newUser as Record<string, unknown>).is_owner as boolean ?? false,
+        avatar_url: (newUser as Record<string, unknown>).avatar_url as string | undefined,
+        created_at: newUser.created_at
+      }).catch(() => {})
 
       try {
         const cur = await db.settings.get('store_settings')

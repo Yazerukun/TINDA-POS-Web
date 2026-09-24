@@ -644,7 +644,7 @@ export default function App(): React.JSX.Element {
       {/* Rewarded Ad & Pro Time-Bank Gatekeeper Modal */}
       <RewardedAdModal
         open={proAccess.gateModalOpen}
-        onClose={proAccess.closeRewardModal}
+        onClose={() => { if (vaultSession?.isMasterAdmin || proAccess.isPro) proAccess.closeRewardModal() }}
         blockedFeatureName={proAccess.pendingFeatureName}
         formattedTime={proAccess.formattedTime}
         isPro={proAccess.isPro}
@@ -661,6 +661,43 @@ export default function App(): React.JSX.Element {
         onToggleOwnerBypass={proAccess.toggleOwnerBypass}
         isMasterAdmin={vaultSession?.isMasterAdmin ?? false}
       />
+      {/* HARD GATE: Full app lockout when store shift pass expires — non-master-admin */}
+      {!isVaultLocked && vaultSession && !vaultSession.isMasterAdmin && !proAccess.isPro && (
+        <div className="fixed inset-0 z-[200] bg-zinc-950/98 backdrop-blur-2xl flex flex-col items-center justify-center p-6 text-center">
+          <div className="max-w-md w-full space-y-6">
+            <div className="h-20 w-20 mx-auto rounded-3xl bg-rose-950/60 border border-rose-700/40 flex items-center justify-center">
+              <span className="text-5xl select-none">🔒</span>
+            </div>
+            <div>
+              <h2 className="text-2xl font-serif font-bold text-white tracking-wide">Store Shift Locked</h2>
+              <p className="text-sm text-stone-400 mt-2 font-sans leading-relaxed max-w-sm mx-auto">
+                Your store shift pass has expired. Watch a sponsor ad to earn tokens,
+                then activate a shift pass to continue using TINDA POS.
+              </p>
+            </div>
+            <div className="p-4 rounded-2xl bg-rose-950/30 border border-rose-700/30">
+              <p className="text-[10px] font-mono text-stone-500 uppercase tracking-widest">Shift Pass Timer</p>
+              <p className="text-4xl font-mono font-bold text-rose-400 mt-1">00:00:00</p>
+              <p className="text-[10px] font-mono text-stone-600 mt-1">Expired — watch ads to earn tokens</p>
+            </div>
+            <button
+              onClick={() => proAccess.openRewardModal('Store Shift Pass')}
+              className="w-full py-4 rounded-2xl bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold text-sm tracking-wider uppercase shadow-lg transition-all"
+            >
+              ⚡ Watch Sponsor Ad — Earn Tokens
+            </button>
+            <button
+              onClick={() => {
+                try { localStorage.removeItem('tinda_vault_session') } catch {}
+                window.location.reload()
+              }}
+              className="text-xs font-mono text-stone-600 hover:text-stone-300 underline transition-colors mt-2"
+            >
+              Switch Account / Sign Out
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -132,7 +132,7 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
   const date = now.toLocaleDateString('en-PH', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
 
   return (
-    <aside className="flex flex-col justify-between p-8 sm:p-10 lg:p-14 border-b lg:border-b-0 lg:border-r border-gold/20 bg-[#0a0a0c]/90 relative overflow-hidden backdrop-blur-2xl">
+    <aside className="flex flex-col justify-between p-8 sm:p-10 lg:p-14 border-b lg:border-b-0 lg:border-r border-gold/20 bg-[#0a0a0c]/80 relative overflow-hidden backdrop-blur-2xl">
       {/* Background ambient lighting */}
       <div className="absolute top-0 right-0 h-[420px] w-[420px] rounded-full bg-amber-500/[0.07] blur-[130px] pointer-events-none animate-float-slow" />
       <div className="absolute bottom-0 left-0 h-[380px] w-[380px] rounded-full bg-gold/[0.06] blur-[120px] pointer-events-none animate-float-reverse" />
@@ -562,20 +562,23 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
 
   return (
     <div className="fixed inset-0 z-50 flex bg-[#0a0a0c] overflow-y-auto">
-      {/* ── Background: Deep obsidian/zinc black (#0a0a0c) with warm brushed gold accents ── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Subtle geometric drift grid */}
-        <div
-          className="absolute inset-0 opacity-40 bg-grid-drift"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(212, 175, 55, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(212, 175, 55, 0.05) 1px, transparent 1px)',
-            backgroundSize: '48px 48px'
-          }}
-        />
+      {/* ── Background: Official Luxury Damask & Gold Crest Artwork (Gemini_Generated_Image_xuximrxuximrxuxi.jpeg) ── */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+        <picture>
+          <source srcSet="/login-bg.webp" type="image/webp" />
+          <img
+            src="/login-bg.jpeg"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover object-center opacity-40 scale-100"
+          />
+        </picture>
+
+        {/* Dark luxury gradient overlays for crisp readability and glassmorphic depth */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/70 to-[#0a0a0c]/80" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(212,175,55,0.18),_transparent_70%)]" />
 
         {/* Ambient Warm Brushed Gold Light Orbs */}
-        <div className="absolute -top-32 -left-32 w-[620px] h-[620px] rounded-full bg-gradient-to-br from-amber-500/20 via-gold/15 to-transparent blur-[140px] animate-float-slow animate-pulse-glow" />
+        <div className="absolute -top-32 -left-32 w-[620px] h-[620px] rounded-full bg-gradient-to-br from-amber-500/20 via-gold/15 to-transparent blur-[140px] animate-float-slow" />
         <div className="absolute top-1/3 -right-28 w-[540px] h-[540px] rounded-full bg-gradient-to-bl from-amber-600/15 via-gold/10 to-transparent blur-[140px] animate-float-reverse" />
         <div className="absolute -bottom-40 left-1/4 w-[700px] h-[700px] rounded-full bg-gradient-to-tr from-gold/15 via-amber-700/10 to-transparent blur-[160px] animate-float-slow" />
 

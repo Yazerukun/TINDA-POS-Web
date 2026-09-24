@@ -71,7 +71,7 @@ export const DEFAULT_SETTINGS: StoreSettings = {
   owner_name: 'Boss Store Owner',
   contact_number: '+63 912 345 6789',
   address: 'Poblacion Market St., Philippines',
-  receipt_footer: 'Salamat sa pagpalit! Balik-balik kamo!',
+  receipt_footer: 'Thank you for your purchase! Please come again!',
   default_low_stock: 5,
   currency_symbol: '₱'
 }

@@ -140,11 +140,15 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
       {/* Gold node network illustration at the bottom-left */}
       <NodeNetworkIllustration />
 
-      {/* Top Header: Refined Gold Serif Monogram Logo next to "TINDA POS" (Business Point of Sale · Terminal Session) */}
+      {/* Top Header: Refined Gold Luxury Crest Logo next to "TINDA POS" (Business Point of Sale · Terminal Session) */}
       <div className="relative z-10">
         <div className="flex items-center gap-3.5">
-          <div className="relative flex h-13 w-13 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-300/30 via-gold/20 to-zinc-950 border border-gold/50 shadow-glow-gold">
-            <span className="font-serif text-2xl font-black tracking-widest text-gold-light">T</span>
+          <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-zinc-950/80 border border-gold/50 shadow-glow-gold p-1 shrink-0 overflow-hidden">
+            <img
+              src="/tinda-pos-crest.png"
+              alt="TINDA POS Crest"
+              className="w-full h-full object-contain"
+            />
             <div className="absolute -inset-0.5 rounded-2xl bg-gold/15 blur-sm -z-10 animate-pulse-glow" />
           </div>
           <div>
@@ -156,7 +160,7 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
         </div>
       </div>
 
-      {/* Main Headline: Bold serif typography: "ABLIHI ANG IMONG KAUNTER NGA NAAY KOMPYANSA." */}
+      {/* Main Headline: Bold serif typography: "OPEN YOUR COUNTER WITH CONFIDENCE." */}
       <div className="relative z-10 my-8 lg:my-auto max-w-xl">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-gold/10 border border-gold/25 text-gold-light font-mono text-[10px] tracking-widest uppercase mb-5 shadow-sm">
           <Sparkles className="h-3 w-3 text-gold" />
@@ -164,9 +168,9 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
         </div>
 
         <h1 className="font-serif text-3xl sm:text-4xl xl:text-5xl font-black tracking-tight leading-[1.12] text-stone-100 uppercase">
-          ABLIHI ANG IMONG KAUNTER
+          OPEN YOUR COUNTER
           <br />
-          <span className="text-gold-gradient">NGA NAAY KOMPYANSA.</span>
+          <span className="text-gold-gradient">WITH CONFIDENCE.</span>
         </h1>
 
         <p className="mt-4 sm:mt-5 text-xs sm:text-sm leading-relaxed text-stone-400 font-normal">
@@ -593,18 +597,21 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
             {/* Subtle top card gold highlight beam */}
             <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
 
-            {/* Top of Card: Integrated Lock & 'T' Monogram Shield Logo + Headline: "LOG IN SA TERMINAL" */}
+            {/* Top of Card: Luxury Crest Logo + Headline: "LOG IN TO TERMINAL" */}
             <div className="flex flex-col items-center justify-center text-center px-6 pt-6 sm:px-8 sm:pt-7">
-              <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-300/30 via-gold/20 to-zinc-950 border border-gold/50 shadow-glow-gold mb-3">
-                <span className="font-serif text-2xl font-black tracking-widest text-gold-light">T</span>
-                <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-zinc-950 border border-gold/40 flex items-center justify-center text-gold-light shadow-sm">
-                  <Lock className="h-3 w-3" />
+              <div className="relative mb-3 flex items-center justify-center">
+                <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-950/80 border border-gold/50 shadow-glow-gold p-1 overflow-hidden">
+                  <img
+                    src="/tinda-pos-crest.png"
+                    alt="TINDA POS Crest"
+                    className="w-full h-full object-contain"
+                  />
+                  <div className="absolute -inset-1 rounded-2xl bg-gold/15 blur-sm -z-10 animate-pulse-glow" />
                 </div>
-                <div className="absolute -inset-1 rounded-2xl bg-gold/15 blur-sm -z-10 animate-pulse-glow" />
               </div>
 
               <h2 className="font-serif text-xl sm:text-2xl font-bold tracking-wider uppercase text-stone-100">
-                {step === 'FLOAT' ? 'SHIFT OPENING FLOAT' : step === 'SIGNUP' ? 'REGISTER STORE' : 'LOG IN SA TERMINAL'}
+                {step === 'FLOAT' ? 'SHIFT OPENING FLOAT' : step === 'SIGNUP' ? 'REGISTER STORE' : 'LOG IN TO TERMINAL'}
               </h2>
               <p className="font-mono text-[9px] sm:text-[10px] tracking-[0.25em] uppercase text-gold-muted font-medium mt-1">
                 {step === 'FLOAT' ? 'Counter Float Setup' : step === 'SIGNUP' ? 'Merchant Registration' : 'Authorized Station Gateway'}

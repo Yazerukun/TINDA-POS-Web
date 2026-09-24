@@ -121,8 +121,12 @@ export function Navigation({
         {/* Brand & Logo Header */}
         <div className="space-y-5">
           <div className="flex items-center gap-3 px-2 py-2 border-b border-white/[0.08]">
-            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-b from-amber-200/20 via-gold/15 to-transparent border border-gold/40 shadow-glow-gold shrink-0">
-              <span className="font-serif text-lg font-bold tracking-widest text-gold-light">T</span>
+            <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-950/80 border border-gold/40 shadow-glow-gold shrink-0 p-1 overflow-hidden">
+              <img
+                src="/tinda-pos-crest.png"
+                alt="TINDA POS"
+                className="w-full h-full object-contain"
+              />
               <div className="absolute -inset-0.5 rounded-xl bg-gold/10 blur-[4px] -z-10" />
             </div>
             <div className="leading-tight min-w-0">
@@ -357,6 +361,11 @@ export function Navigation({
       {/* ── MOBILE TOP BAR (md:hidden) ── */}
       <header className="md:hidden sticky top-0 z-40 h-14 w-full flex items-center justify-between px-4 bg-[#090A0D]/95 backdrop-blur-xl border-b border-white/10">
         <div className="flex items-center gap-2">
+          <img
+            src="/tinda-pos-crest.png"
+            alt="TINDA POS"
+            className="w-8 h-8 rounded-lg object-contain border border-gold/40 p-0.5 bg-zinc-950 shadow-glow-gold"
+          />
           <span className="font-serif font-bold text-base tracking-[0.2em] uppercase text-stone-100">
             TINDA
           </span>
@@ -496,7 +505,12 @@ export function Navigation({
           />
           <div className="bg-[#0e1015] border-t border-white/10 rounded-t-2xl p-5 max-h-[85vh] overflow-y-auto space-y-5 animate-slide-up shadow-2xl">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
+                <img
+                  src="/tinda-pos-crest.png"
+                  alt="TINDA POS"
+                  className="w-7 h-7 rounded-lg object-contain border border-gold/40 p-0.5 bg-zinc-950 shadow-glow-gold"
+                />
                 <span className="font-serif font-bold text-sm tracking-wider uppercase text-gold">TINDA APPS</span>
                 <span className="text-[10px] font-mono text-stone-500 uppercase tracking-widest">Directory</span>
               </div>

@@ -627,7 +627,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex bg-[#0a0a0c] overflow-y-auto">
+    <div className="fixed inset-0 z-[250] flex flex-col bg-[#0a0a0c] overflow-y-auto">
       {/* ── Background: Official Luxury Damask & Gold Crest Artwork (Gemini_Generated_Image_xuximrxuximrxuxi.jpeg) ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
         <picture>
@@ -653,7 +653,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
       </div>
 
       {/* ── Two-Column Responsive Split Layout (Desktop: 2-Col | Mobile: Full Stack with top bar) ── */}
-      <div className="relative w-full flex flex-col lg:grid lg:grid-cols-2 min-h-svh lg:h-screen lg:max-h-screen">
+      <div className="relative w-full flex flex-col lg:grid lg:grid-cols-2 min-h-full lg:h-screen lg:max-h-screen flex-1">
         {/* Mobile-only compact top bar (takes ~56px, login card fills the rest) */}
         <MobileTopBar terminalId={TERMINAL_ID} />
 
@@ -661,10 +661,10 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
         <HeroPanel terminalId={TERMINAL_ID} />
 
         {/* Right Column (Auth Card) */}
-        <main className="flex flex-col items-center justify-center w-full flex-1 lg:h-full lg:max-h-screen p-3 sm:p-4 lg:p-6 relative z-10 overflow-y-auto custom-scrollbar">
+        <main className="flex flex-col items-center justify-start lg:justify-center w-full flex-1 px-3 py-3 sm:p-4 lg:p-6 relative z-10 lg:overflow-y-auto custom-scrollbar">
 
           {/* Modern Dark Glassmorphism Card with Soft Gold Border Highlight */}
-          <div className="w-full max-w-sm sm:max-w-[440px] glass-vault rounded-3xl border border-gold/35 shadow-vault text-stone-100 animate-fade-in relative overflow-hidden backdrop-blur-3xl bg-zinc-950/90 my-auto p-4 sm:p-5">
+          <div className="w-full max-w-sm sm:max-w-[440px] glass-vault rounded-3xl border border-gold/35 shadow-vault text-stone-100 animate-fade-in relative overflow-hidden backdrop-blur-3xl bg-zinc-950/90 my-2 lg:my-auto p-4 sm:p-5">
 
             {/* Elegant Luxury Verification Loading Overlay */}
             {isVerifying && (
@@ -692,7 +692,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
 
             {/* Top of Card: Luxury Crest Logo + Headline: "LOG IN TO TERMINAL" */}
             <div className="flex flex-col items-center justify-center text-center">
-              <div className="relative mb-2 flex items-center justify-center">
+              <div className="relative mb-2 hidden lg:flex items-center justify-center">
                 <div className="relative flex h-12 w-12 sm:h-13 sm:w-13 items-center justify-center rounded-2xl bg-zinc-950/80 border border-gold/50 shadow-glow-gold p-1 overflow-hidden">
                   <img
                     src="/tinda-pos-crest.png"
@@ -703,7 +703,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                 </div>
               </div>
 
-              <h2 className="font-serif text-lg sm:text-xl font-bold tracking-wider uppercase text-stone-100">
+              <h2 className="font-serif text-base sm:text-xl font-bold tracking-wider uppercase text-stone-100">
                 {step === 'FLOAT' ? 'SHIFT OPENING FLOAT' : step === 'SIGNUP' ? 'REGISTER STORE' : 'LOG IN TO TERMINAL'}
               </h2>
               <p className="font-mono text-[8px] sm:text-[9px] tracking-[0.25em] uppercase text-gold-muted font-medium mt-0.5">
@@ -973,143 +973,139 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
 
               {/* ────────────────── SIGN UP VIEW ────────────────── */}
               {step === 'SIGNUP' && (
-                <form onSubmit={handleSignupSubmit} className="animate-fade-in space-y-4">
-                  <div className="p-4 rounded-2xl bg-zinc-950/60 border border-gold/25 space-y-3">
-                    <p className="font-mono text-[10px] tracking-[0.25em] uppercase text-gold-muted font-semibold flex items-center gap-1.5">
-                      <Store className="h-3.5 w-3.5 text-gold-light" />
-                      <span>Store Profile</span>
-                    </p>
+                <form onSubmit={handleSignupSubmit} className="animate-fade-in space-y-2.5">
 
+                  {/* Section label */}
+                  <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-gold-muted font-semibold flex items-center gap-1.5 px-0.5">
+                    <Store className="h-3 w-3 text-gold-light" />
+                    <span>Store Profile</span>
+                  </p>
+
+                  {/* Store Name */}
+                  <div>
+                    <label className="block text-[9px] font-mono tracking-wider uppercase text-stone-400 mb-1">
+                      Store / Business Name *
+                    </label>
+                    <input
+                      ref={signupStoreInputRef}
+                      type="text"
+                      value={signupStoreName}
+                      onChange={(e) => { setSignupStoreName(e.target.value); setErrorMessage('') }}
+                      placeholder="e.g. Aling Nena's Sari-Sari"
+                      className="w-full h-10 px-3.5 rounded-xl bg-zinc-900/80 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs font-medium placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                    />
+                  </div>
+
+                  {/* Owner Name */}
+                  <div>
+                    <label className="block text-[9px] font-mono tracking-wider uppercase text-stone-400 mb-1">
+                      Owner Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={signupName}
+                      onChange={(e) => { setSignupName(e.target.value); setErrorMessage('') }}
+                      placeholder="e.g. Maria Santos"
+                      className="w-full h-10 px-3.5 rounded-xl bg-zinc-900/80 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs font-medium placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                    />
+                  </div>
+
+                  {/* Divider */}
+                  <div className="pt-1 border-t border-white/[0.06]" />
+
+                  {/* Section label */}
+                  <p className="font-mono text-[9px] tracking-[0.25em] uppercase text-gold-muted font-semibold flex items-center gap-1.5 px-0.5">
+                    <KeyRound className="h-3 w-3 text-gold-light" />
+                    <span>Account Credentials</span>
+                  </p>
+
+                  {/* Username */}
+                  <div>
+                    <label className="block text-[9px] font-mono tracking-wider uppercase text-stone-400 mb-1">
+                      Username (Staff ID) *
+                    </label>
+                    <input
+                      type="text"
+                      value={signupUsername}
+                      onChange={(e) => { setSignupUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '')); setErrorMessage('') }}
+                      placeholder="e.g. mariasari"
+                      className="w-full h-10 px-3 rounded-xl bg-zinc-900/80 border border-white/[0.09] focus:border-gold/60 text-stone-100 text-xs font-mono placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                    />
+                  </div>
+
+                  {/* Contact */}
+                  <div>
+                    <label className="block text-[9px] font-mono tracking-wider uppercase text-stone-400 mb-1">
+                      Contact (Phone / Email)
+                    </label>
+                    <input
+                      type="text"
+                      value={signupEmail}
+                      onChange={(e) => { setSignupEmail(e.target.value); setErrorMessage('') }}
+                      placeholder="e.g. 0917xxxxxxx or email"
+                      className="w-full h-10 px-3 rounded-xl bg-zinc-900/80 border border-white/[0.09] focus:border-gold/60 text-stone-100 text-xs font-mono placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                    />
+                  </div>
+
+                  {/* PIN + Confirm side by side */}
+                  <div className="grid grid-cols-2 gap-2.5">
                     <div>
-                      <label className="block text-[10px] font-mono tracking-wider uppercase text-stone-400 mb-1">
-                        Store / Business Name *
-                      </label>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[9px] font-mono tracking-wider uppercase text-stone-400">PIN *</label>
+                        <button type="button" onClick={() => setShowSignupPin(!showSignupPin)} className="text-stone-500 hover:text-gold-light">
+                          {showSignupPin ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                        </button>
+                      </div>
                       <input
-                        ref={signupStoreInputRef}
-                        type="text"
-                        value={signupStoreName}
-                        onChange={(e) => {
-                          setSignupStoreName(e.target.value)
-                          setErrorMessage('')
-                        }}
-                        placeholder="e.g. Aling Nena's Sari-Sari Store"
-                        className="w-full h-11 px-3.5 rounded-xl bg-zinc-900/80 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-medium placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                        type={showSignupPin ? 'text' : 'password'}
+                        inputMode="numeric"
+                        maxLength={4}
+                        value={signupPin}
+                        onChange={(e) => { setSignupPin(e.target.value.replace(/[^0-9]/g, '')); setErrorMessage('') }}
+                        placeholder="4 digits"
+                        className="w-full h-10 text-center px-2 rounded-xl bg-zinc-900/80 border border-white/[0.09] focus:border-gold/60 text-gold-light font-mono text-sm tracking-widest focus:outline-none shadow-inner"
                       />
                     </div>
-
                     <div>
-                      <label className="block text-[10px] font-mono tracking-wider uppercase text-stone-400 mb-1">
-                        Owner Full Name *
-                      </label>
+                      <label className="block text-[9px] font-mono tracking-wider uppercase text-stone-400 mb-1">Confirm PIN *</label>
                       <input
-                        type="text"
-                        value={signupName}
-                        onChange={(e) => {
-                          setSignupName(e.target.value)
-                          setErrorMessage('')
-                        }}
-                        placeholder="e.g. Maria Santos"
-                        className="w-full h-11 px-3.5 rounded-xl bg-zinc-900/80 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-medium placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                        type={showSignupPin ? 'text' : 'password'}
+                        inputMode="numeric"
+                        maxLength={4}
+                        value={signupConfirmPin}
+                        onChange={(e) => { setSignupConfirmPin(e.target.value.replace(/[^0-9]/g, '')); setErrorMessage('') }}
+                        placeholder="Repeat"
+                        className="w-full h-10 text-center px-2 rounded-xl bg-zinc-900/80 border border-white/[0.09] focus:border-gold/60 text-gold-light font-mono text-sm tracking-widest focus:outline-none shadow-inner"
                       />
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-zinc-950/60 border border-gold/25 space-y-3">
-                    <p className="font-mono text-[10px] tracking-[0.25em] uppercase text-gold-muted font-semibold flex items-center gap-1.5">
-                      <KeyRound className="h-3.5 w-3.5 text-gold-light" />
-                      <span>Security Credentials</span>
-                    </p>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[10px] font-mono tracking-wider uppercase text-stone-400 mb-1">
-                          Staff ID / Username *
-                        </label>
-                        <input
-                          type="text"
-                          value={signupUsername}
-                          onChange={(e) => {
-                            setSignupUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))
-                            setErrorMessage('')
-                          }}
-                          placeholder="e.g. mariasari"
-                          className="w-full h-10 px-3 rounded-xl bg-zinc-900/80 border border-white/[0.09] focus:border-gold/60 text-stone-100 text-xs font-mono placeholder-stone-600 focus:outline-none transition-all shadow-inner"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[10px] font-mono tracking-wider uppercase text-stone-400 mb-1">
-                          Contact Info
-                        </label>
-                        <input
-                          type="text"
-                          value={signupEmail}
-                          onChange={(e) => {
-                            setSignupEmail(e.target.value)
-                            setErrorMessage('')
-                          }}
-                          placeholder="e.g. 0917... or email"
-                          className="w-full h-10 px-3 rounded-xl bg-zinc-900/80 border border-white/[0.09] focus:border-gold/60 text-stone-100 text-xs font-mono placeholder-stone-600 focus:outline-none transition-all shadow-inner"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <label className="text-[10px] font-mono tracking-wider uppercase text-stone-400">PIN *</label>
-                          <button
-                            type="button"
-                            onClick={() => setShowSignupPin(!showSignupPin)}
-                            className="text-stone-500 hover:text-gold-light"
-                          >
-                            {showSignupPin ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
-                          </button>
-                        </div>
-                        <input
-                          type={showSignupPin ? 'text' : 'password'}
-                          maxLength={4}
-                          value={signupPin}
-                          onChange={(e) => {
-                            setSignupPin(e.target.value.replace(/[^0-9]/g, ''))
-                            setErrorMessage('')
-                          }}
-                          placeholder="4 digits"
-                          className="w-full h-10 text-center px-2.5 rounded-xl bg-zinc-900/80 border border-white/[0.09] focus:border-gold/60 text-gold-light font-mono text-xs tracking-wider focus:outline-none shadow-inner"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[10px] font-mono tracking-wider uppercase text-stone-400 mb-1">Confirm PIN *</label>
-                        <input
-                          type={showSignupPin ? 'text' : 'password'}
-                          maxLength={4}
-                          value={signupConfirmPin}
-                          onChange={(e) => {
-                            setSignupConfirmPin(e.target.value.replace(/[^0-9]/g, ''))
-                            setErrorMessage('')
-                          }}
-                          placeholder="Confirm"
-                          className="w-full h-10 text-center px-2.5 rounded-xl bg-zinc-900/80 border border-white/[0.09] focus:border-gold/60 text-gold-light font-mono text-xs tracking-wider focus:outline-none shadow-inner"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
+                  {/* Error */}
                   {errorMessage && (
-                    <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/30 text-xs font-mono text-red-400 text-center animate-fade-in">
+                    <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-[11px] font-mono text-red-400 text-center animate-fade-in">
                       {errorMessage}
                     </div>
                   )}
 
+                  {/* Submit */}
                   <button
                     type="submit"
                     disabled={isVerifying}
-                    className="btn-gold w-full h-12 rounded-2xl flex items-center justify-center gap-2 text-xs font-bold tracking-[0.2em] uppercase shadow-glow-gold hover:shadow-glow-amber transition-all"
+                    className="btn-gold w-full h-12 rounded-2xl flex items-center justify-center gap-2 text-xs font-bold tracking-[0.18em] uppercase shadow-glow-gold hover:shadow-glow-amber transition-all mt-1"
                   >
-                    <UserPlus className="h-4 w-4 text-obsidian-950" />
-                    <span>{isVerifying ? 'REGISTERING...' : 'REGISTER STORE & ENTER SHIFT'}</span>
+                    {isVerifying ? (
+                      <>
+                        <div className="w-3.5 h-3.5 rounded-full border-2 border-obsidian-950 border-t-transparent animate-spin" />
+                        <span>REGISTERING...</span>
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="h-4 w-4 text-obsidian-950" />
+                        <span>CREATE STORE ACCOUNT</span>
+                      </>
+                    )}
                   </button>
+
                 </form>
               )}
 

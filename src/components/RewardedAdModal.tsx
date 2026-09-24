@@ -216,7 +216,7 @@ export function RewardedAdModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/85 backdrop-blur-2xl animate-fade-in">
+    <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-obsidian-950/85 backdrop-blur-2xl animate-fade-in">
       {/* ── VIDEO AD PLAYER SCREEN ── */}
       {isPlayingAd ? (
         <div className="relative w-full max-w-lg rounded-3xl bg-zinc-950 border border-gold/40 shadow-vault p-6 text-center overflow-hidden animate-scale-up">

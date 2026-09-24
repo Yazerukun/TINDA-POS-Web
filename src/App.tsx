@@ -662,7 +662,7 @@ export default function App(): React.JSX.Element {
         isMasterAdmin={vaultSession?.isMasterAdmin ?? false}
       />
       {/* HARD GATE: Full app lockout when store shift pass expires — non-master-admin */}
-      {!isVaultLocked && vaultSession && !vaultSession.isMasterAdmin && !proAccess.isPro && (
+      {!isVaultLocked && vaultSession && !vaultSession.isMasterAdmin && !proAccess.isPro && !proAccess.gateModalOpen && (
         <div className="fixed inset-0 z-[200] bg-zinc-950/98 backdrop-blur-2xl flex flex-col items-center justify-center p-6 text-center">
           <div className="max-w-md w-full space-y-6">
             <div className="h-20 w-20 mx-auto rounded-3xl bg-rose-950/60 border border-rose-700/40 flex items-center justify-center">

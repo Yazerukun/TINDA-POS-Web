@@ -35,6 +35,7 @@ export interface VaultSession {
   isMasterAdmin?: boolean
   username?: string
   storeName?: string
+  avatarUrl?: string
 }
 
 interface VaultAuthModalProps {
@@ -541,7 +542,8 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
       isAdmin: authenticatedUser.role === 'ADMIN',
       isMasterAdmin: isMaster,
       username: authenticatedUser.username,
-      storeName: userStoreName
+      storeName: userStoreName,
+      avatarUrl: authenticatedUser.avatar_url
     }
 
     const isNewAccount = !!authenticatedUser.created_at &&

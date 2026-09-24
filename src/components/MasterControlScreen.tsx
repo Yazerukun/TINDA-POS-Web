@@ -836,11 +836,26 @@ export function MasterControlScreen({
                           {owner && (
                             <tr className="hover:bg-white/[0.02] transition-colors">
                               <td className="py-3 px-3">
-                                <div className="font-semibold text-stone-100 flex items-center gap-1.5">
-                                  {isPlatformMasterStore && <Crown className="w-3.5 h-3.5 text-gold" />}
-                                  <span>{owner.name}</span>
+                                <div className="flex items-center gap-2.5">
+                                  {owner.avatar_url ? (
+                                    <img
+                                      src={owner.avatar_url}
+                                      alt={owner.name}
+                                      className="w-8 h-8 rounded-xl object-cover border border-gold/40 shadow-glow-gold shrink-0"
+                                    />
+                                  ) : (
+                                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-300 to-[#D4AF37] text-obsidian-950 font-serif font-bold text-xs flex items-center justify-center shrink-0">
+                                      {owner.name.substring(0, 2).toUpperCase()}
+                                    </div>
+                                  )}
+                                  <div>
+                                    <div className="font-semibold text-stone-100 flex items-center gap-1.5">
+                                      {isPlatformMasterStore && <Crown className="w-3.5 h-3.5 text-gold" />}
+                                      <span>{owner.name}</span>
+                                    </div>
+                                    <div className="text-[10px] font-mono text-stone-400">@{owner.username}</div>
+                                  </div>
                                 </div>
-                                <div className="text-[10px] font-mono text-stone-400">@{owner.username}</div>
                               </td>
                               <td className="py-3 px-3">
                                 <span className={`px-2 py-0.5 rounded-md font-mono text-[9px] font-bold uppercase tracking-wider ${
@@ -907,8 +922,23 @@ export function MasterControlScreen({
                           {staffList.map((staff) => (
                             <tr key={staff.id || staff.username} className="hover:bg-white/[0.02] transition-colors">
                               <td className="py-3 px-3">
-                                <div className="font-semibold text-stone-200">{staff.name}</div>
-                                <div className="text-[10px] font-mono text-stone-400">@{staff.username}</div>
+                                <div className="flex items-center gap-2.5">
+                                  {staff.avatar_url ? (
+                                    <img
+                                      src={staff.avatar_url}
+                                      alt={staff.name}
+                                      className="w-8 h-8 rounded-xl object-cover border border-white/20 shrink-0"
+                                    />
+                                  ) : (
+                                    <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-white/10 text-stone-300 font-serif font-bold text-xs flex items-center justify-center shrink-0">
+                                      {staff.name.substring(0, 2).toUpperCase()}
+                                    </div>
+                                  )}
+                                  <div>
+                                    <div className="font-semibold text-stone-200">{staff.name}</div>
+                                    <div className="text-[10px] font-mono text-stone-400">@{staff.username}</div>
+                                  </div>
+                                </div>
                               </td>
                               <td className="py-3 px-3">
                                 <span className={`px-2 py-0.5 rounded-md font-mono text-[9px] font-bold uppercase tracking-wider ${

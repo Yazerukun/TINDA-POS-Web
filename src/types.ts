@@ -131,6 +131,7 @@ export interface UserAccount {
   owner_username?: string
   is_owner?: boolean
   email?: string
+  avatar_url?: string
 }
 
 export interface ExpenseCategory {

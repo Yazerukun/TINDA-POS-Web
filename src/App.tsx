@@ -18,6 +18,7 @@ import { CheckoutModal } from './components/CheckoutModal'
 import { VaultAuthModal, type VaultSession } from './components/VaultAuthModal'
 import { RewardedAdModal } from './components/RewardedAdModal'
 import { MasterControlScreen } from './components/MasterControlScreen'
+import { UserProfileModal } from './components/UserProfileModal'
 import { useProAccess } from './services/proAccess'
 
 export default function App(): React.JSX.Element {
@@ -47,6 +48,36 @@ export default function App(): React.JSX.Element {
     }
   })
   const [isVaultLocked, setIsVaultLocked] = useState<boolean>(!vaultSession)
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
+
+  // Sync avatar with IndexedDB
+  useEffect(() => {
+    const syncSessionAvatar = async () => {
+      if (!vaultSession?.username) return
+      try {
+        const u = await db.users.where('username').equalsIgnoreCase(vaultSession.username).first()
+        if (u && u.avatar_url && u.avatar_url !== vaultSession.avatarUrl) {
+          const updated = { ...vaultSession, avatarUrl: u.avatar_url }
+          setVaultSession(updated)
+          localStorage.setItem('tinda_vault_session', JSON.stringify(updated))
+        }
+      } catch (err) {
+        console.error('Failed to sync avatar:', err)
+      }
+    }
+    syncSessionAvatar()
+  }, [vaultSession?.username, vaultSession?.avatarUrl])
+
+  const handleUpdateAvatar = (avatarUrl?: string) => {
+    if (!vaultSession) return
+    const updated = { ...vaultSession, avatarUrl }
+    setVaultSession(updated)
+    try {
+      localStorage.setItem('tinda_vault_session', JSON.stringify(updated))
+    } catch {
+      // ignore
+    }
+  }
 
   // Checkout modal state
   const [checkoutData, setCheckoutData] = useState<{
@@ -366,6 +397,8 @@ export default function App(): React.JSX.Element {
         lowStockCount={lowStockCount}
         cashierName={vaultSession?.cashierName || 'Master Admin'}
         cashierRole={vaultSession?.cashierRole || 'Administrator'}
+        avatarUrl={vaultSession?.avatarUrl}
+        onOpenProfile={() => setIsProfileModalOpen(true)}
         onLockTerminal={handleLockTerminal}
         onOpenPriceGuide={handleOpenPriceGuide}
         onOpenExpiration={handleOpenExpiration}
@@ -400,9 +433,23 @@ export default function App(): React.JSX.Element {
               Terminal <span className="text-gold-light font-bold">{vaultSession?.terminalId || 'TRM-8891'}</span>
             </span>
             <span className="text-stone-600">•</span>
-            <span className="font-mono text-[11px] text-stone-400">
-              Cashier: <span className="text-stone-200 font-semibold">{vaultSession?.cashierName || 'Staff'}</span> ({vaultSession?.cashierRole || 'Staff'})
-            </span>
+            <button
+              type="button"
+              onClick={() => setIsProfileModalOpen(true)}
+              className="flex items-center gap-2 font-mono text-[11px] text-stone-400 hover:text-white transition-colors cursor-pointer"
+              title="View & Edit Account Profile"
+            >
+              {vaultSession?.avatarUrl ? (
+                <img
+                  src={vaultSession.avatarUrl}
+                  alt={vaultSession?.cashierName || 'Cashier'}
+                  className="w-5 h-5 rounded-full object-cover border border-amber-400/40"
+                />
+              ) : null}
+              <span>
+                Cashier: <span className="text-stone-200 font-semibold">{vaultSession?.cashierName || 'Staff'}</span> ({vaultSession?.cashierRole || 'Staff'})
+              </span>
+            </button>
           </div>
 
           {vaultSession?.isMasterAdmin ? (
@@ -516,8 +563,13 @@ export default function App(): React.JSX.Element {
             onRefreshAll={loadData}
             isAdmin={isUserAdmin}
             currentCashierName={vaultSession?.cashierName}
+            currentCashierRole={vaultSession?.cashierRole}
             currentSessionStoreName={activeStoreName}
             isMasterAdmin={vaultSession?.isMasterAdmin || false}
+            currentUserId={vaultSession?.userId}
+            currentUsername={vaultSession?.username}
+            currentUserAvatar={vaultSession?.avatarUrl}
+            onUpdateAvatar={handleUpdateAvatar}
           />
         )}
 
@@ -573,6 +625,20 @@ export default function App(): React.JSX.Element {
         onClose={() => setIsExpirationOpen(false)}
         products={products}
         onProductsUpdated={loadData}
+      />
+
+      {/* User Profile & Avatar Modal */}
+      <UserProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        currentUserId={vaultSession?.userId}
+        currentUsername={vaultSession?.username}
+        currentCashierName={vaultSession?.cashierName || 'Cashier'}
+        currentCashierRole={vaultSession?.cashierRole || 'Staff'}
+        currentStoreName={vaultSession?.storeName || activeStoreName}
+        currentAvatarUrl={vaultSession?.avatarUrl}
+        isMasterAdmin={vaultSession?.isMasterAdmin || false}
+        onUpdateAvatar={handleUpdateAvatar}
       />
 
       {/* Rewarded Ad & Pro Time-Bank Gatekeeper Modal */}

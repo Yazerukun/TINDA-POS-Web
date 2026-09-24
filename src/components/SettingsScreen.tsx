@@ -17,10 +17,14 @@ import {
   Check,
   X,
   UserCheck,
-  UserX
+  UserX,
+  Camera,
+  Crown,
+  User
 } from 'lucide-react'
 import type { StoreSettings, UserAccount, UserRole } from '../types'
 import { downloadBackupFile, importTindaBackup } from '../utils/backup'
+import { compressImageFile } from '../utils/image'
 import { db, initDatabase } from '../db'
 
 interface SettingsScreenProps {
@@ -29,8 +33,13 @@ interface SettingsScreenProps {
   onRefreshAll: () => void
   isAdmin?: boolean
   currentCashierName?: string
+  currentCashierRole?: string
   currentSessionStoreName?: string
   isMasterAdmin?: boolean
+  currentUserId?: number
+  currentUsername?: string
+  currentUserAvatar?: string
+  onUpdateAvatar?: (avatarUrl?: string) => void
 }
 
 export function SettingsScreen({
@@ -39,13 +48,23 @@ export function SettingsScreen({
   onRefreshAll,
   isAdmin = true,
   currentCashierName,
+  currentCashierRole,
   currentSessionStoreName,
-  isMasterAdmin = false
+  isMasterAdmin = false,
+  currentUserId,
+  currentUsername,
+  currentUserAvatar,
+  onUpdateAvatar
 }: SettingsScreenProps): React.JSX.Element {
   const [form, setForm] = useState<StoreSettings>(settings)
   const [saved, setSaved] = useState(false)
   const [importing, setImporting] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Current User Account state
+  const [currentUser, setCurrentUser] = useState<UserAccount | null>(null)
+  const [isUploadingCurrentAvatar, setIsUploadingCurrentAvatar] = useState(false)
+  const myFileInputRef = useRef<HTMLInputElement>(null)
 
   // Staff accounts state
   const [users, setUsers] = useState<UserAccount[]>([])
@@ -59,24 +78,37 @@ export function SettingsScreen({
   const [newUsername, setNewUsername] = useState('')
   const [newUserRole, setNewUserRole] = useState<UserRole>('CASHIER')
   const [newUserPin, setNewUserPin] = useState('')
+  const [newUserAvatar, setNewUserAvatar] = useState<string | undefined>(undefined)
   const [userFormError, setUserFormError] = useState('')
   const [userSuccessMessage, setUserSuccessMessage] = useState('')
+  const newUserAvatarInputRef = useRef<HTMLInputElement>(null)
 
   const loadUsers = useCallback(async () => {
     try {
-      let allUsers = await db.users.toArray()
+      const allUsers = await db.users.toArray()
 
       // STRICT MULTI-TENANT ISOLATION: Only show staff belonging to the active store
       const targetStore = currentSessionStoreName || (isMasterAdmin ? 'PLATFORM_HQ' : settings.store_name)
-      allUsers = allUsers.filter(u => u.store_name === targetStore)
+      const storeUsers = allUsers.filter(u => u.store_name === targetStore)
+      setUsers(storeUsers)
 
-      setUsers(allUsers)
+      // Identify currently logged in user
+      if (currentUserId) {
+        const found = allUsers.find(u => u.id === currentUserId)
+        if (found) setCurrentUser(found)
+      } else if (currentUsername) {
+        const found = allUsers.find(u => u.username.toLowerCase() === currentUsername.toLowerCase())
+        if (found) setCurrentUser(found)
+      } else if (currentCashierName) {
+        const found = allUsers.find(u => u.name.toLowerCase() === currentCashierName.toLowerCase())
+        if (found) setCurrentUser(found)
+      }
     } catch (err) {
       console.error('Error loading users:', err)
     } finally {
       setLoadingUsers(false)
     }
-  }, [isMasterAdmin, currentSessionStoreName])
+  }, [isMasterAdmin, currentSessionStoreName, currentUserId, currentUsername, currentCashierName, settings.store_name])
 
   useEffect(() => {
     loadUsers()
@@ -163,7 +195,8 @@ export function SettingsScreen({
         created_at: new Date().toISOString(),
         store_name: currentSessionStoreName || settings.store_name,
         owner_username: currentCashierName,
-        is_owner: false
+        is_owner: false,
+        avatar_url: newUserAvatar
       })
 
       setUserSuccessMessage(`User "${trimmedName}" successfully created!`)
@@ -174,11 +207,137 @@ export function SettingsScreen({
       setNewUsername('')
       setNewUserRole('CASHIER')
       setNewUserPin('')
+      setNewUserAvatar(undefined)
       setShowAddUserModal(false)
       await loadUsers()
     } catch (err) {
       console.error('Failed to create user:', err)
       setUserFormError('Failed to save user to database.')
+    }
+  }
+
+  const handleUploadMyAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.')
+      return
+    }
+
+    setIsUploadingCurrentAvatar(true)
+    try {
+      const dataUrl = await compressImageFile(file, 320, 320, 0.85)
+
+      if (currentUser?.id) {
+        await db.users.update(currentUser.id, { avatar_url: dataUrl })
+      } else if (currentUsername) {
+        const existing = await db.users.where('username').equalsIgnoreCase(currentUsername).first()
+        if (existing?.id) {
+          await db.users.update(existing.id, { avatar_url: dataUrl })
+        } else {
+          await db.users.add({
+            username: currentUsername,
+            name: currentCashierName || 'Staff Member',
+            role: isMasterAdmin ? 'ADMIN' : 'CASHIER',
+            pin: '1234',
+            status: 'ACTIVE',
+            created_at: new Date().toISOString(),
+            avatar_url: dataUrl,
+            store_name: currentSessionStoreName || settings.store_name,
+            is_owner: isMasterAdmin
+          })
+        }
+      }
+
+      onUpdateAvatar?.(dataUrl)
+      setUserSuccessMessage('Your profile picture has been updated!')
+      setTimeout(() => setUserSuccessMessage(''), 3000)
+      await loadUsers()
+    } catch (err) {
+      console.error('Failed to upload profile picture:', err)
+      alert('Failed to upload image. Please try another photo.')
+    } finally {
+      setIsUploadingCurrentAvatar(false)
+      if (myFileInputRef.current) myFileInputRef.current.value = ''
+    }
+  }
+
+  const handleRemoveMyAvatar = async () => {
+    if (!confirm('Are you sure you want to remove your profile picture?')) return
+    setIsUploadingCurrentAvatar(true)
+    try {
+      if (currentUser?.id) {
+        await db.users.update(currentUser.id, { avatar_url: undefined })
+      } else if (currentUsername) {
+        const existing = await db.users.where('username').equalsIgnoreCase(currentUsername).first()
+        if (existing?.id) {
+          await db.users.update(existing.id, { avatar_url: undefined })
+        }
+      }
+      onUpdateAvatar?.(undefined)
+      setUserSuccessMessage('Profile picture removed.')
+      setTimeout(() => setUserSuccessMessage(''), 3000)
+      await loadUsers()
+    } catch (err) {
+      console.error('Failed to remove avatar:', err)
+    } finally {
+      setIsUploadingCurrentAvatar(false)
+    }
+  }
+
+  const handleStaffAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>, targetUser: UserAccount) => {
+    const file = e.target.files?.[0]
+    if (!file || !targetUser.id) return
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.')
+      return
+    }
+
+    try {
+      const dataUrl = await compressImageFile(file, 320, 320, 0.85)
+      await db.users.update(targetUser.id, { avatar_url: dataUrl })
+
+      // If updating self
+      if (targetUser.id === currentUser?.id || (currentUsername && targetUser.username.toLowerCase() === currentUsername.toLowerCase())) {
+        onUpdateAvatar?.(dataUrl)
+      }
+
+      setUserSuccessMessage(`Updated profile picture for ${targetUser.name}!`)
+      setTimeout(() => setUserSuccessMessage(''), 3000)
+      await loadUsers()
+    } catch (err) {
+      console.error('Failed to upload staff photo:', err)
+      alert('Failed to update staff photo.')
+    }
+  }
+
+  const handleRemoveStaffAvatar = async (targetUser: UserAccount) => {
+    if (!targetUser.id) return
+    if (!confirm(`Are you sure you want to remove the profile picture for ${targetUser.name}?`)) return
+    try {
+      await db.users.update(targetUser.id, { avatar_url: undefined })
+      if (targetUser.id === currentUser?.id || (currentUsername && targetUser.username.toLowerCase() === currentUsername.toLowerCase())) {
+        onUpdateAvatar?.(undefined)
+      }
+      setUserSuccessMessage(`Removed profile picture for ${targetUser.name}.`)
+      setTimeout(() => setUserSuccessMessage(''), 3000)
+      await loadUsers()
+    } catch (err) {
+      console.error('Failed to remove staff photo:', err)
+    }
+  }
+
+  const handleNewUserAvatarSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    try {
+      const dataUrl = await compressImageFile(file, 320, 320, 0.85)
+      setNewUserAvatar(dataUrl)
+    } catch (err) {
+      console.error('Failed to compress avatar:', err)
+      setUserFormError('Failed to process image.')
     }
   }
 
@@ -237,6 +396,91 @@ export function SettingsScreen({
         <p className="text-xs text-slate-400">
           Configure store profile, manage staff accounts, and download offline backup archives.
         </p>
+      </div>
+
+      {/* ── YOUR PROFILE & AVATAR CARD ── */}
+      <div className="glass-panel rounded-3xl border border-gold/30 p-6 shadow-2xl bg-gradient-to-r from-amber-500/[0.08] via-zinc-950 to-zinc-950 relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5">
+          <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+            <div className="relative group">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-gold/60 shadow-glow-gold bg-zinc-900 flex items-center justify-center">
+                {currentUser?.avatar_url || currentUserAvatar ? (
+                  <img
+                    src={currentUser?.avatar_url || currentUserAvatar}
+                    alt={currentCashierName || 'User'}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-amber-300 to-[#D4AF37] flex items-center justify-center text-obsidian-950 font-serif font-black text-2xl">
+                    {(currentCashierName || 'User').substring(0, 2).toUpperCase()}
+                  </div>
+                )}
+                {isUploadingCurrentAvatar && (
+                  <div className="absolute inset-0 bg-black/75 flex items-center justify-center">
+                    <RefreshCw className="w-5 h-5 text-gold animate-spin" />
+                  </div>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => myFileInputRef.current?.click()}
+                disabled={isUploadingCurrentAvatar}
+                className="absolute -bottom-1 -right-1 p-1.5 rounded-lg bg-amber-500 text-obsidian-950 font-bold hover:bg-amber-400 transition-all shadow-md"
+                title="Upload Photo"
+              >
+                <Camera className="w-3.5 h-3.5" />
+              </button>
+              <input
+                ref={myFileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleUploadMyAvatar}
+                className="hidden"
+              />
+            </div>
+
+            <div>
+              <div className="flex items-center gap-2 justify-center sm:justify-start flex-wrap">
+                <h3 className="text-base font-bold text-white flex items-center gap-1.5">
+                  {isMasterAdmin && <Crown className="w-4 h-4 text-gold" />}
+                  <span>{currentCashierName || 'Staff Member'}</span>
+                </h3>
+                <span className="px-2 py-0.5 rounded-full bg-amber-500/15 border border-gold/30 text-gold-light font-mono text-[10px] font-bold uppercase">
+                  {currentCashierRole || (isMasterAdmin ? 'Master Admin' : 'Staff')}
+                </span>
+              </div>
+              {currentUsername && (
+                <p className="text-xs font-mono text-stone-400 mt-0.5">@{currentUsername}</p>
+              )}
+              <p className="text-xs text-stone-400 mt-1">
+                Your profile picture is saved to your account and displayed across your terminal sessions.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => myFileInputRef.current?.click()}
+              disabled={isUploadingCurrentAvatar}
+              className="btn-press flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-gold/40 text-gold-light font-bold text-xs transition-all"
+            >
+              <Camera className="w-4 h-4" />
+              <span>{currentUser?.avatar_url || currentUserAvatar ? 'Change Photo' : 'Upload Photo'}</span>
+            </button>
+            {(currentUser?.avatar_url || currentUserAvatar) && (
+              <button
+                type="button"
+                onClick={handleRemoveMyAvatar}
+                disabled={isUploadingCurrentAvatar}
+                className="btn-press flex items-center gap-1 px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-semibold transition-all"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Remove</span>
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Cloudflare Edge Status Card */}
@@ -313,13 +557,21 @@ export function SettingsScreen({
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`h-9 w-9 rounded-xl flex items-center justify-center font-serif font-bold text-xs shrink-0 ${
-                      isMaster
-                        ? 'bg-gradient-to-br from-amber-300 to-amber-500 text-black shadow-glow-gold'
-                        : 'bg-zinc-900 border border-white/10 text-stone-200'
-                    }`}>
-                      {u.name.substring(0, 2).toUpperCase()}
-                    </div>
+                    {u.avatar_url ? (
+                      <img
+                        src={u.avatar_url}
+                        alt={u.name}
+                        className="h-10 w-10 rounded-xl object-cover border border-gold/40 shadow-glow-gold shrink-0"
+                      />
+                    ) : (
+                      <div className={`h-10 w-10 rounded-xl flex items-center justify-center font-serif font-bold text-xs shrink-0 ${
+                        isMaster
+                          ? 'bg-gradient-to-br from-amber-300 to-amber-500 text-black shadow-glow-gold'
+                          : 'bg-zinc-900 border border-white/10 text-stone-200'
+                      }`}>
+                        {u.name.substring(0, 2).toUpperCase()}
+                      </div>
+                    )}
 
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
@@ -391,6 +643,31 @@ export function SettingsScreen({
                         >
                           <Key className="h-3 w-3 text-gold-muted" />
                           <span className="text-[11px]">PIN</span>
+                        </button>
+                      )}
+
+                      {/* Photo management for staff */}
+                      <label
+                        className="btn-press px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-stone-300 hover:text-gold-light hover:border-gold/40 text-xs flex items-center gap-1 cursor-pointer"
+                        title={u.avatar_url ? 'Change Photo' : 'Upload Photo'}
+                      >
+                        <Camera className="h-3 w-3 text-gold-muted" />
+                        <span className="text-[11px] hidden sm:inline">{u.avatar_url ? 'Photo' : '+ Photo'}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleStaffAvatarUpload(e, u)}
+                          className="hidden"
+                        />
+                      </label>
+
+                      {u.avatar_url && (
+                        <button
+                          onClick={() => handleRemoveStaffAvatar(u)}
+                          className="btn-press p-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs"
+                          title="Remove Photo"
+                        >
+                          <Trash2 className="h-3 w-3" />
                         </button>
                       )}
 
@@ -517,6 +794,46 @@ export function SettingsScreen({
                   <option value="INVENTORY_LEAD">Inventory Lead (POS Counter + Inventory Management)</option>
                   <option value="ADMIN">Master Admin (Full Access + Staff Management)</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  Profile Photo (Optional)
+                </label>
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl border border-white/10 bg-zinc-950 flex items-center justify-center overflow-hidden shrink-0">
+                    {newUserAvatar ? (
+                      <img src={newUserAvatar} alt="Staff Preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <Camera className="w-5 h-5 text-stone-500" />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => newUserAvatarInputRef.current?.click()}
+                      className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-stone-300 hover:text-white text-xs font-semibold"
+                    >
+                      {newUserAvatar ? 'Change Photo' : 'Choose Photo'}
+                    </button>
+                    {newUserAvatar && (
+                      <button
+                        type="button"
+                        onClick={() => setNewUserAvatar(undefined)}
+                        className="px-2.5 py-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    ref={newUserAvatarInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleNewUserAvatarSelect}
+                    className="hidden"
+                  />
+                </div>
               </div>
 
               <div className="pt-2 flex justify-end gap-2.5">

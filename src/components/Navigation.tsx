@@ -40,6 +40,8 @@ interface NavigationProps {
   lowStockCount?: number
   cashierName: string
   cashierRole: string
+  avatarUrl?: string
+  onOpenProfile?: () => void
   onLockTerminal: () => void
   onOpenPriceGuide?: () => void
   onOpenExpiration?: () => void
@@ -56,6 +58,8 @@ export function Navigation({
   lowStockCount,
   cashierName,
   cashierRole,
+  avatarUrl,
+  onOpenProfile,
   onLockTerminal,
   onOpenPriceGuide,
   onOpenExpiration,
@@ -333,19 +337,32 @@ export function Navigation({
             </div>
           )}
 
-          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-zinc-950/60 border border-white/5">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-[#D4AF37] text-obsidian-950 text-xs font-serif font-bold shadow-sm">
-              {cashierInitials}
-            </div>
-            <div className="flex flex-col min-w-0 text-left">
-              <span className="text-xs font-semibold text-stone-200 truncate leading-tight">
+          <button
+            type="button"
+            onClick={onOpenProfile}
+            className="flex items-center gap-3 p-2.5 rounded-xl bg-zinc-950/60 border border-white/5 hover:border-gold/40 hover:bg-zinc-900/80 transition-all text-left group w-full cursor-pointer"
+            title="View & Edit Profile"
+          >
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={cashierName}
+                className="h-9 w-9 shrink-0 rounded-xl object-cover border border-gold/40 shadow-glow-gold"
+              />
+            ) : (
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-[#D4AF37] text-obsidian-950 text-xs font-serif font-bold shadow-sm">
+                {cashierInitials}
+              </div>
+            )}
+            <div className="flex flex-col min-w-0 text-left flex-1">
+              <span className="text-xs font-semibold text-stone-200 truncate leading-tight group-hover:text-gold-light transition-colors">
                 {cashierName}
               </span>
               <span className="text-[10px] text-stone-500 font-mono truncate leading-tight mt-0.5">
                 {cashierRole}
               </span>
             </div>
-          </div>
+          </button>
 
           <button
             onClick={onLockTerminal}
@@ -398,14 +415,27 @@ export function Navigation({
             </button>
           )}
 
-          <div className="flex items-center gap-2 px-2 py-1 rounded-lg bg-zinc-900/60 border border-white/5">
-            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-[#D4AF37] text-black text-[10px] font-serif font-bold">
-              {cashierInitials}
-            </div>
+          <button
+            type="button"
+            onClick={onOpenProfile}
+            className="flex items-center gap-2 px-2 py-1 rounded-lg bg-zinc-900/60 border border-white/5 hover:border-gold/40 transition-all text-left"
+            title="View & Edit Profile"
+          >
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={cashierName}
+                className="h-6 w-6 shrink-0 rounded-full object-cover border border-gold/40"
+              />
+            ) : (
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-[#D4AF37] text-black text-[10px] font-serif font-bold">
+                {cashierInitials}
+              </div>
+            )}
             <span className="text-[11px] text-stone-300 font-medium truncate max-w-[80px]">
               {cashierName.split(' ')[0]}
             </span>
-          </div>
+          </button>
 
           <button
             onClick={onLockTerminal}
@@ -714,15 +744,31 @@ export function Navigation({
 
             {/* User Profile & Log Out */}
             <div className="pt-3 border-t border-white/10 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-gold/20 border border-gold/40 flex items-center justify-center font-bold text-xs text-gold">
-                  {cashierInitials}
-                </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileDrawerOpen(false)
+                  onOpenProfile?.()
+                }}
+                className="flex items-center gap-2.5 text-left group"
+                title="View & Edit Profile"
+              >
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt={cashierName}
+                    className="w-8 h-8 rounded-full object-cover border border-gold/40 shadow-glow-gold"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-gold/20 border border-gold/40 flex items-center justify-center font-bold text-xs text-gold">
+                    {cashierInitials}
+                  </div>
+                )}
                 <div className="text-xs">
-                  <div className="font-semibold text-stone-200">{cashierName}</div>
-                  <div className="text-[10px] text-stone-500">{cashierRole}</div>
+                  <div className="font-semibold text-stone-200 group-hover:text-gold-light transition-colors">{cashierName}</div>
+                  <div className="text-[10px] text-stone-500 font-mono">{cashierRole}</div>
                 </div>
-              </div>
+              </button>
               <button
                 onClick={() => {
                   setMobileDrawerOpen(false)

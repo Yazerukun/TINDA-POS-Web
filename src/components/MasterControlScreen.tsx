@@ -3,7 +3,8 @@ import {
   ShieldCheck, Crown, Store, Users, UserPlus, Search,
   Lock, KeyRound, CheckCircle2, AlertTriangle, RefreshCw,
   Clock, Download, ChevronDown, ChevronRight, Eye, EyeOff,
-  Sparkles, Radio, Shield, Trash2, Edit3, X
+  Sparkles, Radio, Shield, Trash2, Edit3, X, Copy, Check,
+  Zap, ExternalLink, Play, Wallet, Calendar, LogIn
 } from 'lucide-react'
 import { db } from '../db'
 import type { UserAccount, UserRole, StoreSettings, ProAccessState } from '../types'
@@ -12,12 +13,14 @@ interface MasterControlScreenProps {
   currentCashierName?: string
   isMasterAdmin: boolean
   onRefreshAll?: () => void
+  onMasqueradeStore?: (storeName: string, owner?: UserAccount) => void
 }
 
 export function MasterControlScreen({
   currentCashierName = 'Ian Muyco',
   isMasterAdmin,
-  onRefreshAll
+  onRefreshAll,
+  onMasqueradeStore
 }: MasterControlScreenProps): React.JSX.Element {
   const [users, setUsers] = useState<UserAccount[]>([])
   const [loading, setLoading] = useState(true)
@@ -26,6 +29,15 @@ export function MasterControlScreen({
   const [adStats, setAdStats] = useState<ProAccessState | null>(null)
   const [totalTransactions, setTotalTransactions] = useState<number>(0)
   const [expandedStores, setExpandedStores] = useState<Record<string, boolean>>({})
+
+  // Store Pass & Token Authority State
+  const [passTargetStore, setPassTargetStore] = useState<{
+    storeName: string
+    owner?: UserAccount
+  } | null>(null)
+  const [passOwnerState, setPassOwnerState] = useState<ProAccessState | null>(null)
+  const [loadingPassState, setLoadingPassState] = useState(false)
+  const [copiedUserId, setCopiedUserId] = useState<number | null>(null)
 
   // Modal: Add New Store / Merchant
   const [showAddStoreModal, setShowAddStoreModal] = useState(false)
@@ -267,26 +279,186 @@ export function MasterControlScreen({
     }
   }
 
-  // Export Ledger JSON
-  const handleExportLedger = () => {
-    const exportPayload = {
-      exported_at: new Date().toISOString(),
-      platform: 'TINDA POS Web Platform',
-      master_admin: 'skorts188@gmail.com',
-      total_stores: Object.keys(storesGrouped).length,
-      total_users: users.length,
-      users: users,
-      ad_monetization_state: adStats
+  // Open Store Pass Authority Modal
+  const handleOpenStorePassModal = async (storeName: string, owner?: UserAccount) => {
+    setPassTargetStore({ storeName, owner })
+    setLoadingPassState(true)
+    try {
+      if (owner?.id) {
+        const rec = await db.settings.get(`pro_access_state_u${owner.id}`)
+        if (rec?.value) {
+          setPassOwnerState(rec.value)
+        } else {
+          setPassOwnerState({
+            pro_expires_at: 0,
+            tokens: 0,
+            last_ad_watched_at: 0,
+            total_ads_watched: 0,
+            owner_bypass: false
+          })
+        }
+      } else {
+        setPassOwnerState(null)
+      }
+    } catch (e) {
+      console.error('Failed to load store pass state:', e)
+    } finally {
+      setLoadingPassState(false)
+    }
+  }
+
+  // Master Authority: Grant Shift Time
+  const handleGrantTime = async (hours: number) => {
+    if (!passTargetStore?.owner?.id) return
+    const ownerId = passTargetStore.owner.id
+    const addMs = hours * 60 * 60 * 1000
+    const currentBase = Math.max(Date.now(), passOwnerState?.pro_expires_at || 0)
+    const newExpiry = currentBase + addMs
+
+    const updated: ProAccessState = {
+      pro_expires_at: newExpiry,
+      tokens: passOwnerState?.tokens || 0,
+      last_ad_watched_at: passOwnerState?.last_ad_watched_at || 0,
+      total_ads_watched: passOwnerState?.total_ads_watched || 0,
+      owner_bypass: passOwnerState?.owner_bypass || false
     }
 
-    const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `tinda-pos-platform-ledger-${new Date().toISOString().slice(0, 10)}.json`
-    a.click()
-    URL.revokeObjectURL(url)
-    showToast('Platform ledger exported as JSON')
+    try {
+      await db.settings.put({ key: `pro_access_state_u${ownerId}`, value: updated })
+      setPassOwnerState(updated)
+      const days = hours / 24
+      showToast(`⚡ Granted +${days >= 1 ? `${days} Day(s)` : `${hours} Hours`} to ${passTargetStore.storeName}!`)
+    } catch (e) {
+      showToast('Failed to update store pass', 'error')
+    }
+  }
+
+  // Master Authority: Grant Tokens to Wallet
+  const handleGrantTokens = async (amount: number) => {
+    if (!passTargetStore?.owner?.id) return
+    const ownerId = passTargetStore.owner.id
+    const updated: ProAccessState = {
+      pro_expires_at: passOwnerState?.pro_expires_at || 0,
+      tokens: (passOwnerState?.tokens || 0) + amount,
+      last_ad_watched_at: passOwnerState?.last_ad_watched_at || 0,
+      total_ads_watched: passOwnerState?.total_ads_watched || 0,
+      owner_bypass: passOwnerState?.owner_bypass || false
+    }
+
+    try {
+      await db.settings.put({ key: `pro_access_state_u${ownerId}`, value: updated })
+      setPassOwnerState(updated)
+      showToast(`🪙 Granted +${amount} Tokens to ${passTargetStore.storeName}!`)
+    } catch (e) {
+      showToast('Failed to grant tokens', 'error')
+    }
+  }
+
+  // Master Authority: Toggle VIP Bypass
+  const handleToggleVipBypass = async () => {
+    if (!passTargetStore?.owner?.id) return
+    const ownerId = passTargetStore.owner.id
+    const newBypass = !passOwnerState?.owner_bypass
+    const updated: ProAccessState = {
+      pro_expires_at: passOwnerState?.pro_expires_at || 0,
+      tokens: passOwnerState?.tokens || 0,
+      last_ad_watched_at: passOwnerState?.last_ad_watched_at || 0,
+      total_ads_watched: passOwnerState?.total_ads_watched || 0,
+      owner_bypass: newBypass
+    }
+
+    try {
+      await db.settings.put({ key: `pro_access_state_u${ownerId}`, value: updated })
+      setPassOwnerState(updated)
+      showToast(newBypass ? `👑 Lifetime VIP Bypass ENABLED for ${passTargetStore.storeName}!` : `VIP Bypass DISABLED for ${passTargetStore.storeName}`)
+    } catch (e) {
+      showToast('Failed to toggle VIP bypass', 'error')
+    }
+  }
+
+  // Master Authority: Expire Store Pass Immediately
+  const handleExpireStorePassNow = async () => {
+    if (!passTargetStore?.owner?.id) return
+    const ownerId = passTargetStore.owner.id
+    const updated: ProAccessState = {
+      pro_expires_at: Date.now() - 1000,
+      tokens: passOwnerState?.tokens || 0,
+      last_ad_watched_at: passOwnerState?.last_ad_watched_at || 0,
+      total_ads_watched: passOwnerState?.total_ads_watched || 0,
+      owner_bypass: false
+    }
+
+    try {
+      await db.settings.put({ key: `pro_access_state_u${ownerId}`, value: updated })
+      setPassOwnerState(updated)
+      showToast(`🔴 Expired pass for ${passTargetStore.storeName}! Store features locked.`, 'info')
+    } catch (e) {
+      showToast('Failed to expire pass', 'error')
+    }
+  }
+
+  // 1-Click Copy PIN
+  const handleCopyPin = (pin: string, username: string, userId?: number) => {
+    if (userId) {
+      setCopiedUserId(userId)
+      setTimeout(() => setCopiedUserId(null), 2000)
+    }
+    try {
+      navigator.clipboard.writeText(pin)
+      showToast(`Copied PIN "${pin}" for @${username}`)
+    } catch {
+      showToast(`PIN is: ${pin}`)
+    }
+  }
+
+  // Full Platform Master Database Backup JSON
+  const handleExportFullMasterBackup = async () => {
+    try {
+      const [allUsers, allProducts, allCategories, allTx, allCust, allSettings, allExpenses] = await Promise.all([
+        db.users.toArray(),
+        db.products.toArray(),
+        db.categories.toArray(),
+        db.transactions.toArray(),
+        db.customers.toArray(),
+        db.settings.toArray(),
+        db.expenses.toArray()
+      ])
+
+      const masterBackup = {
+        exported_at: new Date().toISOString(),
+        platform: 'TINDA POS Executive Retail Cloud',
+        master_admin: 'skorts188@gmail.com',
+        database_version: 1,
+        stats: {
+          total_stores: Object.keys(storesGrouped).length,
+          total_users: allUsers.length,
+          total_products: allProducts.length,
+          total_transactions: allTx.length,
+          total_expenses: allExpenses.length
+        },
+        data: {
+          users: allUsers,
+          products: allProducts,
+          categories: allCategories,
+          transactions: allTx,
+          customers: allCust,
+          expenses: allExpenses,
+          settings: allSettings
+        }
+      }
+
+      const blob = new Blob([JSON.stringify(masterBackup, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `tinda-pos-FULL-MASTER-BACKUP-${new Date().toISOString().slice(0, 10)}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+      showToast('Full Platform Database Backup exported successfully!')
+    } catch (err) {
+      console.error('Backup error:', err)
+      showToast('Failed to export master backup', 'error')
+    }
   }
 
   // Group Users by Store
@@ -394,11 +566,12 @@ export function MasterControlScreen({
             </button>
 
             <button
-              onClick={handleExportLedger}
-              className="btn-press px-3.5 py-2.5 rounded-xl bg-zinc-900/80 border border-white/[0.08] hover:border-gold/40 text-stone-300 hover:text-stone-100 text-xs font-mono flex items-center gap-2 transition-all"
+              onClick={handleExportFullMasterBackup}
+              className="btn-press px-3.5 py-2.5 rounded-xl bg-zinc-900/80 border border-white/[0.08] hover:border-gold/40 text-stone-300 hover:text-stone-100 text-xs font-mono flex items-center gap-2 transition-all shadow-sm"
+              title="Download full database JSON backup"
             >
-              <Download className="w-3.5 h-3.5" />
-              <span>Export Ledger</span>
+              <Download className="w-3.5 h-3.5 text-gold-light" />
+              <span>Full Master Backup</span>
             </button>
 
             <button
@@ -476,19 +649,22 @@ export function MasterControlScreen({
           <p className="text-[10px] font-mono text-stone-400 mt-1">Transactions recorded</p>
         </div>
 
-        {/* Ads Engine Status */}
+        {/* Monetag Revenue Engine Status */}
         <div className="p-4 sm:p-5 rounded-2xl glass-card border border-gold/30 relative overflow-hidden bg-amber-500/[0.03]">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-gold-light">
-              Ads Monetization
+              Monetag Ads Engine
             </span>
             <Sparkles className="w-4 h-4 text-gold" />
           </div>
-          <div className="font-serif text-2xl sm:text-3xl font-bold text-gold-light">
-            {adStats?.total_ads_watched || 0}
+          <div className="flex items-baseline gap-2">
+            <span className="font-serif text-2xl sm:text-3xl font-bold text-gold-light">
+              {adStats?.total_ads_watched || 0}
+            </span>
+            <span className="text-[10px] font-mono text-emerald-400 font-bold">● Active</span>
           </div>
-          <p className="text-[10px] font-mono text-gold-muted mt-1">
-            30s Cooldown · Required for users
+          <p className="text-[10px] font-mono text-gold-muted mt-1 truncate">
+            Zones 11879014 &amp; 11879016 Live
           </p>
         </div>
       </div>
@@ -590,7 +766,29 @@ export function MasterControlScreen({
                   </div>
 
                   {/* Store Actions */}
-                  <div className="flex items-center gap-2 self-end sm:self-auto">
+                  <div className="flex items-center gap-2 self-end sm:self-auto flex-wrap">
+                    {!isPlatformMasterStore && onMasqueradeStore && (
+                      <button
+                        onClick={() => onMasqueradeStore(storeName, owner)}
+                        className="btn-press px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-gold/40 text-gold-light font-mono text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm"
+                        title={`Manage ${storeName} POS as Master Admin`}
+                      >
+                        <LogIn className="w-3.5 h-3.5" />
+                        <span>Enter Store</span>
+                      </button>
+                    )}
+
+                    {!isPlatformMasterStore && owner && (
+                      <button
+                        onClick={() => handleOpenStorePassModal(storeName, owner)}
+                        className="btn-press px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-mono text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm"
+                        title="Manage Store Pass, Time & Tokens"
+                      >
+                        <Zap className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>Manage Pass</span>
+                      </button>
+                    )}
+
                     {!isPlatformMasterStore && (
                       <button
                         onClick={() => {
@@ -665,6 +863,17 @@ export function MasterControlScreen({
                                   >
                                     {revealedPins[owner.id || 0] ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
                                   </button>
+                                  <button
+                                    onClick={() => handleCopyPin(owner.pin, owner.username, owner.id)}
+                                    className="p-1 text-stone-500 hover:text-gold-light transition-colors"
+                                    title="Copy PIN"
+                                  >
+                                    {copiedUserId === owner.id ? (
+                                      <Check className="w-3 h-3 text-emerald-400" />
+                                    ) : (
+                                      <Copy className="w-3 h-3" />
+                                    )}
+                                  </button>
                                 </div>
                               </td>
                               <td className="py-3 px-3 font-mono text-[11px]">
@@ -721,6 +930,17 @@ export function MasterControlScreen({
                                     title="Toggle PIN Visibility"
                                   >
                                     {revealedPins[staff.id || 0] ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                                  </button>
+                                  <button
+                                    onClick={() => handleCopyPin(staff.pin, staff.username, staff.id)}
+                                    className="p-1 text-stone-500 hover:text-gold-light transition-colors"
+                                    title="Copy PIN"
+                                  >
+                                    {copiedUserId === staff.id ? (
+                                      <Check className="w-3 h-3 text-emerald-400" />
+                                    ) : (
+                                      <Copy className="w-3 h-3" />
+                                    )}
                                   </button>
                                 </div>
                               </td>
@@ -1055,6 +1275,144 @@ export function MasterControlScreen({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ── MODAL: STORE PASS & TOKEN AUTHORITY (MASTER OVERRIDE) ── */}
+      {passTargetStore && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/85 backdrop-blur-2xl animate-fade-in">
+          <div className="w-full max-w-lg rounded-3xl glass-vault border border-gold/50 p-6 sm:p-7 shadow-vault text-stone-100 animate-scale-up space-y-5">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+              <div className="flex items-center gap-2.5">
+                <div className="h-10 w-10 rounded-2xl bg-amber-500/20 border border-gold/40 flex items-center justify-center text-gold-light">
+                  <Zap className="w-5 h-5 text-gold-light" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-bold text-base text-stone-100 uppercase tracking-wide">
+                    Store Pass Authority
+                  </h3>
+                  <p className="text-[11px] font-mono text-gold-muted">
+                    {passTargetStore.storeName} &bull; Owner @{passTargetStore.owner?.username || 'unknown'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setPassTargetStore(null)}
+                className="text-stone-400 hover:text-stone-200 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {loadingPassState ? (
+              <div className="py-8 text-center text-xs font-mono text-stone-400">
+                <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-gold-light" />
+                <span>Loading store pass records...</span>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {/* Status summary */}
+                <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-zinc-950/80 border border-white/[0.08]">
+                  <div>
+                    <span className="text-[10px] font-mono uppercase text-stone-400 block">
+                      Current Shift Pass
+                    </span>
+                    <span className="font-mono text-xs sm:text-sm font-bold text-gold-light block truncate">
+                      {passOwnerState?.owner_bypass
+                        ? '👑 LIFETIME VIP BYPASS'
+                        : passOwnerState?.pro_expires_at && passOwnerState.pro_expires_at > Date.now()
+                        ? `${Math.ceil((passOwnerState.pro_expires_at - Date.now()) / (1000 * 3600))} Hours Remaining`
+                        : '00:00:00 (EXPIRED)'}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-mono uppercase text-stone-400 block">
+                      Token Balance
+                    </span>
+                    <span className="font-mono text-xs sm:text-sm font-bold text-emerald-300 block truncate">
+                      {passOwnerState?.tokens || 0} Tokens ({((passOwnerState?.tokens || 0) / 3).toFixed(1)} Days)
+                    </span>
+                  </div>
+                </div>
+
+                {/* 1-Click Time Grant */}
+                <div className="space-y-2">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">
+                    1-Click VIP Time Grant (Bypasses Ads)
+                  </span>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      onClick={() => handleGrantTime(24)}
+                      className="py-2 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-gold/30 text-gold-light font-mono text-xs font-bold transition-all text-center"
+                    >
+                      +1 Day (24h)
+                    </button>
+                    <button
+                      onClick={() => handleGrantTime(168)}
+                      className="py-2 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-gold/30 text-gold-light font-mono text-xs font-bold transition-all text-center"
+                    >
+                      +7 Days (1wk)
+                    </button>
+                    <button
+                      onClick={() => handleGrantTime(720)}
+                      className="py-2 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-gold/30 text-gold-light font-mono text-xs font-bold transition-all text-center"
+                    >
+                      +30 Days (1mo)
+                    </button>
+                  </div>
+                </div>
+
+                {/* Grant Tokens to Wallet */}
+                <div className="space-y-2">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block">
+                    Grant Tokens to Store Wallet
+                  </span>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      onClick={() => handleGrantTokens(3)}
+                      className="py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/[0.08] text-stone-200 font-mono text-xs font-bold transition-all text-center"
+                    >
+                      +3 Tokens (1d)
+                    </button>
+                    <button
+                      onClick={() => handleGrantTokens(9)}
+                      className="py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/[0.08] text-stone-200 font-mono text-xs font-bold transition-all text-center"
+                    >
+                      +9 Tokens (3d)
+                    </button>
+                    <button
+                      onClick={() => handleGrantTokens(30)}
+                      className="py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/[0.08] text-stone-200 font-mono text-xs font-bold transition-all text-center"
+                    >
+                      +30 Tokens (10d)
+                    </button>
+                  </div>
+                </div>
+
+                {/* Supreme Overrides */}
+                <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between gap-3 flex-wrap">
+                  <button
+                    onClick={handleToggleVipBypass}
+                    className={`py-2 px-3.5 rounded-xl font-mono text-xs font-bold transition-all border ${
+                      passOwnerState?.owner_bypass
+                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                        : 'bg-zinc-900 text-stone-300 border-white/[0.1] hover:border-gold/40'
+                    }`}
+                  >
+                    {passOwnerState?.owner_bypass ? '👑 VIP Bypass Active (Disable)' : '👑 Grant Lifetime VIP Bypass'}
+                  </button>
+
+                  <button
+                    onClick={handleExpireStorePassNow}
+                    className="py-2 px-3.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-mono text-xs font-bold transition-all"
+                  >
+                    🔴 Expire & Lock Now
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

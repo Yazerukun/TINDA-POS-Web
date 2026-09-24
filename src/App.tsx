@@ -58,6 +58,35 @@ export default function App(): React.JSX.Element {
     quickTender_c?: number
   } | null>(null)
 
+  // Master Admin Store Masquerade / Impersonate State
+  const [masqueradeSession, setMasqueradeSession] = useState<{
+    originalSession: VaultSession
+    activeStore: string
+  } | null>(null)
+
+  const handleMasqueradeStore = (targetStoreName: string) => {
+    if (!vaultSession) return
+    setMasqueradeSession({
+      originalSession: vaultSession,
+      activeStore: targetStoreName
+    })
+
+    setVaultSession({
+      ...vaultSession,
+      storeName: targetStoreName,
+      cashierName: `Master Admin (${targetStoreName})`
+    })
+
+    setActiveTab('pos')
+  }
+
+  const handleExitMasquerade = () => {
+    if (!masqueradeSession) return
+    setVaultSession(masqueradeSession.originalSession)
+    setMasqueradeSession(null)
+    setActiveTab('master-control')
+  }
+
   // Load all data from Dexie
   const loadData = useCallback(async () => {
     try {
@@ -294,6 +323,22 @@ export default function App(): React.JSX.Element {
 
       {/* Main Screen Router */}
       <main className="flex-1 min-w-0 overflow-y-auto pb-20 md:pb-6 flex flex-col">
+        {/* Master Admin Masquerade / Store Impersonate Top Bar */}
+        {masqueradeSession && (
+          <div className="bg-gradient-to-r from-amber-600 via-gold to-amber-500 text-obsidian-950 px-4 py-2 flex items-center justify-between shadow-xl sticky top-0 z-50 animate-fade-in font-mono text-xs">
+            <div className="flex items-center gap-2 font-bold tracking-wide">
+              <Crown className="w-4 h-4 fill-current text-obsidian-950" />
+              <span>MASQUERADE MODE: Managing Store "{masqueradeSession.activeStore}" as Master Admin</span>
+            </div>
+            <button
+              onClick={handleExitMasquerade}
+              className="bg-obsidian-950 text-gold-light hover:bg-zinc-900 border border-gold/40 px-3 py-1 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
+            >
+              <span>↩ Return to Master Control</span>
+            </button>
+          </div>
+        )}
+
         {/* Desktop Top Status Bar with real-time shift time limit */}
         <div className="hidden md:flex items-center justify-between px-6 py-2.5 bg-obsidian-950/80 backdrop-blur-md border-b border-white/[0.06] sticky top-0 z-30">
           <div className="flex items-center gap-3">
@@ -423,6 +468,7 @@ export default function App(): React.JSX.Element {
             currentCashierName={vaultSession?.cashierName}
             isMasterAdmin={vaultSession?.isMasterAdmin || false}
             onRefreshAll={loadData}
+            onMasqueradeStore={handleMasqueradeStore}
           />
         )}
       </main>

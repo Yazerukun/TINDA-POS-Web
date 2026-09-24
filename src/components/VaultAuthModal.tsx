@@ -560,6 +560,12 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
             <Clock className="h-3 w-3" />
             Terminal {TERMINAL_ID} · Private session · {new Date().toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit', hour12: true })}
           </p>
+
+          <div className="mt-3 flex items-center justify-center gap-4 text-[10px] font-mono text-stone-500">
+            <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className="hover:text-gold-light transition-colors underline decoration-stone-700">Privacy Policy</a>
+            <span>•</span>
+            <a href="/terms.html" target="_blank" rel="noopener noreferrer" className="hover:text-gold-light transition-colors underline decoration-stone-700">Terms of Service</a>
+          </div>
         </main>
       </div>
     </div>

@@ -428,6 +428,21 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
       setAuthenticatedUser(user)
       setIsVerifying(false)
       setStep('FLOAT')
+
+      // Fire-and-forget: sync this local account to D1 cloud on every login
+      // This captures accounts created BEFORE cloud sync was deployed
+      syncUserToCloud({
+        username: user.username,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        pin: user.pin,
+        status: user.status ?? 'ACTIVE',
+        store_name: user.store_name,
+        is_owner: user.is_owner ?? false,
+        avatar_url: user.avatar_url,
+        created_at: user.created_at
+      }).catch(() => {})
     } catch (err) {
       console.error('Login error:', err)
       setErrorMessage('A database error occurred. Please try again.')

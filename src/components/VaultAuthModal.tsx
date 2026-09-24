@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import {
   Fingerprint,
-  WifiOff,
+  Cloud,
   ShieldCheck,
   ServerCog,
   Lock,
@@ -52,9 +52,9 @@ const FEATURES = [
     desc: 'Individual employee credentials with full audit log'
   },
   {
-    icon: WifiOff,
-    title: 'Offline-First Resilience',
-    desc: 'Full register capability with or without internet'
+    icon: Cloud,
+    title: 'Real-Time Cloud Synchronization',
+    desc: 'Live cloud updates, multi-device backup, and realtime ledger sync'
   },
   {
     icon: ShieldCheck,

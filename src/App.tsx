@@ -460,6 +460,7 @@ export default function App(): React.JSX.Element {
         onExpireTest={proAccess.expireNowForTesting}
         ownerBypass={proAccess.state.owner_bypass}
         onToggleOwnerBypass={proAccess.toggleOwnerBypass}
+        isMasterAdmin={vaultSession?.isMasterAdmin ?? false}
       />
     </div>
   )

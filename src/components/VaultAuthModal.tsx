@@ -144,6 +144,10 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
   const [openingFloat, setOpeningFloat] = useState(200000) // ₱2,000.00 in centavos
   const [customFloatInput, setCustomFloatInput] = useState('2000')
 
+  // Security: Brute-force lockout state
+  const [failedAttempts, setFailedAttempts] = useState(0)
+  const [lockoutUntil, setLockoutUntil] = useState<number>(0)
+
   // Store Owner Sign Up form state
   const [signupStoreName, setSignupStoreName] = useState('')
   const [signupName, setSignupName] = useState('')
@@ -169,6 +173,11 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
   if (!isOpen) return null
 
   const handleKeypadPress = (digit: string) => {
+    if (Date.now() < lockoutUntil) {
+      const waitSec = Math.ceil((lockoutUntil - Date.now()) / 1000)
+      setErrorMessage(`Security Lockout: Too many failed attempts. Wait ${waitSec}s.`)
+      return
+    }
     if (pin.length < 16) {
       const nextPin = pin + digit
       setPin(nextPin)
@@ -188,6 +197,12 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
 
   const handleLoginSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault()
+    if (Date.now() < lockoutUntil) {
+      const waitSec = Math.ceil((lockoutUntil - Date.now()) / 1000)
+      setErrorMessage(`Security Lockout: Too many failed attempts. Please wait ${waitSec}s.`)
+      return
+    }
+
     const trimmedUser = username.trim()
     if (!trimmedUser) {
       setErrorMessage('Please enter your username or email.')
@@ -231,6 +246,8 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
           masterUser.pin = 'muyco155'
         }
 
+        setFailedAttempts(0)
+        setLockoutUntil(0)
         setAuthenticatedUser(masterUser)
         setIsVerifying(false)
         setStep('FLOAT')
@@ -267,13 +284,22 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
       }
 
       if (!user || user.status !== 'ACTIVE' || user.pin !== pin) {
-        setErrorMessage('Authentication failed. Invalid username or PIN.')
+        const nextFails = failedAttempts + 1
+        setFailedAttempts(nextFails)
+        if (nextFails >= 5) {
+          setLockoutUntil(Date.now() + 30000)
+          setErrorMessage('Security Alert: 5 failed attempts. Terminal locked for 30 seconds.')
+        } else {
+          setErrorMessage(`Authentication failed. Invalid username or PIN. (${5 - nextFails} attempts remaining)`)
+        }
         setPin('')
         setIsVerifying(false)
         return
       }
 
       // Successful authentication
+      setFailedAttempts(0)
+      setLockoutUntil(0)
       setAuthenticatedUser(user)
       setIsVerifying(false)
       setStep('FLOAT')
@@ -461,7 +487,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                 <div className="leading-tight">
                   <p className="font-serif text-xs sm:text-sm font-bold tracking-[0.18em] uppercase text-stone-100">TINDA POS</p>
                   <p className="font-mono text-[7px] sm:text-[8px] tracking-[0.22em] uppercase text-gold-muted font-medium">
-                    {step === 'SIGNUP' ? 'Staff Registration' : 'Terminal Sign In'}
+                    {step === 'SIGNUP' ? 'Store Registration' : 'Terminal Sign In'}
                   </p>
                 </div>
               </div>
@@ -469,12 +495,50 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                                px-2 py-1 sm:px-3 sm:py-1.5
                                font-mono text-[9px] sm:text-[10px] tracking-[0.18em] uppercase text-gold-light">
                 {step === 'LOGIN' ? <KeyRound className="h-3 w-3" /> : step === 'SIGNUP' ? <UserPlus className="h-3 w-3" /> : <Banknote className="h-3 w-3" />}
-                {step === 'LOGIN' ? 'Step 1 · Credential' : step === 'SIGNUP' ? 'Register' : 'Step 2 · Float'}
+                {step === 'LOGIN' ? 'Step 1 · Credential' : step === 'SIGNUP' ? 'Register Store' : 'Step 2 · Float'}
               </span>
             </div>
 
+            {/* Quick Mode Switcher Tabs for Mobile & Desktop */}
+            {step !== 'FLOAT' && (
+              <div className="px-5 pt-4 sm:px-7">
+                <div className="grid grid-cols-2 p-1 rounded-xl bg-zinc-950/80 border border-white/[0.08]">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep('LOGIN')
+                      setErrorMessage('')
+                    }}
+                    className={`py-2 rounded-lg text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5 ${
+                      step === 'LOGIN'
+                        ? 'bg-gold/20 text-gold-light border border-gold/40 shadow-sm'
+                        : 'text-stone-400 hover:text-stone-200'
+                    }`}
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span>Sign In</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep('SIGNUP')
+                      setErrorMessage('')
+                    }}
+                    className={`py-2 rounded-lg text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5 ${
+                      step === 'SIGNUP'
+                        ? 'bg-gold/20 text-gold-light border border-gold/40 shadow-sm'
+                        : 'text-stone-400 hover:text-stone-200'
+                    }`}
+                  >
+                    <UserPlus className="w-3.5 h-3.5" />
+                    <span>Register Store</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Card body */}
-            <div className="px-5 pb-5 pt-4 sm:px-7 sm:pb-7 sm:pt-6">
+            <div className="px-5 pb-5 pt-3 sm:px-7 sm:pb-7 sm:pt-4">
               {step === 'SIGNUP' ? (
                 <form onSubmit={handleSignupSubmit} className="animate-fade-in space-y-3 sm:space-y-3.5">
                   {/* Store Name */}
@@ -642,7 +706,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                         autoCapitalize="none"
                         autoCorrect="off"
                         spellCheck="false"
-                        placeholder="e.g. skorts188@gmail.com or admin"
+                        placeholder="Enter username or email"
                         className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-xl bg-zinc-950/70 border border-white/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-medium tracking-wide placeholder-stone-600 focus:outline-none transition-all shadow-inner"
                       />
                     </div>
@@ -766,9 +830,10 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                     type="button"
                     onClick={() => {
                       setErrorMessage('')
+                      setSignupStoreName('')
                       setSignupName('')
                       setSignupUsername('')
-                      setSignupRole('CASHIER')
+                      setSignupEmail('')
                       setSignupPin('')
                       setSignupConfirmPin('')
                       setStep('SIGNUP')

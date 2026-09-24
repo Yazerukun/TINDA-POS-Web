@@ -4,6 +4,7 @@ import {
   Play,
   Sparkles,
   ShieldCheck,
+  ShieldAlert,
   AlertCircle,
   X,
   Volume2,
@@ -11,9 +12,11 @@ import {
   CheckCircle2,
   Zap,
   Gift,
-  Coins
+  Coins,
+  RefreshCw
 } from 'lucide-react'
 import confetti from 'canvas-confetti'
+import { useAdBlocker } from '../services/adBlocker'
 
 interface RewardedAdModalProps {
   open: boolean
@@ -30,6 +33,7 @@ interface RewardedAdModalProps {
   onExpireTest: () => void
   ownerBypass: boolean
   onToggleOwnerBypass: (enabled: boolean) => void
+  isMasterAdmin?: boolean
 }
 
 export function RewardedAdModal({
@@ -46,7 +50,8 @@ export function RewardedAdModal({
   onGrantReward,
   onExpireTest,
   ownerBypass,
-  onToggleOwnerBypass
+  onToggleOwnerBypass,
+  isMasterAdmin = false
 }: RewardedAdModalProps): React.JSX.Element | null {
   const [isPlayingAd, setIsPlayingAd] = useState(false)
   const [adSecondsLeft, setAdSecondsLeft] = useState(20)
@@ -55,6 +60,10 @@ export function RewardedAdModal({
   const [adSuccessMessage, setAdSuccessMessage] = useState<string | null>(null)
   const [showDevTools, setShowDevTools] = useState(false)
   const adTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const adStartTimeRef = useRef<number>(0)
+
+  // Real-time AdBlocker detection
+  const { isBlocked: isAdBlockerActive, isChecking: isCheckingAdBlocker, checkAdBlocker } = useAdBlocker()
 
   // Clean up timer on unmount
   useEffect(() => {
@@ -68,8 +77,14 @@ export function RewardedAdModal({
   // Start watching ad
   const handleStartWatch = (minutes: number) => {
     if (!canWatchAd) return
+    if (isAdBlockerActive && !isMasterAdmin) {
+      alert('Ad Blocker Detected! Please disable your ad blocker or Brave Shields on this site to watch the sponsor ad and unlock Pro access.')
+      return
+    }
+
     setRewardMinutesToGrant(minutes)
     setAdSecondsLeft(20)
+    adStartTimeRef.current = performance.now()
     setIsPlayingAd(true)
     setAdSuccessMessage(null)
 
@@ -78,7 +93,7 @@ export function RewardedAdModal({
       setAdSecondsLeft((prev) => {
         if (prev <= 1) {
           if (adTimerRef.current) clearInterval(adTimerRef.current)
-          handleAdCompleted(minutes)
+          handleAdCompleted(minutes, false)
           return 0
         }
         return prev - 1
@@ -86,10 +101,12 @@ export function RewardedAdModal({
     }, 1000)
   }
 
-  // Fast test ad (3 seconds)
+  // Fast test ad (3 seconds) - Only permitted for Master Admin
   const handleFastTestAd = (minutes: number) => {
+    if (!isMasterAdmin) return
     setRewardMinutesToGrant(minutes)
     setAdSecondsLeft(3)
+    adStartTimeRef.current = performance.now()
     setIsPlayingAd(true)
     setAdSuccessMessage(null)
 
@@ -98,7 +115,7 @@ export function RewardedAdModal({
       setAdSecondsLeft((prev) => {
         if (prev <= 1) {
           if (adTimerRef.current) clearInterval(adTimerRef.current)
-          handleAdCompleted(minutes)
+          handleAdCompleted(minutes, true)
           return 0
         }
         return prev - 1
@@ -106,8 +123,18 @@ export function RewardedAdModal({
     }, 1000)
   }
 
-  // Completed 20s ad
-  const handleAdCompleted = (minutes: number) => {
+  // Completed 20s ad with anti-tamper verification
+  const handleAdCompleted = (minutes: number, isFastTest = false) => {
+    // Anti-Tamper check: ensure full duration elapsed
+    if (!isFastTest) {
+      const elapsedSeconds = (performance.now() - adStartTimeRef.current) / 1000
+      if (elapsedSeconds < 18.5 && !isMasterAdmin) {
+        console.warn('Ad playback tampering detected: elapsed time is too short.')
+        setIsPlayingAd(false)
+        return
+      }
+    }
+
     setIsPlayingAd(false)
     onGrantReward(minutes)
     setAdSuccessMessage(`+${minutes} Minutes Pro Access Added Successfully!`)
@@ -248,6 +275,33 @@ export function RewardedAdModal({
             </div>
           )}
 
+          {/* AdBlocker Warning Banner */}
+          {isAdBlockerActive && !isMasterAdmin && (
+            <div className="mb-4 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3 animate-fade-in">
+              <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+              <div className="text-xs">
+                <p className="font-semibold text-amber-200">
+                  Ad Blocker Detected (Brave Shield / uBlock / AdBlock)
+                </p>
+                <p className="text-stone-300 mt-1 leading-relaxed">
+                  TINDA POS is 100% free supported by sponsor ads. Please whitelist or disable your Ad Blocker / Brave Shields on this site to unlock Pro features.
+                </p>
+                <p className="text-stone-400 mt-1 italic text-[11px]">
+                  (Palihug i-disable o i-pause imong Ad Blocker aron maka-watch ug sponsor ad ug ma-unlock imong Pro shift.)
+                </p>
+                <button
+                  type="button"
+                  onClick={() => checkAdBlocker()}
+                  disabled={isCheckingAdBlocker}
+                  className="mt-2.5 px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-amber-300 font-mono text-[11px] font-semibold flex items-center gap-1.5 transition-colors"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isCheckingAdBlocker ? 'animate-spin' : ''}`} />
+                  <span>{isCheckingAdBlocker ? 'Re-checking...' : 'I disabled it, Re-check now'}</span>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Current Pro Status Card */}
           <div
             className={`p-4 rounded-2xl border mb-5 flex items-center justify-between ${
@@ -312,7 +366,7 @@ export function RewardedAdModal({
               </div>
 
               <button
-                disabled={!canWatchAd}
+                disabled={!canWatchAd || (isAdBlockerActive && !isMasterAdmin)}
                 onClick={() => handleStartWatch(60)}
                 className="btn-gold px-3.5 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-1.5 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
@@ -338,7 +392,7 @@ export function RewardedAdModal({
               </div>
 
               <button
-                disabled={!canWatchAd}
+                disabled={!canWatchAd || (isAdBlockerActive && !isMasterAdmin)}
                 onClick={() => handleStartWatch(120)}
                 className="btn-gold px-3.5 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-1.5 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
@@ -364,7 +418,7 @@ export function RewardedAdModal({
               </div>
 
               <button
-                disabled={!canWatchAd}
+                disabled={!canWatchAd || (isAdBlockerActive && !isMasterAdmin)}
                 onClick={() => handleStartWatch(180)}
                 className="btn-gold px-3.5 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-1.5 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
@@ -388,17 +442,19 @@ export function RewardedAdModal({
               Free Sales Counter always remains 100% active.
             </span>
 
-            <button
-              type="button"
-              onClick={() => setShowDevTools(!showDevTools)}
-              className="text-[10px] font-mono text-stone-500 hover:text-stone-300 transition-colors"
-            >
-              {showDevTools ? 'Hide Test Tools' : '🧪 Test Tools'}
-            </button>
+            {isMasterAdmin && (
+              <button
+                type="button"
+                onClick={() => setShowDevTools(!showDevTools)}
+                className="text-[10px] font-mono text-stone-500 hover:text-stone-300 transition-colors"
+              >
+                {showDevTools ? 'Hide Test Tools' : '🧪 Test Tools'}
+              </button>
+            )}
           </div>
 
-          {/* Quick Testing Tools for Ian */}
-          {showDevTools && (
+          {/* Quick Testing Tools - Strictly Master Admin Only */}
+          {isMasterAdmin && showDevTools && (
             <div className="mt-3 p-3 rounded-xl bg-zinc-900/90 border border-white/[0.08] space-y-2 text-xs font-mono text-stone-300">
               <div className="flex items-center justify-between">
                 <span>Fast 3-Second Test Ad:</span>

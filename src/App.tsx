@@ -15,9 +15,12 @@ import { PriceGuideModal } from './components/PriceGuideModal'
 import { ExpirationTrackerModal } from './components/ExpirationTrackerModal'
 import { CheckoutModal } from './components/CheckoutModal'
 import { VaultAuthModal, type VaultSession } from './components/VaultAuthModal'
+import { RewardedAdModal } from './components/RewardedAdModal'
+import { useProAccess } from './services/proAccess'
 
 export default function App(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard')
+  const proAccess = useProAccess()
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -200,19 +203,53 @@ export default function App(): React.JSX.Element {
       vaultSession?.cashierRole?.toLowerCase().includes('admin') ||
       !vaultSession)
 
+  // Pro Feature Gatekeeper Tab Selection
+  const handleSelectTab = (tab: ActiveTab) => {
+    const PRO_TABS: Record<string, string> = {
+      analytics: 'Analytics & Z-Readings',
+      expenses: 'Expenses Tracker',
+      suppliers: 'Suppliers Directory',
+    }
+
+    if (PRO_TABS[tab]) {
+      proAccess.requireProFeature(PRO_TABS[tab], () => {
+        setActiveTab(tab)
+      })
+      return
+    }
+
+    setActiveTab(tab)
+  }
+
+  // Fast Tools Pro Gatekeeper
+  const handleOpenPriceGuide = () => {
+    proAccess.requireProFeature('DTI Price Guide & SRP Matcher', () => {
+      setIsPriceGuideOpen(true)
+    })
+  }
+
+  const handleOpenExpiration = () => {
+    proAccess.requireProFeature('Shelf Life Expiry Watch', () => {
+      setIsExpirationOpen(true)
+    })
+  }
+
   return (
     <div className="min-h-screen bg-obsidian-950 text-stone-100 flex flex-col md:flex-row selection:bg-amber-400 selection:text-obsidian-950 font-sans">
       {/* Executive Vertical Navigation Sidebar & Mobile Bottom Nav */}
       <Navigation
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleSelectTab}
         cartCount={cart.reduce((s, i) => s + i.quantity, 0)}
         lowStockCount={lowStockCount}
         cashierName={vaultSession?.cashierName || 'Master Admin'}
         cashierRole={vaultSession?.cashierRole || 'Administrator'}
         onLockTerminal={handleLockTerminal}
-        onOpenPriceGuide={() => setIsPriceGuideOpen(true)}
-        onOpenExpiration={() => setIsExpirationOpen(true)}
+        onOpenPriceGuide={handleOpenPriceGuide}
+        onOpenExpiration={handleOpenExpiration}
+        proFormattedTime={proAccess.formattedTime}
+        isPro={proAccess.isPro}
+        onOpenProModal={() => proAccess.openRewardModal('Account Pro Access')}
       />
 
       {/* Main Screen Router */}
@@ -224,10 +261,10 @@ export default function App(): React.JSX.Element {
             customers={customers}
             expenses={expenses}
             settings={settings}
-            onNavigate={(tab) => setActiveTab(tab)}
+            onNavigate={handleSelectTab}
             onQuickRestock={handleQuickRestock}
-            onOpenPriceGuide={() => setIsPriceGuideOpen(true)}
-            onOpenExpiration={() => setIsExpirationOpen(true)}
+            onOpenPriceGuide={handleOpenPriceGuide}
+            onOpenExpiration={handleOpenExpiration}
           />
         )}
 
@@ -341,6 +378,25 @@ export default function App(): React.JSX.Element {
         products={products}
         onProductsUpdated={loadData}
       />
+
+      {/* Rewarded Ad & Pro Time-Bank Gatekeeper Modal */}
+      <RewardedAdModal
+        open={proAccess.gateModalOpen}
+        onClose={proAccess.closeRewardModal}
+        blockedFeatureName={proAccess.pendingFeatureName}
+        formattedTime={proAccess.formattedTime}
+        isPro={proAccess.isPro}
+        remainingSeconds={proAccess.remainingSeconds}
+        cooldownRemaining={proAccess.cooldownRemaining}
+        canWatchAd={proAccess.canWatchAd}
+        totalAdsWatched={proAccess.state.total_ads_watched}
+        tokens={proAccess.state.tokens}
+        onGrantReward={proAccess.grantRewardMinutes}
+        onExpireTest={proAccess.expireNowForTesting}
+        ownerBypass={proAccess.state.owner_bypass}
+        onToggleOwnerBypass={proAccess.toggleOwnerBypass}
+      />
     </div>
   )
 }
+

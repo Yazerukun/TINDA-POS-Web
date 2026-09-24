@@ -200,6 +200,10 @@ export interface ZReadRecord {
   net_profit_c: number
   transaction_count: number
   items_sold_count: number
+}export interface ProAccessState {
+  pro_expires_at: number // unix timestamp ms
+  tokens: number
+  last_ad_watched_at: number // unix timestamp ms
+  total_ads_watched: number
+  owner_bypass: boolean
 }
-
-

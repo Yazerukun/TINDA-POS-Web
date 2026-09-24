@@ -14,7 +14,9 @@ import {
   CalendarClock,
   Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  Clock,
+  Zap
 } from 'lucide-react'
 
 export type ActiveTab =
@@ -38,6 +40,9 @@ interface NavigationProps {
   onLockTerminal: () => void
   onOpenPriceGuide?: () => void
   onOpenExpiration?: () => void
+  proFormattedTime?: string
+  isPro?: boolean
+  onOpenProModal?: () => void
 }
 
 export function Navigation({
@@ -49,7 +54,10 @@ export function Navigation({
   cashierRole,
   onLockTerminal,
   onOpenPriceGuide,
-  onOpenExpiration
+  onOpenExpiration,
+  proFormattedTime = '00:00:00',
+  isPro = true,
+  onOpenProModal
 }: NavigationProps): React.JSX.Element {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
 
@@ -224,8 +232,50 @@ export function Navigation({
           )}
         </div>
 
-        {/* Footer: User Profile & Log Out */}
+        {/* Footer: Pro Access HUD & User Profile & Log Out */}
         <div className="space-y-3 pt-4 border-t border-white/[0.08] mt-4">
+          {/* Real-Time Pro Access Time Limit Status Card */}
+          <div
+            onClick={onOpenProModal}
+            role="button"
+            tabIndex={0}
+            className={`cursor-pointer group p-2.5 rounded-2xl border transition-all duration-300 ${
+              isPro
+                ? 'bg-amber-500/[0.05] border-gold/30 hover:border-gold hover:bg-amber-500/[0.09]'
+                : 'bg-rose-950/25 border-rose-700/50 hover:border-rose-500 animate-pulse'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="flex items-center gap-1.5 text-[9px] font-mono tracking-widest uppercase font-semibold text-stone-400">
+                <Clock className={`w-3 h-3 ${isPro ? 'text-gold-light' : 'text-rose-400'}`} />
+                <span>{isPro ? 'PRO ACCESS' : 'FREE MODE'}</span>
+              </span>
+              <span
+                className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-bold uppercase ${
+                  isPro
+                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                    : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                }`}
+              >
+                {isPro ? 'ACTIVE' : 'EXPIRED'}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span
+                className={`font-mono text-xs font-bold tracking-wider ${
+                  isPro ? 'text-gold-light' : 'text-rose-400'
+                }`}
+              >
+                {proFormattedTime}
+              </span>
+
+              <span className="text-[10px] font-mono text-gold-muted group-hover:text-gold-light transition-colors underline decoration-gold/40">
+                {isPro ? '+ Extend' : '⚡ Unlock'}
+              </span>
+            </div>
+          </div>
+
           <div className="flex items-center gap-3 p-2.5 rounded-xl bg-zinc-950/60 border border-white/5">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-[#D4AF37] text-obsidian-950 text-xs font-serif font-bold shadow-sm">
               {cashierInitials}
@@ -263,6 +313,19 @@ export function Navigation({
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Real-time Pro Pill for Mobile */}
+          <button
+            onClick={onOpenProModal}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-mono font-bold transition-all ${
+              isPro
+                ? 'bg-amber-500/10 border-gold/40 text-gold-light'
+                : 'bg-rose-950/60 border-rose-700/60 text-rose-300 animate-pulse'
+            }`}
+          >
+            <Clock className="w-3 h-3 text-gold-muted" />
+            <span>{proFormattedTime}</span>
+          </button>
+
           <div className="flex items-center gap-2 px-2 py-1 rounded-lg bg-zinc-900/60 border border-white/5">
             <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-[#D4AF37] text-black text-[10px] font-serif font-bold">
               {cashierInitials}
@@ -380,6 +443,35 @@ export function Navigation({
               >
                 <X className="w-5 h-5" />
               </button>
+            </div>
+
+            {/* Mobile Drawer Pro Access Card */}
+            <div
+              onClick={() => {
+                setMobileDrawerOpen(false)
+                onOpenProModal?.()
+              }}
+              role="button"
+              className={`p-3 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
+                isPro
+                  ? 'bg-amber-500/[0.08] border-gold/30'
+                  : 'bg-rose-950/30 border-rose-700/60 animate-pulse'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Clock className={`w-4 h-4 ${isPro ? 'text-gold-light' : 'text-rose-400'}`} />
+                <div>
+                  <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 block leading-tight">
+                    {isPro ? 'PRO ACCESS ACTIVE' : 'PRO EXPIRED (FREE MODE)'}
+                  </span>
+                  <span className={`font-mono text-xs font-bold ${isPro ? 'text-gold-light' : 'text-rose-400'}`}>
+                    {proFormattedTime}
+                  </span>
+                </div>
+              </div>
+              <span className="text-[11px] font-mono font-bold text-gold underline">
+                {isPro ? '+ Extend' : '⚡ Unlock'}
+              </span>
             </div>
 
             {/* Quick Actions / Fast Tools */}

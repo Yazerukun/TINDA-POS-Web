@@ -13,10 +13,13 @@ import {
   Zap,
   Gift,
   Coins,
-  RefreshCw
+  RefreshCw,
+  ExternalLink
 } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import { useAdBlocker } from '../services/adBlocker'
+
+const MONETAG_DIRECT_LINK = 'https://omg10.com/4/11879014'
 
 interface RewardedAdModalProps {
   open: boolean
@@ -86,6 +89,13 @@ export function RewardedAdModal({
     if (isAdBlockerActive && !isMasterAdmin) {
       alert('Ad Blocker Detected! Please disable your ad blocker or Brave Shields on this site to watch the sponsor ad.')
       return
+    }
+
+    // Launch Monetag Direct Link in a new tab upon user click
+    try {
+      window.open(MONETAG_DIRECT_LINK, '_blank', 'noopener,noreferrer')
+    } catch (e) {
+      console.warn('Popup blocked, fallback button available inside modal', e)
     }
 
     setAdSecondsLeft(20)
@@ -221,16 +231,26 @@ export function RewardedAdModal({
 
               <div>
                 <h4 className="text-sm font-serif font-bold text-stone-100 tracking-wider uppercase">
-                  TINDA POS PRO RETAIL NETWORK
+                  Monetag Sponsor Offer Active
                 </h4>
                 <p className="text-xs text-stone-400 mt-1 max-w-xs font-sans">
-                  Sari-Sari Store Automation, Instant DTI SRP Price Sync, and Offline-First Cloud Ledgers.
+                  Sponsor page has opened in a new tab. Please view the sponsor offer while the countdown completes.
                 </p>
               </div>
 
+              <a
+                href={MONETAG_DIRECT_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-gold px-4 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-2 shadow-lg hover:scale-105 transition-all"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Click / Re-open Sponsor Ad</span>
+              </a>
+
               <div className="flex items-center gap-2 text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-full">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Google AdSense Rewarded Unit (ca-pub-8613908595644796)</span>
+                <span>Monetag Direct Link Zone (11879014)</span>
               </div>
             </div>
 

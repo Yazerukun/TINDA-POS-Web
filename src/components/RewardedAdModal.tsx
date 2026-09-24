@@ -195,7 +195,7 @@ export function RewardedAdModal({
 
               <div className="flex items-center gap-2 text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-full">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Verified Google AdSense Web Rewarded Unit</span>
+                <span>Google AdSense Rewarded Unit (ca-pub-8613908595644796)</span>
               </div>
             </div>
 

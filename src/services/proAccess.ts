@@ -85,16 +85,20 @@ export function useProAccess() {
     return Math.max(0, Math.floor((state.pro_expires_at - now) / 1000))
   }, [state.pro_expires_at, state.owner_bypass, now])
 
-  // 3-token permanent unlock: collect 3 tokens from watching 3 ads
+  // 3-token threshold: user has earned the "right" to use features (one-time gate crossed)
+  // BUT they still need active time — tokens >= 3 is just the prerequisite, not a bypass
   const isFullyUnlocked = useMemo(() => {
     return state.owner_bypass || state.tokens >= 3
   }, [state.owner_bypass, state.tokens])
 
+  // isPro = BOTH the 3-token gate crossed AND time is still active (or owner bypass)
+  // When time hits 0 → features lock even if tokens >= 3 → must watch more ads to extend
   const isPro = useMemo(() => {
-    return state.owner_bypass || remainingSeconds > 0 || isFullyUnlocked
+    if (state.owner_bypass) return true
+    return isFullyUnlocked && remainingSeconds > 0
   }, [state.owner_bypass, remainingSeconds, isFullyUnlocked])
 
-  // 20-second cooldown calculation
+  // 30-second cooldown calculation
   const cooldownRemaining = useMemo(() => {
     if (!state.last_ad_watched_at) return 0
     const elapsed = Math.floor((now - state.last_ad_watched_at) / 1000)
@@ -103,7 +107,7 @@ export function useProAccess() {
 
   const canWatchAd = cooldownRemaining <= 0
 
-  // Format HH:MM:SS or MM:SS
+  // Format HH:MM:SS
   const formattedTime = useMemo(() => {
     if (state.owner_bypass) return 'UNLIMITED (OWNER)'
     if (remainingSeconds <= 0) return '00:00:00'
@@ -119,13 +123,17 @@ export function useProAccess() {
     return `00:${pad(mins)}:${pad(secs)}`
   }, [remainingSeconds, state.owner_bypass])
 
-  // Reward: Add Pro time in minutes
-  const grantRewardMinutes = useCallback(async (minutes: number) => {
-    const addMs = minutes * 60 * 1000
+  // Each ad = +1 token + +8 hours (3 tokens = 1 full day, stackable up to 60 days)
+  const HOURS_PER_TOKEN = 8
+  const MAX_ACCUMULATION_MS = 60 * 24 * 60 * 60 * 1000 // 60 days cap
+
+  const grantRewardForAd = useCallback(async () => {
+    const addMs = HOURS_PER_TOKEN * 60 * 60 * 1000 // 8 hours per ad
     const currentBase = Math.max(Date.now(), state.pro_expires_at)
+    const newExpiry = Math.min(currentBase + addMs, Date.now() + MAX_ACCUMULATION_MS)
     const updated: ProAccessState = {
       ...state,
-      pro_expires_at: currentBase + addMs,
+      pro_expires_at: newExpiry,
       tokens: state.tokens + 1,
       last_ad_watched_at: Date.now(),
       total_ads_watched: state.total_ads_watched + 1
@@ -138,6 +146,11 @@ export function useProAccess() {
       setPendingAction(null)
     }
   }, [state, persistState, pendingAction])
+
+  // Keep grantRewardMinutes as alias for compatibility (always grants 8h = 480 min)
+  const grantRewardMinutes = useCallback(async (_minutes?: number) => {
+    await grantRewardForAd()
+  }, [grantRewardForAd])
 
   // Admin Owner Bypass toggle
   const toggleOwnerBypass = useCallback(async (enabled: boolean) => {
@@ -189,6 +202,7 @@ export function useProAccess() {
     formattedTime,
     cooldownRemaining,
     canWatchAd,
+    grantRewardForAd,
     grantRewardMinutes,
     toggleOwnerBypass,
     expireNowForTesting,

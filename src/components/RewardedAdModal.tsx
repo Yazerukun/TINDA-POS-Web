@@ -57,12 +57,16 @@ export function RewardedAdModal({
 }: RewardedAdModalProps): React.JSX.Element | null {
   const [isPlayingAd, setIsPlayingAd] = useState(false)
   const [adSecondsLeft, setAdSecondsLeft] = useState(20)
-  const [rewardMinutesToGrant, setRewardMinutesToGrant] = useState(30)
   const [isMuted, setIsMuted] = useState(false)
   const [adSuccessMessage, setAdSuccessMessage] = useState<string | null>(null)
   const [showDevTools, setShowDevTools] = useState(false)
   const adTimerRef = useRef<NodeJS.Timeout | null>(null)
   const adStartTimeRef = useRef<number>(0)
+
+  // Derived token/day info
+  const tokensAfterWatch = tokens + 1
+  const daysEarned = Math.floor(tokens / 3)
+  const daysAfterWatch = Math.floor(tokensAfterWatch / 3)
 
   // Real-time AdBlocker detection
   const { isBlocked: isAdBlockerActive, isChecking: isCheckingAdBlocker, checkAdBlocker } = useAdBlocker()
@@ -76,15 +80,14 @@ export function RewardedAdModal({
 
   if (!open) return null
 
-  // Start watching ad
-  const handleStartWatch = (minutes: number) => {
+  // Start watching ad (fixed: 1 ad = +1 token = +8 hours)
+  const handleStartWatch = () => {
     if (!canWatchAd) return
     if (isAdBlockerActive && !isMasterAdmin) {
-      alert('Ad Blocker Detected! Please disable your ad blocker or Brave Shields on this site to watch the sponsor ad and unlock Pro access.')
+      alert('Ad Blocker Detected! Please disable your ad blocker or Brave Shields on this site to watch the sponsor ad.')
       return
     }
 
-    setRewardMinutesToGrant(minutes)
     setAdSecondsLeft(20)
     adStartTimeRef.current = performance.now()
     setIsPlayingAd(true)
@@ -95,7 +98,7 @@ export function RewardedAdModal({
       setAdSecondsLeft((prev) => {
         if (prev <= 1) {
           if (adTimerRef.current) clearInterval(adTimerRef.current)
-          handleAdCompleted(minutes, false)
+          handleAdCompleted(false)
           return 0
         }
         return prev - 1
@@ -104,9 +107,8 @@ export function RewardedAdModal({
   }
 
   // Fast test ad (3 seconds) - Only permitted for Master Admin
-  const handleFastTestAd = (minutes: number) => {
+  const handleFastTestAd = () => {
     if (!isMasterAdmin) return
-    setRewardMinutesToGrant(minutes)
     setAdSecondsLeft(3)
     adStartTimeRef.current = performance.now()
     setIsPlayingAd(true)
@@ -117,7 +119,7 @@ export function RewardedAdModal({
       setAdSecondsLeft((prev) => {
         if (prev <= 1) {
           if (adTimerRef.current) clearInterval(adTimerRef.current)
-          handleAdCompleted(minutes, true)
+          handleAdCompleted(true)
           return 0
         }
         return prev - 1
@@ -125,21 +127,26 @@ export function RewardedAdModal({
     }, 1000)
   }
 
-  // Completed 20s ad with anti-tamper verification
-  const handleAdCompleted = (minutes: number, isFastTest = false) => {
-    // Anti-Tamper check: ensure full duration elapsed
+  // Completed ad with anti-tamper verification
+  const handleAdCompleted = (isFastTest = false) => {
     if (!isFastTest) {
       const elapsedSeconds = (performance.now() - adStartTimeRef.current) / 1000
       if (elapsedSeconds < 18.5 && !isMasterAdmin) {
-        console.warn('Ad playback tampering detected: elapsed time is too short.')
+        console.warn('Ad playback tampering detected: elapsed time too short.')
         setIsPlayingAd(false)
         return
       }
     }
 
     setIsPlayingAd(false)
-    onGrantReward(minutes)
-    setAdSuccessMessage(`+${minutes} Minutes Pro Access Added Successfully!`)
+    onGrantReward(480) // 480 min = 8 hours per ad; proAccess ignores this and uses fixed 8h
+    const newTokens = tokens + 1
+    const newDays = Math.floor(newTokens / 3)
+    if (newDays > daysEarned) {
+      setAdSuccessMessage(`🎉 +1 Token earned! ${newTokens} tokens = ${newDays} day${newDays !== 1 ? 's' : ''} access unlocked!`)
+    } else {
+      setAdSuccessMessage(`✅ +1 Token earned! ${newTokens}/3 tokens — ${3 - newTokens % 3} more ad${(3 - newTokens % 3) !== 1 ? 's' : ''} for next day`)
+    }
 
     try {
       confetti({
@@ -150,15 +157,14 @@ export function RewardedAdModal({
       })
     } catch {}
 
-    // Auto-dismiss notification after 3.5s
     setTimeout(() => {
       setAdSuccessMessage(null)
-    }, 3500)
+    }, 4000)
   }
 
   // Attempt to cancel early
   const handleEarlyCancel = () => {
-    if (confirm('Cancel ad? If you close now before the timer finishes, you will not receive your Pro time credit.')) {
+    if (confirm('Cancel ad? If you close now, you will not receive your token credit.')) {
       if (adTimerRef.current) clearInterval(adTimerRef.current)
       setIsPlayingAd(false)
     }
@@ -176,7 +182,7 @@ export function RewardedAdModal({
                 Sponsor Video
               </span>
               <span className="text-[11px] text-stone-400 font-sans">
-                Watch to unlock +{rewardMinutesToGrant}m
+                +1 Token (+8 Hours access)
               </span>
             </div>
 
@@ -259,14 +265,20 @@ export function RewardedAdModal({
             </div>
             <div>
               <h3 className="font-serif font-bold text-base tracking-wide text-stone-100 uppercase">
-                Unlock Full Features
+                {!isFullyUnlocked
+                  ? 'Collect 3 Tokens to Unlock'
+                  : remainingSeconds <= 0
+                  ? '⏰ Time Expired — Extend Access'
+                  : '✅ Features Unlocked'}
               </h3>
               <p className="text-xs text-stone-400 font-sans">
-                {isFullyUnlocked
-                  ? '🔓 All features permanently unlocked! You can still watch ads for Pro time.'
+                {!isFullyUnlocked
+                  ? `Watch ${3 - tokens} more ad${3 - tokens !== 1 ? 's' : ''} to unlock all features. (${tokens}/3 tokens)`
+                  : remainingSeconds <= 0
+                  ? 'Your access time ran out. Watch an ad to extend — each ad adds time (max 60 days).'
                   : blockedFeatureName
-                  ? `"${blockedFeatureName}" requires Pro access. Watch ${3 - tokens} more ad${3 - tokens !== 1 ? 's' : ''} to permanently unlock all features.`
-                  : `Watch 3 ads to permanently unlock all features. ${tokens}/3 tokens collected.`}
+                  ? `"${blockedFeatureName}" needs active access. Watch an ad to extend your time.`
+                  : 'Watch ads to stack more time. Max 60 days accumulation.'}
               </p>
             </div>
           </div>
@@ -365,84 +377,55 @@ export function RewardedAdModal({
             </div>
           </div>
 
-          {/* Ad Reward Options */}
-          <div className="space-y-2.5 mb-5">
-            <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 block px-1">
-              SELECT REWARD OPTION
+          {/* Watch Ad — Single Fixed Reward */}
+          <div className="mb-5">
+            <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 block px-1 mb-2.5">
+              HOW IT WORKS
             </span>
 
-            {/* Option 1: 1 Ad -> +1 Hour */}
-            <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-900/60 border border-white/[0.06] hover:border-gold/30 transition-all">
+            {/* Token → Day chart */}
+            <div className="grid grid-cols-3 gap-1.5 mb-3">
+              {[
+                { tokens: 3, days: 1 },
+                { tokens: 6, days: 2 },
+                { tokens: 9, days: 3 }
+              ].map(({ tokens: t, days: d }) => (
+                <div
+                  key={t}
+                  className={`p-2 rounded-xl border text-center ${
+                    tokens >= t
+                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                      : 'bg-zinc-900/60 border-white/[0.06] text-stone-500'
+                  }`}
+                >
+                  <div className="text-[10px] font-mono font-bold">{t} tokens</div>
+                  <div className="text-[9px] mt-0.5">{d} day{d > 1 ? 's' : ''}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Single Watch Button */}
+            <div className="flex items-center justify-between p-4 rounded-2xl bg-zinc-900/60 border border-gold/20 hover:border-gold/40 transition-all">
               <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-300 text-xs font-mono font-bold">
+                <div className="h-10 w-10 rounded-xl bg-gold/15 border border-gold/30 flex items-center justify-center text-gold-light text-xs font-mono font-bold">
                   1 AD
                 </div>
                 <div>
                   <h4 className="text-xs font-semibold text-stone-200">
-                    +1 Hour Standard Shift
+                    +1 Token &nbsp;·&nbsp; +8 Hours
                   </h4>
                   <p className="text-[10px] text-stone-400 font-sans">
-                    Recommended unlock for standard retail counter operations
+                    {daysAfterWatch > daysEarned
+                      ? `🎉 This unlocks Day ${daysAfterWatch}!`
+                      : `${tokensAfterWatch % 3 === 0 ? 3 : tokensAfterWatch % 3}/3 tokens toward Day ${daysAfterWatch + 1}`}
                   </p>
                 </div>
               </div>
 
               <button
                 disabled={!canWatchAd || (isAdBlockerActive && !isMasterAdmin)}
-                onClick={() => handleStartWatch(60)}
-                className="btn-gold px-3.5 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-1.5 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <Play className="w-3 h-3 fill-current" />
-                <span>Watch</span>
-              </button>
-            </div>
-
-            {/* Option 2: 2 Ads -> +2 Hours */}
-            <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-900/60 border border-white/[0.06] hover:border-gold/30 transition-all">
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-xl bg-gold/15 border border-gold/30 flex items-center justify-center text-gold-light text-xs font-mono font-bold">
-                  2 ADS
-                </div>
-                <div>
-                  <h4 className="text-xs font-semibold text-stone-200">
-                    +2 Hours Extended Shift
-                  </h4>
-                  <p className="text-[10px] text-stone-400 font-sans">
-                    Extended daytime cashier & inventory audit shift
-                  </p>
-                </div>
-              </div>
-
-              <button
-                disabled={!canWatchAd || (isAdBlockerActive && !isMasterAdmin)}
-                onClick={() => handleStartWatch(120)}
-                className="btn-gold px-3.5 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-1.5 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <Play className="w-3 h-3 fill-current" />
-                <span>Watch</span>
-              </button>
-            </div>
-
-            {/* Option 3: 3 Ads -> +3 Hours */}
-            <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-900/60 border border-white/[0.06] hover:border-gold/30 transition-all">
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 text-xs font-mono font-bold">
-                  3 ADS
-                </div>
-                <div>
-                  <h4 className="text-xs font-semibold text-stone-200">
-                    +3 Hours Full Day Power Pass
-                  </h4>
-                  <p className="text-[10px] text-stone-400 font-sans">
-                    Uninterrupted Pro features for full operating day
-                  </p>
-                </div>
-              </div>
-
-              <button
-                disabled={!canWatchAd || (isAdBlockerActive && !isMasterAdmin)}
-                onClick={() => handleStartWatch(180)}
-                className="btn-gold px-3.5 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-1.5 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={handleStartWatch}
+                className="btn-gold px-4 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase flex items-center gap-1.5 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <Play className="w-3 h-3 fill-current" />
                 <span>Watch</span>
@@ -450,10 +433,10 @@ export function RewardedAdModal({
             </div>
           </div>
 
-          {/* Cooldown Notice if recently watched */}
+          {/* Cooldown Notice */}
           {!canWatchAd && (
             <div className="p-2.5 rounded-xl bg-amber-500/[0.08] border border-amber-500/25 flex items-center justify-between text-xs text-amber-300 font-mono mb-4">
-              <span>Next video available in:</span>
+              <span>Next ad available in:</span>
               <span className="font-bold text-amber-200">{cooldownRemaining}s</span>
             </div>
           )}
@@ -461,7 +444,7 @@ export function RewardedAdModal({
           {/* Footer Notice */}
           <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between">
             <span className="text-[10px] text-stone-500 font-sans">
-              Free Sales Counter always remains 100% active.
+              Free Sales Counter always remains 100% active. Max stack: 60 days.
             </span>
 
             {isMasterAdmin && (
@@ -475,16 +458,16 @@ export function RewardedAdModal({
             )}
           </div>
 
-          {/* Quick Testing Tools - Strictly Master Admin Only */}
+          {/* Quick Testing Tools - Master Admin Only */}
           {isMasterAdmin && showDevTools && (
             <div className="mt-3 p-3 rounded-xl bg-zinc-900/90 border border-white/[0.08] space-y-2 text-xs font-mono text-stone-300">
               <div className="flex items-center justify-between">
-                <span>Fast 3-Second Test Ad:</span>
+                <span>Fast 3-Second Test Ad (+1 Token +8h):</span>
                 <button
-                  onClick={() => handleFastTestAd(30)}
+                  onClick={() => handleFastTestAd()}
                   className="px-2 py-1 rounded bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 text-[10px]"
                 >
-                  +30m (3s ad)
+                  Run (3s)
                 </button>
               </div>
 

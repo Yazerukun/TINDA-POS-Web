@@ -115,6 +115,12 @@ export interface StoreSettings {
   receipt_footer: string
   default_low_stock: number
   currency_symbol: string
+  printer_paper_width?: '58mm' | '80mm' | 'A4'
+  printer_show_barcode?: boolean
+  printer_show_logo?: boolean
+  printer_show_customer_info?: boolean
+  printer_auto_print?: boolean
+  printer_custom_header?: string
 }
 
 export type UserRole = 'ADMIN' | 'CASHIER' | 'INVENTORY_LEAD'

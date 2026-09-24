@@ -73,7 +73,12 @@ export const DEFAULT_SETTINGS: StoreSettings = {
   address: 'Poblacion Market St., Philippines',
   receipt_footer: 'Thank you for your purchase! Please come again!',
   default_low_stock: 5,
-  currency_symbol: '₱'
+  currency_symbol: '₱',
+  printer_paper_width: '80mm',
+  printer_show_barcode: true,
+  printer_show_logo: true,
+  printer_show_customer_info: true,
+  printer_auto_print: false
 }
 
 export async function initDatabase(): Promise<void> {

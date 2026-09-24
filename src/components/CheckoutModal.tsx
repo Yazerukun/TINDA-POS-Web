@@ -46,6 +46,9 @@ export function CheckoutModal({
   const [customerId, setCustomerId] = useState<number | null>(selectedCustomerId)
   const [completedTx, setCompletedTx] = useState<Transaction | null>(null)
   const [processing, setProcessing] = useState(false)
+  const [paperWidth, setPaperWidth] = useState<'58mm' | '80mm' | 'A4'>(
+    settings?.printer_paper_width || '80mm'
+  )
 
   const tendered_c = Math.round((parseFloat(tenderedInput) || 0) * 100)
   const change_c = Math.max(0, tendered_c - total_c)
@@ -128,6 +131,11 @@ export function CheckoutModal({
       }
 
       setCompletedTx(fullTx)
+      if (settings?.printer_auto_print) {
+        setTimeout(() => {
+          window.print()
+        }, 400)
+      }
     } catch (err) {
       console.error(err)
       alert('Settlement failed: ' + (err as Error)?.message)
@@ -226,14 +234,40 @@ export function CheckoutModal({
               </div>
             </div>
 
-            {/* Print-only 80mm receipt document */}
+            {/* Quick Printer Format Selector */}
+            <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-950/80 border border-white/[0.08] text-xs font-mono">
+              <span className="text-[11px] text-stone-400 pl-1">Print Format:</span>
+              <div className="flex items-center gap-1">
+                {(['58mm', '80mm', 'A4'] as const).map((w) => (
+                  <button
+                    key={w}
+                    type="button"
+                    onClick={() => setPaperWidth(w)}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all ${
+                      paperWidth === w
+                        ? 'bg-amber-500/20 text-gold-light border border-gold/40 font-bold'
+                        : 'text-stone-400 hover:text-white bg-white/5'
+                    }`}
+                  >
+                    {w === '58mm' ? '58mm Roll' : w === '80mm' ? '80mm Roll' : 'A4 Invoice'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Print-only VIP Receipt document */}
             <Receipt
               tx={completedTx}
-              storeName={settings?.store_name}
+              paperWidth={paperWidth}
+              storeSettings={settings}
+              storeName={settings?.store_name || storeName}
               address={settings?.address}
               contact={settings?.contact_number}
               receiptFooter={settings?.receipt_footer}
               terminalId={terminalId}
+              showBarcode={settings?.printer_show_barcode ?? true}
+              showLogo={settings?.printer_show_logo ?? true}
+              showCustomerInfo={settings?.printer_show_customer_info ?? true}
             />
 
             {/* Print & Close Actions */}
@@ -244,7 +278,7 @@ export function CheckoutModal({
                 className="btn-press flex-1 py-3 px-4 rounded-2xl bg-zinc-950 border border-white/[0.08] hover:border-gold/40 text-stone-300 text-xs font-mono tracking-wider uppercase flex items-center justify-center gap-2"
               >
                 <Printer className="h-4 w-4 text-gold-muted" />
-                <span>Print Receipt</span>
+                <span>Print Receipt ({paperWidth})</span>
               </button>
 
               <button

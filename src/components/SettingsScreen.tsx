@@ -20,12 +20,16 @@ import {
   UserX,
   Camera,
   Crown,
-  User
+  User,
+  Printer,
+  QrCode,
+  FileText
 } from 'lucide-react'
-import type { StoreSettings, UserAccount, UserRole } from '../types'
+import type { StoreSettings, UserAccount, UserRole, Transaction } from '../types'
 import { downloadBackupFile, importTindaBackup } from '../utils/backup'
 import { compressImageFile } from '../utils/image'
 import { db, initDatabase } from '../db'
+import { Receipt } from './Receipt'
 
 interface SettingsScreenProps {
   settings: StoreSettings
@@ -59,6 +63,10 @@ export function SettingsScreen({
   const [form, setForm] = useState<StoreSettings>(settings)
   const [saved, setSaved] = useState(false)
   const [importing, setImporting] = useState(false)
+  const [showTestPrintModal, setShowTestPrintModal] = useState(false)
+  const [testPaperWidth, setTestPaperWidth] = useState<'58mm' | '80mm' | 'A4'>(
+    settings.printer_paper_width || '80mm'
+  )
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Current User Account state
@@ -925,12 +933,158 @@ export function SettingsScreen({
             />
           </div>
 
-          <button
-            type="submit"
-            className="btn-press px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-obsidian-950 font-black text-xs shadow-glow-emerald"
-          >
-            Save Settings
-          </button>
+          {/* ── PRINTER & RECEIPT HARDWARE CONFIGURATION ── */}
+          <div className="pt-4 border-t border-white/[0.08] space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                  <Printer className="h-4 w-4 text-gold-light" />
+                  <span>Receipt &amp; Universal Printer Setup</span>
+                </h4>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Select your physical receipt paper width. Compatible with all Bluetooth, USB, ESC/POS, and office printers.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowTestPrintModal(true)}
+                className="btn-press px-3.5 py-1.5 rounded-xl bg-amber-500/15 border border-gold/40 text-gold-light hover:bg-amber-500/25 text-xs font-mono font-bold flex items-center gap-1.5 self-start sm:self-auto shrink-0 transition-all"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Test Print Sample</span>
+              </button>
+            </div>
+
+            {/* Paper Width Selection Cards */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-2">
+                Primary Printer Paper Width
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* 58mm Card */}
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, printer_paper_width: '58mm' })}
+                  className={`p-3.5 rounded-2xl border text-left transition-all ${
+                    form.printer_paper_width === '58mm'
+                      ? 'bg-amber-500/15 border-gold shadow-glow-gold'
+                      : 'bg-zinc-950/60 border-white/[0.08] hover:border-white/20'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-bold text-xs text-white">58mm Mini Thermal</span>
+                    <span className="text-[10px] font-mono text-gold-light">2-Inch Roll</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400">
+                    Portable Bluetooth &amp; mini USB printers (GOOJPRT, Xprinter 58, Sunmi, MPT-II).
+                  </p>
+                </button>
+
+                {/* 80mm Card */}
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, printer_paper_width: '80mm' })}
+                  className={`p-3.5 rounded-2xl border text-left transition-all ${
+                    (form.printer_paper_width || '80mm') === '80mm'
+                      ? 'bg-amber-500/15 border-gold shadow-glow-gold'
+                      : 'bg-zinc-950/60 border-white/[0.08] hover:border-white/20'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-bold text-xs text-white">80mm Standard Thermal</span>
+                    <span className="text-[10px] font-mono text-gold-light">3-Inch Roll</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400">
+                    Desktop commercial POS printers (Epson TM-T20, Star Micronics, Xprinter 80).
+                  </p>
+                </button>
+
+                {/* A4 Sheet Card */}
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, printer_paper_width: 'A4' })}
+                  className={`p-3.5 rounded-2xl border text-left transition-all ${
+                    form.printer_paper_width === 'A4'
+                      ? 'bg-amber-500/15 border-gold shadow-glow-gold'
+                      : 'bg-zinc-950/60 border-white/[0.08] hover:border-white/20'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-bold text-xs text-white">A4 / Letter Full Page</span>
+                    <span className="text-[10px] font-mono text-gold-light">Standard Sheet</span>
+                  </div>
+                  <p className="text-[11px] text-slate-400">
+                    Standard office inkjet / laser printers and formal commercial PDF invoices.
+                  </p>
+                </button>
+              </div>
+            </div>
+
+            {/* Customization Checkboxes */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-950/60 border border-white/[0.06] cursor-pointer hover:border-white/20 transition-all">
+                <input
+                  type="checkbox"
+                  checked={form.printer_show_barcode ?? true}
+                  onChange={(e) => setForm({ ...form, printer_show_barcode: e.target.checked })}
+                  className="rounded border-white/20 text-amber-500 focus:ring-0 w-4 h-4 bg-zinc-900 cursor-pointer"
+                />
+                <div>
+                  <span className="text-xs font-semibold text-white block">Print Code128 Barcode</span>
+                  <span className="text-[10px] text-slate-400 block">Scannable invoice barcode for counter audits</span>
+                </div>
+              </label>
+
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-950/60 border border-white/[0.06] cursor-pointer hover:border-white/20 transition-all">
+                <input
+                  type="checkbox"
+                  checked={form.printer_show_logo ?? true}
+                  onChange={(e) => setForm({ ...form, printer_show_logo: e.target.checked })}
+                  className="rounded border-white/20 text-amber-500 focus:ring-0 w-4 h-4 bg-zinc-900 cursor-pointer"
+                />
+                <div>
+                  <span className="text-xs font-semibold text-white block">Print Store Crest Monogram</span>
+                  <span className="text-[10px] text-slate-400 block">Luxury brand emblem at top of receipt</span>
+                </div>
+              </label>
+
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-950/60 border border-white/[0.06] cursor-pointer hover:border-white/20 transition-all">
+                <input
+                  type="checkbox"
+                  checked={form.printer_show_customer_info ?? true}
+                  onChange={(e) => setForm({ ...form, printer_show_customer_info: e.target.checked })}
+                  className="rounded border-white/20 text-amber-500 focus:ring-0 w-4 h-4 bg-zinc-900 cursor-pointer"
+                />
+                <div>
+                  <span className="text-xs font-semibold text-white block">Customer Utang &amp; Credit Balance</span>
+                  <span className="text-[10px] text-slate-400 block">Print remaining ledger balance for utang transactions</span>
+                </div>
+              </label>
+
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-950/60 border border-white/[0.06] cursor-pointer hover:border-white/20 transition-all">
+                <input
+                  type="checkbox"
+                  checked={form.printer_auto_print ?? false}
+                  onChange={(e) => setForm({ ...form, printer_auto_print: e.target.checked })}
+                  className="rounded border-white/20 text-amber-500 focus:ring-0 w-4 h-4 bg-zinc-900 cursor-pointer"
+                />
+                <div>
+                  <span className="text-xs font-semibold text-white block">Auto-Prompt Print on Checkout</span>
+                  <span className="text-[10px] text-slate-400 block">Automatically open print dialog after sale settlement</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div className="pt-2">
+            <button
+              type="submit"
+              className="btn-press px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-obsidian-950 font-black text-xs shadow-glow-emerald"
+            >
+              Save Settings
+            </button>
+          </div>
         </form>
       </div>
 
@@ -1006,6 +1160,113 @@ export function SettingsScreen({
           </button>
         </div>
       </div>
+
+      {/* ── TEST PRINT RECEIPT MODAL ── */}
+      {showTestPrintModal && (
+        <div className="fixed inset-0 z-60 bg-black/85 backdrop-blur-md flex flex-col items-center justify-start p-4 sm:p-6 overflow-y-auto animate-fade-in">
+          <div className="no-print w-full max-w-2xl bg-zinc-900 border border-white/10 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-gold/30 flex items-center justify-center text-gold-light">
+                <Printer className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white">Printer Output Test</h3>
+                <p className="text-[11px] font-mono text-stone-400">
+                  Verify paper margins, font size, and barcode alignment
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="flex items-center bg-zinc-950 p-1 rounded-xl border border-white/10 text-xs font-mono">
+                <button
+                  type="button"
+                  onClick={() => setTestPaperWidth('58mm')}
+                  className={`px-2.5 py-1 rounded-lg transition-all ${
+                    testPaperWidth === '58mm'
+                      ? 'bg-amber-500/20 text-gold-light font-bold border border-gold/40'
+                      : 'text-stone-400 hover:text-white'
+                  }`}
+                >
+                  58mm
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTestPaperWidth('80mm')}
+                  className={`px-2.5 py-1 rounded-lg transition-all ${
+                    testPaperWidth === '80mm'
+                      ? 'bg-amber-500/20 text-gold-light font-bold border border-gold/40'
+                      : 'text-stone-400 hover:text-white'
+                  }`}
+                >
+                  80mm
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTestPaperWidth('A4')}
+                  className={`px-2.5 py-1 rounded-lg transition-all ${
+                    testPaperWidth === 'A4'
+                      ? 'bg-amber-500/20 text-gold-light font-bold border border-gold/40'
+                      : 'text-stone-400 hover:text-white'
+                  }`}
+                >
+                  A4
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="btn-press px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 via-gold to-amber-500 text-obsidian-950 font-bold text-xs font-mono flex items-center gap-1.5 shadow-glow-gold hover:brightness-110"
+              >
+                <Printer className="w-4 h-4" />
+                <span>Print Paper</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowTestPrintModal(false)}
+                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Test Paper Preview */}
+          <div className="w-full flex justify-center py-2">
+            <Receipt
+              tx={{
+                id: 8891,
+                invoice_number: 'INV-20260924-8891',
+                created_at: new Date().toISOString(),
+                items: [
+                  { product_id: 101, name: 'San Miguel Pale Pilsen 330ml', unit_name: 'can', quantity: 2, unit_price_c: 6500, total_c: 13000 },
+                  { product_id: 102, name: 'Lucky Me Pancit Canton Kalamansi', unit_name: 'pack', quantity: 3, unit_price_c: 1800, total_c: 5400 },
+                  { product_id: 103, name: 'Purefoods Corned Beef 150g', unit_name: 'can', quantity: 1, unit_price_c: 8500, total_c: 8500 }
+                ],
+                subtotal_c: 26900,
+                discount_c: 2000,
+                discount_type: 'CUSTOM',
+                total_c: 24900,
+                payment_method: 'CASH',
+                amount_tendered_c: 30000,
+                change_c: 5100,
+                customer_id: null,
+                cashier_name: currentCashierName || 'Ian Muyco',
+                store_name: form.store_name || settings.store_name
+              }}
+              storeName={form.store_name || settings.store_name}
+              address={form.address || settings.address}
+              contact={form.contact_number || settings.contact_number}
+              receiptFooter={form.receipt_footer || settings.receipt_footer}
+              paperWidth={testPaperWidth}
+              showBarcode={form.printer_show_barcode ?? true}
+              showLogo={form.printer_show_logo ?? true}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

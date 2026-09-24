@@ -45,6 +45,9 @@ export function TransactionsScreen({
   // View Modal state
   const [selectedTx, setSelectedTx] = useState<Transaction | null>(null)
   const [isReprintOpen, setIsReprintOpen] = useState(false)
+  const [reprintPaperWidth, setReprintPaperWidth] = useState<'58mm' | '80mm' | 'A4'>(
+    settings?.printer_paper_width || '80mm'
+  )
   const [voidTargetTx, setVoidTargetTx] = useState<Transaction | null>(null)
   const [voidReason, setVoidReason] = useState('Customer return / wrong item')
 
@@ -445,29 +448,84 @@ export function TransactionsScreen({
         </div>
       )}
 
-      {/* Thermal Receipt Print View */}
+      {/* Universal VIP Receipt Reprint View */}
       {isReprintOpen && selectedTx && (
-        <div className="fixed inset-0 z-60 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-sm bg-white text-black rounded-2xl p-5 shadow-2xl space-y-4">
-            <ReceiptComponent
-              transaction={selectedTx}
-              storeSettings={settings}
-            />
-            <div className="flex items-center gap-2 pt-2">
+        <div className="fixed inset-0 z-60 bg-black/90 backdrop-blur-md flex flex-col items-center justify-start p-3 sm:p-6 overflow-y-auto animate-fade-in">
+          {/* Top Control Bar (Hidden during printing) */}
+          <div className="no-print w-full max-w-xl bg-zinc-900 border border-white/10 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
+            <div className="flex items-center gap-2">
+              <Receipt className="w-5 h-5 text-gold-light" />
+              <div>
+                <h3 className="text-xs font-bold text-white font-mono uppercase tracking-wide">
+                  Receipt Reprint • {selectedTx.invoice_number}
+                </h3>
+                <p className="text-[10px] text-stone-400 font-mono">
+                  {formatDateTime(selectedTx.created_at)}
+                </p>
+              </div>
+            </div>
+
+            {/* Paper Width Pills & Actions */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center bg-zinc-950 p-1 rounded-xl border border-white/10 text-xs font-mono">
+                {(['58mm', '80mm', 'A4'] as const).map((w) => (
+                  <button
+                    key={w}
+                    type="button"
+                    onClick={() => setReprintPaperWidth(w)}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] transition-all ${
+                      reprintPaperWidth === w
+                        ? 'bg-amber-500/20 text-gold-light font-bold border border-gold/40'
+                        : 'text-stone-400 hover:text-white'
+                    }`}
+                  >
+                    {w === '58mm' ? '58mm Roll' : w === '80mm' ? '80mm Roll' : 'A4 Full'}
+                  </button>
+                ))}
+              </div>
+
               <button
-                onClick={() => setIsReprintOpen(false)}
-                className="btn-press flex-1 py-2.5 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-bold uppercase"
-              >
-                Close
-              </button>
-              <button
+                type="button"
                 onClick={() => window.print()}
-                className="btn-press flex-1 py-2.5 rounded-xl bg-black text-white hover:bg-gray-900 text-xs font-bold uppercase flex items-center justify-center gap-1.5"
+                className="btn-press px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-[#D4AF37] hover:from-amber-300 hover:to-gold text-black text-xs font-bold font-mono uppercase tracking-wider flex items-center gap-1.5 shadow-glow-gold"
               >
                 <Printer className="w-4 h-4" />
-                <span>Print Paper</span>
+                <span>Print</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsReprintOpen(false)}
+                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-400 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
               </button>
             </div>
+          </div>
+
+          {/* Receipt Print Target */}
+          <div
+            data-paper-width={reprintPaperWidth}
+            className={`tinda-print-target print-area bg-white text-black font-mono shadow-2xl rounded-xl ${
+              reprintPaperWidth === 'A4'
+                ? 'w-full max-w-[210mm] p-10'
+                : reprintPaperWidth === '58mm'
+                ? 'w-[58mm] max-w-[58mm] p-2.5'
+                : 'w-[80mm] max-w-[80mm] p-4'
+            }`}
+          >
+            <ReceiptComponent
+              tx={selectedTx}
+              paperWidth={reprintPaperWidth}
+              storeSettings={settings}
+              storeName={settings?.store_name}
+              address={settings?.address}
+              contact={settings?.contact_number}
+              receiptFooter={settings?.receipt_footer}
+              showBarcode={settings?.printer_show_barcode ?? true}
+              showLogo={settings?.printer_show_logo ?? true}
+              showCustomerInfo={settings?.printer_show_customer_info ?? true}
+            />
           </div>
         </div>
       )}

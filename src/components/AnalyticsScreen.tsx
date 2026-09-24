@@ -19,6 +19,7 @@ import {
 import type { Transaction, Expense, Product, StoreSettings, CashCountRecord } from '../types'
 import { db } from '../db'
 import { money, formatDateTime } from '../utils/format'
+import { PrintReportModal } from './PrintReportModal'
 
 interface AnalyticsScreenProps {
   transactions: Transaction[]
@@ -72,6 +73,15 @@ export function AnalyticsScreen({
 
   // Reading type
   const [readingType, setReadingType] = useState<'X' | 'Z'>('X')
+
+  // Print Report Modal State
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false)
+  const [activePrintReportType, setActivePrintReportType] = useState<'X' | 'Z' | 'CASHCOUNT' | 'SALES'>('X')
+
+  const handleOpenPrintReport = (type: 'X' | 'Z' | 'CASHCOUNT' | 'SALES') => {
+    setActivePrintReportType(type)
+    setIsPrintModalOpen(true)
+  }
 
   // Financial computations
   const metrics = useMemo(() => {
@@ -180,6 +190,25 @@ export function AnalyticsScreen({
     }
   }
 
+  // Save Z-Read Store Closure Audit
+  const handleSaveZRead = async () => {
+    try {
+      await db.cash_counts.add({
+        business_date: todayStr,
+        created_at: new Date().toISOString(),
+        cashier_name: cashierName,
+        denominations: counts,
+        total_c: countedPhysicalCash_c,
+        expected_c: expectedCashInDrawer_c,
+        discrepancy_c: cashDiscrepancy_c,
+        notes: `Official Daily Z-Reading Store Closure Audit by ${cashierName}`,
+        store_name: storeName
+      })
+    } catch (err) {
+      console.error('Failed to save Z-reading:', err)
+    }
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fade-in">
       {/* Header */}
@@ -238,6 +267,26 @@ export function AnalyticsScreen({
       {/* ── TAB 1: SALES & MARGIN ── */}
       {activeTab === 'SALES' && (
         <div className="space-y-6">
+          {/* Executive Report Action Bar */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-zinc-950/80 border border-white/[0.08] p-4 rounded-3xl">
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-amber-500/10 border border-gold/30 flex items-center justify-center text-gold-light">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-white font-mono tracking-wide">Executive Financial Performance</h4>
+                <p className="text-[10px] text-stone-400 font-mono">Export or print official audited sales reports in 58mm, 80mm, or A4 PDF format.</p>
+              </div>
+            </div>
+            <button
+              onClick={() => handleOpenPrintReport('SALES')}
+              className="btn-press px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400/20 to-gold/20 hover:from-amber-400/30 hover:to-gold/30 text-gold-light text-xs font-bold font-mono flex items-center gap-2 border border-gold/40 transition-all shadow-glow-gold/10"
+            >
+              <Printer className="w-4 h-4" />
+              <span>Print Executive Sales Report</span>
+            </button>
+          </div>
+
           {/* 4 Financial Metric Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="glass-panel rounded-3xl p-5 border border-white/[0.08]">
@@ -533,6 +582,15 @@ export function AnalyticsScreen({
                   <Save className="w-4 h-4" />
                   <span>Save Cash Count Record</span>
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleOpenPrintReport('CASHCOUNT')}
+                  className="btn-press w-full py-2.5 rounded-xl bg-zinc-950 border border-white/15 hover:border-gold/40 text-stone-200 text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all"
+                >
+                  <Printer className="w-4 h-4 text-gold-light" />
+                  <span>Print Drawer Reconciliation Audit</span>
+                </button>
               </div>
             </div>
           </div>
@@ -565,11 +623,11 @@ export function AnalyticsScreen({
             </button>
 
             <button
-              onClick={() => window.print()}
-              className="btn-press ml-auto px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-stone-200 text-xs font-bold font-mono flex items-center gap-1.5"
+              onClick={() => handleOpenPrintReport(readingType)}
+              className="btn-press ml-auto px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400/20 to-gold/20 hover:from-amber-400/30 hover:to-gold/30 text-gold-light text-xs font-bold font-mono flex items-center gap-1.5 border border-gold/40 shadow-glow-gold/10"
             >
               <Printer className="w-4 h-4" />
-              <span>Print Reading</span>
+              <span>Print {readingType}-Reading (Universal)</span>
             </button>
           </div>
 
@@ -649,6 +707,23 @@ export function AnalyticsScreen({
           </div>
         </div>
       )}
+
+      {/* ── EXECUTIVE PRINT REPORT MODAL (Universal 58mm / 80mm / A4) ── */}
+      <PrintReportModal
+        isOpen={isPrintModalOpen}
+        onClose={() => setIsPrintModalOpen(false)}
+        reportType={activePrintReportType}
+        transactions={transactions}
+        expenses={expenses}
+        products={products}
+        settings={settings}
+        cashierName={cashierName}
+        storeName={storeName}
+        cashCounts={counts}
+        totalPhysicalCash_c={countedPhysicalCash_c}
+        expectedCashInDrawer_c={expectedCashInDrawer_c}
+        onSaveZRead={handleSaveZRead}
+      />
     </div>
   )
 }

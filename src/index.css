@@ -196,77 +196,147 @@ body {
   color: #555;
   margin-top: 1mm;
 }
-.receipt .dashed {
-  border-top: 1px dashed #000;
-  margin: 2.5mm 0;
-}
-.receipt .dashed.thin {
-  margin: 1.5mm 0;
-}
-.receipt .row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-}
-.receipt .row.total {
-  font-weight: 700;
-  font-size: 12.5px;
-  margin-top: 1mm;
-}
-.receipt .item-head {
-  display: flex;
-  font-weight: 700;
-}
-.receipt .item {
-  display: flex;
-  gap: 2mm;
-}
-.receipt .item .name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.receipt .item .qty,
-.receipt .item-head .qty {
-  flex: 0 0 34mm;
-  text-align: right;
-}
-.receipt .item .amt,
-.receipt .item-head .amt {
-  flex: 0 0 20mm;
-  text-align: right;
-}
-.receipt .footer {
-  margin: 1mm 0;
+/* ── Universal Receipt & Report Print Architecture ── */
+.tinda-receipt {
+  font-family: 'Courier New', Courier, monospace, 'Roboto Mono';
+  color: #000000;
+  background-color: #ffffff;
+  box-sizing: border-box;
 }
 
-/* Print only the .print-area (80mm receipt) */
-.print-area {
-  position: absolute;
-  left: -9999px;
-  top: 0;
+/* On-screen preview container default */
+.tinda-print-target {
+  box-sizing: border-box;
 }
+
+/* Paper Width Presets */
+.tinda-print-target[data-paper-width="58mm"],
+.tinda-receipt[data-paper-width="58mm"] {
+  width: 58mm;
+  max-width: 58mm;
+  padding: 2mm 3mm;
+  font-size: 10.5px;
+  line-height: 1.25;
+}
+
+.tinda-print-target[data-paper-width="80mm"],
+.tinda-receipt[data-paper-width="80mm"] {
+  width: 80mm;
+  max-width: 80mm;
+  padding: 4mm 5mm;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.tinda-print-target[data-paper-width="A4"],
+.tinda-receipt[data-paper-width="A4"] {
+  width: 100%;
+  max-width: 210mm;
+  padding: 10mm 15mm;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.tinda-receipt .dashed {
+  border-top: 1px dashed #000000;
+  margin: 2mm 0;
+}
+
+.tinda-receipt .dashed.double {
+  border-top: 3px double #000000;
+  margin: 2.5mm 0;
+}
+
+.tinda-receipt .dashed.thin {
+  border-top: 1px dotted #555555;
+  margin: 1.5mm 0;
+}
+
+/* Hide print elements from normal layout */
+.print-only {
+  display: none !important;
+}
+
+/* ── PRINT MEDIA QUERY (Works across all OS & physical printers) ── */
 @media print {
   @page {
-    size: 80mm auto;
-    margin: 4mm;
+    margin: 0;
+    size: auto;
   }
+
   html,
   body {
-    background: #fff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
+
+  /* Hide everything on page by default */
   body * {
-    visibility: hidden;
+    visibility: hidden !important;
   }
+
+  /* Make print targets visible */
+  .tinda-print-target,
+  .tinda-print-target *,
   .print-area,
   .print-area * {
-    visibility: visible;
+    visibility: visible !important;
   }
+
+  /* Position print target cleanly at the very top-left of page */
+  .tinda-print-target,
   .print-area {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 80mm;
-    margin: 0;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    margin: 0 auto !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* 58mm Thermal paper mode */
+  .tinda-print-target[data-paper-width="58mm"],
+  .print-area[data-paper-width="58mm"] {
+    width: 58mm !important;
+    max-width: 58mm !important;
+    padding: 2mm 2.5mm !important;
+    font-size: 10.5px !important;
+  }
+
+  /* 80mm Thermal paper mode */
+  .tinda-print-target[data-paper-width="80mm"],
+  .print-area[data-paper-width="80mm"] {
+    width: 80mm !important;
+    max-width: 80mm !important;
+    padding: 3mm 4mm !important;
+    font-size: 12px !important;
+  }
+
+  /* A4 Full page invoice/report mode */
+  .tinda-print-target[data-paper-width="A4"],
+  .print-area[data-paper-width="A4"] {
+    width: 100% !important;
+    max-width: 210mm !important;
+    padding: 10mm !important;
+    font-size: 13px !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .no-print,
+  .no-print * {
+    display: none !important;
+    visibility: hidden !important;
   }
 }

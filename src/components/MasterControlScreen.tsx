@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import {
   ShieldCheck, Crown, Store, Users, UserPlus, Search,
   Lock, KeyRound, CheckCircle2, AlertTriangle, RefreshCw,

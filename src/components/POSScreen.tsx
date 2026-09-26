@@ -41,6 +41,70 @@ interface POSScreenProps {
   ) => void
 }
 
+interface CartQuantityInputProps {
+  productId: number
+  quantity: number
+  maxStock: number
+  onSetQuantity: (productId: number, qty: number) => void
+}
+
+function CartQuantityInput({
+  productId,
+  quantity,
+  maxStock,
+  onSetQuantity
+}: CartQuantityInputProps): React.JSX.Element {
+  const [val, setVal] = useState<string>(String(quantity))
+
+  useEffect(() => {
+    setVal(String(quantity))
+  }, [quantity])
+
+  const commit = (raw: string) => {
+    const parsed = parseInt(raw, 10)
+    if (isNaN(parsed) || parsed <= 0) {
+      setVal(String(quantity))
+      return
+    }
+    const clamped = maxStock > 0 ? Math.min(parsed, maxStock) : parsed
+    setVal(String(clamped))
+    onSetQuantity(productId, clamped)
+  }
+
+  return (
+    <input
+      type="number"
+      inputMode="numeric"
+      pattern="[0-9]*"
+      min={1}
+      max={maxStock > 0 ? maxStock : undefined}
+      value={val}
+      onChange={(e) => {
+        const next = e.target.value
+        setVal(next)
+        const parsed = parseInt(next, 10)
+        if (!isNaN(parsed) && parsed > 0) {
+          const clamped = maxStock > 0 ? Math.min(parsed, maxStock) : parsed
+          onSetQuantity(productId, clamped)
+        }
+      }}
+      onBlur={() => commit(val)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          commit(val)
+          ;(e.target as HTMLInputElement).blur()
+        } else if (e.key === 'Escape') {
+          setVal(String(quantity))
+          ;(e.target as HTMLInputElement).blur()
+        }
+      }}
+      onFocus={(e) => e.target.select()}
+      title="Click or tap to edit quantity"
+      className="w-11 h-6 text-center text-xs font-mono font-bold text-stone-100 bg-obsidian-950 border border-white/[0.1] focus:border-gold focus:ring-1 focus:ring-gold/30 rounded-lg py-0.5 px-0.5 transition-all cursor-text [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+    />
+  )
+}
+
 export function POSScreen({
   products,
   categories,
@@ -181,6 +245,34 @@ export function POSScreen({
           }
         })
         .filter(Boolean) as CartItem[]
+    })
+  }
+
+  const setDirectQuantity = (productId: number, targetQty: number) => {
+    setCart((prev) => {
+      const item = prev.find((i) => i.product.id === productId)
+      if (!item) return prev
+
+      if (targetQty <= 0) {
+        return prev.filter((i) => i.product.id !== productId)
+      }
+
+      const prod = products.find((p) => p.id === productId) || item.product
+      const maxStock = prod.stock > 0 ? prod.stock : 999999
+      const newQty = Math.min(targetQty, maxStock)
+
+      if (newQty > item.quantity) {
+        triggerRealtimeDeduct(productId)
+      }
+
+      return prev.map((i) => {
+        if (i.product.id !== productId) return i
+        return {
+          ...i,
+          quantity: newQty,
+          total_c: newQty * i.unit_price_c
+        }
+      })
     })
   }
 
@@ -564,17 +656,21 @@ export function POSScreen({
                   </p>
                 </div>
 
-                {/* Micro-Quantity Stepper */}
+                {/* Micro-Quantity Stepper with Direct Editable Input */}
                 <div className="flex items-center gap-1 rounded-xl bg-zinc-900 border border-white/[0.06] p-1">
                   <button
                     onClick={() => updateQuantity(item.product.id, -1)}
                     className="btn-press h-5 w-5 rounded-lg flex items-center justify-center text-stone-400 hover:text-stone-100 hover:bg-white/[0.06]"
+                    title="Decrease quantity"
                   >
                     <Minus className="h-3 w-3" />
                   </button>
-                  <span className="w-5 text-center text-xs font-mono font-bold text-stone-200">
-                    {item.quantity}
-                  </span>
+                  <CartQuantityInput
+                    productId={item.product.id}
+                    quantity={item.quantity}
+                    maxStock={products.find((p) => p.id === item.product.id)?.stock ?? item.product.stock}
+                    onSetQuantity={setDirectQuantity}
+                  />
                   <button
                     disabled={item.quantity >= (products.find((p) => p.id === item.product.id)?.stock ?? item.product.stock)}
                     onClick={() => updateQuantity(item.product.id, 1)}

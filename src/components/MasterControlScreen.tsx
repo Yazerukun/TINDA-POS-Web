@@ -17,12 +17,21 @@ interface MasterControlScreenProps {
   onMasqueradeStore?: (storeName: string, owner?: UserAccount) => void
 }
 
-export function getPresenceInfo(user: UserAccount, nowMs: number = Date.now()): {
+export function getPresenceInfo(user?: UserAccount | null, nowMs: number = Date.now()): {
   status: 'ONLINE' | 'IDLE' | 'OFFLINE'
   label: string
   dotClass: string
   badgeClass: string
 } {
+  if (!user) {
+    return {
+      status: 'OFFLINE',
+      label: 'Offline',
+      dotClass: 'bg-stone-500',
+      badgeClass: 'bg-zinc-900/80 text-stone-400 border-white/[0.08]'
+    }
+  }
+
   const lastActive = user.last_active_at || user.updated_at
   if (!lastActive) {
     return {
@@ -33,7 +42,17 @@ export function getPresenceInfo(user: UserAccount, nowMs: number = Date.now()): 
     }
   }
 
-  const diffMs = nowMs - new Date(lastActive).getTime()
+  const parsedTime = new Date(lastActive).getTime()
+  if (isNaN(parsedTime)) {
+    return {
+      status: 'OFFLINE',
+      label: 'Offline',
+      dotClass: 'bg-stone-500',
+      badgeClass: 'bg-zinc-900/80 text-stone-400 border-white/[0.08]'
+    }
+  }
+
+  const diffMs = nowMs - parsedTime
   const diffSec = Math.max(0, Math.floor(diffMs / 1000))
 
   // Within 60s: Active Now (online)
@@ -143,11 +162,12 @@ export function MasterControlScreen({
         const cloudUsers = await fetchAllCloudUsers()
         const cloudMap = new Map<string, Record<string, unknown>>()
         ;(cloudUsers as Array<Record<string, unknown>>).forEach((cu) => {
-          if (cu.username) cloudMap.set(String(cu.username).toLowerCase(), cu)
+          if (cu?.username) cloudMap.set(String(cu.username).toLowerCase(), cu)
         })
 
         // Enrich local users with cloud presence timestamps & store names
         allUsers.forEach((u) => {
+          if (!u?.username) return
           const cu = cloudMap.get(u.username.toLowerCase())
           if (cu) {
             if (cu.last_active_at) u.last_active_at = cu.last_active_at as string
@@ -157,20 +177,20 @@ export function MasterControlScreen({
         })
 
         // Add cloud-only users (registered on other devices)
-        const localUsernames = new Set(allUsers.map((u) => u.username?.toLowerCase()))
+        const localUsernames = new Set(allUsers.map((u) => (u?.username || '').toLowerCase()).filter(Boolean))
         const cloudOnlyUsers = (cloudUsers as Array<Record<string, unknown>>)
-          .filter((cu) => !localUsernames.has(String(cu.username).toLowerCase()))
+          .filter((cu) => cu?.username && !localUsernames.has(String(cu.username).toLowerCase()))
           .map((cu, idx) => ({
             id: -1000 - idx,
-            username: cu.username as string,
-            name: cu.name as string,
-            email: cu.email as string | undefined,
+            username: String(cu.username || ''),
+            name: String(cu.name || cu.username || 'Merchant User'),
+            email: cu.email ? String(cu.email) : undefined,
             role: (cu.role as UserRole) || 'CASHIER',
             pin: '', // never expose pin from cloud
             status: (cu.status as 'ACTIVE' | 'DISABLED') || 'ACTIVE',
-            store_name: cu.store_name as string | undefined,
+            store_name: cu.store_name ? String(cu.store_name) : undefined,
             is_owner: Boolean(cu.is_owner),
-            avatar_url: cu.avatar_url as string | undefined,
+            avatar_url: cu.avatar_url ? String(cu.avatar_url) : undefined,
             created_at: (cu.created_at as string) || new Date().toISOString(),
             updated_at: cu.updated_at as string | undefined,
             last_active_at: cu.last_active_at as string | undefined,
@@ -187,7 +207,12 @@ export function MasterControlScreen({
 
       const proRec = await db.settings.get('pro_access_state')
       if (proRec && proRec.value) {
-        setAdStats(proRec.value)
+        try {
+          const parsed = typeof proRec.value === 'string' ? JSON.parse(proRec.value) : proRec.value
+          setAdStats(parsed)
+        } catch {
+          setAdStats(null)
+        }
       }
 
       // Fetch cloud pro access states (ads watched & tokens) across all stores
@@ -594,7 +619,8 @@ export function MasterControlScreen({
 
     // First collect all explicit owners
     users.forEach((u) => {
-      const storeName = u.store_name || (u.is_owner ? `${u.name}'s Store` : 'Independent / General Staff')
+      if (!u) return
+      const storeName = u.store_name || (u.is_owner ? `${u.name || 'Merchant'}'s Store` : 'Independent / General Staff')
       if (!map[storeName]) {
         map[storeName] = { staff: [] }
       }
@@ -614,20 +640,20 @@ export function MasterControlScreen({
 
   // Filtered store entries
   const filteredStoreEntries = React.useMemo(() => {
-    const query = searchQuery.trim().toLowerCase()
+    const query = (searchQuery || '').trim().toLowerCase()
 
     return Object.entries(storesGrouped).filter(([storeName, group]) => {
-      const matchesStore = storeName.toLowerCase().includes(query)
+      const matchesStore = (storeName || '').toLowerCase().includes(query)
       const matchesOwner =
-        group.owner?.name.toLowerCase().includes(query) ||
-        group.owner?.username.toLowerCase().includes(query) ||
-        group.owner?.email?.toLowerCase().includes(query)
+        Boolean(group.owner?.name && group.owner.name.toLowerCase().includes(query)) ||
+        Boolean(group.owner?.username && group.owner.username.toLowerCase().includes(query)) ||
+        Boolean(group.owner?.email && group.owner.email.toLowerCase().includes(query))
 
-      const matchesStaff = group.staff.some(
+      const matchesStaff = (group.staff || []).some(
         (s) =>
-          s.name.toLowerCase().includes(query) ||
-          s.username.toLowerCase().includes(query) ||
-          s.role.toLowerCase().includes(query)
+          Boolean(s?.name && s.name.toLowerCase().includes(query)) ||
+          Boolean(s?.username && s.username.toLowerCase().includes(query)) ||
+          Boolean(s?.role && s.role.toLowerCase().includes(query))
       )
 
       const textMatch = !query || matchesStore || matchesOwner || matchesStaff
@@ -635,14 +661,14 @@ export function MasterControlScreen({
       if (!textMatch) return false
 
       if (filterRole === 'OWNERS') return !!group.owner
-      if (filterRole === 'STAFF') return group.staff.length > 0
+      if (filterRole === 'STAFF') return (group.staff || []).length > 0
       return true
     })
   }, [storesGrouped, searchQuery, filterRole])
 
   // Total Counts
   const totalStoresCount = Object.keys(storesGrouped).length
-  const totalStaffCount = users.filter((u) => !u.is_owner && u.role !== 'ADMIN').length
+  const totalStaffCount = users.filter((u) => u && !u.is_owner && u.role !== 'ADMIN').length
 
   // Realtime Presence breakdown
   const presenceCounts = useMemo(() => {
@@ -650,6 +676,7 @@ export function MasterControlScreen({
     let idle = 0
     let offline = 0
     users.forEach((u) => {
+      if (!u) return
       const p = getPresenceInfo(u, currentTime)
       if (p.status === 'ONLINE') online++
       else if (p.status === 'IDLE') idle++
@@ -660,13 +687,13 @@ export function MasterControlScreen({
 
   // Total Platform Ads Watched across all merchant stores
   const totalPlatformAds = useMemo(() => {
-    const fromPro = Object.values(cloudProMap).reduce((sum, p) => sum + (p.total_ads_watched || 0), 0)
+    const fromPro = Object.values(cloudProMap || {}).reduce((sum, p) => sum + (p?.total_ads_watched || 0), 0)
     return Math.max(fromPro, adStats?.total_ads_watched || 0)
   }, [cloudProMap, adStats])
 
   // Total Platform Tokens held across all merchant wallets
   const totalPlatformTokens = useMemo(() => {
-    const fromPro = Object.values(cloudProMap).reduce((sum, p) => sum + (p.tokens || 0), 0)
+    const fromPro = Object.values(cloudProMap || {}).reduce((sum, p) => sum + (p?.tokens || 0), 0)
     return Math.max(fromPro, adStats?.tokens || 0)
   }, [cloudProMap, adStats])
 
@@ -912,20 +939,23 @@ export function MasterControlScreen({
         ) : (
           filteredStoreEntries.map(([storeName, group]) => {
             const isExpanded = expandedStores[storeName] !== false
-            const owner = group.owner
-            const staffList = group.staff
-            const isPlatformMasterStore = storeName === 'TINDA POS HQ' || owner?.username.toLowerCase() === 'skorts188@gmail.com'
+            const owner = group?.owner
+            const staffList = group?.staff || []
+            const ownerUsername = (owner?.username || '').toLowerCase()
+            const isPlatformMasterStore = storeName === 'TINDA POS HQ' || ownerUsername === 'skorts188@gmail.com'
 
             // Realtime store presence & ads calculation
             const allStoreUsers = [owner, ...staffList].filter(Boolean) as UserAccount[]
             const hasOnlineUser = allStoreUsers.some((u) => getPresenceInfo(u, currentTime).status === 'ONLINE')
             const hasIdleUser = !hasOnlineUser && allStoreUsers.some((u) => getPresenceInfo(u, currentTime).status === 'IDLE')
             const storeAds = allStoreUsers.reduce((sum, u) => {
-              const p = cloudProMap[u.username.toLowerCase()]
+              const uKey = (u?.username || '').toLowerCase()
+              const p = (cloudProMap || {})[uKey]
               return sum + (p?.total_ads_watched || 0)
             }, 0)
             const storeTokens = allStoreUsers.reduce((sum, u) => {
-              const p = cloudProMap[u.username.toLowerCase()]
+              const uKey = (u?.username || '').toLowerCase()
+              const p = (cloudProMap || {})[uKey]
               return sum + (p?.tokens || 0)
             }, 0)
 
@@ -986,7 +1016,7 @@ export function MasterControlScreen({
                       <div className="flex items-center gap-3 font-mono text-[11px] text-stone-400 mt-1.5 flex-wrap">
                         {owner && (
                           <span>
-                            Owner: <span className="text-stone-200 font-semibold">{owner.name}</span> (@{owner.username})
+                            Owner: <span className="text-stone-200 font-semibold">{owner.name || owner.username || 'Owner'}</span> (@{owner.username || 'unknown'})
                           </span>
                         )}
                         {owner?.email && (
@@ -1086,20 +1116,20 @@ export function MasterControlScreen({
                                   {owner.avatar_url ? (
                                     <img
                                       src={owner.avatar_url}
-                                      alt={owner.name}
+                                      alt={owner.name || owner.username || 'Avatar'}
                                       className="w-8 h-8 rounded-xl object-cover border border-gold/40 shadow-glow-gold shrink-0"
                                     />
                                   ) : (
                                     <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-300 to-[#D4AF37] text-obsidian-950 font-serif font-bold text-xs flex items-center justify-center shrink-0">
-                                      {owner.name.substring(0, 2).toUpperCase()}
+                                      {(owner.name || owner.username || 'OW').substring(0, 2).toUpperCase()}
                                     </div>
                                   )}
                                   <div>
                                     <div className="font-semibold text-stone-100 flex items-center gap-1.5">
                                       {isPlatformMasterStore && <Crown className="w-3.5 h-3.5 text-gold" />}
-                                      <span>{owner.name}</span>
+                                      <span>{owner.name || owner.username || 'Store Owner'}</span>
                                     </div>
-                                    <div className="text-[10px] font-mono text-stone-400">@{owner.username}</div>
+                                    <div className="text-[10px] font-mono text-stone-400">@{owner.username || 'unknown'}</div>
                                   </div>
                                 </div>
                               </td>
@@ -1133,7 +1163,8 @@ export function MasterControlScreen({
                                   </div>
                                 ) : (
                                   (() => {
-                                    const pro = cloudProMap[owner.username.toLowerCase()]
+                                    const uKey = (owner.username || '').toLowerCase()
+                                    const pro = (cloudProMap || {})[uKey]
                                     const adsCount = pro?.total_ads_watched ?? 0
                                     const tokenCount = pro?.tokens ?? 0
                                     return (
@@ -1148,7 +1179,7 @@ export function MasterControlScreen({
                                           </span>
                                         </div>
                                         <span className="text-[9px] text-stone-400 font-mono">
-                                          {pro?.unlimited_until && new Date(pro.unlimited_until).getTime() > currentTime
+                                          {pro?.unlimited_until && !isNaN(new Date(pro.unlimited_until).getTime()) && new Date(pro.unlimited_until).getTime() > currentTime
                                             ? `Pass: until ${new Date(pro.unlimited_until).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
                                             : 'Requires Ad Shift'}
                                         </span>
@@ -1160,7 +1191,7 @@ export function MasterControlScreen({
                               <td className="py-3 px-3 font-mono">
                                 <div className="flex items-center gap-1.5">
                                   <span>
-                                    {revealedPins[owner.id || 0] ? owner.pin : '••••••••'}
+                                    {revealedPins[owner.id || 0] ? (owner.pin || '••••••••') : '••••••••'}
                                   </span>
                                   <button
                                     onClick={() => toggleRevealPin(owner.id)}
@@ -1170,7 +1201,7 @@ export function MasterControlScreen({
                                     {revealedPins[owner.id || 0] ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
                                   </button>
                                   <button
-                                    onClick={() => handleCopyPin(owner.pin, owner.username, owner.id)}
+                                    onClick={() => handleCopyPin(owner.pin || '', owner.username || '', owner.id)}
                                     className="p-1 text-stone-500 hover:text-gold-light transition-colors"
                                     title="Copy PIN"
                                   >
@@ -1204,23 +1235,23 @@ export function MasterControlScreen({
 
                           {/* Staff rows */}
                           {staffList.map((staff) => (
-                            <tr key={staff.id || staff.username} className="hover:bg-white/[0.02] transition-colors">
+                            <tr key={staff.id || staff.username || Math.random()} className="hover:bg-white/[0.02] transition-colors">
                               <td className="py-3 px-3">
                                 <div className="flex items-center gap-2.5">
                                   {staff.avatar_url ? (
                                     <img
                                       src={staff.avatar_url}
-                                      alt={staff.name}
+                                      alt={staff.name || staff.username || 'Staff'}
                                       className="w-8 h-8 rounded-xl object-cover border border-white/20 shrink-0"
                                     />
                                   ) : (
                                     <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-white/10 text-stone-300 font-serif font-bold text-xs flex items-center justify-center shrink-0">
-                                      {staff.name.substring(0, 2).toUpperCase()}
+                                      {(staff.name || staff.username || 'ST').substring(0, 2).toUpperCase()}
                                     </div>
                                   )}
                                   <div>
-                                    <div className="font-semibold text-stone-200">{staff.name}</div>
-                                    <div className="text-[10px] font-mono text-stone-400">@{staff.username}</div>
+                                    <div className="font-semibold text-stone-200">{staff.name || staff.username || 'Staff User'}</div>
+                                    <div className="text-[10px] font-mono text-stone-400">@{staff.username || 'unknown'}</div>
                                   </div>
                                 </div>
                               </td>
@@ -1246,7 +1277,8 @@ export function MasterControlScreen({
                               </td>
                               <td className="py-3 px-3 font-mono text-[11px]">
                                 {(() => {
-                                  const pro = cloudProMap[staff.username.toLowerCase()]
+                                  const sKey = (staff?.username || '').toLowerCase()
+                                  const pro = (cloudProMap || {})[sKey]
                                   const adsCount = pro?.total_ads_watched ?? 0
                                   const tokenCount = pro?.tokens ?? 0
                                   return (
@@ -1270,7 +1302,7 @@ export function MasterControlScreen({
                               <td className="py-3 px-3 font-mono">
                                 <div className="flex items-center gap-1.5">
                                   <span>
-                                    {revealedPins[staff.id || 0] ? staff.pin : '••••'}
+                                    {revealedPins[staff.id || 0] ? (staff.pin || '••••') : '••••'}
                                   </span>
                                   <button
                                     onClick={() => toggleRevealPin(staff.id)}
@@ -1280,7 +1312,7 @@ export function MasterControlScreen({
                                     {revealedPins[staff.id || 0] ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
                                   </button>
                                   <button
-                                    onClick={() => handleCopyPin(staff.pin, staff.username, staff.id)}
+                                    onClick={() => handleCopyPin(staff.pin || '', staff.username || '', staff.id)}
                                     className="p-1 text-stone-500 hover:text-gold-light transition-colors"
                                     title="Copy PIN"
                                   >

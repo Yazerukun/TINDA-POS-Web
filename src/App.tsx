@@ -19,6 +19,7 @@ import { VaultAuthModal, type VaultSession } from './components/VaultAuthModal'
 import { RewardedAdModal } from './components/RewardedAdModal'
 import { MasterControlScreen } from './components/MasterControlScreen'
 import { UserProfileModal } from './components/UserProfileModal'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import { useProAccess } from './services/proAccess'
 import { sendHeartbeat } from './services/cloudSync'
 
@@ -599,12 +600,14 @@ export default function App(): React.JSX.Element {
         )}
 
         {activeTab === 'master-control' && (
-          <MasterControlScreen
-            currentCashierName={vaultSession?.cashierName}
-            isMasterAdmin={vaultSession?.isMasterAdmin || false}
-            onRefreshAll={loadData}
-            onMasqueradeStore={handleMasqueradeStore}
-          />
+          <ErrorBoundary fallbackTitle="Master Control Console Error">
+            <MasterControlScreen
+              currentCashierName={vaultSession?.cashierName}
+              isMasterAdmin={vaultSession?.isMasterAdmin || false}
+              onRefreshAll={loadData}
+              onMasqueradeStore={handleMasqueradeStore}
+            />
+          </ErrorBoundary>
         )}
       </main>
 

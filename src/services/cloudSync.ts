@@ -79,3 +79,31 @@ export async function fetchCloudProState(username: string): Promise<CloudProPayl
     return null
   }
 }
+
+/** Send lightweight heartbeat to update last_active_at in Cloudflare D1 */
+export async function sendHeartbeat(username: string): Promise<boolean> {
+  if (!username) return false
+  try {
+    const res = await fetch(`${API_BASE}/api/heartbeat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username })
+    })
+    const data = await res.json() as { ok: boolean }
+    return data.ok === true
+  } catch {
+    return false
+  }
+}
+
+/** Fetch all cloud pro access states (ads watched, tokens) — used by Master Admin */
+export async function fetchAllCloudProStates(): Promise<CloudProPayload[]> {
+  try {
+    const res = await fetch(`${API_BASE}/api/pro`)
+    const data = await res.json() as { ok: boolean; states?: CloudProPayload[] }
+    return data.ok && Array.isArray(data.states) ? data.states : []
+  } catch {
+    return []
+  }
+}
+

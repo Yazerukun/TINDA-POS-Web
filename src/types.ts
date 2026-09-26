@@ -133,6 +133,8 @@ export interface UserAccount {
   pin: string
   status: 'ACTIVE' | 'DISABLED'
   created_at: string
+  updated_at?: string
+  last_active_at?: string
   store_name?: string
   owner_username?: string
   is_owner?: boolean

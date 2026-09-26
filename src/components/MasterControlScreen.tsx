@@ -4,17 +4,75 @@ import {
   Lock, KeyRound, CheckCircle2, AlertTriangle, RefreshCw,
   Clock, Download, ChevronDown, ChevronRight, Eye, EyeOff,
   Sparkles, Radio, Shield, Trash2, Edit3, X, Copy, Check,
-  Zap, ExternalLink, Play, Wallet, Calendar, LogIn
+  Zap, ExternalLink, Play, Wallet, Calendar, LogIn, Tv, Coins, Activity
 } from 'lucide-react'
 import { db } from '../db'
 import type { UserAccount, UserRole, StoreSettings, ProAccessState } from '../types'
-import { fetchAllCloudUsers } from '../services/cloudSync'
+import { fetchAllCloudUsers, fetchAllCloudProStates, type CloudProPayload } from '../services/cloudSync'
 
 interface MasterControlScreenProps {
   currentCashierName?: string
   isMasterAdmin: boolean
   onRefreshAll?: () => void
   onMasqueradeStore?: (storeName: string, owner?: UserAccount) => void
+}
+
+export function getPresenceInfo(user: UserAccount, nowMs: number = Date.now()): {
+  status: 'ONLINE' | 'IDLE' | 'OFFLINE'
+  label: string
+  dotClass: string
+  badgeClass: string
+} {
+  const lastActive = user.last_active_at || user.updated_at
+  if (!lastActive) {
+    return {
+      status: 'OFFLINE',
+      label: 'Offline',
+      dotClass: 'bg-stone-500',
+      badgeClass: 'bg-zinc-900/80 text-stone-400 border-white/[0.08]'
+    }
+  }
+
+  const diffMs = nowMs - new Date(lastActive).getTime()
+  const diffSec = Math.max(0, Math.floor(diffMs / 1000))
+
+  // Within 60s: Active Now (online)
+  if (diffSec < 60) {
+    return {
+      status: 'ONLINE',
+      label: 'Active Now',
+      dotClass: 'bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]',
+      badgeClass: 'bg-emerald-950/70 text-emerald-300 border-emerald-500/40 shadow-sm'
+    }
+  }
+
+  // Within 5 mins: Idle
+  if (diffSec < 300) {
+    const mins = Math.max(1, Math.floor(diffSec / 60))
+    return {
+      status: 'IDLE',
+      label: `${mins}m ago`,
+      dotClass: 'bg-amber-400',
+      badgeClass: 'bg-amber-950/60 text-amber-300 border-amber-500/30'
+    }
+  }
+
+  // Offline with human readable time
+  let timeAgo = ''
+  if (diffSec < 3600) {
+    timeAgo = `${Math.floor(diffSec / 60)}m ago`
+  } else if (diffSec < 86400) {
+    timeAgo = `${Math.floor(diffSec / 3600)}h ago`
+  } else {
+    timeAgo = `${Math.floor(diffSec / 86400)}d ago`
+  }
+
+  return {
+    status: 'OFFLINE',
+    label: `Offline (${timeAgo})`,
+    dotClass: 'bg-stone-600',
+    badgeClass: 'bg-zinc-950/80 text-stone-400 border-white/[0.06]'
+  }
 }
 
 export function MasterControlScreen({
@@ -30,6 +88,8 @@ export function MasterControlScreen({
   const [adStats, setAdStats] = useState<ProAccessState | null>(null)
   const [totalTransactions, setTotalTransactions] = useState<number>(0)
   const [expandedStores, setExpandedStores] = useState<Record<string, boolean>>({})
+  const [currentTime, setCurrentTime] = useState<number>(Date.now())
+  const [cloudProMap, setCloudProMap] = useState<Record<string, CloudProPayload>>({})
 
   // Store Pass & Token Authority State
   const [passTargetStore, setPassTargetStore] = useState<{
@@ -73,35 +133,54 @@ export function MasterControlScreen({
     setTimeout(() => setNotification(null), 3500)
   }
 
-  const loadData = async () => {
-    setLoading(true)
+  const loadData = async (isManual = true) => {
+    if (isManual) setLoading(true)
     try {
       const allUsers = await db.users.toArray()
 
       // Merge in cloud users that may not exist on this device's local IndexedDB
       try {
         const cloudUsers = await fetchAllCloudUsers()
+        const cloudMap = new Map<string, Record<string, unknown>>()
+        ;(cloudUsers as Array<Record<string, unknown>>).forEach((cu) => {
+          if (cu.username) cloudMap.set(String(cu.username).toLowerCase(), cu)
+        })
+
+        // Enrich local users with cloud presence timestamps & store names
+        allUsers.forEach((u) => {
+          const cu = cloudMap.get(u.username.toLowerCase())
+          if (cu) {
+            if (cu.last_active_at) u.last_active_at = cu.last_active_at as string
+            if (cu.updated_at) u.updated_at = cu.updated_at as string
+            if (cu.store_name && !u.store_name) u.store_name = cu.store_name as string
+          }
+        })
+
+        // Add cloud-only users (registered on other devices)
         const localUsernames = new Set(allUsers.map((u) => u.username?.toLowerCase()))
         const cloudOnlyUsers = (cloudUsers as Array<Record<string, unknown>>)
-          .filter((cu) => !localUsernames.has((cu.username as string)?.toLowerCase()))
-          .map((cu) => ({
-            id: -(Math.floor(Math.random() * 999999)), // negative = cloud-only (no local ID)
+          .filter((cu) => !localUsernames.has(String(cu.username).toLowerCase()))
+          .map((cu, idx) => ({
+            id: -1000 - idx,
             username: cu.username as string,
             name: cu.name as string,
             email: cu.email as string | undefined,
-            role: cu.role as string,
+            role: (cu.role as UserRole) || 'CASHIER',
             pin: '', // never expose pin from cloud
-            status: cu.status as string,
+            status: (cu.status as 'ACTIVE' | 'DISABLED') || 'ACTIVE',
             store_name: cu.store_name as string | undefined,
             is_owner: Boolean(cu.is_owner),
             avatar_url: cu.avatar_url as string | undefined,
-            created_at: cu.created_at as string,
+            created_at: (cu.created_at as string) || new Date().toISOString(),
+            updated_at: cu.updated_at as string | undefined,
+            last_active_at: cu.last_active_at as string | undefined,
             _cloud_only: true,
           }))
         allUsers.push(...(cloudOnlyUsers as typeof allUsers))
       } catch { /* silently ignore if cloud is unreachable */ }
 
       setUsers(allUsers)
+      setCurrentTime(Date.now())
 
       const txCount = await db.transactions.count()
       setTotalTransactions(txCount)
@@ -111,23 +190,46 @@ export function MasterControlScreen({
         setAdStats(proRec.value)
       }
 
+      // Fetch cloud pro access states (ads watched & tokens) across all stores
+      try {
+        const proStates = await fetchAllCloudProStates()
+        const pMap: Record<string, CloudProPayload> = {}
+        proStates.forEach((ps) => {
+          if (ps.username) pMap[ps.username.toLowerCase()] = ps
+        })
+        setCloudProMap(pMap)
+      } catch {}
+
       // Auto expand all stores by default
-      const expMap: Record<string, boolean> = {}
-      allUsers.forEach((u) => {
-        const storeKey = u.store_name || 'Independent / General Stores'
-        expMap[storeKey] = true
+      setExpandedStores((prev) => {
+        const next = { ...prev }
+        allUsers.forEach((u) => {
+          const storeKey = u.store_name || 'Independent / General Stores'
+          if (next[storeKey] === undefined) {
+            next[storeKey] = true
+          }
+        })
+        return next
       })
-      setExpandedStores(expMap)
     } catch (err) {
-      console.error('Error loading master control data:', err)
-      showToast('Failed to load master control data', 'error')
+      if (isManual) {
+        console.error('Error loading master control data:', err)
+        showToast('Failed to load master control data', 'error')
+      }
     } finally {
-      setLoading(false)
+      if (isManual) setLoading(false)
     }
   }
 
+  // Real-time auto-polling every 5 seconds + live clock tick
   useEffect(() => {
-    loadData()
+    loadData(true)
+    const interval = setInterval(() => {
+      loadData(false)
+      setCurrentTime(Date.now())
+    }, 5000)
+
+    return () => clearInterval(interval)
   }, [])
 
   // Toggle Reveal PIN
@@ -542,6 +644,32 @@ export function MasterControlScreen({
   const totalStoresCount = Object.keys(storesGrouped).length
   const totalStaffCount = users.filter((u) => !u.is_owner && u.role !== 'ADMIN').length
 
+  // Realtime Presence breakdown
+  const presenceCounts = useMemo(() => {
+    let online = 0
+    let idle = 0
+    let offline = 0
+    users.forEach((u) => {
+      const p = getPresenceInfo(u, currentTime)
+      if (p.status === 'ONLINE') online++
+      else if (p.status === 'IDLE') idle++
+      else offline++
+    })
+    return { online, idle, offline }
+  }, [users, currentTime])
+
+  // Total Platform Ads Watched across all merchant stores
+  const totalPlatformAds = useMemo(() => {
+    const fromPro = Object.values(cloudProMap).reduce((sum, p) => sum + (p.total_ads_watched || 0), 0)
+    return Math.max(fromPro, adStats?.total_ads_watched || 0)
+  }, [cloudProMap, adStats])
+
+  // Total Platform Tokens held across all merchant wallets
+  const totalPlatformTokens = useMemo(() => {
+    const fromPro = Object.values(cloudProMap).reduce((sum, p) => sum + (p.tokens || 0), 0)
+    return Math.max(fromPro, adStats?.tokens || 0)
+  }, [cloudProMap, adStats])
+
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 animate-fade-in text-stone-100">
       {/* ── HEADER BANNER ── */}
@@ -629,7 +757,7 @@ export function MasterControlScreen({
       )}
 
       {/* ── KPI STATS CARDS ── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Total Stores */}
         <div className="p-4 sm:p-5 rounded-2xl glass-card border border-white/[0.08] relative overflow-hidden">
           <div className="flex items-center justify-between mb-2">
@@ -641,56 +769,103 @@ export function MasterControlScreen({
           <div className="font-serif text-2xl sm:text-3xl font-bold text-stone-100">
             {totalStoresCount}
           </div>
-          <p className="text-[10px] font-mono text-stone-400 mt-1">Merchant accounts created</p>
+          <p className="text-[10px] font-mono text-stone-400 mt-1">Merchant stores on platform</p>
         </div>
 
-        {/* Total Staff */}
-        <div className="p-4 sm:p-5 rounded-2xl glass-card border border-white/[0.08] relative overflow-hidden">
+        {/* Realtime Live Active Users */}
+        <div className="p-4 sm:p-5 rounded-2xl glass-card border border-emerald-500/30 relative overflow-hidden bg-emerald-950/[0.15]">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-stone-400">
-              Total Staff Users
+            <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-emerald-400 flex items-center gap-1.5 font-bold">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+              Live Realtime Status
             </span>
-            <Users className="w-4 h-4 text-amber-300" />
+            <Activity className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="font-serif text-2xl sm:text-3xl font-bold text-stone-100">
-            {users.length}
+          <div className="flex items-baseline gap-2">
+            <span className="font-serif text-2xl sm:text-3xl font-bold text-emerald-300">
+              {presenceCounts.online}
+            </span>
+            <span className="text-xs font-mono text-emerald-400/80 font-semibold">Online Now</span>
           </div>
           <p className="text-[10px] font-mono text-stone-400 mt-1">
-            {totalStaffCount} cashiers/leads + {users.length - totalStaffCount} owners
+            {presenceCounts.idle} idle (&lt;5m) • {presenceCounts.offline} offline
           </p>
         </div>
 
-        {/* Total Platform Sales */}
-        <div className="p-4 sm:p-5 rounded-2xl glass-card border border-white/[0.08] relative overflow-hidden">
+        {/* Total Platform Ads Watched */}
+        <div className="p-4 sm:p-5 rounded-2xl glass-card border border-amber-500/30 relative overflow-hidden bg-amber-500/[0.04]">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-stone-400">
-              Platform Sales
-            </span>
-            <Radio className="w-4 h-4 text-emerald-400" />
-          </div>
-          <div className="font-serif text-2xl sm:text-3xl font-bold text-emerald-300">
-            {totalTransactions}
-          </div>
-          <p className="text-[10px] font-mono text-stone-400 mt-1">Transactions recorded</p>
-        </div>
-
-        {/* Monetag Revenue Engine Status */}
-        <div className="p-4 sm:p-5 rounded-2xl glass-card border border-gold/30 relative overflow-hidden bg-amber-500/[0.03]">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-gold-light">
-              Monetag Ads Engine
+            <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-gold-light flex items-center gap-1.5">
+              <Tv className="w-3.5 h-3.5 text-gold-light" />
+              Total Ads Watched
             </span>
             <Sparkles className="w-4 h-4 text-gold" />
           </div>
           <div className="flex items-baseline gap-2">
             <span className="font-serif text-2xl sm:text-3xl font-bold text-gold-light">
-              {adStats?.total_ads_watched || 0}
+              {totalPlatformAds}
             </span>
-            <span className="text-[10px] font-mono text-emerald-400 font-bold">● Active</span>
+            <span className="text-[10px] font-mono text-emerald-400 font-bold">● Monetag Live</span>
           </div>
-          <p className="text-[10px] font-mono text-gold-muted mt-1 truncate">
-            Zones 11879014 &amp; 11879016 Live
+          <p className="text-[10px] font-mono text-stone-400 mt-1 truncate">
+            Across all merchant accounts
           </p>
+        </div>
+
+        {/* Total Tokens Distributed */}
+        <div className="p-4 sm:p-5 rounded-2xl glass-card border border-gold/30 relative overflow-hidden bg-zinc-900/60">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-amber-300 flex items-center gap-1.5">
+              <Coins className="w-3.5 h-3.5 text-gold" />
+              Merchant Tokens
+            </span>
+            <Wallet className="w-4 h-4 text-amber-300" />
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="font-serif text-2xl sm:text-3xl font-bold text-amber-200">
+              {totalPlatformTokens}
+            </span>
+            <span className="text-[10px] font-mono text-gold-light font-semibold">🪙 Tokens</span>
+          </div>
+          <p className="text-[10px] font-mono text-stone-400 mt-1">
+            Total active merchant token balance
+          </p>
+        </div>
+      </div>
+
+      {/* ── REALTIME PRESENCE & ADS TICKER BAR ── */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-zinc-950/90 border border-gold/20 shadow-inner text-xs font-mono">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="flex items-center gap-1.5 text-emerald-400 font-bold tracking-wider uppercase text-[11px]">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+            Cloudflare D1 Realtime Presence
+          </span>
+          <span className="text-stone-600">|</span>
+          <span className="text-stone-400 text-[11px]">
+            Auto-refreshing every <span className="text-gold-light font-bold">5s</span>
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3 text-[11px] flex-wrap">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            {presenceCounts.online} Online
+          </span>
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-amber-500/10 text-amber-300 border border-amber-500/20">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+            {presenceCounts.idle} Idle (&lt;5m)
+          </span>
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-zinc-900 text-stone-400 border border-white/[0.06]">
+            <span className="w-1.5 h-1.5 rounded-full bg-stone-500" />
+            {presenceCounts.offline} Offline
+          </span>
+          <span className="text-stone-600">|</span>
+          <span className="text-gold-light font-bold flex items-center gap-1">
+            <Tv className="w-3 h-3" /> {totalPlatformAds} Total Ads
+          </span>
+          <span className="text-amber-300 font-bold flex items-center gap-1">
+            <Coins className="w-3 h-3" /> {totalPlatformTokens} Tokens
+          </span>
         </div>
       </div>
 
@@ -739,7 +914,20 @@ export function MasterControlScreen({
             const isExpanded = expandedStores[storeName] !== false
             const owner = group.owner
             const staffList = group.staff
-            const isPlatformMasterStore = owner?.username.toLowerCase() === 'skorts188@gmail.com'
+            const isPlatformMasterStore = storeName === 'TINDA POS HQ' || owner?.username.toLowerCase() === 'skorts188@gmail.com'
+
+            // Realtime store presence & ads calculation
+            const allStoreUsers = [owner, ...staffList].filter(Boolean) as UserAccount[]
+            const hasOnlineUser = allStoreUsers.some((u) => getPresenceInfo(u, currentTime).status === 'ONLINE')
+            const hasIdleUser = !hasOnlineUser && allStoreUsers.some((u) => getPresenceInfo(u, currentTime).status === 'IDLE')
+            const storeAds = allStoreUsers.reduce((sum, u) => {
+              const p = cloudProMap[u.username.toLowerCase()]
+              return sum + (p?.total_ads_watched || 0)
+            }, 0)
+            const storeTokens = allStoreUsers.reduce((sum, u) => {
+              const p = cloudProMap[u.username.toLowerCase()]
+              return sum + (p?.tokens || 0)
+            }, 0)
 
             return (
               <div
@@ -766,17 +954,36 @@ export function MasterControlScreen({
                           {storeName}
                         </h3>
                         {isPlatformMasterStore ? (
-                          <span className="px-2 py-0.5 rounded-full bg-gold/20 text-gold-light font-mono text-[9px] font-extrabold uppercase border border-gold/40">
+                          <span className="px-2 py-0.5 rounded-full bg-gold/20 text-gold-light font-mono text-[9px] font-extrabold uppercase border border-gold/40 flex items-center gap-1">
+                            <Crown className="w-3 h-3 text-gold" />
                             PLATFORM HQ
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 font-mono text-[9px] font-semibold uppercase border border-emerald-500/30">
+                          <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 font-mono text-[9px] font-semibold uppercase border border-amber-500/30">
                             Merchant Store
+                          </span>
+                        )}
+
+                        {/* Realtime Store Online Badge */}
+                        {hasOnlineUser ? (
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 font-mono text-[9px] font-bold uppercase border border-emerald-500/40 flex items-center gap-1 shadow-sm">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(52,211,153,0.9)]" />
+                            STORE ONLINE
+                          </span>
+                        ) : hasIdleUser ? (
+                          <span className="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-mono text-[9px] font-bold uppercase border border-amber-500/30 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                            IDLE (&lt;5M)
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full bg-zinc-900/80 text-stone-400 font-mono text-[9px] uppercase border border-white/[0.06] flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-stone-500" />
+                            OFFLINE
                           </span>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-3 font-mono text-[11px] text-stone-400 mt-1 flex-wrap">
+                      <div className="flex items-center gap-3 font-mono text-[11px] text-stone-400 mt-1.5 flex-wrap">
                         {owner && (
                           <span>
                             Owner: <span className="text-stone-200 font-semibold">{owner.name}</span> (@{owner.username})
@@ -785,7 +992,20 @@ export function MasterControlScreen({
                         {owner?.email && (
                           <span>• Contact: <span className="text-stone-300">{owner.email}</span></span>
                         )}
-                        <span>• <span className="text-gold-light font-bold">{staffList.length}</span> Staff accounts</span>
+                        <span>• <span className="text-gold-light font-bold">{staffList.length}</span> Staff</span>
+
+                        {/* Store Ads & Tokens Pill */}
+                        <span className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-lg bg-zinc-900/90 border border-gold/20 text-stone-200">
+                          <span className="text-gold-light font-semibold flex items-center gap-1">
+                            <Tv className="w-3 h-3 text-gold" />
+                            {isPlatformMasterStore ? '0 Ads (Master Admin)' : `${storeAds} Ads Watched`}
+                          </span>
+                          <span className="text-stone-600">•</span>
+                          <span className="text-amber-300 font-semibold flex items-center gap-1">
+                            <Coins className="w-3 h-3 text-amber-400" />
+                            {storeTokens} Tokens
+                          </span>
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -850,9 +1070,10 @@ export function MasterControlScreen({
                           <tr className="border-b border-white/[0.08] text-[10px] font-mono uppercase tracking-widest text-stone-400 pb-2">
                             <th className="py-2.5 px-3">Account / User</th>
                             <th className="py-2.5 px-3">Role</th>
+                            <th className="py-2.5 px-3">Realtime Status</th>
+                            <th className="py-2.5 px-3">Ads &amp; Tokens</th>
                             <th className="py-2.5 px-3">Security PIN</th>
-                            <th className="py-2.5 px-3">Ad Requirement</th>
-                            <th className="py-2.5 px-3">Status</th>
+                            <th className="py-2.5 px-3">Account</th>
                             <th className="py-2.5 px-3 text-right">Actions</th>
                           </tr>
                         </thead>
@@ -891,6 +1112,51 @@ export function MasterControlScreen({
                                   {isPlatformMasterStore ? 'PLATFORM MASTER' : 'STORE OWNER'}
                                 </span>
                               </td>
+                              <td className="py-3 px-3">
+                                {(() => {
+                                  const presence = getPresenceInfo(owner, currentTime)
+                                  return (
+                                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-mono text-[10px] font-semibold border ${presence.badgeClass}`}>
+                                      <span className={`w-1.5 h-1.5 rounded-full ${presence.dotClass}`} />
+                                      {presence.label}
+                                    </span>
+                                  )
+                                })()}
+                              </td>
+                              <td className="py-3 px-3 font-mono text-[11px]">
+                                {isPlatformMasterStore ? (
+                                  <div className="flex flex-col">
+                                    <span className="text-emerald-400 font-bold flex items-center gap-1">
+                                      <Crown className="w-3 h-3 text-gold" /> MASTER ADMIN
+                                    </span>
+                                    <span className="text-[9px] text-stone-400">Zero-Ads Bypass</span>
+                                  </div>
+                                ) : (
+                                  (() => {
+                                    const pro = cloudProMap[owner.username.toLowerCase()]
+                                    const adsCount = pro?.total_ads_watched ?? 0
+                                    const tokenCount = pro?.tokens ?? 0
+                                    return (
+                                      <div className="flex flex-col gap-0.5">
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-gold-light font-bold flex items-center gap-1">
+                                            <Tv className="w-3 h-3 text-gold" /> {adsCount} Ads
+                                          </span>
+                                          <span className="text-stone-500">•</span>
+                                          <span className="text-amber-300 font-bold flex items-center gap-1">
+                                            <Coins className="w-3 h-3 text-amber-400" /> {tokenCount} 🪙
+                                          </span>
+                                        </div>
+                                        <span className="text-[9px] text-stone-400 font-mono">
+                                          {pro?.unlimited_until && new Date(pro.unlimited_until).getTime() > currentTime
+                                            ? `Pass: until ${new Date(pro.unlimited_until).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                                            : 'Requires Ad Shift'}
+                                        </span>
+                                      </div>
+                                    )
+                                  })()
+                                )}
+                              </td>
                               <td className="py-3 px-3 font-mono">
                                 <div className="flex items-center gap-1.5">
                                   <span>
@@ -915,13 +1181,6 @@ export function MasterControlScreen({
                                     )}
                                   </button>
                                 </div>
-                              </td>
-                              <td className="py-3 px-3 font-mono text-[11px]">
-                                {isPlatformMasterStore ? (
-                                  <span className="text-emerald-400 font-bold">EXEMPT (ZERO ADS)</span>
-                                ) : (
-                                  <span className="text-amber-300">Requires Ad Shift (+1h/+2h/+3h)</span>
-                                )}
                               </td>
                               <td className="py-3 px-3">
                                 <span className="inline-flex items-center gap-1 font-mono text-[10px] text-emerald-400">
@@ -974,6 +1233,40 @@ export function MasterControlScreen({
                                   {staff.role}
                                 </span>
                               </td>
+                              <td className="py-3 px-3">
+                                {(() => {
+                                  const presence = getPresenceInfo(staff, currentTime)
+                                  return (
+                                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-mono text-[10px] font-semibold border ${presence.badgeClass}`}>
+                                      <span className={`w-1.5 h-1.5 rounded-full ${presence.dotClass}`} />
+                                      {presence.label}
+                                    </span>
+                                  )
+                                })()}
+                              </td>
+                              <td className="py-3 px-3 font-mono text-[11px]">
+                                {(() => {
+                                  const pro = cloudProMap[staff.username.toLowerCase()]
+                                  const adsCount = pro?.total_ads_watched ?? 0
+                                  const tokenCount = pro?.tokens ?? 0
+                                  return (
+                                    <div className="flex flex-col gap-0.5">
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-gold-light font-bold flex items-center gap-1">
+                                          <Tv className="w-3 h-3 text-gold" /> {adsCount} Ads
+                                        </span>
+                                        <span className="text-stone-500">•</span>
+                                        <span className="text-amber-300 font-bold flex items-center gap-1">
+                                          <Coins className="w-3 h-3 text-amber-400" /> {tokenCount} 🪙
+                                        </span>
+                                      </div>
+                                      <span className="text-[9px] text-stone-400 font-mono">
+                                        30s Cooldown Shift
+                                      </span>
+                                    </div>
+                                  )
+                                })()}
+                              </td>
                               <td className="py-3 px-3 font-mono">
                                 <div className="flex items-center gap-1.5">
                                   <span>
@@ -998,9 +1291,6 @@ export function MasterControlScreen({
                                     )}
                                   </button>
                                 </div>
-                              </td>
-                              <td className="py-3 px-3 font-mono text-[11px] text-amber-300">
-                                Requires Ad Shift (30s Cooldown)
                               </td>
                               <td className="py-3 px-3">
                                 <button

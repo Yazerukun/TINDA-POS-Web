@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { db } from '../db'
 import type { ProAccessState } from '../types'
+import { syncProStateToCloud } from './cloudSync'
 
 const STORAGE_KEY_PREFIX = 'tinda_pro_access'
 const DEFAULT_COOLDOWN_SECONDS = 30
@@ -83,6 +84,26 @@ export function useProAccess() {
     } catch (e) {
       console.warn('Could not persist pro access to Dexie:', e)
     }
+
+    // Fire-and-forget sync to Cloudflare D1
+    try {
+      const savedSession = localStorage.getItem('tinda_vault_session')
+      if (savedSession) {
+        const parsed = JSON.parse(savedSession)
+        if (parsed?.username) {
+          syncProStateToCloud({
+            user_id: Number(currentUserId) || 0,
+            username: parsed.username,
+            store_name: parsed.storeName || '',
+            pro_expires_at: updated.pro_expires_at,
+            tokens: updated.tokens,
+            last_ad_watched_at: updated.last_ad_watched_at,
+            total_ads_watched: updated.total_ads_watched,
+            owner_bypass: Boolean(updated.owner_bypass)
+          })
+        }
+      }
+    } catch {}
   }, [currentUserId])
 
   // Called from App.tsx on login — load THIS user's state (or start fresh)

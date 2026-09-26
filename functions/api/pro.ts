@@ -32,13 +32,18 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   try {
     const url = new URL(request.url)
     const username = url.searchParams.get('username')
-    if (!username) return Response.json({ ok: false, error: 'username required' }, { status: 400, headers: CORS })
+    if (username) {
+      const state = await env.TINDAPOS_DB.prepare(
+        'SELECT * FROM pro_access WHERE username = ? COLLATE NOCASE LIMIT 1'
+      ).bind(username).first()
+      return Response.json({ ok: true, state: state ?? null }, { headers: CORS })
+    }
 
-    const state = await env.TINDAPOS_DB.prepare(
-      'SELECT * FROM pro_access WHERE username = ? COLLATE NOCASE LIMIT 1'
-    ).bind(username).first()
-
-    return Response.json({ ok: true, state: state ?? null }, { headers: CORS })
+    // Return all pro access states for Master Admin inspection
+    const { results } = await env.TINDAPOS_DB.prepare(
+      'SELECT * FROM pro_access ORDER BY updated_at DESC'
+    ).all()
+    return Response.json({ ok: true, states: results }, { headers: CORS })
   } catch (err) {
     return Response.json({ ok: false, error: String(err) }, { status: 500, headers: CORS })
   }

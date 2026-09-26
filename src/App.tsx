@@ -20,6 +20,7 @@ import { RewardedAdModal } from './components/RewardedAdModal'
 import { MasterControlScreen } from './components/MasterControlScreen'
 import { UserProfileModal } from './components/UserProfileModal'
 import { useProAccess } from './services/proAccess'
+import { sendHeartbeat } from './services/cloudSync'
 
 export default function App(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard')
@@ -78,6 +79,28 @@ export default function App(): React.JSX.Element {
       // ignore
     }
   }
+
+  // Real-time online presence heartbeat (every 25 seconds & on tab focus)
+  useEffect(() => {
+    if (!vaultSession?.username) return
+    const ping = () => {
+      sendHeartbeat(vaultSession.username)
+    }
+    ping()
+    const timer = setInterval(ping, 25000)
+
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        ping()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
+
+    return () => {
+      clearInterval(timer)
+      document.removeEventListener('visibilitychange', handleVisibility)
+    }
+  }, [vaultSession?.username])
 
   // Checkout modal state
   const [checkoutData, setCheckoutData] = useState<{

@@ -40,7 +40,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     } else if (storeName) {
       stmt = env.TINDAPOS_DB.prepare('SELECT * FROM users WHERE store_name = ? ORDER BY created_at ASC').bind(storeName)
     } else {
-      stmt = env.TINDAPOS_DB.prepare('SELECT id, username, name, email, role, status, store_name, is_owner, avatar_url, created_at FROM users ORDER BY created_at ASC')
+      stmt = env.TINDAPOS_DB.prepare('SELECT id, username, name, email, role, status, store_name, is_owner, avatar_url, created_at, updated_at, last_active_at FROM users ORDER BY created_at ASC')
     }
 
     const { results } = await stmt.all()
@@ -63,8 +63,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
     const now = new Date().toISOString()
     await env.TINDAPOS_DB.prepare(`
-      INSERT INTO users (username, name, email, role, pin, status, store_name, is_owner, avatar_url, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO users (username, name, email, role, pin, status, store_name, is_owner, avatar_url, created_at, updated_at, last_active_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(username) DO UPDATE SET
         name = excluded.name,
         email = excluded.email,
@@ -73,11 +73,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         store_name = excluded.store_name,
         is_owner = excluded.is_owner,
         avatar_url = excluded.avatar_url,
-        updated_at = excluded.updated_at
+        updated_at = excluded.updated_at,
+        last_active_at = excluded.last_active_at
     `).bind(
       body.username, body.name, body.email ?? null, body.role ?? 'CASHIER', body.pin,
       body.status ?? 'ACTIVE', body.store_name ?? null, body.is_owner ? 1 : 0,
-      body.avatar_url ?? null, body.created_at ?? now, now
+      body.avatar_url ?? null, body.created_at ?? now, now, now
     ).run()
 
     // Register the store automatically if this is an owner signup

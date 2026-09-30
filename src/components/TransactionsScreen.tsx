@@ -133,13 +133,13 @@ export function TransactionsScreen({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-900/15 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-serif font-bold text-white tracking-wide">
+            <h1 className="text-2xl font-serif font-bold text-slate-900 tracking-wide">
               Transactions & Receipts
             </h1>
-            <span className="text-[10px] font-mono tracking-widest text-gold-muted border border-gold/30 px-2 py-0.5 rounded-full uppercase">
+            <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted border border-gold/30 px-2 py-0.5 rounded-full uppercase">
               Sales Ledger
             </span>
           </div>
@@ -149,18 +149,18 @@ export function TransactionsScreen({
         </div>
 
         <div className="text-right">
-          <p className="text-[10px] font-mono text-stone-500 uppercase tracking-wider">Filtered Net Volume</p>
+          <p className="text-[0.75rem] font-sans font-semibold text-stone-500 uppercase tracking-wider">Filtered Net Volume</p>
           <p className="text-xl font-serif font-bold text-gold-light">
             {money(totalFilteredSales_c)}
           </p>
-          <p className="text-[10px] font-mono text-stone-400">
+          <p className="text-[0.75rem] font-mono text-stone-400">
             {filteredTransactions.length} receipts shown
           </p>
         </div>
       </div>
 
       {/* Filter Bar */}
-      <div className="p-4 rounded-2xl bg-zinc-950/80 border border-white/[0.08] space-y-3">
+      <div className="p-4 rounded-2xl bg-zinc-950/80 border border-slate-900/20/[0.08] space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="relative flex-1 min-w-[240px]">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
@@ -169,7 +169,7 @@ export function TransactionsScreen({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by invoice #, item name, cashier..."
-              className="w-full h-10 pl-10 pr-4 rounded-xl bg-black border border-white/15 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#D4AF37]"
+              className="w-full h-10 pl-10 pr-4 rounded-xl bg-black border border-slate-900/20 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#2563EB]"
             />
           </div>
 
@@ -177,7 +177,7 @@ export function TransactionsScreen({
             <select
               value={paymentFilter}
               onChange={(e) => setPaymentFilter(e.target.value)}
-              className="h-10 px-3 rounded-xl bg-black border border-white/15 text-stone-200 text-xs font-mono focus:outline-none focus:border-[#D4AF37]"
+              className="h-10 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-200 text-xs font-mono focus:outline-none focus:border-[#2563EB]"
             >
               <option value="ALL">All Payments</option>
               <option value="CASH">CASH</option>
@@ -188,7 +188,7 @@ export function TransactionsScreen({
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="h-10 px-3 rounded-xl bg-black border border-white/15 text-stone-200 text-xs font-mono focus:outline-none focus:border-[#D4AF37]"
+              className="h-10 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-200 text-xs font-mono focus:outline-none focus:border-[#2563EB]"
             >
               <option value="ALL">All Status</option>
               <option value="COMPLETED">Completed</option>
@@ -203,14 +203,14 @@ export function TransactionsScreen({
                 setFromDate('')
                 setToDate('')
               }}
-              className="btn-press text-xs font-mono text-gold-muted hover:text-white px-2 py-1"
+              className="btn-press text-xs font-mono text-gold-muted hover:text-slate-900 px-2 py-1"
             >
               Reset
             </button>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-white/5 text-xs font-mono text-stone-400">
+        <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-900/10 text-xs font-mono text-stone-400">
           <span>Date Filter:</span>
           <div className="flex items-center gap-1.5">
             <span>From:</span>
@@ -218,7 +218,7 @@ export function TransactionsScreen({
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="bg-black/60 border border-white/15 rounded-lg px-2 py-1 text-xs text-stone-200 focus:outline-none focus:border-[#D4AF37]"
+              className="bg-black/60 border border-slate-900/20 rounded-lg px-2 py-1 text-xs text-stone-200 focus:outline-none focus:border-[#2563EB]"
             />
           </div>
 
@@ -228,7 +228,7 @@ export function TransactionsScreen({
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="bg-black/60 border border-white/15 rounded-lg px-2 py-1 text-xs text-stone-200 focus:outline-none focus:border-[#D4AF37]"
+              className="bg-black/60 border border-slate-900/20 rounded-lg px-2 py-1 text-xs text-stone-200 focus:outline-none focus:border-[#2563EB]"
             />
           </div>
 
@@ -237,7 +237,7 @@ export function TransactionsScreen({
               setFromDate(todayStr)
               setToDate(todayStr)
             }}
-            className="btn-press text-[11px] text-[#D4AF37] hover:underline ml-auto"
+            className="btn-press text-[0.8125rem] text-[#2563EB] hover:underline ml-auto"
           >
             Today Only
           </button>
@@ -245,7 +245,7 @@ export function TransactionsScreen({
       </div>
 
       {/* Transactions Table */}
-      <div className="rounded-3xl border border-white/[0.08] bg-zinc-950/70 overflow-hidden">
+      <div className="rounded-3xl border border-slate-900/20/[0.08] bg-zinc-950/70 overflow-hidden">
         {filteredTransactions.length === 0 ? (
           <div className="py-20 text-center space-y-2">
             <Receipt className="h-10 w-10 text-stone-600 mx-auto" />
@@ -257,7 +257,7 @@ export function TransactionsScreen({
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-black/50 border-b border-white/[0.08] text-[10px] font-mono uppercase tracking-wider text-stone-400">
+              <thead className="bg-black/50 border-b border-slate-900/20/[0.08] text-[0.75rem] font-sans font-semibold uppercase tracking-wider text-stone-400">
                 <tr>
                   <th className="py-3.5 px-4 font-semibold">Invoice #</th>
                   <th className="py-3.5 px-4 font-semibold">Date & Time</th>
@@ -282,7 +282,7 @@ export function TransactionsScreen({
                       <td className="py-3 px-4 font-mono font-bold text-gold-light">
                         {tx.invoice_number}
                       </td>
-                      <td className="py-3 px-4 font-mono text-stone-400 text-[11px]">
+                      <td className="py-3 px-4 font-mono text-stone-400 text-[0.8125rem]">
                         {formatDateTime(tx.created_at)}
                       </td>
                       <td className="py-3 px-4 text-stone-300">
@@ -293,7 +293,7 @@ export function TransactionsScreen({
                       </td>
                       <td className="py-3 px-4">
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+                          className={`px-2 py-0.5 rounded text-[0.75rem] font-mono font-bold uppercase ${
                             tx.payment_method === 'CASH'
                               ? 'bg-emerald-500/20 text-emerald-400'
                               : tx.payment_method === 'GCASH'
@@ -306,11 +306,11 @@ export function TransactionsScreen({
                       </td>
                       <td className="py-3 px-4">
                         {isVoided ? (
-                          <span className="px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 text-[9px] font-mono font-bold uppercase border border-red-500/30">
+                          <span className="px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 text-[0.6875rem] font-sans font-semibold font-bold uppercase border border-red-500/30">
                             Voided
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[9px] font-mono font-bold uppercase">
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[0.6875rem] font-sans font-semibold font-bold uppercase">
                             Paid
                           </span>
                         )}
@@ -321,7 +321,7 @@ export function TransactionsScreen({
                       <td className="py-3 px-4 text-center">
                         <button
                           onClick={() => setSelectedTx(tx)}
-                          className="btn-press px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-stone-300 hover:text-white text-xs font-semibold inline-flex items-center gap-1"
+                          className="btn-press px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-stone-300 hover:text-slate-900 text-xs font-semibold inline-flex items-center gap-1"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           <span>View</span>
@@ -339,22 +339,22 @@ export function TransactionsScreen({
       {/* Receipt Details Modal */}
       {selectedTx && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="w-full max-w-md bg-[#0C0D11] border border-amber-500/30 rounded-3xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <div className="w-full max-w-md bg-[#F1F5F9] border border-amber-500/30 rounded-3xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-900/15 pb-4">
               <div>
-                <p className="text-[10px] font-mono tracking-widest text-gold-muted uppercase">Receipt Audit</p>
-                <h3 className="text-base font-bold text-white mt-0.5">{selectedTx.invoice_number}</h3>
+                <p className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted uppercase">Receipt Audit</p>
+                <h3 className="text-base font-bold text-slate-900 mt-0.5">{selectedTx.invoice_number}</h3>
               </div>
               <button
                 onClick={() => setSelectedTx(null)}
-                className="btn-press h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 text-stone-400 hover:text-white flex items-center justify-center"
+                className="btn-press h-8 w-8 rounded-lg bg-slate-900/40 hover:bg-slate-900/50 text-stone-400 hover:text-slate-900 flex items-center justify-center"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Receipt Summary Card */}
-            <div className="p-4 rounded-2xl bg-zinc-950 border border-white/10 space-y-3 font-mono text-xs">
+            <div className="p-4 rounded-2xl bg-zinc-950 border border-slate-900/15 space-y-3 font-mono text-xs">
               <div className="flex justify-between text-stone-400">
                 <span>Date & Time:</span>
                 <span className="text-stone-200">{formatDateTime(selectedTx.created_at)}</span>
@@ -365,11 +365,11 @@ export function TransactionsScreen({
               </div>
               <div className="flex justify-between text-stone-400">
                 <span>Payment Mode:</span>
-                <span className="text-[#D4AF37] font-bold">{selectedTx.payment_method}</span>
+                <span className="text-[#2563EB] font-bold">{selectedTx.payment_method}</span>
               </div>
 
               {selectedTx.status === 'VOIDED' && (
-                <div className="p-2.5 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-[11px] space-y-1">
+                <div className="p-2.5 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-[0.8125rem] space-y-1">
                   <p className="font-bold flex items-center gap-1">
                     <Ban className="w-3.5 h-3.5" />
                     <span>TRANSACTION VOIDED</span>
@@ -382,15 +382,15 @@ export function TransactionsScreen({
 
             {/* Itemized list */}
             <div className="space-y-2">
-              <p className="text-xs font-bold text-stone-300 uppercase tracking-wider font-mono">
+              <p className="text-xs font-bold text-stone-300 uppercase tracking-wider font-sans font-semibold">
                 Items Purchased ({selectedTx.items.length})
               </p>
-              <div className="divide-y divide-white/5 bg-zinc-950 rounded-2xl p-3 border border-white/5 max-h-48 overflow-y-auto">
+              <div className="divide-y divide-white/5 bg-zinc-950 rounded-2xl p-3 border border-slate-900/10 max-h-48 overflow-y-auto">
                 {selectedTx.items.map((item, idx) => (
                   <div key={idx} className="py-2 flex items-center justify-between text-xs">
                     <div>
-                      <p className="font-semibold text-white">{item.name}</p>
-                      <p className="text-[10px] text-stone-400 font-mono">
+                      <p className="font-semibold text-slate-900">{item.name}</p>
+                      <p className="text-[0.75rem] text-stone-400 font-mono">
                         {item.quantity} {item.unit_name} × {money(item.unit_price_c)}
                       </p>
                     </div>
@@ -403,7 +403,7 @@ export function TransactionsScreen({
             </div>
 
             {/* Totals */}
-            <div className="pt-2 border-t border-white/10 space-y-1.5 font-mono text-xs">
+            <div className="pt-2 border-t border-slate-900/15 space-y-1.5 font-mono text-xs">
               <div className="flex justify-between text-stone-400">
                 <span>Subtotal:</span>
                 <span>{money(selectedTx.subtotal_c)}</span>
@@ -414,11 +414,11 @@ export function TransactionsScreen({
                   <span>-{money(selectedTx.discount_c)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-stone-100 font-bold text-sm pt-1 border-t border-white/5">
+              <div className="flex justify-between text-stone-100 font-bold text-sm pt-1 border-t border-slate-900/10">
                 <span>Total Amount:</span>
                 <span className="font-serif text-gold-light text-base">{money(selectedTx.total_c)}</span>
               </div>
-              <div className="flex justify-between text-stone-400 text-[11px]">
+              <div className="flex justify-between text-stone-400 text-[0.8125rem]">
                 <span>Tendered: {money(selectedTx.amount_tendered_c)}</span>
                 <span>Change: {money(selectedTx.change_c)}</span>
               </div>
@@ -428,7 +428,7 @@ export function TransactionsScreen({
             <div className="flex items-center gap-2 pt-2">
               <button
                 onClick={() => setIsReprintOpen(true)}
-                className="btn-press flex-1 py-3 rounded-xl bg-white/[0.08] hover:bg-white/[0.12] text-stone-200 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 border border-white/10"
+                className="btn-press flex-1 py-3 rounded-xl bg-white/[0.08] hover:bg-white/[0.12] text-stone-200 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 border border-slate-900/15"
               >
                 <Printer className="w-4 h-4" />
                 <span>Reprint</span>
@@ -452,14 +452,14 @@ export function TransactionsScreen({
       {isReprintOpen && selectedTx && (
         <div className="fixed inset-0 z-60 bg-black/90 backdrop-blur-md flex flex-col items-center justify-start p-3 sm:p-6 overflow-y-auto animate-fade-in">
           {/* Top Control Bar (Hidden during printing) */}
-          <div className="no-print w-full max-w-xl bg-zinc-900 border border-white/10 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
+          <div className="no-print w-full max-w-xl bg-zinc-900 border border-slate-900/15 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
             <div className="flex items-center gap-2">
               <Receipt className="w-5 h-5 text-gold-light" />
               <div>
-                <h3 className="text-xs font-bold text-white font-mono uppercase tracking-wide">
+                <h3 className="text-xs font-bold text-slate-900 font-sans font-semibold uppercase tracking-wide">
                   Receipt Reprint • {selectedTx.invoice_number}
                 </h3>
-                <p className="text-[10px] text-stone-400 font-mono">
+                <p className="text-[0.75rem] text-stone-400 font-mono">
                   {formatDateTime(selectedTx.created_at)}
                 </p>
               </div>
@@ -467,16 +467,16 @@ export function TransactionsScreen({
 
             {/* Paper Width Pills & Actions */}
             <div className="flex items-center gap-2">
-              <div className="flex items-center bg-zinc-950 p-1 rounded-xl border border-white/10 text-xs font-mono">
+              <div className="flex items-center bg-zinc-950 p-1 rounded-xl border border-slate-900/15 text-xs font-mono">
                 {(['58mm', '80mm', 'A4'] as const).map((w) => (
                   <button
                     key={w}
                     type="button"
                     onClick={() => setReprintPaperWidth(w)}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] transition-all ${
+                    className={`px-2.5 py-1 rounded-lg text-[0.75rem] transition-all ${
                       reprintPaperWidth === w
                         ? 'bg-amber-500/20 text-gold-light font-bold border border-gold/40'
-                        : 'text-stone-400 hover:text-white'
+                        : 'text-stone-400 hover:text-slate-900'
                     }`}
                   >
                     {w === '58mm' ? '58mm Roll' : w === '80mm' ? '80mm Roll' : 'A4 Full'}
@@ -487,7 +487,7 @@ export function TransactionsScreen({
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="btn-press px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-[#D4AF37] hover:from-amber-300 hover:to-gold text-black text-xs font-bold font-mono uppercase tracking-wider flex items-center gap-1.5 shadow-glow-gold"
+                className="btn-press px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-[#2563EB] hover:from-amber-300 hover:to-gold text-black text-xs font-bold font-sans font-semibold uppercase tracking-wider flex items-center gap-1.5 shadow-glow-gold"
               >
                 <Printer className="w-4 h-4" />
                 <span>Print</span>
@@ -496,7 +496,7 @@ export function TransactionsScreen({
               <button
                 type="button"
                 onClick={() => setIsReprintOpen(false)}
-                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-400 hover:text-white transition-colors"
+                className="p-2 rounded-xl bg-slate-900/40 hover:bg-slate-900/50 text-stone-400 hover:text-slate-900 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -533,14 +533,14 @@ export function TransactionsScreen({
       {/* Void Confirmation Modal */}
       {voidTargetTx && (
         <div className="fixed inset-0 z-60 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-sm bg-[#120E0E] border border-red-500/40 rounded-3xl p-5 shadow-2xl space-y-4 text-stone-200">
+          <div className="w-full max-w-sm bg-[#F8FAFC] border border-red-500/40 rounded-3xl p-5 shadow-2xl space-y-4 text-stone-200">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-2xl bg-red-500/20 text-red-400 flex items-center justify-center shrink-0">
                 <Ban className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-white">Void Transaction?</h4>
-                <p className="text-[10px] font-mono text-red-400">{voidTargetTx.invoice_number}</p>
+                <h4 className="text-sm font-bold text-slate-900">Void Transaction?</h4>
+                <p className="text-[0.75rem] font-mono text-red-400">{voidTargetTx.invoice_number}</p>
               </div>
             </div>
 
@@ -549,7 +549,7 @@ export function TransactionsScreen({
             </p>
 
             <div>
-              <label className="text-[11px] font-mono font-bold text-stone-400 block mb-1">
+              <label className="text-[0.8125rem] font-mono font-bold text-stone-400 block mb-1">
                 Reason for Voiding:
               </label>
               <input
@@ -557,14 +557,14 @@ export function TransactionsScreen({
                 value={voidReason}
                 onChange={(e) => setVoidReason(e.target.value)}
                 placeholder="Reason why this transaction is voided..."
-                className="w-full h-10 px-3 rounded-xl bg-black border border-white/15 text-xs text-stone-100 focus:outline-none focus:border-red-400"
+                className="w-full h-10 px-3 rounded-xl bg-black border border-slate-900/20 text-xs text-stone-100 focus:outline-none focus:border-red-400"
               />
             </div>
 
             <div className="flex items-center gap-2 pt-2">
               <button
                 onClick={() => setVoidTargetTx(null)}
-                className="btn-press flex-1 py-2.5 rounded-xl bg-white/10 text-stone-300 text-xs font-bold uppercase"
+                className="btn-press flex-1 py-2.5 rounded-xl bg-slate-900/50 text-stone-300 text-xs font-bold uppercase"
               >
                 Cancel
               </button>

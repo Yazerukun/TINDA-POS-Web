@@ -212,13 +212,13 @@ export function AnalyticsScreen({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-900/15 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-serif font-bold text-white tracking-wide">
+            <h1 className="text-2xl font-serif font-bold text-slate-900 tracking-wide">
               Store Analytics & Audit Reports
             </h1>
-            <span className="text-[10px] font-mono tracking-widest text-gold-muted border border-gold/30 px-2 py-0.5 rounded-full uppercase">
+            <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted border border-gold/30 px-2 py-0.5 rounded-full uppercase">
               Financial Intelligence
             </span>
           </div>
@@ -228,12 +228,12 @@ export function AnalyticsScreen({
         </div>
 
         {/* Tab switchers */}
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-zinc-950 border border-white/10">
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-zinc-950 border border-slate-900/15">
           <button
             onClick={() => setActiveTab('SALES')}
             className={`btn-press px-3.5 py-1.5 rounded-xl text-xs font-bold font-mono transition-all ${
               activeTab === 'SALES'
-                ? 'bg-[#D4AF37] text-black shadow-glow-gold'
+                ? 'bg-[#2563EB] text-black shadow-glow-gold'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -244,7 +244,7 @@ export function AnalyticsScreen({
             onClick={() => setActiveTab('CASHCOUNT')}
             className={`btn-press px-3.5 py-1.5 rounded-xl text-xs font-bold font-mono transition-all ${
               activeTab === 'CASHCOUNT'
-                ? 'bg-[#D4AF37] text-black shadow-glow-gold'
+                ? 'bg-[#2563EB] text-black shadow-glow-gold'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -255,7 +255,7 @@ export function AnalyticsScreen({
             onClick={() => setActiveTab('READINGS')}
             className={`btn-press px-3.5 py-1.5 rounded-xl text-xs font-bold font-mono transition-all ${
               activeTab === 'READINGS'
-                ? 'bg-[#D4AF37] text-black shadow-glow-gold'
+                ? 'bg-[#2563EB] text-black shadow-glow-gold'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -268,14 +268,14 @@ export function AnalyticsScreen({
       {activeTab === 'SALES' && (
         <div className="space-y-6">
           {/* Executive Report Action Bar */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-zinc-950/80 border border-white/[0.08] p-4 rounded-3xl">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-zinc-950/80 border border-slate-900/20/[0.08] p-4 rounded-3xl">
             <div className="flex items-center gap-3">
               <div className="h-9 w-9 rounded-xl bg-amber-500/10 border border-gold/30 flex items-center justify-center text-gold-light">
                 <Sparkles className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-white font-mono tracking-wide">Executive Financial Performance</h4>
-                <p className="text-[10px] text-stone-400 font-mono">Export or print official audited sales reports in 58mm, 80mm, or A4 PDF format.</p>
+                <h4 className="text-xs font-bold text-slate-900 font-mono tracking-wide">Executive Financial Performance</h4>
+                <p className="text-[0.75rem] text-stone-400 font-mono">Export or print official audited sales reports in 58mm, 80mm, or A4 PDF format.</p>
               </div>
             </div>
             <button
@@ -289,24 +289,24 @@ export function AnalyticsScreen({
 
           {/* 4 Financial Metric Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="glass-panel rounded-3xl p-5 border border-white/[0.08]">
+            <div className="glass-panel rounded-3xl p-5 border border-slate-900/20/[0.08]">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono tracking-widest text-stone-400 uppercase">Gross Sales</span>
+                <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-stone-400 uppercase">Gross Sales</span>
                 <div className="h-8 w-8 rounded-xl bg-gold/15 text-gold-light flex items-center justify-center">
                   <DollarSign className="h-4 w-4" />
                 </div>
               </div>
-              <h3 className="mt-3 text-2xl font-serif font-black text-white">
+              <h3 className="mt-3 text-2xl font-serif font-black text-slate-900">
                 {money(metrics.totalSales_c)}
               </h3>
-              <p className="text-[11px] text-stone-400 mt-1 font-mono">
+              <p className="text-[0.8125rem] text-stone-400 mt-1 font-mono">
                 {metrics.totalOrders} completed orders
               </p>
             </div>
 
-            <div className="glass-panel rounded-3xl p-5 border border-white/[0.08]">
+            <div className="glass-panel rounded-3xl p-5 border border-slate-900/20/[0.08]">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono tracking-widest text-stone-400 uppercase">Est. Gross Profit</span>
+                <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-stone-400 uppercase">Est. Gross Profit</span>
                 <div className="h-8 w-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
                   <TrendingUp className="h-4 w-4" />
                 </div>
@@ -314,14 +314,14 @@ export function AnalyticsScreen({
               <h3 className="mt-3 text-2xl font-serif font-black text-emerald-400">
                 {money(metrics.grossProfit_c)}
               </h3>
-              <p className="text-[11px] text-stone-400 mt-1 font-mono">
+              <p className="text-[0.8125rem] text-stone-400 mt-1 font-mono">
                 Revenue minus item cost
               </p>
             </div>
 
-            <div className="glass-panel rounded-3xl p-5 border border-white/[0.08]">
+            <div className="glass-panel rounded-3xl p-5 border border-slate-900/20/[0.08]">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono tracking-widest text-stone-400 uppercase">Total Expenses</span>
+                <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-stone-400 uppercase">Total Expenses</span>
                 <div className="h-8 w-8 rounded-xl bg-red-500/15 text-red-400 flex items-center justify-center">
                   <Receipt className="h-4 w-4" />
                 </div>
@@ -329,14 +329,14 @@ export function AnalyticsScreen({
               <h3 className="mt-3 text-2xl font-serif font-black text-red-400">
                 {money(metrics.totalExpenses_c)}
               </h3>
-              <p className="text-[11px] text-stone-400 mt-1 font-mono">
+              <p className="text-[0.8125rem] text-stone-400 mt-1 font-mono">
                 {expenses.length} operating records
               </p>
             </div>
 
-            <div className="glass-panel rounded-3xl p-5 border border-white/[0.08]">
+            <div className="glass-panel rounded-3xl p-5 border border-slate-900/20/[0.08]">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono tracking-widest text-stone-400 uppercase">True Net Margin</span>
+                <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-stone-400 uppercase">True Net Margin</span>
                 <div className="h-8 w-8 rounded-xl bg-amber-500/15 text-amber-300 flex items-center justify-center">
                   <Sparkles className="h-4 w-4" />
                 </div>
@@ -344,7 +344,7 @@ export function AnalyticsScreen({
               <h3 className="mt-3 text-2xl font-serif font-black text-gold-light">
                 {money(metrics.netProfit_c)}
               </h3>
-              <p className="text-[11px] text-stone-400 mt-1 font-mono">
+              <p className="text-[0.8125rem] text-stone-400 mt-1 font-mono">
                 Gross profit minus all expenses
               </p>
             </div>
@@ -352,20 +352,20 @@ export function AnalyticsScreen({
 
           {/* Payment Method Distribution */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="glass-panel p-5 rounded-3xl border border-white/[0.08] space-y-3">
-              <span className="text-xs font-mono font-bold text-stone-300 uppercase tracking-wider block">
+            <div className="glass-panel p-5 rounded-3xl border border-slate-900/20/[0.08] space-y-3">
+              <span className="text-xs font-sans font-semibold font-bold text-stone-300 uppercase tracking-wider block">
                 Payment Channel Breakdown
               </span>
               <div className="space-y-2.5">
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950 border border-white/5">
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950 border border-slate-900/10">
                   <span className="text-xs font-mono text-stone-300">CASH (Physical Drawer)</span>
                   <span className="font-serif font-bold text-emerald-400">{money(metrics.cashSales_c)}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950 border border-white/5">
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950 border border-slate-900/10">
                   <span className="text-xs font-mono text-stone-300">GCASH (Digital E-Wallet)</span>
                   <span className="font-serif font-bold text-blue-400">{money(metrics.gcashSales_c)}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950 border border-white/5">
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950 border border-slate-900/10">
                   <span className="text-xs font-mono text-stone-300">STORE CREDIT (Receivables)</span>
                   <span className="font-serif font-bold text-amber-400">{money(metrics.utangSales_c)}</span>
                 </div>
@@ -373,8 +373,8 @@ export function AnalyticsScreen({
             </div>
 
             {/* Top 5 Best Sellers */}
-            <div className="lg:col-span-2 glass-panel p-5 rounded-3xl border border-white/[0.08] space-y-3">
-              <span className="text-xs font-mono font-bold text-stone-300 uppercase tracking-wider block">
+            <div className="lg:col-span-2 glass-panel p-5 rounded-3xl border border-slate-900/20/[0.08] space-y-3">
+              <span className="text-xs font-sans font-semibold font-bold text-stone-300 uppercase tracking-wider block">
                 Top 5 Best-Selling Products by Revenue
               </span>
               {topProducts.length === 0 ? (
@@ -384,13 +384,13 @@ export function AnalyticsScreen({
                   {topProducts.map((p, i) => (
                     <div
                       key={p.name}
-                      className="p-3 rounded-2xl bg-zinc-950 border border-white/5 flex items-center justify-between gap-3 text-xs"
+                      className="p-3 rounded-2xl bg-zinc-950 border border-slate-900/10 flex items-center justify-between gap-3 text-xs"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <span className="h-6 w-6 rounded-lg bg-gold/15 text-gold-light font-mono font-bold flex items-center justify-center shrink-0 text-[11px]">
+                        <span className="h-6 w-6 rounded-lg bg-gold/15 text-gold-light font-mono font-bold flex items-center justify-center shrink-0 text-[0.8125rem]">
                           #{i + 1}
                         </span>
-                        <span className="font-semibold text-white truncate">{p.name}</span>
+                        <span className="font-semibold text-slate-900 truncate">{p.name}</span>
                       </div>
                       <div className="text-right shrink-0 font-mono">
                         <span className="text-stone-400">{p.quantity} units · </span>
@@ -410,11 +410,11 @@ export function AnalyticsScreen({
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left 2 Cols: Denomination Input Table */}
-            <div className="lg:col-span-2 glass-panel p-5 rounded-3xl border border-white/[0.08] space-y-4">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+            <div className="lg:col-span-2 glass-panel p-5 rounded-3xl border border-slate-900/20/[0.08] space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-900/15 pb-3">
                 <div>
-                  <h3 className="text-sm font-bold text-white">Philippine Peso Denomination Counter</h3>
-                  <p className="text-[10px] font-mono text-stone-400 mt-0.5">
+                  <h3 className="text-sm font-bold text-slate-900">Philippine Peso Denomination Counter</h3>
+                  <p className="text-[0.75rem] font-mono text-stone-400 mt-0.5">
                     Count physical bills and coins inside the cash register drawer
                   </p>
                 </div>
@@ -447,11 +447,11 @@ export function AnalyticsScreen({
                   return (
                     <div
                       key={d.key}
-                      className="p-3 rounded-2xl bg-zinc-950 border border-white/5 flex items-center justify-between gap-3"
+                      className="p-3 rounded-2xl bg-zinc-950 border border-slate-900/10 flex items-center justify-between gap-3"
                     >
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-white font-mono">{d.label}</p>
-                        <p className="text-[10px] font-mono text-gold-muted mt-0.5">
+                        <p className="text-xs font-bold text-slate-900 font-mono">{d.label}</p>
+                        <p className="text-[0.75rem] font-mono text-gold-muted mt-0.5">
                           = {money(subtotal)}
                         </p>
                       </div>
@@ -465,7 +465,7 @@ export function AnalyticsScreen({
                               [d.key]: Math.max(0, (prev[d.key] || 0) - 1)
                             }))
                           }
-                          className="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 text-stone-300 font-bold flex items-center justify-center text-sm"
+                          className="h-8 w-8 rounded-lg bg-slate-900/40 hover:bg-slate-900/50 text-stone-300 font-bold flex items-center justify-center text-sm"
                         >
                           -
                         </button>
@@ -478,7 +478,7 @@ export function AnalyticsScreen({
                             const val = parseInt(e.target.value, 10) || 0
                             setCounts((prev) => ({ ...prev, [d.key]: Math.max(0, val) }))
                           }}
-                          className="w-14 h-8 bg-black border border-white/15 rounded-lg text-center font-mono text-xs text-stone-100 focus:outline-none focus:border-[#D4AF37]"
+                          className="w-14 h-8 bg-black border border-slate-900/20 rounded-lg text-center font-mono text-xs text-stone-100 focus:outline-none focus:border-[#2563EB]"
                         />
                         <button
                           type="button"
@@ -488,7 +488,7 @@ export function AnalyticsScreen({
                               [d.key]: (prev[d.key] || 0) + 1
                             }))
                           }
-                          className="h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 text-stone-300 font-bold flex items-center justify-center text-sm"
+                          className="h-8 w-8 rounded-lg bg-slate-900/40 hover:bg-slate-900/50 text-stone-300 font-bold flex items-center justify-center text-sm"
                         >
                           +
                         </button>
@@ -500,16 +500,16 @@ export function AnalyticsScreen({
             </div>
 
             {/* Right Col: Drawer Audit Reconciliation */}
-            <div className="glass-panel p-5 rounded-3xl border border-white/[0.08] space-y-5 flex flex-col justify-between">
+            <div className="glass-panel p-5 rounded-3xl border border-slate-900/20/[0.08] space-y-5 flex flex-col justify-between">
               <div className="space-y-4">
-                <div className="border-b border-white/10 pb-3">
-                  <h3 className="text-sm font-bold text-white">Drawer Audit Summary</h3>
-                  <p className="text-[10px] font-mono text-stone-400 mt-0.5">Shift Cash Reconciliation</p>
+                <div className="border-b border-slate-900/15 pb-3">
+                  <h3 className="text-sm font-bold text-slate-900">Drawer Audit Summary</h3>
+                  <p className="text-[0.75rem] font-mono text-stone-400 mt-0.5">Shift Cash Reconciliation</p>
                 </div>
 
                 <div className="space-y-3 font-mono text-xs">
-                  <div className="p-3.5 rounded-2xl bg-zinc-950 border border-white/10">
-                    <p className="text-[10px] text-stone-400 uppercase">Actual Physical Cash Counted</p>
+                  <div className="p-3.5 rounded-2xl bg-zinc-950 border border-slate-900/15">
+                    <p className="text-[0.75rem] text-stone-400 uppercase">Actual Physical Cash Counted</p>
                     <p className="text-2xl font-serif font-black text-gold-light mt-1">
                       {money(countedPhysicalCash_c)}
                     </p>
@@ -525,7 +525,7 @@ export function AnalyticsScreen({
                     <span>-{money(todayCashExpenses_c)}</span>
                   </div>
 
-                  <div className="flex justify-between text-stone-300 font-semibold border-t border-white/10 pt-2">
+                  <div className="flex justify-between text-stone-300 font-semibold border-t border-slate-900/15 pt-2">
                     <span>Expected Cash in Drawer:</span>
                     <span>{money(expectedCashInDrawer_c)}</span>
                   </div>
@@ -541,7 +541,7 @@ export function AnalyticsScreen({
                       : 'bg-red-500/10 border-red-500/30 text-red-400'
                   }`}
                 >
-                  <p className="font-bold flex items-center gap-1.5 uppercase text-[11px]">
+                  <p className="font-bold flex items-center gap-1.5 uppercase text-[0.8125rem]">
                     {cashDiscrepancy_c === 0 ? (
                       <>
                         <CheckCircle2 className="w-4 h-4 text-emerald-400" />
@@ -559,7 +559,7 @@ export function AnalyticsScreen({
                       </>
                     )}
                   </p>
-                  <p className="text-[10px] text-stone-400">
+                  <p className="text-[0.75rem] text-stone-400">
                     {cashDiscrepancy_c === 0
                       ? 'Physical cash matches recorded store sales perfectly.'
                       : cashDiscrepancy_c > 0
@@ -569,7 +569,7 @@ export function AnalyticsScreen({
                 </div>
               </div>
 
-              <div className="space-y-2 pt-4 border-t border-white/10">
+              <div className="space-y-2 pt-4 border-t border-slate-900/15">
                 {cashCountSavedMessage && (
                   <p className="text-xs text-emerald-400 font-mono text-center font-bold animate-pulse">
                     ✓ Cash count record saved successfully!
@@ -577,7 +577,7 @@ export function AnalyticsScreen({
                 )}
                 <button
                   onClick={handleSaveCashCount}
-                  className="btn-press w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-[#D4AF37] hover:from-amber-300 hover:to-gold text-black text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-glow-gold"
+                  className="btn-press w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-[#2563EB] hover:from-amber-300 hover:to-gold text-black text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-glow-gold"
                 >
                   <Save className="w-4 h-4" />
                   <span>Save Cash Count Record</span>
@@ -586,7 +586,7 @@ export function AnalyticsScreen({
                 <button
                   type="button"
                   onClick={() => handleOpenPrintReport('CASHCOUNT')}
-                  className="btn-press w-full py-2.5 rounded-xl bg-zinc-950 border border-white/15 hover:border-gold/40 text-stone-200 text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all"
+                  className="btn-press w-full py-2.5 rounded-xl bg-zinc-950 border border-slate-900/20 hover:border-gold/40 text-stone-200 text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all"
                 >
                   <Printer className="w-4 h-4 text-gold-light" />
                   <span>Print Drawer Reconciliation Audit</span>
@@ -606,7 +606,7 @@ export function AnalyticsScreen({
               className={`btn-press px-4 py-2 rounded-xl text-xs font-bold font-mono transition-all ${
                 readingType === 'X'
                   ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40'
-                  : 'bg-white/5 text-stone-400 hover:text-stone-200'
+                  : 'bg-slate-900/40 text-stone-400 hover:text-stone-200'
               }`}
             >
               X-Reading (Mid-Day Audit)
@@ -616,7 +616,7 @@ export function AnalyticsScreen({
               className={`btn-press px-4 py-2 rounded-xl text-xs font-bold font-mono transition-all ${
                 readingType === 'Z'
                   ? 'bg-amber-500/20 text-gold-light border border-gold/40'
-                  : 'bg-white/5 text-stone-400 hover:text-stone-200'
+                  : 'bg-slate-900/40 text-stone-400 hover:text-stone-200'
               }`}
             >
               Z-Reading (End of Day Store Closure)
@@ -637,12 +637,12 @@ export function AnalyticsScreen({
               <h2 className="text-base font-black uppercase tracking-wider">
                 {settings?.store_name || 'TINDA POS'}
               </h2>
-              <p className="text-[11px]">{settings?.address || 'Philippines'}</p>
-              <p className="text-[11px] font-bold mt-1">
+              <p className="text-[0.8125rem]">{settings?.address || 'Philippines'}</p>
+              <p className="text-[0.8125rem] font-bold mt-1">
                 {readingType === 'X' ? '*** X-READING (MID-SHIFT) ***' : '*** Z-READING (DAILY CLOSING) ***'}
               </p>
-              <p className="text-[10px] text-gray-600">Generated: {formatDateTime(new Date().toISOString())}</p>
-              <p className="text-[10px] text-gray-600">Cashier: {cashierName}</p>
+              <p className="text-[0.75rem] text-gray-600">Generated: {formatDateTime(new Date().toISOString())}</p>
+              <p className="text-[0.75rem] text-gray-600">Cashier: {cashierName}</p>
             </div>
 
             <div className="space-y-1.5 border-b border-black pb-3">
@@ -665,7 +665,7 @@ export function AnalyticsScreen({
             </div>
 
             <div className="space-y-1.5 border-b border-black pb-3">
-              <p className="font-bold uppercase text-[11px]">Payment Breakdown:</p>
+              <p className="font-bold uppercase text-[0.8125rem]">Payment Breakdown:</p>
               <div className="flex justify-between">
                 <span>CASH SALES:</span>
                 <span>{money(metrics.cashSales_c)}</span>
@@ -681,7 +681,7 @@ export function AnalyticsScreen({
             </div>
 
             <div className="space-y-1.5 border-b border-black pb-3">
-              <p className="font-bold uppercase text-[11px]">Financial Margins:</p>
+              <p className="font-bold uppercase text-[0.8125rem]">Financial Margins:</p>
               <div className="flex justify-between">
                 <span>Cost of Goods (COGS):</span>
                 <span>{money(metrics.totalCost_c)}</span>
@@ -700,7 +700,7 @@ export function AnalyticsScreen({
               </div>
             </div>
 
-            <div className="text-center text-[10px] text-gray-500 pt-2">
+            <div className="text-center text-[0.75rem] text-gray-500 pt-2">
               <p>*** END OF {readingType}-READING REPORT ***</p>
               <p className="mt-1">TINDA POS Web · Enterprise Engine</p>
             </div>

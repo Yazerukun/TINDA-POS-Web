@@ -143,16 +143,16 @@ export function DashboardScreen({
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-sm font-bold text-white tracking-wide">
+                <h3 className="text-sm font-bold text-slate-900 tracking-wide">
                   Inventory Stock Warning
                 </h3>
                 {outOfStockProducts.length > 0 && (
-                  <span className="px-2 py-0.5 rounded-full bg-red-500/25 text-red-300 text-[10px] font-mono font-bold uppercase border border-red-500/40">
+                  <span className="px-2 py-0.5 rounded-full bg-red-500/25 text-red-300 text-[0.75rem] font-sans font-semibold font-bold uppercase border border-red-500/40">
                     {outOfStockProducts.length} Out of Stock
                   </span>
                 )}
                 {lowStockProducts.length > 0 && (
-                  <span className="px-2 py-0.5 rounded-full bg-amber-500/25 text-amber-300 text-[10px] font-mono font-bold uppercase border border-amber-500/40">
+                  <span className="px-2 py-0.5 rounded-full bg-amber-500/25 text-amber-300 text-[0.75rem] font-sans font-semibold font-bold uppercase border border-amber-500/40">
                     {lowStockProducts.length} Low Stock
                   </span>
                 )}
@@ -179,7 +179,7 @@ export function DashboardScreen({
               Healthy stock status! All {products.length} active inventory items are at adequate stock levels.
             </span>
           </div>
-          <span className="hidden sm:inline text-[11px] font-mono text-emerald-400 font-bold uppercase">
+          <span className="hidden sm:inline text-[0.8125rem] font-sans font-semibold text-emerald-400 font-bold uppercase">
             Healthy Stock
           </span>
         </div>
@@ -190,10 +190,10 @@ export function DashboardScreen({
         {/* Today's Net Sales */}
         <div className="glass-card rounded-2xl p-4 sm:p-5 border border-gold/25 relative overflow-hidden flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 font-medium">
+            <span className="text-[0.75rem] font-sans font-semibold tracking-widest uppercase text-stone-400 font-medium">
               Today's Net Sales
             </span>
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[9px] font-mono font-bold text-emerald-400 uppercase">
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[0.6875rem] font-sans font-semibold font-bold text-emerald-400 uppercase">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping" />
               Live
             </span>
@@ -202,16 +202,16 @@ export function DashboardScreen({
             <p className="font-serif text-xl sm:text-2xl font-bold text-gold-light tabular-nums">
               {money(todayGrossSales_c)}
             </p>
-            <p className="text-[10px] text-stone-500 font-mono mt-1">
+            <p className="text-[0.75rem] text-stone-500 font-mono mt-1">
               {todayTransactions.length} orders · {todayItemsSold} sold
             </p>
           </div>
         </div>
 
         {/* Estimated Net Profit */}
-        <div className="glass-card rounded-2xl p-4 sm:p-5 border border-white/[0.08] flex flex-col justify-between">
+        <div className="glass-card rounded-2xl p-4 sm:p-5 border border-slate-900/20/[0.08] flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 font-medium">
+            <span className="text-[0.75rem] font-sans font-semibold tracking-widest uppercase text-stone-400 font-medium">
               Net Profit Today
             </span>
             <TrendingUp className="h-4 w-4 text-emerald-400" />
@@ -220,7 +220,7 @@ export function DashboardScreen({
             <p className="font-serif text-xl sm:text-2xl font-bold text-emerald-400 tabular-nums">
               {money(todayProfit_c - (expenses.filter(e => e.date === todayStr).reduce((s, e) => s + e.amount_c, 0)))}
             </p>
-            <p className="text-[10px] text-stone-500 font-mono mt-1">
+            <p className="text-[0.75rem] text-stone-500 font-mono mt-1">
               After COGS & expenses
             </p>
           </div>
@@ -229,10 +229,10 @@ export function DashboardScreen({
         {/* Today's Store Expenses */}
         <button
           onClick={() => onNavigate('expenses')}
-          className="btn-press glass-card rounded-2xl p-4 sm:p-5 border border-white/[0.08] hover:border-red-500/30 text-left flex flex-col justify-between transition-all"
+          className="btn-press glass-card rounded-2xl p-4 sm:p-5 border border-slate-900/20/[0.08] hover:border-red-500/30 text-left flex flex-col justify-between transition-all"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 font-medium">
+            <span className="text-[0.75rem] font-sans font-semibold tracking-widest uppercase text-stone-400 font-medium">
               Today Expenses
             </span>
             <Receipt className="h-4 w-4 text-red-400" />
@@ -241,7 +241,7 @@ export function DashboardScreen({
             <p className="font-serif text-xl sm:text-2xl font-bold text-red-400 tabular-nums">
               {money(expenses.filter(e => e.date === todayStr).reduce((s, e) => s + e.amount_c, 0))}
             </p>
-            <p className="text-[10px] text-stone-500 font-mono mt-1">
+            <p className="text-[0.75rem] text-stone-500 font-mono mt-1">
               Operating outflow
             </p>
           </div>
@@ -250,10 +250,10 @@ export function DashboardScreen({
         {/* Total Utang / Receivables */}
         <button
           onClick={() => onNavigate('customers')}
-          className="btn-press glass-card rounded-2xl p-4 sm:p-5 border border-white/[0.08] hover:border-amber-500/30 text-left flex flex-col justify-between transition-all"
+          className="btn-press glass-card rounded-2xl p-4 sm:p-5 border border-slate-900/20/[0.08] hover:border-amber-500/30 text-left flex flex-col justify-between transition-all"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 font-medium">
+            <span className="text-[0.75rem] font-sans font-semibold tracking-widest uppercase text-stone-400 font-medium">
               Customer Credit
             </span>
             <Wallet className="h-4 w-4 text-amber-400" />
@@ -262,7 +262,7 @@ export function DashboardScreen({
             <p className={`font-serif text-xl sm:text-2xl font-bold tabular-nums ${totalUtang_c > 0 ? 'text-amber-400' : 'text-stone-300'}`}>
               {money(totalUtang_c)}
             </p>
-            <p className="text-[10px] text-stone-500 font-mono mt-1">
+            <p className="text-[0.75rem] text-stone-500 font-mono mt-1">
               {customers.filter((c) => c.balance_c > 0).length} customers with balance
             </p>
           </div>
@@ -271,19 +271,19 @@ export function DashboardScreen({
         {/* Total Active Inventory */}
         <button
           onClick={() => onNavigate('inventory')}
-          className="btn-press glass-card rounded-2xl p-4 sm:p-5 border border-white/[0.08] hover:border-indigo-500/30 text-left col-span-2 sm:col-span-1 flex flex-col justify-between transition-all"
+          className="btn-press glass-card rounded-2xl p-4 sm:p-5 border border-slate-900/20/[0.08] hover:border-indigo-500/30 text-left col-span-2 sm:col-span-1 flex flex-col justify-between transition-all"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 font-medium">
+            <span className="text-[0.75rem] font-sans font-semibold tracking-widest uppercase text-stone-400 font-medium">
               Active Catalog
             </span>
             <Package className="h-4 w-4 text-indigo-400" />
           </div>
           <div className="mt-3">
-            <p className="font-serif text-xl sm:text-2xl font-bold text-white tabular-nums">
+            <p className="font-serif text-xl sm:text-2xl font-bold text-slate-900 tabular-nums">
               {products.length}
             </p>
-            <p className="text-[10px] text-stone-500 font-mono mt-1">
+            <p className="text-[0.75rem] text-stone-500 font-mono mt-1">
               {totalAlertCount > 0 ? `${totalAlertCount} need attention` : 'All healthy'}
             </p>
           </div>
@@ -292,7 +292,7 @@ export function DashboardScreen({
 
       {/* ── 3. FAST ACTION SHORTCUTS (6-GRID) ── */}
       <div>
-        <p className="mb-2.5 text-[10px] font-mono uppercase tracking-[0.25em] text-stone-500 font-bold">
+        <p className="mb-2.5 text-[0.75rem] font-sans font-semibold uppercase tracking-[0.25em] text-stone-500 font-bold">
           Quick Operations & Store Utilities
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -304,21 +304,21 @@ export function DashboardScreen({
               <ShoppingCart className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-white truncate">Counter</p>
-              <p className="text-[9px] text-gold-muted font-mono truncate">Start Sale</p>
+              <p className="text-xs font-bold text-slate-900 truncate">Counter</p>
+              <p className="text-[0.6875rem] text-gold-muted font-mono truncate">Start Sale</p>
             </div>
           </button>
 
           <button
             onClick={() => onNavigate('inventory')}
-            className="btn-press flex items-center gap-2.5 p-3 rounded-2xl bg-zinc-950/60 border border-white/[0.08] hover:border-gold/40 hover:bg-zinc-900/60 transition-all text-left"
+            className="btn-press flex items-center gap-2.5 p-3 rounded-2xl bg-zinc-950/60 border border-slate-900/20/[0.08] hover:border-gold/40 hover:bg-zinc-900/60 transition-all text-left"
           >
             <div className="h-9 w-9 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-300 shrink-0">
               <PlusCircle className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-white truncate">Inventory</p>
-              <p className="text-[9px] text-stone-400 font-mono truncate">Restock</p>
+              <p className="text-xs font-bold text-slate-900 truncate">Inventory</p>
+              <p className="text-[0.6875rem] text-stone-400 font-mono truncate">Restock</p>
             </div>
           </button>
 
@@ -331,46 +331,46 @@ export function DashboardScreen({
             </div>
             <div className="min-w-0">
               <p className="text-xs font-bold text-emerald-300 truncate">DTI Price Guide</p>
-              <p className="text-[9px] text-emerald-400/80 font-mono truncate">DTI SRP</p>
+              <p className="text-[0.6875rem] text-emerald-400/80 font-mono truncate">DTI SRP</p>
             </div>
           </button>
 
           <button
             onClick={() => onNavigate('expenses')}
-            className="btn-press flex items-center gap-2.5 p-3 rounded-2xl bg-zinc-950/60 border border-white/[0.08] hover:border-red-400 hover:bg-zinc-900/60 transition-all text-left"
+            className="btn-press flex items-center gap-2.5 p-3 rounded-2xl bg-zinc-950/60 border border-slate-900/20/[0.08] hover:border-red-400 hover:bg-zinc-900/60 transition-all text-left"
           >
             <div className="h-9 w-9 rounded-xl bg-red-500/20 flex items-center justify-center text-red-400 shrink-0">
               <Receipt className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-white truncate">Expenses</p>
-              <p className="text-[9px] text-stone-400 font-mono truncate">Record Outflow</p>
+              <p className="text-xs font-bold text-slate-900 truncate">Expenses</p>
+              <p className="text-[0.6875rem] text-stone-400 font-mono truncate">Record Outflow</p>
             </div>
           </button>
 
           <button
             onClick={() => onOpenExpiration && onOpenExpiration()}
-            className="btn-press flex items-center gap-2.5 p-3 rounded-2xl bg-zinc-950/60 border border-white/[0.08] hover:border-amber-400 hover:bg-zinc-900/60 transition-all text-left"
+            className="btn-press flex items-center gap-2.5 p-3 rounded-2xl bg-zinc-950/60 border border-slate-900/20/[0.08] hover:border-amber-400 hover:bg-zinc-900/60 transition-all text-left"
           >
             <div className="h-9 w-9 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-300 shrink-0">
               <CalendarClock className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-white truncate">Shelf Life</p>
-              <p className="text-[9px] text-stone-400 font-mono truncate">Expiry Watch</p>
+              <p className="text-xs font-bold text-slate-900 truncate">Shelf Life</p>
+              <p className="text-[0.6875rem] text-stone-400 font-mono truncate">Expiry Watch</p>
             </div>
           </button>
 
           <button
             onClick={() => onNavigate('analytics')}
-            className="btn-press flex items-center gap-2.5 p-3 rounded-2xl bg-zinc-950/60 border border-white/[0.08] hover:border-gold/40 hover:bg-zinc-900/60 transition-all text-left"
+            className="btn-press flex items-center gap-2.5 p-3 rounded-2xl bg-zinc-950/60 border border-slate-900/20/[0.08] hover:border-gold/40 hover:bg-zinc-900/60 transition-all text-left"
           >
             <div className="h-9 w-9 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-300 shrink-0">
               <BarChart3 className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-white truncate">Reports</p>
-              <p className="text-[9px] text-stone-400 font-mono truncate">X/Z Readings</p>
+              <p className="text-xs font-bold text-slate-900 truncate">Reports</p>
+              <p className="text-[0.6875rem] text-stone-400 font-mono truncate">X/Z Readings</p>
             </div>
           </button>
         </div>
@@ -379,13 +379,13 @@ export function DashboardScreen({
       {/* ── 4. LOW STOCK WATCHLIST & RECENT TRANSACTIONS ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Column: Stock Alert Watchlist (7 cols) */}
-        <div className="lg:col-span-7 glass-panel rounded-3xl border border-white/[0.08] p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <div className="lg:col-span-7 glass-panel rounded-3xl border border-slate-900/20/[0.08] p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-900/20/[0.08] pb-3">
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-amber-400" />
-              <h3 className="text-sm font-bold text-white">Low Stock Watchlist</h3>
+              <h3 className="text-sm font-bold text-slate-900">Low Stock Watchlist</h3>
               {totalAlertCount > 0 && (
-                <span className="px-2 py-0.2 rounded-full bg-red-500/20 border border-red-500/30 text-red-300 font-mono text-[10px] font-bold">
+                <span className="px-2 py-0.2 rounded-full bg-red-500/20 border border-red-500/30 text-red-300 font-mono text-[0.75rem] font-bold">
                   {totalAlertCount}
                 </span>
               )}
@@ -393,7 +393,7 @@ export function DashboardScreen({
 
             <button
               onClick={() => onNavigate('inventory')}
-              className="text-xs text-gold-light hover:text-white font-mono flex items-center gap-1 transition-colors"
+              className="text-xs text-gold-light hover:text-slate-900 font-mono flex items-center gap-1 transition-colors"
             >
               <span>All Products ({products.length})</span>
               <ChevronRight className="h-3.5 w-3.5" />
@@ -406,7 +406,7 @@ export function DashboardScreen({
               <p className="text-xs text-stone-300 font-medium">
                 All inventory items are in stock!
               </p>
-              <p className="text-[10px] text-stone-500 font-mono">
+              <p className="text-[0.75rem] text-stone-500 font-mono">
                 No items have fallen below the {lowThreshold} units threshold.
               </p>
             </div>
@@ -423,20 +423,20 @@ export function DashboardScreen({
                       !
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-white truncate">{p.name}</p>
-                      <p className="text-[10px] text-red-300/80 font-mono">
+                      <p className="text-xs font-bold text-slate-900 truncate">{p.name}</p>
+                      <p className="text-[0.75rem] text-red-300/80 font-mono">
                         0 {p.base_unit || 'pcs'} left · Threshold: {p.low_stock_threshold ?? lowThreshold}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="px-2 py-0.5 rounded-full bg-red-500/20 border border-red-500/40 text-red-300 text-[9px] font-mono font-bold uppercase">
+                    <span className="px-2 py-0.5 rounded-full bg-red-500/20 border border-red-500/40 text-red-300 text-[0.6875rem] font-sans font-semibold font-bold uppercase">
                       Out of Stock
                     </span>
                     <button
                       onClick={() => handleRestockClick(p)}
-                      className="btn-press px-2.5 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-200 text-[11px] font-bold"
+                      className="btn-press px-2.5 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-200 text-[0.8125rem] font-bold"
                     >
                       Restock
                     </button>
@@ -455,20 +455,20 @@ export function DashboardScreen({
                       {p.stock}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-white truncate">{p.name}</p>
-                      <p className="text-[10px] text-stone-400 font-mono">
+                      <p className="text-xs font-bold text-slate-900 truncate">{p.name}</p>
+                      <p className="text-[0.75rem] text-stone-400 font-mono">
                         {p.stock} {p.base_unit || 'pcs'} remaining · Threshold: {p.low_stock_threshold ?? lowThreshold}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[9px] font-mono font-bold uppercase">
+                    <span className="px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[0.6875rem] font-sans font-semibold font-bold uppercase">
                       Low Stock
                     </span>
                     <button
                       onClick={() => handleRestockClick(p)}
-                      className="btn-press px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-[11px] font-bold"
+                      className="btn-press px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-[0.8125rem] font-bold"
                     >
                       Restock
                     </button>
@@ -480,16 +480,16 @@ export function DashboardScreen({
         </div>
 
         {/* Right Column: Recent Transactions Feed (5 cols) */}
-        <div className="lg:col-span-5 glass-panel rounded-3xl border border-white/[0.08] p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <div className="lg:col-span-5 glass-panel rounded-3xl border border-slate-900/20/[0.08] p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-900/20/[0.08] pb-3">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-gold-muted" />
-              <h3 className="text-sm font-bold text-white">Recent Transactions</h3>
+              <h3 className="text-sm font-bold text-slate-900">Recent Transactions</h3>
             </div>
 
             <button
               onClick={() => onNavigate('analytics')}
-              className="text-xs text-gold-light hover:text-white font-mono flex items-center gap-1 transition-colors"
+              className="text-xs text-gold-light hover:text-slate-900 font-mono flex items-center gap-1 transition-colors"
             >
               <span>History</span>
               <ChevronRight className="h-3.5 w-3.5" />
@@ -500,7 +500,7 @@ export function DashboardScreen({
             <div className="py-8 text-center space-y-2">
               <ShoppingCart className="h-8 w-8 text-stone-600 mx-auto" />
               <p className="text-xs text-stone-400">No sales recorded yet today.</p>
-              <p className="text-[10px] text-stone-600 font-mono">
+              <p className="text-[0.75rem] text-stone-600 font-mono">
                 Sales completed at the POS Counter will appear here.
               </p>
             </div>
@@ -509,18 +509,18 @@ export function DashboardScreen({
               {todayTransactions.slice(0, 6).map((tx) => (
                 <div
                   key={tx.id}
-                  className="p-3 rounded-2xl bg-zinc-950/60 border border-white/[0.06] flex items-center justify-between gap-3"
+                  className="p-3 rounded-2xl bg-zinc-950/60 border border-slate-900/20/[0.06] flex items-center justify-between gap-3"
                 >
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-stone-200 truncate">
                       {tx.invoice_number}
                     </p>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="text-[10px] text-stone-500 font-mono">
+                      <span className="text-[0.75rem] text-stone-500 font-mono">
                         {formatDateTime(tx.created_at).split(',')[1] || tx.created_at.slice(11, 16)}
                       </span>
-                      <span className="text-[10px] text-stone-600">•</span>
-                      <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded uppercase font-bold ${
+                      <span className="text-[0.75rem] text-stone-600">•</span>
+                      <span className={`text-[0.6875rem] font-mono px-1.5 py-0.2 rounded uppercase font-bold ${
                         tx.payment_method === 'CASH'
                           ? 'bg-emerald-500/20 text-emerald-400'
                           : tx.payment_method === 'GCASH'
@@ -536,7 +536,7 @@ export function DashboardScreen({
                     <p className="text-xs font-serif font-bold text-gold-light">
                       {money(tx.total_c)}
                     </p>
-                    <p className="text-[10px] text-stone-500 font-mono">
+                    <p className="text-[0.75rem] text-stone-500 font-mono">
                       {tx.items?.length || 0} items
                     </p>
                   </div>
@@ -550,11 +550,11 @@ export function DashboardScreen({
       {/* Quick Restock Modal Dialog */}
       {restockModalProduct && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="w-full max-w-md bg-[#0D0E12] border border-amber-500/30 rounded-3xl p-6 shadow-2xl space-y-5">
-            <div className="flex items-start justify-between border-b border-white/[0.08] pb-4">
+          <div className="w-full max-w-md bg-[#F1F5F9] border border-amber-500/30 rounded-3xl p-6 shadow-2xl space-y-5">
+            <div className="flex items-start justify-between border-b border-slate-900/20/[0.08] pb-4">
               <div>
-                <p className="text-[10px] font-mono tracking-widest text-gold-muted uppercase">Fast Restock Terminal</p>
-                <h3 className="text-base font-bold text-white mt-1">{restockModalProduct.name}</h3>
+                <p className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted uppercase">Fast Restock Terminal</p>
+                <h3 className="text-base font-bold text-slate-900 mt-1">{restockModalProduct.name}</h3>
               </div>
               <div className="px-2.5 py-1 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-bold">
                 Current: {restockModalProduct.stock} {restockModalProduct.base_unit || 'pcs'}
@@ -573,8 +573,8 @@ export function DashboardScreen({
                     onClick={() => setRestockQty(preset)}
                     className={`btn-press flex-1 py-2 rounded-xl text-xs font-bold font-mono transition-all ${
                       restockQty === preset
-                        ? 'bg-[#D4AF37] text-black shadow-glow-gold'
-                        : 'bg-white/[0.06] text-stone-300 hover:bg-white/[0.1] border border-white/10'
+                        ? 'bg-[#2563EB] text-black shadow-glow-gold'
+                        : 'bg-white/[0.06] text-stone-300 hover:bg-white/[0.1] border border-slate-900/15'
                     }`}
                   >
                     +{preset}
@@ -588,11 +588,11 @@ export function DashboardScreen({
                   min="1"
                   value={restockQty}
                   onChange={(e) => setRestockQty(Math.max(1, parseInt(e.target.value, 10) || 1))}
-                  className="w-full h-12 bg-black/60 border border-white/15 rounded-xl px-4 text-center font-mono text-xl font-bold text-gold-light focus:outline-none focus:border-[#D4AF37]"
+                  className="w-full h-12 bg-black/60 border border-slate-900/20 rounded-xl px-4 text-center font-mono text-xl font-bold text-gold-light focus:outline-none focus:border-[#2563EB]"
                 />
               </div>
 
-              <p className="text-[11px] text-stone-400 text-center font-mono">
+              <p className="text-[0.8125rem] text-stone-400 text-center font-mono">
                 New inventory level will be:{' '}
                 <strong className="text-emerald-400 font-bold">
                   {restockModalProduct.stock + (restockQty || 0)} {restockModalProduct.base_unit || 'pcs'}
@@ -604,14 +604,14 @@ export function DashboardScreen({
               <button
                 type="button"
                 onClick={() => setRestockModalProduct(null)}
-                className="btn-press flex-1 py-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-stone-300 text-xs font-bold uppercase tracking-wider transition-colors"
+                className="btn-press flex-1 py-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-slate-900/15 text-stone-300 text-xs font-bold uppercase tracking-wider transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleConfirmRestock}
-                className="btn-press flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-[#D4AF37] text-black text-xs font-bold uppercase tracking-wider shadow-glow-gold transition-all"
+                className="btn-press flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-[#2563EB] text-black text-xs font-bold uppercase tracking-wider shadow-glow-gold transition-all"
               >
                 Confirm Restock
               </button>

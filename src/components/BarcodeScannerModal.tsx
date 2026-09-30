@@ -157,7 +157,7 @@ export function BarcodeScannerModal({ open, onClose, onDetect }: BarcodeScannerM
   return (
     <div className="fixed inset-0 z-[60] flex flex-col bg-obsidian-950/95 backdrop-blur-2xl animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-slate-900/20/[0.06]">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/[0.12] text-gold-light border border-gold/30">
             <ScanLine className="h-5 w-5" />
@@ -166,7 +166,7 @@ export function BarcodeScannerModal({ open, onClose, onDetect }: BarcodeScannerM
             <h3 className="font-serif font-bold text-sm tracking-widest uppercase text-stone-100">
               Barcode Scan
             </h3>
-            <p className="font-mono text-[10px] tracking-widest uppercase text-gold-muted">
+            <p className="font-sans font-semibold text-[0.75rem] tracking-widest uppercase text-gold-muted">
               {mode === 'native' ? 'Native scanner · Chrome/Edge' : mode === 'zxing' ? 'Universal scanner · All browsers' : 'Hardware scanner required'}
             </p>
           </div>
@@ -204,7 +204,7 @@ export function BarcodeScannerModal({ open, onClose, onDetect }: BarcodeScannerM
             {starting && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-obsidian-950/70 text-stone-300">
                 <Loader2 className="h-8 w-8 animate-spin text-gold" />
-                <p className="font-mono text-[11px] tracking-widest uppercase">Starting camera…</p>
+                <p className="font-sans font-semibold text-[0.8125rem] tracking-widest uppercase">Starting camera…</p>
               </div>
             )}
           </>
@@ -222,7 +222,7 @@ export function BarcodeScannerModal({ open, onClose, onDetect }: BarcodeScannerM
                   // re-trigger effect by remounting isn't possible here, but
                   // user can close and reopen after granting permission
                 }}
-                className="font-mono text-[10px] tracking-widest uppercase text-gold-muted border border-gold/30 rounded-lg px-4 py-2 hover:bg-gold/10 transition-colors"
+                className="font-sans font-semibold text-[0.75rem] tracking-widest uppercase text-gold-muted border border-gold/30 rounded-lg px-4 py-2 hover:bg-gold/10 transition-colors"
               >
                 Close & try again
               </button>
@@ -232,13 +232,13 @@ export function BarcodeScannerModal({ open, onClose, onDetect }: BarcodeScannerM
       </div>
 
       {/* Footer */}
-      <div className="px-5 py-4 border-t border-white/[0.06]">
+      <div className="px-5 py-4 border-t border-slate-900/20/[0.06]">
         {!error && isSupported ? (
-          <p className="text-center font-mono text-[10px] tracking-widest uppercase text-stone-500">
+          <p className="text-center font-sans font-semibold text-[0.75rem] tracking-widest uppercase text-stone-500">
             Auto-adds to ticket on successful scan · USB/Bluetooth scanners also work
           </p>
         ) : (
-          <p className="text-center font-mono text-[11px] tracking-widest text-red-400">
+          <p className="text-center font-mono text-[0.8125rem] tracking-widest text-red-400">
             {error}
           </p>
         )}

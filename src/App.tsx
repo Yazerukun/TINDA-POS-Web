@@ -451,16 +451,16 @@ export default function App(): React.JSX.Element {
         )}
 
         {/* Desktop & Tablet Top Status Bar with real-time shift time limit */}
-        <div className="hidden md:flex items-center justify-between px-4 lg:px-6 py-2.5 bg-obsidian-950/80 backdrop-blur-md border-b border-white/[0.06] sticky top-0 z-30 min-w-0 gap-3">
+        <div className="hidden md:flex items-center justify-between px-4 lg:px-6 py-2.5 bg-obsidian-950/80 backdrop-blur-md border-b border-slate-900/20/[0.06] sticky top-0 z-30 min-w-0 gap-3">
           <div className="flex items-center gap-2 lg:gap-3 min-w-0 truncate">
-            <span className="font-mono text-[11px] tracking-widest uppercase text-stone-400 shrink-0">
+            <span className="font-sans font-semibold text-[0.8125rem] tracking-widest uppercase text-stone-400 shrink-0">
               Terminal <span className="text-gold-light font-bold">{vaultSession?.terminalId || 'TRM-8891'}</span>
             </span>
             <span className="text-stone-600 shrink-0">•</span>
             <button
               type="button"
               onClick={() => setIsProfileModalOpen(true)}
-              className="flex items-center gap-2 font-mono text-[11px] text-stone-400 hover:text-white transition-colors cursor-pointer min-w-0 truncate"
+              className="flex items-center gap-2 font-mono text-[0.8125rem] text-stone-400 hover:text-slate-900 transition-colors cursor-pointer min-w-0 truncate"
               title="View & Edit Account Profile"
             >
               {vaultSession?.avatarUrl ? (
@@ -485,7 +485,7 @@ export default function App(): React.JSX.Element {
               <Crown className="w-3.5 h-3.5 text-gold shrink-0" />
               <span className="hidden lg:inline">SUPER ADMIN · ZERO ADS</span>
               <span className="lg:hidden">SUPER ADMIN</span>
-              <span className="text-[10px] text-gold underline ml-1">Control →</span>
+              <span className="text-[0.75rem] text-gold underline ml-1">Control →</span>
             </button>
           ) : (
             <button
@@ -499,7 +499,7 @@ export default function App(): React.JSX.Element {
               <Clock className="w-3.5 h-3.5 text-gold-muted shrink-0" />
               <span className="hidden lg:inline">Shift Time Limit:</span>
               <span className="font-mono font-extrabold tracking-wider">{proAccess.formattedTime}</span>
-              <span className="text-[10px] text-gold underline ml-1">
+              <span className="text-[0.75rem] text-gold underline ml-1">
                 {proAccess.isPro ? '+ Extend' : '⚡ Unlock'}
               </span>
             </button>
@@ -697,16 +697,16 @@ export default function App(): React.JSX.Element {
               <span className="text-5xl select-none">🔒</span>
             </div>
             <div>
-              <h2 className="text-2xl font-serif font-bold text-white tracking-wide">Store Shift Locked</h2>
+              <h2 className="text-2xl font-serif font-bold text-slate-900 tracking-wide">Store Shift Locked</h2>
               <p className="text-sm text-stone-400 mt-2 font-sans leading-relaxed max-w-sm mx-auto">
                 Your store shift pass has expired. Watch a sponsor ad to earn tokens,
                 then activate a shift pass to continue using TINDA POS.
               </p>
             </div>
             <div className="p-4 rounded-2xl bg-rose-950/30 border border-rose-700/30">
-              <p className="text-[10px] font-mono text-stone-500 uppercase tracking-widest">Shift Pass Timer</p>
+              <p className="text-[0.75rem] font-sans font-semibold text-stone-500 uppercase tracking-widest">Shift Pass Timer</p>
               <p className="text-4xl font-mono font-bold text-rose-400 mt-1">00:00:00</p>
-              <p className="text-[10px] font-mono text-stone-600 mt-1">Expired — watch ads to earn tokens</p>
+              <p className="text-[0.75rem] font-mono text-stone-600 mt-1">Expired — watch ads to earn tokens</p>
             </div>
             <button
               onClick={() => proAccess.openRewardModal('Store Shift Pass')}

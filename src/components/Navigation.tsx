@@ -121,10 +121,10 @@ export function Navigation({
   return (
     <>
       {/* ── DESKTOP & TABLET VERTICAL SIDEBAR (md:flex) ── */}
-      <aside className="hidden md:flex flex-col w-60 xl:w-64 h-screen sticky top-0 shrink-0 bg-[#090A0D] border-r border-white/10 p-4 justify-between z-30 transition-all select-none overflow-y-auto custom-scrollbar">
+      <aside className="hidden md:flex flex-col w-60 xl:w-64 h-screen sticky top-0 shrink-0 bg-[#F8FAFC] border-r border-slate-900/15 p-4 justify-between z-30 transition-all select-none overflow-y-auto custom-scrollbar">
         {/* Brand & Logo Header */}
         <div className="space-y-5">
-          <div className="flex items-center gap-3 px-2 py-2 border-b border-white/[0.08]">
+          <div className="flex items-center gap-3 px-2 py-2 border-b border-slate-900/20/[0.08]">
             <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-950/80 border border-gold/40 shadow-glow-gold shrink-0 p-1 overflow-hidden">
               <img
                 src="/tinda-pos-crest.png"
@@ -137,7 +137,7 @@ export function Navigation({
               <p className="font-serif text-base font-bold tracking-[0.2em] text-stone-100 uppercase truncate">
                 TINDA
               </p>
-              <p className="font-mono text-[9px] tracking-[0.22em] uppercase text-gold-muted font-medium truncate">
+              <p className="font-sans font-semibold text-[0.6875rem] tracking-[0.22em] uppercase text-gold-muted font-medium truncate">
                 BUSINESS POS
               </p>
             </div>
@@ -145,7 +145,7 @@ export function Navigation({
 
           {/* Group 1: Store Operations */}
           <div>
-            <div className="px-3 pb-2 text-[10px] font-mono uppercase tracking-[0.18em] text-stone-500">
+            <div className="px-3 pb-2 text-[0.75rem] font-sans font-semibold uppercase tracking-[0.18em] text-stone-500">
               Store Operations
             </div>
             <nav className="space-y-1">
@@ -158,8 +158,8 @@ export function Navigation({
                     onClick={() => setActiveTab(item.id)}
                     className={`btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium transition-all duration-200 text-left ${
                       isActive
-                        ? 'bg-amber-500/10 text-[#D4AF37] border border-[#D4AF37]/35 shadow-glow-gold font-bold'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-white/[0.04] border border-transparent'
+                        ? 'bg-amber-500/10 text-[#2563EB] border border-[#2563EB]/35 shadow-glow-gold font-bold'
+                        : 'text-stone-400 hover:text-stone-200 hover:bg-slate-900/[0.05] border border-transparent'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
@@ -168,8 +168,8 @@ export function Navigation({
                     </div>
                     {item.badge !== undefined && item.badge > 0 && (
                       <span
-                        className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold shrink-0 ${
-                          item.badgeClass || 'bg-[#D4AF37] text-black'
+                        className={`px-2 py-0.5 rounded-full text-[0.75rem] font-mono font-bold shrink-0 ${
+                          item.badgeClass || 'bg-[#2563EB] text-black'
                         }`}
                       >
                         {item.badge}
@@ -183,7 +183,7 @@ export function Navigation({
 
           {/* Group 2: Business & Finance */}
           <div>
-            <div className="px-3 pb-2 text-[10px] font-mono uppercase tracking-[0.18em] text-stone-500">
+            <div className="px-3 pb-2 text-[0.75rem] font-sans font-semibold uppercase tracking-[0.18em] text-stone-500">
               Management
             </div>
             <nav className="space-y-1">
@@ -196,8 +196,8 @@ export function Navigation({
                     onClick={() => setActiveTab(item.id)}
                     className={`btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium transition-all duration-200 text-left ${
                       isActive
-                        ? 'bg-amber-500/10 text-[#D4AF37] border border-[#D4AF37]/35 shadow-glow-gold font-bold'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-white/[0.04] border border-transparent'
+                        ? 'bg-amber-500/10 text-[#2563EB] border border-[#2563EB]/35 shadow-glow-gold font-bold'
+                        : 'text-stone-400 hover:text-stone-200 hover:bg-slate-900/[0.05] border border-transparent'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
@@ -213,7 +213,7 @@ export function Navigation({
           {/* Group 3: Fast Tools (SRP & Expiration) */}
           {(onOpenPriceGuide || onOpenExpiration) && (
             <div>
-              <div className="px-3 pb-2 text-[10px] font-mono uppercase tracking-[0.18em] text-stone-500">
+              <div className="px-3 pb-2 text-[0.75rem] font-sans font-semibold uppercase tracking-[0.18em] text-stone-500">
                 Fast Tools
               </div>
               <div className="space-y-1">
@@ -226,7 +226,7 @@ export function Navigation({
                       <Sparkles className="w-4 h-4 shrink-0 text-amber-400" />
                       <span className="truncate">DTI Price Guide</span>
                     </div>
-                    <span className="text-[10px] font-mono bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">SRP</span>
+                    <span className="text-[0.75rem] font-mono bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">SRP</span>
                   </button>
                 )}
                 {onOpenExpiration && (
@@ -246,7 +246,7 @@ export function Navigation({
           {/* Master Admin Platform Console */}
           {isMasterAdmin && (
             <div>
-              <div className="px-3 pb-2 text-[10px] font-mono uppercase tracking-[0.18em] text-gold-light flex items-center gap-1.5 font-bold">
+              <div className="px-3 pb-2 text-[0.75rem] font-sans font-semibold uppercase tracking-[0.18em] text-gold-light flex items-center gap-1.5 font-bold">
                 <Crown className="w-3.5 h-3.5 text-gold" />
                 <span>Super Admin</span>
               </div>
@@ -262,7 +262,7 @@ export function Navigation({
                   <ShieldCheck className="w-4 h-4 text-gold-light shrink-0" />
                   <span className="truncate">Master Control</span>
                 </div>
-                <span className="px-1.5 py-0.5 rounded-md bg-gold/20 text-[9px] font-mono text-gold-light font-extrabold border border-gold/40">
+                <span className="px-1.5 py-0.5 rounded-md bg-gold/20 text-[0.6875rem] font-mono text-gold-light font-extrabold border border-gold/40">
                   ROOT
                 </span>
               </button>
@@ -271,7 +271,7 @@ export function Navigation({
         </div>
 
         {/* Footer: Pro Access HUD & User Profile & Log Out */}
-        <div className="space-y-3 pt-4 border-t border-white/[0.08] mt-4">
+        <div className="space-y-3 pt-4 border-t border-slate-900/20/[0.08] mt-4">
           {/* Real-Time Pro Access Time Limit Status Card / Master License Card */}
           {isMasterAdmin ? (
             <div
@@ -281,17 +281,17 @@ export function Navigation({
               className="cursor-pointer group p-2.5 rounded-2xl border border-gold/40 bg-gradient-to-r from-amber-500/15 via-gold/10 to-amber-500/10 shadow-glow-gold transition-all"
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="flex items-center gap-1.5 text-[9px] font-mono tracking-widest uppercase font-bold text-gold-light">
+                <span className="flex items-center gap-1.5 text-[0.6875rem] font-sans font-semibold tracking-widest uppercase font-bold text-gold-light">
                   <Crown className="w-3.5 h-3.5 text-gold" />
                   <span>MASTER LICENSE</span>
                 </span>
-                <span className="text-[8px] font-mono px-1.5 py-0.5 rounded font-extrabold uppercase bg-gold/20 text-gold-light border border-gold/40">
+                <span className="text-[0.625rem] font-sans font-semibold px-1.5 py-0.5 rounded font-extrabold uppercase bg-gold/20 text-gold-light border border-gold/40">
                   AD-FREE
                 </span>
               </div>
-              <div className="flex items-center justify-between font-mono text-[11px] text-stone-300">
+              <div className="flex items-center justify-between font-mono text-[0.8125rem] text-stone-300">
                 <span className="text-gold-light font-bold">LIFETIME ACCESS</span>
-                <span className="text-[10px] text-gold underline">Console →</span>
+                <span className="text-[0.75rem] text-gold underline">Console →</span>
               </div>
             </div>
           ) : (
@@ -306,12 +306,12 @@ export function Navigation({
               }`}
             >
               <div className="flex items-center justify-between mb-1.5">
-                <span className="flex items-center gap-1.5 text-[9px] font-mono tracking-widest uppercase font-semibold text-stone-400">
+                <span className="flex items-center gap-1.5 text-[0.6875rem] font-sans font-semibold tracking-widest uppercase font-semibold text-stone-400">
                   <Clock className={`w-3 h-3 ${isPro ? 'text-gold-light' : 'text-rose-400'}`} />
                   <span>{isPro ? 'PRO ACCESS' : 'FREE MODE'}</span>
                 </span>
                 <span
-                  className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-bold uppercase ${
+                  className={`text-[0.6875rem] font-mono px-1.5 py-0.5 rounded font-bold uppercase ${
                     isPro
                       ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
                       : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
@@ -330,7 +330,7 @@ export function Navigation({
                   {proFormattedTime}
                 </span>
 
-                <span className="text-[10px] font-mono text-gold-muted group-hover:text-gold-light transition-colors underline decoration-gold/40">
+                <span className="text-[0.75rem] font-mono text-gold-muted group-hover:text-gold-light transition-colors underline decoration-gold/40">
                   {isPro ? '+ Extend' : '⚡ Unlock'}
                 </span>
               </div>
@@ -340,7 +340,7 @@ export function Navigation({
           <button
             type="button"
             onClick={onOpenProfile}
-            className="flex items-center gap-3 p-2.5 rounded-xl bg-zinc-950/60 border border-white/5 hover:border-gold/40 hover:bg-zinc-900/80 transition-all text-left group w-full cursor-pointer"
+            className="flex items-center gap-3 p-2.5 rounded-xl bg-zinc-950/60 border border-slate-900/10 hover:border-gold/40 hover:bg-zinc-900/80 transition-all text-left group w-full cursor-pointer"
             title="View & Edit Profile"
           >
             {avatarUrl ? (
@@ -350,7 +350,7 @@ export function Navigation({
                 className="h-9 w-9 shrink-0 rounded-xl object-cover border border-gold/40 shadow-glow-gold"
               />
             ) : (
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-[#D4AF37] text-obsidian-950 text-xs font-serif font-bold shadow-sm">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-[#2563EB] text-obsidian-950 text-xs font-serif font-bold shadow-sm">
                 {cashierInitials}
               </div>
             )}
@@ -358,7 +358,7 @@ export function Navigation({
               <span className="text-xs font-semibold text-stone-200 truncate leading-tight group-hover:text-gold-light transition-colors">
                 {cashierName}
               </span>
-              <span className="text-[10px] text-stone-500 font-mono truncate leading-tight mt-0.5">
+              <span className="text-[0.75rem] text-stone-500 font-mono truncate leading-tight mt-0.5">
                 {cashierRole}
               </span>
             </div>
@@ -370,13 +370,13 @@ export function Navigation({
             className="btn-press w-full py-2.5 px-3 rounded-xl bg-red-500/10 border border-red-500/25 hover:bg-red-500/20 hover:border-red-500/40 text-red-400 text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm"
           >
             <LogOut className="w-4 h-4 shrink-0" />
-            <span className="tracking-wider uppercase text-[11px] font-bold">Log Out</span>
+            <span className="tracking-wider uppercase text-[0.8125rem] font-bold">Log Out</span>
           </button>
         </div>
       </aside>
 
       {/* ── MOBILE TOP BAR (md:hidden) — Auto-responsive for all Android, iPhone & Foldables ── */}
-      <header className="md:hidden sticky top-0 z-40 h-13 w-full flex items-center justify-between px-3 sm:px-4 bg-[#090A0D]/95 backdrop-blur-xl border-b border-white/10 gap-2 select-none">
+      <header className="md:hidden sticky top-0 z-40 h-13 w-full flex items-center justify-between px-3 sm:px-4 bg-[#F8FAFC]/95 backdrop-blur-xl border-b border-slate-900/15 gap-2 select-none">
         {/* Left: Brand logo & name */}
         <div className="flex items-center gap-2 shrink-0 min-w-0">
           <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-zinc-950/90 border border-gold/40 shadow-glow-gold p-0.5 shrink-0 overflow-hidden">
@@ -391,7 +391,7 @@ export function Navigation({
             <span className="font-serif font-bold text-sm sm:text-base tracking-[0.18em] uppercase text-stone-100 truncate">
               TINDA
             </span>
-            <span className="text-[8px] sm:text-[9px] tracking-widest text-[#D4AF37] border border-[#D4AF37]/30 px-1 py-0.2 rounded-full uppercase font-mono shrink-0">
+            <span className="text-[0.625rem] sm:text-[0.6875rem] tracking-widest text-[#2563EB] border border-[#2563EB]/30 px-1 py-0.2 rounded-full uppercase font-sans font-semibold shrink-0">
               POS
             </span>
           </div>
@@ -403,7 +403,7 @@ export function Navigation({
           {isMasterAdmin ? (
             <button
               onClick={() => setActiveTab('master-control')}
-              className="flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full border border-gold/60 bg-gold/20 text-gold-light font-mono text-[10px] sm:text-[11px] font-bold shadow-glow-gold shrink-0 transition-transform active:scale-95"
+              className="flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full border border-gold/60 bg-gold/20 text-gold-light font-mono text-[0.75rem] sm:text-[0.8125rem] font-bold shadow-glow-gold shrink-0 transition-transform active:scale-95"
             >
               <Crown className="w-3 h-3 text-gold shrink-0" />
               <span>MASTER</span>
@@ -411,7 +411,7 @@ export function Navigation({
           ) : (
             <button
               onClick={onOpenProModal}
-              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full border text-[10px] sm:text-[11px] font-mono font-bold transition-all shrink-0 active:scale-95 ${
+              className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full border text-[0.75rem] sm:text-[0.8125rem] font-mono font-bold transition-all shrink-0 active:scale-95 ${
                 isPro
                   ? 'bg-amber-500/10 border-gold/40 text-gold-light'
                   : 'bg-rose-950/60 border-rose-700/60 text-rose-300 animate-pulse'
@@ -426,7 +426,7 @@ export function Navigation({
           <button
             type="button"
             onClick={onOpenProfile}
-            className="flex items-center gap-1.5 p-1 sm:px-2 sm:py-1 rounded-lg bg-zinc-900/60 border border-white/5 hover:border-gold/40 transition-all shrink-0 cursor-pointer"
+            className="flex items-center gap-1.5 p-1 sm:px-2 sm:py-1 rounded-lg bg-zinc-900/60 border border-slate-900/10 hover:border-gold/40 transition-all shrink-0 cursor-pointer"
             title={`View profile (${cashierName})`}
           >
             {avatarUrl ? (
@@ -436,11 +436,11 @@ export function Navigation({
                 className="h-6 w-6 shrink-0 rounded-full object-cover border border-gold/40"
               />
             ) : (
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-[#D4AF37] text-black text-[10px] font-serif font-bold">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-[#2563EB] text-black text-[0.75rem] font-serif font-bold">
                 {cashierInitials}
               </div>
             )}
-            <span className="hidden sm:inline text-[11px] text-stone-300 font-medium truncate max-w-[70px]">
+            <span className="hidden sm:inline text-[0.8125rem] text-stone-300 font-medium truncate max-w-[70px]">
               {cashierName.split(' ')[0]}
             </span>
           </button>
@@ -457,22 +457,22 @@ export function Navigation({
       </header>
 
       {/* ── MOBILE BOTTOM BAR (md:hidden) ── */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 grid grid-cols-5 items-center border-t border-white/10 px-1 py-1.5 bg-[#090A0D]/95 backdrop-blur-xl">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 grid grid-cols-5 items-center border-t border-slate-900/15 px-1 py-1.5 bg-[#F8FAFC]/95 backdrop-blur-xl">
         <button
           onClick={() => setActiveTab('dashboard')}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
-            activeTab === 'dashboard' ? 'text-[#D4AF37] font-semibold' : 'text-stone-400 hover:text-stone-300'
+            activeTab === 'dashboard' ? 'text-[#2563EB] font-semibold' : 'text-stone-400 hover:text-stone-300'
           }`}
         >
           <div className="relative">
             <LayoutDashboard className="w-4 h-4 shrink-0" />
             {lowStockCount !== undefined && lowStockCount > 0 && (
-              <span className="absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[8px] font-mono font-bold leading-none bg-red-500 text-white">
+              <span className="absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[0.625rem] font-mono font-bold leading-none bg-red-500 text-white">
                 {lowStockCount}
               </span>
             )}
           </div>
-          <span className="truncate max-w-full tracking-tight uppercase text-[9px] font-medium leading-none">
+          <span className="truncate max-w-full tracking-tight uppercase text-[0.6875rem] font-medium leading-none">
             Dash
           </span>
         </button>
@@ -480,18 +480,18 @@ export function Navigation({
         <button
           onClick={() => setActiveTab('pos')}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
-            activeTab === 'pos' ? 'text-[#D4AF37] font-semibold' : 'text-stone-400 hover:text-stone-300'
+            activeTab === 'pos' ? 'text-[#2563EB] font-semibold' : 'text-stone-400 hover:text-stone-300'
           }`}
         >
           <div className="relative">
             <ShoppingBag className="w-4 h-4 shrink-0" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[8px] font-mono font-bold leading-none bg-[#D4AF37] text-black">
+              <span className="absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[0.625rem] font-mono font-bold leading-none bg-[#2563EB] text-black">
                 {cartCount}
               </span>
             )}
           </div>
-          <span className="truncate max-w-full tracking-tight uppercase text-[9px] font-medium leading-none">
+          <span className="truncate max-w-full tracking-tight uppercase text-[0.6875rem] font-medium leading-none">
             Counter
           </span>
         </button>
@@ -499,11 +499,11 @@ export function Navigation({
         <button
           onClick={() => setActiveTab('transactions')}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
-            activeTab === 'transactions' ? 'text-[#D4AF37] font-semibold' : 'text-stone-400 hover:text-stone-300'
+            activeTab === 'transactions' ? 'text-[#2563EB] font-semibold' : 'text-stone-400 hover:text-stone-300'
           }`}
         >
           <Receipt className="w-4 h-4 shrink-0" />
-          <span className="truncate max-w-full tracking-tight uppercase text-[9px] font-medium leading-none">
+          <span className="truncate max-w-full tracking-tight uppercase text-[0.6875rem] font-medium leading-none">
             Sales
           </span>
         </button>
@@ -511,11 +511,11 @@ export function Navigation({
         <button
           onClick={() => setActiveTab('inventory')}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
-            activeTab === 'inventory' ? 'text-[#D4AF37] font-semibold' : 'text-stone-400 hover:text-stone-300'
+            activeTab === 'inventory' ? 'text-[#2563EB] font-semibold' : 'text-stone-400 hover:text-stone-300'
           }`}
         >
           <Package className="w-4 h-4 shrink-0" />
-          <span className="truncate max-w-full tracking-tight uppercase text-[9px] font-medium leading-none">
+          <span className="truncate max-w-full tracking-tight uppercase text-[0.6875rem] font-medium leading-none">
             Stocks
           </span>
         </button>
@@ -524,12 +524,12 @@ export function Navigation({
           onClick={() => setMobileDrawerOpen(true)}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
             mobileDrawerOpen || ['customers', 'expenses', 'suppliers', 'analytics', 'settings', 'master-control'].includes(activeTab)
-              ? 'text-[#D4AF37] font-semibold'
+              ? 'text-[#2563EB] font-semibold'
               : 'text-stone-400 hover:text-stone-300'
           }`}
         >
           <Menu className="w-4 h-4 shrink-0" />
-          <span className="truncate max-w-full tracking-tight uppercase text-[9px] font-medium leading-none">
+          <span className="truncate max-w-full tracking-tight uppercase text-[0.6875rem] font-medium leading-none">
             More
           </span>
         </button>
@@ -542,8 +542,8 @@ export function Navigation({
             className="flex-1"
             onClick={() => setMobileDrawerOpen(false)}
           />
-          <div className="bg-[#0e1015] border-t border-white/10 rounded-t-2xl p-5 max-h-[85vh] overflow-y-auto space-y-5 animate-slide-up shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+          <div className="bg-[#F1F5F9] border-t border-slate-900/15 rounded-t-2xl p-5 max-h-[85vh] overflow-y-auto space-y-5 animate-slide-up shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-900/15 pb-3">
               <div className="flex items-center gap-2.5">
                 <img
                   src="/tinda-pos-crest.png"
@@ -551,11 +551,11 @@ export function Navigation({
                   className="w-7 h-7 rounded-lg object-contain border border-gold/40 p-0.5 bg-zinc-950 shadow-glow-gold"
                 />
                 <span className="font-serif font-bold text-sm tracking-wider uppercase text-gold">TINDA APPS</span>
-                <span className="text-[10px] font-mono text-stone-500 uppercase tracking-widest">Directory</span>
+                <span className="text-[0.75rem] font-sans font-semibold text-stone-500 uppercase tracking-widest">Directory</span>
               </div>
               <button
                 onClick={() => setMobileDrawerOpen(false)}
-                className="p-1 rounded-lg hover:bg-white/10 text-stone-400"
+                className="p-1 rounded-lg hover:bg-slate-900/50 text-stone-400"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -574,7 +574,7 @@ export function Navigation({
                 <div className="flex items-center gap-2.5">
                   <Crown className="w-4 h-4 text-gold-light" />
                   <div>
-                    <span className="text-[10px] font-mono tracking-widest uppercase text-gold block leading-tight font-bold">
+                    <span className="text-[0.75rem] font-sans font-semibold tracking-widest uppercase text-gold block leading-tight font-bold">
                       SUPER ADMIN ROOT ACCESS
                     </span>
                     <span className="font-mono text-xs font-bold text-stone-100">
@@ -582,7 +582,7 @@ export function Navigation({
                     </span>
                   </div>
                 </div>
-                <span className="text-[11px] font-mono font-bold text-gold underline">
+                <span className="text-[0.8125rem] font-mono font-bold text-gold underline">
                   Open →
                 </span>
               </div>
@@ -602,7 +602,7 @@ export function Navigation({
                 <div className="flex items-center gap-2.5">
                   <Clock className={`w-4 h-4 ${isPro ? 'text-gold-light' : 'text-rose-400'}`} />
                   <div>
-                    <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 block leading-tight">
+                    <span className="text-[0.75rem] font-sans font-semibold tracking-widest uppercase text-stone-400 block leading-tight">
                       {isPro ? 'PRO ACCESS ACTIVE' : 'PRO EXPIRED (FREE MODE)'}
                     </span>
                     <span className={`font-mono text-xs font-bold ${isPro ? 'text-gold-light' : 'text-rose-400'}`}>
@@ -610,7 +610,7 @@ export function Navigation({
                     </span>
                   </div>
                 </div>
-                <span className="text-[11px] font-mono font-bold text-gold underline">
+                <span className="text-[0.8125rem] font-mono font-bold text-gold underline">
                   {isPro ? '+ Extend' : '⚡ Unlock'}
                 </span>
               </div>
@@ -619,7 +619,7 @@ export function Navigation({
             {/* Quick Actions / Fast Tools */}
             {(onOpenPriceGuide || onOpenExpiration) && (
               <div>
-                <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-stone-500 mb-2">Fast Tools</p>
+                <p className="text-[0.75rem] font-sans font-semibold uppercase tracking-[0.16em] text-stone-500 mb-2">Fast Tools</p>
                 <div className="grid grid-cols-2 gap-2">
                   {onOpenPriceGuide && (
                     <button
@@ -632,7 +632,7 @@ export function Navigation({
                       <Sparkles className="w-5 h-5 text-amber-400 mb-1" />
                       <div>
                         <div className="text-xs font-bold uppercase tracking-wider">DTI Price Guide</div>
-                        <div className="text-[10px] text-amber-300/70 font-mono">172+ DTI SRP Items</div>
+                        <div className="text-[0.75rem] text-amber-300/70 font-mono">172+ DTI SRP Items</div>
                       </div>
                     </button>
                   )}
@@ -647,7 +647,7 @@ export function Navigation({
                       <CalendarClock className="w-5 h-5 text-rose-400 mb-1" />
                       <div>
                         <div className="text-xs font-bold uppercase tracking-wider">Expiry Watch</div>
-                        <div className="text-[10px] text-rose-300/70 font-mono">Perishable Alerts</div>
+                        <div className="text-[0.75rem] text-rose-300/70 font-mono">Perishable Alerts</div>
                       </div>
                     </button>
                   )}
@@ -657,21 +657,21 @@ export function Navigation({
 
             {/* Additional Modules */}
             <div>
-              <p className="text-[10px] font-mono uppercase tracking-[0.16em] text-stone-500 mb-2">Store Management</p>
+              <p className="text-[0.75rem] font-sans font-semibold uppercase tracking-[0.16em] text-stone-500 mb-2">Store Management</p>
               <div className="space-y-1.5">
                 <button
                   onClick={() => handleMobileSelectTab('customers')}
                   className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
                     activeTab === 'customers'
                       ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
-                      : 'bg-zinc-950/50 border-white/5 text-stone-300 hover:bg-white/5'
+                      : 'bg-zinc-950/50 border-slate-900/10 text-stone-300 hover:bg-slate-900/40'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <Users className="w-4 h-4 text-emerald-400" />
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-wider">Customer Credit Ledger</div>
-                      <div className="text-[10px] text-stone-500">Track customer credit & balances</div>
+                      <div className="text-[0.75rem] text-stone-500">Track customer credit & balances</div>
                     </div>
                   </div>
                   <ChevronRight className="w-4 h-4 text-stone-600" />
@@ -682,14 +682,14 @@ export function Navigation({
                   className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
                     activeTab === 'expenses'
                       ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
-                      : 'bg-zinc-950/50 border-white/5 text-stone-300 hover:bg-white/5'
+                      : 'bg-zinc-950/50 border-slate-900/10 text-stone-300 hover:bg-slate-900/40'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <TrendingDown className="w-4 h-4 text-rose-400" />
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-wider">Expenses Tracker</div>
-                      <div className="text-[10px] text-stone-500">Operating costs & net profit math</div>
+                      <div className="text-[0.75rem] text-stone-500">Operating costs & net profit math</div>
                     </div>
                   </div>
                   <ChevronRight className="w-4 h-4 text-stone-600" />
@@ -700,14 +700,14 @@ export function Navigation({
                   className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
                     activeTab === 'suppliers'
                       ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
-                      : 'bg-zinc-950/50 border-white/5 text-stone-300 hover:bg-white/5'
+                      : 'bg-zinc-950/50 border-slate-900/10 text-stone-300 hover:bg-slate-900/40'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <Truck className="w-4 h-4 text-sky-400" />
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-wider">Suppliers Directory</div>
-                      <div className="text-[10px] text-stone-500">Vendor contacts & delivery notes</div>
+                      <div className="text-[0.75rem] text-stone-500">Vendor contacts & delivery notes</div>
                     </div>
                   </div>
                   <ChevronRight className="w-4 h-4 text-stone-600" />
@@ -718,14 +718,14 @@ export function Navigation({
                   className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
                     activeTab === 'analytics'
                       ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
-                      : 'bg-zinc-950/50 border-white/5 text-stone-300 hover:bg-white/5'
+                      : 'bg-zinc-950/50 border-slate-900/10 text-stone-300 hover:bg-slate-900/40'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <BarChart3 className="w-4 h-4 text-indigo-400" />
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-wider">Analytics & Z-Read</div>
-                      <div className="text-[10px] text-stone-500">Cash drawer audit & closure readings</div>
+                      <div className="text-[0.75rem] text-stone-500">Cash drawer audit & closure readings</div>
                     </div>
                   </div>
                   <ChevronRight className="w-4 h-4 text-stone-600" />
@@ -736,14 +736,14 @@ export function Navigation({
                   className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
                     activeTab === 'settings'
                       ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
-                      : 'bg-zinc-950/50 border-white/5 text-stone-300 hover:bg-white/5'
+                      : 'bg-zinc-950/50 border-slate-900/10 text-stone-300 hover:bg-slate-900/40'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <Settings className="w-4 h-4 text-amber-400" />
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-wider">Settings & Backup</div>
-                      <div className="text-[10px] text-stone-500">Store config, JSON export & user accounts</div>
+                      <div className="text-[0.75rem] text-stone-500">Store config, JSON export & user accounts</div>
                     </div>
                   </div>
                   <ChevronRight className="w-4 h-4 text-stone-600" />
@@ -752,7 +752,7 @@ export function Navigation({
             </div>
 
             {/* User Profile & Log Out */}
-            <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+            <div className="pt-3 border-t border-slate-900/15 flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => {
@@ -775,7 +775,7 @@ export function Navigation({
                 )}
                 <div className="text-xs">
                   <div className="font-semibold text-stone-200 group-hover:text-gold-light transition-colors">{cashierName}</div>
-                  <div className="text-[10px] text-stone-500 font-mono">{cashierRole}</div>
+                  <div className="text-[0.75rem] text-stone-500 font-mono">{cashierRole}</div>
                 </div>
               </button>
               <button

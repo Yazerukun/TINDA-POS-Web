@@ -397,7 +397,7 @@ export function SettingsScreen({
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
+        <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
           <Settings className="h-6 w-6 text-emerald-400" />
           <span>Store Settings &amp; Administration</span>
         </h2>
@@ -419,7 +419,7 @@ export function SettingsScreen({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-amber-300 to-[#D4AF37] flex items-center justify-center text-obsidian-950 font-serif font-black text-2xl">
+                  <div className="w-full h-full bg-gradient-to-br from-amber-300 to-[#2563EB] flex items-center justify-center text-obsidian-950 font-serif font-black text-2xl">
                     {(currentCashierName || 'User').substring(0, 2).toUpperCase()}
                   </div>
                 )}
@@ -449,11 +449,11 @@ export function SettingsScreen({
 
             <div>
               <div className="flex items-center gap-2 justify-center sm:justify-start flex-wrap">
-                <h3 className="text-base font-bold text-white flex items-center gap-1.5">
+                <h3 className="text-base font-bold text-slate-900 flex items-center gap-1.5">
                   {isMasterAdmin && <Crown className="w-4 h-4 text-gold" />}
                   <span>{currentCashierName || 'Staff Member'}</span>
                 </h3>
-                <span className="px-2 py-0.5 rounded-full bg-amber-500/15 border border-gold/30 text-gold-light font-mono text-[10px] font-bold uppercase">
+                <span className="px-2 py-0.5 rounded-full bg-amber-500/15 border border-gold/30 text-gold-light font-sans font-semibold text-[0.75rem] font-bold uppercase">
                   {currentCashierRole || (isMasterAdmin ? 'Master Admin' : 'Staff')}
                 </span>
               </div>
@@ -499,8 +499,8 @@ export function SettingsScreen({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-white">Cloudflare Pages Edge Architecture</h3>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-black border border-emerald-500/30">
+              <h3 className="text-sm font-bold text-slate-900">Cloudflare Pages Edge Architecture</h3>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[0.75rem] font-black border border-emerald-500/30">
                 0ms Latency
               </span>
             </div>
@@ -512,10 +512,10 @@ export function SettingsScreen({
       </div>
 
       {/* ── STAFF & CASHIER ACCOUNTS (Master Admin Section) ── */}
-      <div className="glass-panel rounded-3xl border border-white/[0.1] p-6 shadow-2xl space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/[0.08] pb-4 gap-3">
+      <div className="glass-panel rounded-3xl border border-slate-900/20/[0.1] p-6 shadow-2xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-900/20/[0.08] pb-4 gap-3">
           <div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
               <Users className="h-4 w-4 text-amber-400" />
               <span>Staff &amp; Cashier Accounts</span>
             </h3>
@@ -560,7 +560,7 @@ export function SettingsScreen({
                   key={u.id}
                   className={`p-3.5 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
                     u.status === 'ACTIVE'
-                      ? 'bg-zinc-950/60 border-white/[0.08]'
+                      ? 'bg-zinc-950/60 border-slate-900/20/[0.08]'
                       : 'bg-zinc-950/30 border-red-500/20 opacity-60'
                   }`}
                 >
@@ -575,7 +575,7 @@ export function SettingsScreen({
                       <div className={`h-10 w-10 rounded-xl flex items-center justify-center font-serif font-bold text-xs shrink-0 ${
                         isMaster
                           ? 'bg-gradient-to-br from-amber-300 to-amber-500 text-black shadow-glow-gold'
-                          : 'bg-zinc-900 border border-white/10 text-stone-200'
+                          : 'bg-zinc-900 border border-slate-900/15 text-stone-200'
                       }`}>
                         {u.name.substring(0, 2).toUpperCase()}
                       </div>
@@ -583,11 +583,11 @@ export function SettingsScreen({
 
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-xs sm:text-sm font-semibold text-white">{u.name}</p>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/5 text-stone-400">
+                        <p className="text-xs sm:text-sm font-semibold text-slate-900">{u.name}</p>
+                        <span className="text-[0.75rem] font-mono px-2 py-0.5 rounded-full bg-slate-900/40 text-stone-400">
                           @{u.username}
                         </span>
-                        <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                        <span className={`text-[0.6875rem] font-mono font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
                           isMaster
                             ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                             : u.role === 'INVENTORY_LEAD'
@@ -597,17 +597,17 @@ export function SettingsScreen({
                           {u.role === 'ADMIN' ? 'Master Admin' : u.role === 'INVENTORY_LEAD' ? 'Inventory Lead' : 'Cashier'}
                         </span>
                         {u.store_name && (
-                          <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-gold/10 text-gold-light border border-gold/30">
+                          <span className="text-[0.6875rem] font-mono px-2 py-0.5 rounded-full bg-gold/10 text-gold-light border border-gold/30">
                             {u.store_name}
                           </span>
                         )}
                         {u.status === 'DISABLED' && (
-                          <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30 uppercase">
+                          <span className="text-[0.6875rem] font-sans font-semibold font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30 uppercase">
                             Disabled
                           </span>
                         )}
                       </div>
-                      <p className="text-[10px] text-slate-500 font-mono mt-0.5">
+                      <p className="text-[0.75rem] text-slate-500 font-mono mt-0.5">
                         Created: {new Date(u.created_at).toLocaleDateString()}
                       </p>
                     </div>
@@ -639,7 +639,7 @@ export function SettingsScreen({
                               setEditingPinUserId(null)
                               setNewPinValue('')
                             }}
-                            className="p-1.5 rounded-lg bg-white/10 text-stone-400 hover:bg-white/20"
+                            className="p-1.5 rounded-lg bg-slate-900/50 text-stone-400 hover:bg-slate-900/70"
                             title="Cancel"
                           >
                             <X className="h-3.5 w-3.5" />
@@ -651,21 +651,21 @@ export function SettingsScreen({
                             setEditingPinUserId(u.id ?? null)
                             setNewPinValue('')
                           }}
-                          className="btn-press px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-stone-300 hover:text-white text-xs flex items-center gap-1"
+                          className="btn-press px-2.5 py-1 rounded-lg bg-slate-900/40 border border-slate-900/15 text-stone-300 hover:text-slate-900 text-xs flex items-center gap-1"
                           title="Change PIN"
                         >
                           <Key className="h-3 w-3 text-gold-muted" />
-                          <span className="text-[11px]">PIN</span>
+                          <span className="text-[0.8125rem]">PIN</span>
                         </button>
                       )}
 
                       {/* Photo management for staff */}
                       <label
-                        className="btn-press px-2 py-1 rounded-lg bg-white/5 border border-white/10 text-stone-300 hover:text-gold-light hover:border-gold/40 text-xs flex items-center gap-1 cursor-pointer"
+                        className="btn-press px-2 py-1 rounded-lg bg-slate-900/40 border border-slate-900/15 text-stone-300 hover:text-gold-light hover:border-gold/40 text-xs flex items-center gap-1 cursor-pointer"
                         title={u.avatar_url ? 'Change Photo' : 'Upload Photo'}
                       >
                         <Camera className="h-3 w-3 text-gold-muted" />
-                        <span className="text-[11px] hidden sm:inline">{u.avatar_url ? 'Photo' : '+ Photo'}</span>
+                        <span className="text-[0.8125rem] hidden sm:inline">{u.avatar_url ? 'Photo' : '+ Photo'}</span>
                         <input
                           type="file"
                           accept="image/*"
@@ -689,7 +689,7 @@ export function SettingsScreen({
                         onClick={() => handleToggleUserStatus(u)}
                         className={`btn-press p-1.5 rounded-lg border text-xs flex items-center gap-1 ${
                           u.status === 'ACTIVE'
-                            ? 'bg-zinc-900/60 border-white/10 text-stone-400 hover:text-stone-200'
+                            ? 'bg-zinc-900/60 border-slate-900/15 text-stone-400 hover:text-stone-200'
                             : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
                         }`}
                         title={u.status === 'ACTIVE' ? 'Disable Account' : 'Activate Account'}
@@ -720,14 +720,14 @@ export function SettingsScreen({
       {showAddUserModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/80 backdrop-blur-md animate-fade-in">
           <div className="w-full max-w-md glass-panel rounded-3xl border border-gold/30 p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+            <div className="flex items-center justify-between border-b border-slate-900/20/[0.08] pb-3">
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
                   <UserPlus className="h-4 w-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">Create Staff Account</h3>
-                  <p className="text-[10px] text-slate-400 font-mono">Master Admin provisioning</p>
+                  <h3 className="text-sm font-bold text-slate-900">Create Staff Account</h3>
+                  <p className="text-[0.75rem] text-slate-400 font-mono">Master Admin provisioning</p>
                 </div>
               </div>
               <button
@@ -735,7 +735,7 @@ export function SettingsScreen({
                   setShowAddUserModal(false)
                   setUserFormError('')
                 }}
-                className="p-1.5 rounded-xl text-stone-400 hover:text-white hover:bg-white/5"
+                className="p-1.5 rounded-xl text-stone-400 hover:text-slate-900 hover:bg-slate-900/40"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -758,7 +758,7 @@ export function SettingsScreen({
                   placeholder="e.g. Maria Clara"
                   value={newFullName}
                   onChange={(e) => setNewFullName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-amber-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-400"
                 />
               </div>
 
@@ -774,7 +774,7 @@ export function SettingsScreen({
                     placeholder="e.g. maria"
                     value={newUsername}
                     onChange={(e) => setNewUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-mono text-white focus:outline-none focus:border-amber-400"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-mono text-slate-900 focus:outline-none focus:border-amber-400"
                   />
                 </div>
 
@@ -789,7 +789,7 @@ export function SettingsScreen({
                     placeholder="e.g. 1234"
                     value={newUserPin}
                     onChange={(e) => setNewUserPin(e.target.value.replace(/[^0-9]/g, ''))}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-mono text-gold-light focus:outline-none focus:border-amber-400 tracking-widest"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-mono text-gold-light focus:outline-none focus:border-amber-400 tracking-widest"
                   />
                 </div>
               </div>
@@ -801,7 +801,7 @@ export function SettingsScreen({
                 <select
                   value={newUserRole}
                   onChange={(e) => setNewUserRole(e.target.value as UserRole)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-amber-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-400"
                 >
                   <option value="CASHIER">Cashier (POS Counter &amp; Sales)</option>
                   <option value="INVENTORY_LEAD">Inventory Lead (POS Counter + Inventory Management)</option>
@@ -814,7 +814,7 @@ export function SettingsScreen({
                   Profile Photo (Optional)
                 </label>
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-xl border border-white/10 bg-zinc-950 flex items-center justify-center overflow-hidden shrink-0">
+                  <div className="w-11 h-11 rounded-xl border border-slate-900/15 bg-zinc-950 flex items-center justify-center overflow-hidden shrink-0">
                     {newUserAvatar ? (
                       <img src={newUserAvatar} alt="Staff Preview" className="w-full h-full object-cover" />
                     ) : (
@@ -825,7 +825,7 @@ export function SettingsScreen({
                     <button
                       type="button"
                       onClick={() => newUserAvatarInputRef.current?.click()}
-                      className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-stone-300 hover:text-white text-xs font-semibold"
+                      className="px-3 py-1.5 rounded-xl bg-slate-900/40 border border-slate-900/15 text-stone-300 hover:text-slate-900 text-xs font-semibold"
                     >
                       {newUserAvatar ? 'Change Photo' : 'Choose Photo'}
                     </button>
@@ -853,7 +853,7 @@ export function SettingsScreen({
                 <button
                   type="button"
                   onClick={() => setShowAddUserModal(false)}
-                  className="px-4 py-2.5 rounded-xl border border-white/10 text-stone-400 hover:text-white text-xs font-semibold"
+                  className="px-4 py-2.5 rounded-xl border border-slate-900/15 text-stone-400 hover:text-slate-900 text-xs font-semibold"
                 >
                   Cancel
                 </button>
@@ -870,9 +870,9 @@ export function SettingsScreen({
       )}
 
       {/* Store Profile Form */}
-      <div className="glass-panel rounded-3xl border border-white/[0.1] p-6 shadow-2xl space-y-4">
-        <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
-          <h3 className="text-sm font-bold text-white flex items-center gap-2">
+      <div className="glass-panel rounded-3xl border border-slate-900/20/[0.1] p-6 shadow-2xl space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-900/20/[0.08] pb-3">
+          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
             <Store className="h-4 w-4 text-emerald-400" />
             <span>Store Profile &amp; Receipt Branding</span>
           </h3>
@@ -893,7 +893,7 @@ export function SettingsScreen({
                 required
                 value={form.store_name}
                 onChange={(e) => setForm({ ...form, store_name: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-emerald-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
               />
             </div>
             <div>
@@ -902,7 +902,7 @@ export function SettingsScreen({
                 type="text"
                 value={form.owner_name}
                 onChange={(e) => setForm({ ...form, owner_name: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-emerald-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
@@ -914,7 +914,7 @@ export function SettingsScreen({
                 type="text"
                 value={form.contact_number}
                 onChange={(e) => setForm({ ...form, contact_number: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-emerald-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
               />
             </div>
             <div>
@@ -923,7 +923,7 @@ export function SettingsScreen({
                 type="text"
                 value={form.address}
                 onChange={(e) => setForm({ ...form, address: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-emerald-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
@@ -934,15 +934,15 @@ export function SettingsScreen({
               type="text"
               value={form.receipt_footer}
               onChange={(e) => setForm({ ...form, receipt_footer: e.target.value })}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-emerald-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
             />
           </div>
 
           {/* ── PRINTER & RECEIPT HARDWARE CONFIGURATION ── */}
-          <div className="pt-4 border-t border-white/[0.08] space-y-4">
+          <div className="pt-4 border-t border-slate-900/20/[0.08] space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                   <Printer className="h-4 w-4 text-gold-light" />
                   <span>Receipt &amp; Universal Printer Setup</span>
                 </h4>
@@ -974,14 +974,14 @@ export function SettingsScreen({
                   className={`p-3.5 rounded-2xl border text-left transition-all ${
                     form.printer_paper_width === '58mm'
                       ? 'bg-amber-500/15 border-gold shadow-glow-gold'
-                      : 'bg-zinc-950/60 border-white/[0.08] hover:border-white/20'
+                      : 'bg-zinc-950/60 border-slate-900/20/[0.08] hover:border-slate-900/30'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-xs text-white">58mm Mini Thermal</span>
-                    <span className="text-[10px] font-mono text-gold-light">2-Inch Roll</span>
+                    <span className="font-bold text-xs text-slate-900">58mm Mini Thermal</span>
+                    <span className="text-[0.75rem] font-mono text-gold-light">2-Inch Roll</span>
                   </div>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[0.8125rem] text-slate-400">
                     Portable Bluetooth &amp; mini USB printers (GOOJPRT, Xprinter 58, Sunmi, MPT-II).
                   </p>
                 </button>
@@ -993,14 +993,14 @@ export function SettingsScreen({
                   className={`p-3.5 rounded-2xl border text-left transition-all ${
                     (form.printer_paper_width || '80mm') === '80mm'
                       ? 'bg-amber-500/15 border-gold shadow-glow-gold'
-                      : 'bg-zinc-950/60 border-white/[0.08] hover:border-white/20'
+                      : 'bg-zinc-950/60 border-slate-900/20/[0.08] hover:border-slate-900/30'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-xs text-white">80mm Standard Thermal</span>
-                    <span className="text-[10px] font-mono text-gold-light">3-Inch Roll</span>
+                    <span className="font-bold text-xs text-slate-900">80mm Standard Thermal</span>
+                    <span className="text-[0.75rem] font-mono text-gold-light">3-Inch Roll</span>
                   </div>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[0.8125rem] text-slate-400">
                     Desktop commercial POS printers (Epson TM-T20, Star Micronics, Xprinter 80).
                   </p>
                 </button>
@@ -1012,14 +1012,14 @@ export function SettingsScreen({
                   className={`p-3.5 rounded-2xl border text-left transition-all ${
                     form.printer_paper_width === 'A4'
                       ? 'bg-amber-500/15 border-gold shadow-glow-gold'
-                      : 'bg-zinc-950/60 border-white/[0.08] hover:border-white/20'
+                      : 'bg-zinc-950/60 border-slate-900/20/[0.08] hover:border-slate-900/30'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="font-bold text-xs text-white">A4 / Letter Full Page</span>
-                    <span className="text-[10px] font-mono text-gold-light">Standard Sheet</span>
+                    <span className="font-bold text-xs text-slate-900">A4 / Letter Full Page</span>
+                    <span className="text-[0.75rem] font-mono text-gold-light">Standard Sheet</span>
                   </div>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[0.8125rem] text-slate-400">
                     Standard office inkjet / laser printers and formal commercial PDF invoices.
                   </p>
                 </button>
@@ -1028,55 +1028,55 @@ export function SettingsScreen({
 
             {/* Customization Checkboxes */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-950/60 border border-white/[0.06] cursor-pointer hover:border-white/20 transition-all">
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-950/60 border border-slate-900/20/[0.06] cursor-pointer hover:border-slate-900/30 transition-all">
                 <input
                   type="checkbox"
                   checked={form.printer_show_barcode ?? true}
                   onChange={(e) => setForm({ ...form, printer_show_barcode: e.target.checked })}
-                  className="rounded border-white/20 text-amber-500 focus:ring-0 w-4 h-4 bg-zinc-900 cursor-pointer"
+                  className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-zinc-900 cursor-pointer"
                 />
                 <div>
-                  <span className="text-xs font-semibold text-white block">Print Code128 Barcode</span>
-                  <span className="text-[10px] text-slate-400 block">Scannable invoice barcode for counter audits</span>
+                  <span className="text-xs font-semibold text-slate-900 block">Print Code128 Barcode</span>
+                  <span className="text-[0.75rem] text-slate-400 block">Scannable invoice barcode for counter audits</span>
                 </div>
               </label>
 
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-950/60 border border-white/[0.06] cursor-pointer hover:border-white/20 transition-all">
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-950/60 border border-slate-900/20/[0.06] cursor-pointer hover:border-slate-900/30 transition-all">
                 <input
                   type="checkbox"
                   checked={form.printer_show_logo ?? true}
                   onChange={(e) => setForm({ ...form, printer_show_logo: e.target.checked })}
-                  className="rounded border-white/20 text-amber-500 focus:ring-0 w-4 h-4 bg-zinc-900 cursor-pointer"
+                  className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-zinc-900 cursor-pointer"
                 />
                 <div>
-                  <span className="text-xs font-semibold text-white block">Print Store Crest Monogram</span>
-                  <span className="text-[10px] text-slate-400 block">Luxury brand emblem at top of receipt</span>
+                  <span className="text-xs font-semibold text-slate-900 block">Print Store Crest Monogram</span>
+                  <span className="text-[0.75rem] text-slate-400 block">Luxury brand emblem at top of receipt</span>
                 </div>
               </label>
 
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-950/60 border border-white/[0.06] cursor-pointer hover:border-white/20 transition-all">
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-950/60 border border-slate-900/20/[0.06] cursor-pointer hover:border-slate-900/30 transition-all">
                 <input
                   type="checkbox"
                   checked={form.printer_show_customer_info ?? true}
                   onChange={(e) => setForm({ ...form, printer_show_customer_info: e.target.checked })}
-                  className="rounded border-white/20 text-amber-500 focus:ring-0 w-4 h-4 bg-zinc-900 cursor-pointer"
+                  className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-zinc-900 cursor-pointer"
                 />
                 <div>
-                  <span className="text-xs font-semibold text-white block">Customer Utang &amp; Credit Balance</span>
-                  <span className="text-[10px] text-slate-400 block">Print remaining ledger balance for utang transactions</span>
+                  <span className="text-xs font-semibold text-slate-900 block">Customer Utang &amp; Credit Balance</span>
+                  <span className="text-[0.75rem] text-slate-400 block">Print remaining ledger balance for utang transactions</span>
                 </div>
               </label>
 
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-950/60 border border-white/[0.06] cursor-pointer hover:border-white/20 transition-all">
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-950/60 border border-slate-900/20/[0.06] cursor-pointer hover:border-slate-900/30 transition-all">
                 <input
                   type="checkbox"
                   checked={form.printer_auto_print ?? false}
                   onChange={(e) => setForm({ ...form, printer_auto_print: e.target.checked })}
-                  className="rounded border-white/20 text-amber-500 focus:ring-0 w-4 h-4 bg-zinc-900 cursor-pointer"
+                  className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-zinc-900 cursor-pointer"
                 />
                 <div>
-                  <span className="text-xs font-semibold text-white block">Auto-Prompt Print on Checkout</span>
-                  <span className="text-[10px] text-slate-400 block">Automatically open print dialog after sale settlement</span>
+                  <span className="text-xs font-semibold text-slate-900 block">Auto-Prompt Print on Checkout</span>
+                  <span className="text-[0.75rem] text-slate-400 block">Automatically open print dialog after sale settlement</span>
                 </div>
               </label>
             </div>
@@ -1094,9 +1094,9 @@ export function SettingsScreen({
       </div>
 
       {/* Universal Backup Archive */}
-      <div className="glass-panel rounded-3xl border border-white/[0.1] p-6 shadow-2xl space-y-4">
-        <div className="border-b border-white/[0.08] pb-3">
-          <h3 className="text-sm font-bold text-white flex items-center gap-2">
+      <div className="glass-panel rounded-3xl border border-slate-900/20/[0.1] p-6 shadow-2xl space-y-4">
+        <div className="border-b border-slate-900/20/[0.08] pb-3">
+          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
             <Database className="h-4 w-4 text-indigo-400" />
             <span>Universal .tinda-backup Archive</span>
           </h3>
@@ -1107,13 +1107,13 @@ export function SettingsScreen({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Export Box */}
-          <div className="p-4 rounded-2xl bg-obsidian-900/60 border border-white/[0.06] flex flex-col justify-between space-y-3">
+          <div className="p-4 rounded-2xl bg-obsidian-900/60 border border-slate-900/20/[0.06] flex flex-col justify-between space-y-3">
             <div>
-              <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+              <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                 <Download className="h-4 w-4 text-emerald-400" />
                 <span>Export .tinda-backup</span>
               </h4>
-              <p className="text-[11px] text-slate-400 mt-1">
+              <p className="text-[0.8125rem] text-slate-400 mt-1">
                 Download the complete store database (products, sales, customers, photos) as a single offline backup file.
               </p>
             </div>
@@ -1126,13 +1126,13 @@ export function SettingsScreen({
           </div>
 
           {/* Import Box */}
-          <div className="p-4 rounded-2xl bg-obsidian-900/60 border border-white/[0.06] flex flex-col justify-between space-y-3">
+          <div className="p-4 rounded-2xl bg-obsidian-900/60 border border-slate-900/20/[0.06] flex flex-col justify-between space-y-3">
             <div>
-              <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+              <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                 <Upload className="h-4 w-4 text-indigo-400" />
                 <span>Restore .tinda-backup</span>
               </h4>
-              <p className="text-[11px] text-slate-400 mt-1">
+              <p className="text-[0.8125rem] text-slate-400 mt-1">
                 Load an existing backup file from your Android phone or another browser.
               </p>
             </div>
@@ -1154,11 +1154,11 @@ export function SettingsScreen({
         </div>
 
         {/* Reset Database */}
-        <div className="pt-3 border-t border-white/[0.06] flex justify-between items-center">
+        <div className="pt-3 border-t border-slate-900/20/[0.06] flex justify-between items-center">
           <span className="text-xs text-slate-500">Clear entire store database (products, sales, customers, held tickets, restocking history).</span>
           <button
             onClick={handleResetData}
-            className="btn-press px-3 py-1.5 rounded-xl border border-white/[0.08] text-slate-400 hover:text-white text-xs font-semibold flex items-center gap-1.5"
+            className="btn-press px-3 py-1.5 rounded-xl border border-slate-900/20/[0.08] text-slate-400 hover:text-slate-900 text-xs font-semibold flex items-center gap-1.5"
           >
             <RefreshCw className="h-3.5 w-3.5" />
             <span>Clear All Data</span>
@@ -1169,28 +1169,28 @@ export function SettingsScreen({
       {/* ── TEST PRINT RECEIPT MODAL ── */}
       {showTestPrintModal && (
         <div className="fixed inset-0 z-60 bg-black/85 backdrop-blur-md flex flex-col items-center justify-start p-4 sm:p-6 overflow-y-auto animate-fade-in">
-          <div className="no-print w-full max-w-2xl bg-zinc-900 border border-white/10 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
+          <div className="no-print w-full max-w-2xl bg-zinc-900 border border-slate-900/15 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-gold/30 flex items-center justify-center text-gold-light">
                 <Printer className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white">Printer Output Test</h3>
-                <p className="text-[11px] font-mono text-stone-400">
+                <h3 className="text-sm font-bold text-slate-900">Printer Output Test</h3>
+                <p className="text-[0.8125rem] font-mono text-stone-400">
                   Verify paper margins, font size, and barcode alignment
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="flex items-center bg-zinc-950 p-1 rounded-xl border border-white/10 text-xs font-mono">
+              <div className="flex items-center bg-zinc-950 p-1 rounded-xl border border-slate-900/15 text-xs font-mono">
                 <button
                   type="button"
                   onClick={() => setTestPaperWidth('58mm')}
                   className={`px-2.5 py-1 rounded-lg transition-all ${
                     testPaperWidth === '58mm'
                       ? 'bg-amber-500/20 text-gold-light font-bold border border-gold/40'
-                      : 'text-stone-400 hover:text-white'
+                      : 'text-stone-400 hover:text-slate-900'
                   }`}
                 >
                   58mm
@@ -1201,7 +1201,7 @@ export function SettingsScreen({
                   className={`px-2.5 py-1 rounded-lg transition-all ${
                     testPaperWidth === '80mm'
                       ? 'bg-amber-500/20 text-gold-light font-bold border border-gold/40'
-                      : 'text-stone-400 hover:text-white'
+                      : 'text-stone-400 hover:text-slate-900'
                   }`}
                 >
                   80mm
@@ -1212,7 +1212,7 @@ export function SettingsScreen({
                   className={`px-2.5 py-1 rounded-lg transition-all ${
                     testPaperWidth === 'A4'
                       ? 'bg-amber-500/20 text-gold-light font-bold border border-gold/40'
-                      : 'text-stone-400 hover:text-white'
+                      : 'text-stone-400 hover:text-slate-900'
                   }`}
                 >
                   A4
@@ -1231,7 +1231,7 @@ export function SettingsScreen({
               <button
                 type="button"
                 onClick={() => setShowTestPrintModal(false)}
-                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-400 hover:text-white"
+                className="p-2 rounded-xl bg-slate-900/40 hover:bg-slate-900/50 text-stone-400 hover:text-slate-900"
               >
                 <X className="w-5 h-5" />
               </button>

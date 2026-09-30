@@ -147,7 +147,7 @@ export function Barcode({
         ))}
       </svg>
       {showText && (
-        <span className="font-mono text-[10px] tracking-[0.2em] font-bold text-black mt-1 uppercase select-all">
+        <span className="font-sans font-semibold text-[0.75rem] tracking-[0.2em] font-bold text-black mt-1 uppercase select-all">
           {value}
         </span>
       )}

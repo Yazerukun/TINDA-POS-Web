@@ -135,14 +135,14 @@ export function PrintReportModal({
   return (
     <div className="fixed inset-0 z-60 bg-black/85 backdrop-blur-md flex flex-col items-center justify-start p-3 sm:p-6 overflow-y-auto animate-fade-in">
       {/* ── TOP CONTROLS BAR (Hidden during printing) ── */}
-      <div className="no-print w-full max-w-4xl bg-zinc-900 border border-white/10 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
+      <div className="no-print w-full max-w-4xl bg-zinc-900 border border-slate-900/15 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-gold/30 flex items-center justify-center text-gold-light">
             <FileText className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-white tracking-wide">{reportTitle}</h2>
-            <p className="text-[11px] font-mono text-stone-400">
+            <h2 className="text-sm font-bold text-slate-900 tracking-wide">{reportTitle}</h2>
+            <p className="text-[0.8125rem] font-mono text-stone-400">
               Audit Date: {dateStr} • Cashier: {cashierName}
             </p>
           </div>
@@ -150,7 +150,7 @@ export function PrintReportModal({
 
         {/* Paper Selector & Print Actions */}
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center bg-zinc-950 p-1 rounded-xl border border-white/10 text-xs font-mono">
+          <div className="flex items-center bg-zinc-950 p-1 rounded-xl border border-slate-900/15 text-xs font-mono">
             <button
               onClick={() => setPaperWidth('58mm')}
               className={`px-3 py-1 rounded-lg transition-all ${
@@ -198,7 +198,7 @@ export function PrintReportModal({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-400 hover:text-white transition-colors"
+            className="p-2 rounded-xl bg-slate-900/40 hover:bg-slate-900/50 text-stone-400 hover:text-slate-900 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -230,11 +230,11 @@ export function PrintReportModal({
           <h1 className={`font-serif font-black tracking-wider uppercase ${isA4 ? 'text-xl' : 'text-sm'}`}>
             {storeName || settings?.store_name || 'TINDA POS'}
           </h1>
-          <p className="text-[10px] text-gray-700">
+          <p className="text-[0.75rem] text-gray-700">
             {settings?.address || 'Poblacion Market St., Philippines'}
           </p>
           {settings?.contact_number && (
-            <p className="text-[10px] text-gray-700">Contact: {settings.contact_number}</p>
+            <p className="text-[0.75rem] text-gray-700">Contact: {settings.contact_number}</p>
           )}
 
           <div className="pt-1.5">
@@ -243,11 +243,11 @@ export function PrintReportModal({
             </span>
           </div>
 
-          <div className="flex justify-between text-[10px] text-gray-600 pt-1">
+          <div className="flex justify-between text-[0.75rem] text-gray-600 pt-1">
             <span>Date: {dateStr} {timeStr}</span>
             <span>Terminal: TRM-8891</span>
           </div>
-          <div className="flex justify-between text-[10px] text-gray-600">
+          <div className="flex justify-between text-[0.75rem] text-gray-600">
             <span>Cashier: {cashierName}</span>
             <span>Report ID: {reportId}</span>
           </div>
@@ -257,7 +257,7 @@ export function PrintReportModal({
 
         {/* ── SALES SUMMARY ── */}
         <div className="space-y-1 my-2">
-          <p className="font-bold uppercase text-[11px] underline">SALES PERFORMANCE SUMMARY:</p>
+          <p className="font-bold uppercase text-[0.8125rem] underline">SALES PERFORMANCE SUMMARY:</p>
           <div className="flex justify-between font-black text-[12px] border-b border-black pb-0.5">
             <span>GROSS SALES:</span>
             <span>{money(totalSales_c)}</span>
@@ -286,7 +286,7 @@ export function PrintReportModal({
 
         {/* ── PAYMENT METHOD BREAKDOWN ── */}
         <div className="space-y-1 my-2">
-          <p className="font-bold uppercase text-[11px] underline">PAYMENT COLLECTION BREAKDOWN:</p>
+          <p className="font-bold uppercase text-[0.8125rem] underline">PAYMENT COLLECTION BREAKDOWN:</p>
           <div className="flex justify-between font-bold">
             <span>CASH PAYMENTS:</span>
             <span>{money(cashSales_c)}</span>
@@ -305,7 +305,7 @@ export function PrintReportModal({
 
         {/* ── PROFIT & MARGIN AUDIT ── */}
         <div className="space-y-1 my-2">
-          <p className="font-bold uppercase text-[11px] underline">STORE FINANCIAL AUDIT:</p>
+          <p className="font-bold uppercase text-[0.8125rem] underline">STORE FINANCIAL AUDIT:</p>
           <div className="flex justify-between">
             <span>Cost of Goods Sold (COGS):</span>
             <span>{money(totalCost_c)}</span>
@@ -329,7 +329,7 @@ export function PrintReportModal({
           <>
             <div className="dashed" />
             <div className="space-y-1 my-2">
-              <p className="font-bold uppercase text-[11px] underline">DRAWER CASH RECONCILIATION:</p>
+              <p className="font-bold uppercase text-[0.8125rem] underline">DRAWER CASH RECONCILIATION:</p>
               <div className="flex justify-between font-bold">
                 <span>Physical Count in Drawer:</span>
                 <span>{money(totalPhysicalCash_c)}</span>
@@ -384,7 +384,7 @@ export function PrintReportModal({
             </div>
           </div>
 
-          <div className="text-center text-[9px] text-gray-500 pt-2 border-t border-dashed border-gray-400">
+          <div className="text-center text-[0.6875rem] text-gray-500 pt-2 border-t border-dashed border-gray-400">
             <p>*** END OF {reportType}-READING AUDIT ARCHIVE ***</p>
             <p className="pt-0.5">TINDA POS Web · Universal Cloud Ledger</p>
           </div>

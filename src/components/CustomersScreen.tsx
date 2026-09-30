@@ -68,7 +68,7 @@ export function CustomersScreen({ customers, onRefresh, storeName = 'PLATFORM_HQ
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
+          <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
             <Users className="h-6 w-6 text-amber-400" />
             <span>Customer Store Credit Ledger</span>
           </h2>
@@ -89,10 +89,10 @@ export function CustomersScreen({ customers, onRefresh, storeName = 'PLATFORM_HQ
       <div className="glass-card rounded-3xl p-5 border border-amber-500/20 bg-gradient-to-r from-amber-500/10 via-obsidian-900 to-obsidian-850 flex items-center justify-between">
         <div>
           <p className="text-xs font-semibold text-amber-400/90 uppercase tracking-wider">Total Outstanding Store Credit</p>
-          <p className="text-3xl font-black text-white font-mono tracking-tight mt-1">
+          <p className="text-3xl font-black text-slate-900 font-mono tracking-tight mt-1">
             {money(totalOutstandingUtang)}
           </p>
-          <p className="text-[11px] text-slate-400 mt-1">
+          <p className="text-[0.8125rem] text-slate-400 mt-1">
             Across {customers.filter((c) => c.balance_c > 0).length} customers with active credit balances
           </p>
         </div>
@@ -102,10 +102,10 @@ export function CustomersScreen({ customers, onRefresh, storeName = 'PLATFORM_HQ
       </div>
 
       {/* Customer List Card */}
-      <div className="glass-panel rounded-3xl border border-white/[0.1] overflow-hidden shadow-2xl">
+      <div className="glass-panel rounded-3xl border border-slate-900/20/[0.1] overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="border-b border-white/[0.08] bg-obsidian-900/80 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+            <thead className="border-b border-slate-900/20/[0.08] bg-obsidian-900/80 text-slate-400 font-semibold uppercase tracking-wider text-[0.75rem]">
               <tr>
                 <th className="py-3.5 px-4">Customer Name</th>
                 <th className="py-3.5 px-4">Contact Phone</th>
@@ -125,7 +125,7 @@ export function CustomersScreen({ customers, onRefresh, storeName = 'PLATFORM_HQ
               ) : (
                 filtered.map((c) => (
                   <tr key={c.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3.5 px-4 font-bold text-white">
+                    <td className="py-3.5 px-4 font-bold text-slate-900">
                       {c.name}
                     </td>
                     <td className="py-3.5 px-4 text-slate-400 font-mono flex items-center gap-1.5">
@@ -171,16 +171,16 @@ export function CustomersScreen({ customers, onRefresh, storeName = 'PLATFORM_HQ
       {/* Record Payment Modal */}
       {paymentModalCustomer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/80 backdrop-blur-md animate-fade-in">
-          <div className="w-full max-w-sm glass-panel rounded-3xl border border-white/[0.12] p-6 shadow-2xl animate-slide-up space-y-4">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
-              <h3 className="text-base font-bold text-white">Record Credit Payment</h3>
-              <button onClick={() => setPaymentModalCustomer(null)} className="btn-press text-slate-400 hover:text-white p-1">
+          <div className="w-full max-w-sm glass-panel rounded-3xl border border-slate-900/20/[0.12] p-6 shadow-2xl animate-slide-up space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-900/20/[0.08] pb-3">
+              <h3 className="text-base font-bold text-slate-900">Record Credit Payment</h3>
+              <button onClick={() => setPaymentModalCustomer(null)} className="btn-press text-slate-400 hover:text-slate-900 p-1">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div>
               <p className="text-xs text-slate-400">Customer</p>
-              <p className="text-sm font-bold text-white">{paymentModalCustomer.name}</p>
+              <p className="text-sm font-bold text-slate-900">{paymentModalCustomer.name}</p>
               <p className="text-xs text-amber-400 mt-1 font-mono">
                 Current Balance: {money(paymentModalCustomer.balance_c)}
               </p>
@@ -192,14 +192,14 @@ export function CustomersScreen({ customers, onRefresh, storeName = 'PLATFORM_HQ
                 step="any"
                 value={paymentAmountInput}
                 onChange={(e) => setPaymentAmountInput(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-white font-mono text-lg font-bold focus:outline-none focus:border-emerald-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-slate-900 font-mono text-lg font-bold focus:outline-none focus:border-emerald-500"
               />
             </div>
             <div className="flex gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setPaymentModalCustomer(null)}
-                className="btn-press flex-1 py-2 rounded-xl border border-white/[0.1] text-xs font-bold text-slate-300"
+                className="btn-press flex-1 py-2 rounded-xl border border-slate-900/20/[0.1] text-xs font-bold text-slate-300"
               >
                 Cancel
               </button>
@@ -218,10 +218,10 @@ export function CustomersScreen({ customers, onRefresh, storeName = 'PLATFORM_HQ
       {/* Add Customer Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/80 backdrop-blur-md animate-fade-in">
-          <div className="w-full max-w-md glass-panel rounded-3xl border border-white/[0.12] p-6 shadow-2xl animate-slide-up">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3 mb-4">
-              <h3 className="text-base font-bold text-white">Add New Customer</h3>
-              <button onClick={() => setModalOpen(false)} className="btn-press text-slate-400 hover:text-white p-1">
+          <div className="w-full max-w-md glass-panel rounded-3xl border border-slate-900/20/[0.12] p-6 shadow-2xl animate-slide-up">
+            <div className="flex items-center justify-between border-b border-slate-900/20/[0.08] pb-3 mb-4">
+              <h3 className="text-base font-bold text-slate-900">Add New Customer</h3>
+              <button onClick={() => setModalOpen(false)} className="btn-press text-slate-400 hover:text-slate-900 p-1">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -234,7 +234,7 @@ export function CustomersScreen({ customers, onRefresh, storeName = 'PLATFORM_HQ
                   value={newCust.name}
                   onChange={(e) => setNewCust({ ...newCust, name: e.target.value })}
                   placeholder="e.g. Aling Ester"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-amber-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-500"
                 />
               </div>
               <div>
@@ -244,7 +244,7 @@ export function CustomersScreen({ customers, onRefresh, storeName = 'PLATFORM_HQ
                   value={newCust.contact}
                   onChange={(e) => setNewCust({ ...newCust, contact: e.target.value })}
                   placeholder="0912..."
-                  className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-amber-500"
+                  className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-500"
                 />
               </div>
               <div>
@@ -254,7 +254,7 @@ export function CustomersScreen({ customers, onRefresh, storeName = 'PLATFORM_HQ
                   value={newCust.credit_limit}
                   onChange={(e) => setNewCust({ ...newCust, credit_limit: parseFloat(e.target.value) || 0 })}
                   placeholder="1000"
-                  className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-mono text-white focus:outline-none focus:border-amber-500"
+                  className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-mono text-slate-900 focus:outline-none focus:border-amber-500"
                 />
               </div>
               <div>
@@ -264,14 +264,14 @@ export function CustomersScreen({ customers, onRefresh, storeName = 'PLATFORM_HQ
                   onChange={(e) => setNewCust({ ...newCust, notes: e.target.value })}
                   placeholder="e.g. Purok 3, pay every 15th..."
                   rows={2}
-                  className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-amber-500"
+                  className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-500"
                 />
               </div>
               <div className="flex gap-2 pt-2">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="btn-press flex-1 py-2.5 rounded-xl border border-white/[0.1] text-xs font-bold text-slate-300"
+                  className="btn-press flex-1 py-2.5 rounded-xl border border-slate-900/20/[0.1] text-xs font-bold text-slate-300"
                 >
                   Cancel
                 </button>

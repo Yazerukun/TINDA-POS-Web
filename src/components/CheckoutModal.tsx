@@ -123,7 +123,7 @@ export function CheckoutModal({
         confetti({
           particleCount: 50,
           spread: 60,
-          colors: ['#D4AF37', '#E2C799', '#FFF0D4', '#8C6D23'],
+          colors: ['#2563EB', '#93C5FD', '#DBEAFE', '#1E40AF'],
           origin: { y: 0.6 }
         })
       } catch {
@@ -153,7 +153,7 @@ export function CheckoutModal({
 
       <div className="relative w-full max-w-lg glass-vault rounded-3xl border border-gold/25 p-6 sm:p-7 shadow-vault text-stone-100 animate-slide-up">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/[0.06] pb-4 mb-5">
+        <div className="flex items-center justify-between border-b border-slate-900/20/[0.06] pb-4 mb-5">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-500/[0.12] text-gold-light border border-gold/30 shadow-glow-gold">
               <ShieldCheck className="h-5 w-5" />
@@ -162,7 +162,7 @@ export function CheckoutModal({
               <h3 className="font-serif font-bold text-base tracking-wider uppercase text-stone-100">
                 {completedTx ? 'Settlement Authorized' : 'Authorize Settlement'}
               </h3>
-              <p className="font-mono text-[10px] tracking-widest uppercase text-gold-muted mt-0.5">
+              <p className="font-sans font-semibold text-[0.75rem] tracking-widest uppercase text-gold-muted mt-0.5">
                 {completedTx ? `INVOICE #${completedTx.invoice_number}` : 'PRIVATE CLIENT TENDER PROTOCOL'}
               </p>
             </div>
@@ -201,8 +201,8 @@ export function CheckoutModal({
             </div>
 
             {/* Receipt Summary Box */}
-            <div className="rounded-2xl bg-zinc-950/70 border border-white/[0.06] p-4 text-xs font-mono space-y-2">
-              <div className="flex justify-between border-b border-white/[0.06] pb-2 text-stone-400 text-[11px] uppercase tracking-wider">
+            <div className="rounded-2xl bg-zinc-950/70 border border-slate-900/20/[0.06] p-4 text-xs font-mono space-y-2">
+              <div className="flex justify-between border-b border-slate-900/20/[0.06] pb-2 text-stone-400 text-[0.8125rem] uppercase tracking-wider">
                 <span>Items ({completedTx.items.length})</span>
                 <span>Qty x Price</span>
               </div>
@@ -216,7 +216,7 @@ export function CheckoutModal({
                   </div>
                 ))}
               </div>
-              <div className="border-t border-white/[0.06] pt-2 space-y-1 text-stone-400">
+              <div className="border-t border-slate-900/20/[0.06] pt-2 space-y-1 text-stone-400">
                 <div className="flex justify-between">
                   <span>Subtotal:</span>
                   <span className="text-stone-200">{money(completedTx.subtotal_c)}</span>
@@ -227,7 +227,7 @@ export function CheckoutModal({
                     <span>-{money(completedTx.discount_c)}</span>
                   </div>
                 )}
-                <div className="flex justify-between font-bold text-stone-100 text-sm pt-1.5 border-t border-white/[0.04]">
+                <div className="flex justify-between font-bold text-stone-100 text-sm pt-1.5 border-t border-slate-900/20/[0.04]">
                   <span>Total Settled:</span>
                   <span className="text-gold-light font-serif text-base">{money(completedTx.total_c)}</span>
                 </div>
@@ -235,18 +235,18 @@ export function CheckoutModal({
             </div>
 
             {/* Quick Printer Format Selector */}
-            <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-950/80 border border-white/[0.08] text-xs font-mono">
-              <span className="text-[11px] text-stone-400 pl-1">Print Format:</span>
+            <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-950/80 border border-slate-900/20/[0.08] text-xs font-mono">
+              <span className="text-[0.8125rem] text-stone-400 pl-1">Print Format:</span>
               <div className="flex items-center gap-1">
                 {(['58mm', '80mm', 'A4'] as const).map((w) => (
                   <button
                     key={w}
                     type="button"
                     onClick={() => setPaperWidth(w)}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all ${
+                    className={`px-2.5 py-1 rounded-lg text-[0.75rem] font-bold transition-all ${
                       paperWidth === w
                         ? 'bg-amber-500/20 text-gold-light border border-gold/40 font-bold'
-                        : 'text-stone-400 hover:text-white bg-white/5'
+                        : 'text-stone-400 hover:text-slate-900 bg-slate-900/40'
                     }`}
                   >
                     {w === '58mm' ? '58mm Roll' : w === '80mm' ? '80mm Roll' : 'A4 Invoice'}
@@ -275,7 +275,7 @@ export function CheckoutModal({
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="btn-press flex-1 py-3 px-4 rounded-2xl bg-zinc-950 border border-white/[0.08] hover:border-gold/40 text-stone-300 text-xs font-mono tracking-wider uppercase flex items-center justify-center gap-2"
+                className="btn-press flex-1 py-3 px-4 rounded-2xl bg-zinc-950 border border-slate-900/20/[0.08] hover:border-gold/40 text-stone-300 text-xs font-sans font-semibold tracking-wider uppercase flex items-center justify-center gap-2"
               >
                 <Printer className="h-4 w-4 text-gold-muted" />
                 <span>Print Receipt ({paperWidth})</span>
@@ -295,7 +295,7 @@ export function CheckoutModal({
           <div className="space-y-4">
             {/* Payment Method Selector: Cash, GCash, Client Credit (Utang) */}
             <div>
-              <label className="block text-[10px] font-mono tracking-[0.2em] uppercase text-stone-400 mb-2">
+              <label className="block text-[0.75rem] font-sans font-semibold tracking-[0.2em] uppercase text-stone-400 mb-2">
                 SELECT SETTLEMENT METHOD
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -314,11 +314,11 @@ export function CheckoutModal({
                       className={`btn-press flex flex-col items-center gap-1.5 p-3 rounded-2xl border transition-all ${
                         isSelected
                           ? 'bg-amber-500/[0.12] border-gold text-gold-light shadow-glow-gold'
-                          : 'bg-zinc-950/50 border-white/[0.06] text-stone-400 hover:text-stone-200 hover:border-gold/20'
+                          : 'bg-zinc-950/50 border-slate-900/20/[0.06] text-stone-400 hover:text-stone-200 hover:border-gold/20'
                       }`}
                     >
                       <Icon className={`h-5 w-5 ${isSelected ? 'text-gold' : 'text-stone-500'}`} />
-                      <span className="text-[11px] font-semibold tracking-wider font-mono">{m.label}</span>
+                      <span className="text-[0.8125rem] font-semibold tracking-wider font-mono">{m.label}</span>
                     </button>
                   )
                 })}
@@ -328,7 +328,7 @@ export function CheckoutModal({
             {/* Client Assignment for Credit Ledger */}
             {paymentMethod === 'UTANG' && (
               <div className="p-3.5 rounded-2xl bg-amber-500/[0.08] border border-gold/30 space-y-2">
-                <label className="block text-[10px] font-mono tracking-wider uppercase text-gold-light font-bold">
+                <label className="block text-[0.75rem] font-sans font-semibold tracking-wider uppercase text-gold-light font-bold">
                   ASSIGN TO CUSTOMER ACCOUNT (STORE CREDIT)
                 </label>
                 <select
@@ -344,7 +344,7 @@ export function CheckoutModal({
                   ))}
                 </select>
                 {selectedCustomerObj && (
-                  <p className="text-[10px] font-mono text-stone-400">
+                  <p className="text-[0.75rem] font-mono text-stone-400">
                     New Balance after this tender:{' '}
                     <span className="text-gold-light font-bold">
                       ₱{((selectedCustomerObj.balance_c + total_c) / 100).toFixed(2)}
@@ -358,13 +358,13 @@ export function CheckoutModal({
             {paymentMethod === 'CASH' && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-[10px] font-mono tracking-[0.2em] uppercase text-stone-400">
+                  <label className="text-[0.75rem] font-sans font-semibold tracking-[0.2em] uppercase text-stone-400">
                     AMOUNT TENDERED (₱)
                   </label>
                   <button
                     type="button"
                     onClick={() => setTenderedInput((total_c / 100).toString())}
-                    className="text-[10px] font-mono text-gold-light hover:underline uppercase"
+                    className="text-[0.75rem] font-sans font-semibold text-gold-light hover:underline uppercase"
                   >
                     Exact Amount (₱{(total_c / 100).toFixed(2)})
                   </button>
@@ -379,7 +379,7 @@ export function CheckoutModal({
                     step="any"
                     value={tenderedInput}
                     onChange={(e) => setTenderedInput(e.target.value)}
-                    className="w-full pl-9 pr-4 py-3 rounded-2xl bg-zinc-950/80 border border-white/[0.08] focus:border-gold text-stone-100 text-lg font-mono font-bold focus:outline-none"
+                    className="w-full pl-9 pr-4 py-3 rounded-2xl bg-zinc-950/80 border border-slate-900/20/[0.08] focus:border-gold text-stone-100 text-lg font-mono font-bold focus:outline-none"
                     placeholder="0.00"
                   />
                 </div>
@@ -391,7 +391,7 @@ export function CheckoutModal({
                       key={amount}
                       type="button"
                       onClick={() => setTenderedInput(amount.toString())}
-                      className="btn-press py-2 rounded-xl bg-zinc-950/60 border border-white/[0.06] hover:border-gold/30 hover:bg-gold/10 text-[11px] font-mono text-stone-300 transition-all text-center"
+                      className="btn-press py-2 rounded-xl bg-zinc-950/60 border border-slate-900/20/[0.06] hover:border-gold/30 hover:bg-gold/10 text-[0.8125rem] font-mono text-stone-300 transition-all text-center"
                     >
                       ₱{amount >= 1000 ? `${amount / 1000}k` : amount}
                     </button>
@@ -399,8 +399,8 @@ export function CheckoutModal({
                 </div>
 
                 {/* Live Change Calculation */}
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950/60 border border-white/[0.05]">
-                  <span className="text-xs font-mono uppercase tracking-wider text-stone-400">
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950/60 border border-slate-900/20/[0.05]">
+                  <span className="text-xs font-sans font-semibold uppercase tracking-wider text-stone-400">
                     Change Due:
                   </span>
                   <span
@@ -416,7 +416,7 @@ export function CheckoutModal({
 
             {/* Total Display */}
             <div className="p-3.5 rounded-2xl bg-zinc-950/70 border border-gold/30 flex items-center justify-between">
-              <span className="font-mono text-xs tracking-wider uppercase text-stone-400">
+              <span className="font-sans font-semibold text-xs tracking-wider uppercase text-stone-400">
                 FINAL CHARGE TOTAL:
               </span>
               <span className="font-serif text-2xl font-bold tracking-wider text-gold-light">

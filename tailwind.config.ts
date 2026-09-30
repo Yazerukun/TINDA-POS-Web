@@ -6,28 +6,42 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Light surfaces. `obsidian-950` is the page background, so the numeric
+        // scale reads light-to-dark instead of dark-to-light.
         obsidian: {
-          950: '#050608',
-          900: '#090b10',
-          850: '#0e1118',
-          800: '#141822',
-          750: '#1b212f',
-          700: '#232b3d',
-          border: 'rgba(255, 255, 255, 0.05)',
-          glow: 'rgba(212, 175, 55, 0.05)'
+          950: '#FFFFFF',
+          900: '#F8FAFC',
+          850: '#F1F5F9',
+          800: '#E2E8F0',
+          750: '#CBD5E1',
+          700: '#94A3B8',
+          border: 'rgba(15, 23, 42, 0.10)',
+          glow: 'rgba(37, 99, 235, 0.06)'
+        },
+        // Text scale inverted for a light background: stone-100 is now the
+        // darkest ink, stone-600 the lightest. Existing `text-stone-*` usages
+        // keep their relative emphasis.
+        stone: {
+          100: '#0F172A',
+          200: '#1E293B',
+          300: '#334155',
+          400: '#475569',
+          500: '#64748B',
+          600: '#94A3B8',
+          800: '#CBD5E1'
         },
         gold: {
-          DEFAULT: '#D4AF37',
-          light: '#E2C799',
-          muted: '#C5A059',
-          dark: '#8C6D23',
-          glow: 'rgba(212, 175, 55, 0.22)'
+          DEFAULT: '#2563EB',
+          light: '#93C5FD',
+          muted: '#3B82F6',
+          dark: '#1E40AF',
+          glow: 'rgba(37, 99, 235, 0.16)'
         },
         burgundy: {
-          DEFAULT: '#8B1E22',
-          dark: '#5C1215',
-          deep: '#3B0B0D',
-          glow: 'rgba(139, 30, 34, 0.28)'
+          DEFAULT: '#DC2626',
+          dark: '#B91C1C',
+          deep: '#991B1B',
+          glow: 'rgba(220, 38, 38, 0.20)'
         },
         emerald: {
           400: '#34d399',
@@ -36,21 +50,26 @@ export default {
           glow: 'rgba(16, 185, 129, 0.2)'
         },
         amber: {
-          400: '#E2C799',
-          500: '#D4AF37',
-          600: '#C5A059',
-          glow: 'rgba(212, 175, 55, 0.2)'
+          400: '#60A5FA',
+          500: '#2563EB',
+          600: '#1D4ED8',
+          glow: 'rgba(37, 99, 235, 0.18)'
         },
         indigo: {
-          400: '#818cf8',
-          500: '#6366f1',
-          600: '#4f46e5'
+          400: '#60A5FA',
+          500: '#3B82F6',
+          600: '#2563EB'
         },
         rose: {
-          400: '#fb7185',
-          500: '#8B1E22',
-          600: '#5C1215'
+          400: '#F87171',
+          500: '#DC2626',
+          600: '#B91C1C'
         }
+      },
+      fontSize: {
+        // Replaces the 9-11px labels that were unreadable at a POS terminal.
+        '2xs': ['0.75rem', { lineHeight: '1rem' }],
+        xs: ['0.875rem', { lineHeight: '1.25rem' }]
       },
       fontFamily: {
         serif: ['Cinzel', 'Cormorant Garamond', 'Playfair Display', 'Georgia', 'serif'],
@@ -58,14 +77,14 @@ export default {
         mono: ['JetBrains Mono', 'SFMono-Regular', 'Consolas', 'monospace']
       },
       boxShadow: {
-        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.45)',
-        'luxury': '0 20px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05)',
-        'vault': '0 25px 70px -10px rgba(0, 0, 0, 0.95), 0 0 50px -10px rgba(212, 175, 55, 0.16), 0 0 0 1px rgba(255, 255, 255, 0.06)',
-        'glow-gold': '0 0 35px -5px rgba(212, 175, 55, 0.28)',
-        'glow-burgundy': '0 0 35px -5px rgba(139, 30, 34, 0.35)',
+        'glass': '0 8px 32px 0 rgba(15, 23, 42, 0.08)',
+        'luxury': '0 20px 50px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.06)',
+        'vault': '0 25px 70px -10px rgba(15, 23, 42, 0.18), 0 0 40px -12px rgba(37, 99, 235, 0.20), 0 0 0 1px rgba(15, 23, 42, 0.07)',
+        'glow-gold': '0 0 30px -6px rgba(37, 99, 235, 0.30)',
+        'glow-burgundy': '0 0 30px -6px rgba(220, 38, 38, 0.28)',
         'glow-emerald': '0 0 35px -5px rgba(16, 185, 129, 0.25)',
-        'glow-amber': '0 0 35px -5px rgba(212, 175, 55, 0.25)',
-        'glow-indigo': '0 0 35px -5px rgba(99, 102, 241, 0.25)'
+        'glow-amber': '0 0 30px -6px rgba(37, 99, 235, 0.25)',
+        'glow-indigo': '0 0 35px -5px rgba(59, 130, 246, 0.25)'
       },
       animation: {
         'fade-in': 'fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',

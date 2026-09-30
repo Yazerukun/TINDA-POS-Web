@@ -265,7 +265,7 @@ export function InventoryScreen({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
+            <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
               <Package className="h-6 w-6 text-emerald-400" />
               <span>Inventory Management</span>
             </h2>
@@ -322,7 +322,7 @@ export function InventoryScreen({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by product name, SKU, or barcode..."
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
             />
           </div>
 
@@ -332,7 +332,7 @@ export function InventoryScreen({
               className={`btn-press whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-semibold ${
                 selectedCat === 'ALL'
                   ? 'bg-emerald-500 text-obsidian-950 font-bold'
-                  : 'glass-pill text-slate-300 hover:text-white'
+                  : 'glass-pill text-slate-300 hover:text-slate-900'
               }`}
             >
               All ({products.length})
@@ -344,7 +344,7 @@ export function InventoryScreen({
                 className={`btn-press whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-semibold ${
                   selectedCat === c.id
                     ? 'bg-emerald-500 text-obsidian-950 font-bold'
-                    : 'glass-pill text-slate-300 hover:text-white'
+                    : 'glass-pill text-slate-300 hover:text-slate-900'
                 }`}
               >
                 {c.name}
@@ -355,8 +355,8 @@ export function InventoryScreen({
 
         {/* Subcategory row */}
         {subCategories.length > 0 && (
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 border-t border-white/[0.06] pt-2">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 shrink-0">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 border-t border-slate-900/20/[0.06] pt-2">
+            <span className="text-[0.75rem] font-sans font-semibold uppercase tracking-wider text-slate-500 shrink-0">
               Subcategory
             </span>
             <button
@@ -364,7 +364,7 @@ export function InventoryScreen({
               className={`btn-press whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-semibold ${
                 selectedSubCat === 'ALL'
                   ? 'bg-emerald-500 text-obsidian-950 font-bold'
-                  : 'glass-pill text-slate-300 hover:text-white'
+                  : 'glass-pill text-slate-300 hover:text-slate-900'
               }`}
             >
               All {categories.find((c) => c.id === selectedCat)?.name ?? ''}
@@ -376,7 +376,7 @@ export function InventoryScreen({
                 className={`btn-press whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-semibold ${
                   selectedSubCat === s.id
                     ? 'bg-emerald-500 text-obsidian-950 font-bold'
-                    : 'glass-pill text-slate-300 hover:text-white'
+                    : 'glass-pill text-slate-300 hover:text-slate-900'
                 }`}
               >
                 {s.name}
@@ -387,10 +387,10 @@ export function InventoryScreen({
       </div>
 
       {/* Products Table Card */}
-      <div className="glass-panel rounded-3xl border border-white/[0.1] overflow-hidden shadow-2xl">
+      <div className="glass-panel rounded-3xl border border-slate-900/20/[0.1] overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="border-b border-white/[0.08] bg-obsidian-900/80 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+            <thead className="border-b border-slate-900/20/[0.08] bg-obsidian-900/80 text-slate-400 font-semibold uppercase tracking-wider text-[0.75rem]">
               <tr>
                 <th className="py-3.5 px-4">Photo & Product</th>
                 <th className="py-3.5 px-4">Category</th>
@@ -428,7 +428,7 @@ export function InventoryScreen({
                     <tr key={p.id} className="hover:bg-white/[0.02] transition-colors">
                       {/* Photo & Name */}
                       <td className="py-3 px-4 flex items-center gap-3">
-                        <div className="h-10 w-10 shrink-0 rounded-xl overflow-hidden bg-obsidian-950 border border-white/[0.08] flex items-center justify-center">
+                        <div className="h-10 w-10 shrink-0 rounded-xl overflow-hidden bg-obsidian-950 border border-slate-900/20/[0.08] flex items-center justify-center">
                           {p.image_path ? (
                             <img src={p.image_path} alt={p.name} className="h-full w-full object-cover" />
                           ) : (
@@ -436,8 +436,8 @@ export function InventoryScreen({
                           )}
                         </div>
                         <div>
-                          <p className="font-bold text-white leading-tight">{p.name}</p>
-                          <div className="flex items-center gap-2 mt-0.5 text-[10px] text-slate-500 font-mono">
+                          <p className="font-bold text-slate-900 leading-tight">{p.name}</p>
+                          <div className="flex items-center gap-2 mt-0.5 text-[0.75rem] text-slate-500 font-mono">
                             {p.sku && <span>SKU: {p.sku}</span>}
                             {p.barcode && <span>• Barcode: {p.barcode}</span>}
                           </div>
@@ -462,7 +462,7 @@ export function InventoryScreen({
                               {money(effectiveSrpC)}
                             </span>
                             <span
-                              className={`inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-mono font-bold tracking-tight ${srpComparison.badgeClass}`}
+                              className={`inline-flex items-center px-1.5 py-0.5 rounded text-[0.6875rem] font-mono font-bold tracking-tight ${srpComparison.badgeClass}`}
                             >
                               {srpComparison.label}
                             </span>
@@ -470,7 +470,7 @@ export function InventoryScreen({
                         ) : (
                           <button
                             onClick={() => handleLinkSrp(p)}
-                            className="btn-press text-[10px] font-mono text-amber-400/80 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 px-2 py-1 rounded-lg border border-amber-500/25 transition-all"
+                            className="btn-press text-[0.75rem] font-mono text-amber-400/80 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 px-2 py-1 rounded-lg border border-amber-500/25 transition-all"
                             title="Find and link official DTI Suggested Retail Price"
                           >
                             + Link SRP
@@ -488,11 +488,11 @@ export function InventoryScreen({
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleAdjustStock(p, -1)}
-                            className="btn-press h-5 w-5 rounded-md bg-obsidian-900 border border-white/[0.08] text-slate-400 hover:text-white flex items-center justify-center"
+                            className="btn-press h-5 w-5 rounded-md bg-obsidian-900 border border-slate-900/20/[0.08] text-slate-400 hover:text-slate-900 flex items-center justify-center"
                           >
                             -
                           </button>
-                          <span className={`px-2 py-0.5 rounded-full font-mono font-bold text-[11px] ${
+                          <span className={`px-2 py-0.5 rounded-full font-mono font-bold text-[0.8125rem] ${
                             isOut
                               ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
                               : isLow
@@ -503,7 +503,7 @@ export function InventoryScreen({
                           </span>
                           <button
                             onClick={() => handleAdjustStock(p, 1)}
-                            className="btn-press h-5 w-5 rounded-md bg-obsidian-900 border border-white/[0.08] text-slate-400 hover:text-white flex items-center justify-center"
+                            className="btn-press h-5 w-5 rounded-md bg-obsidian-900 border border-slate-900/20/[0.08] text-slate-400 hover:text-slate-900 flex items-center justify-center"
                           >
                             +
                           </button>
@@ -523,13 +523,13 @@ export function InventoryScreen({
                               })
                               setModalOpen(true)
                             }}
-                            className="btn-press p-1.5 rounded-xl border border-white/[0.08] text-slate-400 hover:text-white hover:bg-white/[0.04]"
+                            className="btn-press p-1.5 rounded-xl border border-slate-900/20/[0.08] text-slate-400 hover:text-slate-900 hover:bg-slate-900/[0.05]"
                           >
                             <Edit2 className="h-3.5 w-3.5" />
                           </button>
                           <button
                             onClick={() => handleDeleteProduct(p.id)}
-                            className="btn-press p-1.5 rounded-xl border border-white/[0.08] text-rose-400/70 hover:text-rose-400 hover:bg-rose-500/10"
+                            className="btn-press p-1.5 rounded-xl border border-slate-900/20/[0.08] text-rose-400/70 hover:text-rose-400 hover:bg-rose-500/10"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -545,13 +545,13 @@ export function InventoryScreen({
       </div>
 
       {/* Restocking History */}
-      <div className="glass-panel rounded-3xl border border-white/[0.1] p-5 shadow-2xl space-y-4">
-        <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
-          <h3 className="text-sm font-bold text-white flex items-center gap-2">
+      <div className="glass-panel rounded-3xl border border-slate-900/20/[0.1] p-5 shadow-2xl space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-900/20/[0.08] pb-3">
+          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
             <History className="h-4 w-4 text-emerald-400" />
             <span>Restocking History</span>
           </h3>
-          <span className="text-[11px] text-slate-400">{restockLogs.length} records</span>
+          <span className="text-[0.8125rem] text-slate-400">{restockLogs.length} records</span>
         </div>
 
         {restockLogs.length === 0 ? (
@@ -563,21 +563,21 @@ export function InventoryScreen({
             {restockLogs.map((log) => (
               <div
                 key={log.id}
-                className="flex items-center justify-between p-3 rounded-2xl bg-obsidian-900/60 border border-white/[0.06]"
+                className="flex items-center justify-between p-3 rounded-2xl bg-obsidian-900/60 border border-slate-900/20/[0.06]"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="h-9 w-9 rounded-xl bg-white/[0.04] text-slate-300 flex items-center justify-center shrink-0">
                     <Layers className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-white truncate">{log.product_name}</p>
-                    <p className="text-[10px] text-slate-500 font-mono mt-0.5">{formatDateTime(log.timestamp)} · {log.cashier_name}</p>
+                    <p className="text-xs font-bold text-slate-900 truncate">{log.product_name}</p>
+                    <p className="text-[0.75rem] text-slate-500 font-mono mt-0.5">{formatDateTime(log.timestamp)} · {log.cashier_name}</p>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
                   <div className="flex items-center justify-end gap-2">
                     <span
-                      className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${
+                      className={`px-2 py-0.5 rounded-md text-[0.75rem] font-bold border ${
                         log.type === 'RESTOCK'
                           ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                           : log.type === 'RETURN'
@@ -605,16 +605,16 @@ export function InventoryScreen({
       {/* Modal: Add or Edit Product */}
       {modalOpen && editingProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="glass-panel w-full max-w-lg rounded-3xl border border-white/[0.12] p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+          <div className="glass-panel w-full max-w-lg rounded-3xl border border-slate-900/20/[0.12] p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div className="flex items-center justify-between border-b border-slate-900/20/[0.08] pb-3">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <Package className="h-4 w-4 text-emerald-400" />
                 <span>{editingProduct.id ? 'Edit Product' : 'Add New Product'}</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="p-1 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.06]"
+                className="p-1 rounded-xl text-slate-400 hover:text-slate-900 hover:bg-slate-900/[0.07]"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -628,16 +628,16 @@ export function InventoryScreen({
                 <input ref={galleryInputRef} type="file" accept="image/*" onChange={handlePhotoPick} className="hidden" />
 
                 {imageBusy ? (
-                  <div className="flex items-center justify-center p-6 rounded-2xl border border-white/[0.08] bg-obsidian-900/60">
+                  <div className="flex items-center justify-center p-6 rounded-2xl border border-slate-900/20/[0.08] bg-obsidian-900/60">
                     <RefreshCw className="h-5 w-5 text-emerald-400 animate-spin" />
                     <span className="ml-2 text-xs text-slate-400">Optimizing photo...</span>
                   </div>
                 ) : editingProduct.image_path ? (
-                  <div className="flex items-center gap-3 p-3 rounded-2xl border border-white/[0.08] bg-obsidian-900/60">
-                    <img src={editingProduct.image_path} alt="Preview" className="h-16 w-16 rounded-xl object-cover border border-white/[0.08]" />
+                  <div className="flex items-center gap-3 p-3 rounded-2xl border border-slate-900/20/[0.08] bg-obsidian-900/60">
+                    <img src={editingProduct.image_path} alt="Preview" className="h-16 w-16 rounded-xl object-cover border border-slate-900/20/[0.08]" />
                     <div className="flex-1">
-                      <p className="text-xs font-bold text-white">Attached Image</p>
-                      <p className="text-[11px] text-slate-400">Client-side WebP (~15KB) ready</p>
+                      <p className="text-xs font-bold text-slate-900">Attached Image</p>
+                      <p className="text-[0.8125rem] text-slate-400">Client-side WebP (~15KB) ready</p>
                       <div className="mt-2 flex items-center gap-2">
                         <button
                           type="button"
@@ -650,7 +650,7 @@ export function InventoryScreen({
                         <button
                           type="button"
                           onClick={() => galleryInputRef.current?.click()}
-                          className="btn-press px-2.5 py-1 rounded-lg bg-obsidian-850 border border-white/[0.08] text-slate-300 text-xs font-semibold flex items-center gap-1"
+                          className="btn-press px-2.5 py-1 rounded-lg bg-obsidian-850 border border-slate-900/20/[0.08] text-slate-300 text-xs font-semibold flex items-center gap-1"
                         >
                           <ImageIcon className="h-3.5 w-3.5" />
                           <span>Gallery</span>
@@ -677,22 +677,22 @@ export function InventoryScreen({
                         <Camera className="h-4 w-4" />
                       </div>
                       <div>
-                        <span className="block text-xs font-bold text-white">Take Photo</span>
-                        <span className="block text-[10px] text-slate-400">Open camera</span>
+                        <span className="block text-xs font-bold text-slate-900">Take Photo</span>
+                        <span className="block text-[0.75rem] text-slate-400">Open camera</span>
                       </div>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => galleryInputRef.current?.click()}
-                      className="btn-press flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl border border-dashed border-white/[0.12] bg-obsidian-900/60 hover:bg-obsidian-850 text-center transition-all"
+                      className="btn-press flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl border border-dashed border-slate-900/20/[0.12] bg-obsidian-900/60 hover:bg-obsidian-850 text-center transition-all"
                     >
                       <div className="h-8 w-8 rounded-xl bg-obsidian-850 text-slate-300 flex items-center justify-center">
                         <ImageIcon className="h-4 w-4" />
                       </div>
                       <div>
-                        <span className="block text-xs font-bold text-white">Upload Image</span>
-                        <span className="block text-[10px] text-slate-400">Choose from gallery</span>
+                        <span className="block text-xs font-bold text-slate-900">Upload Image</span>
+                        <span className="block text-[0.75rem] text-slate-400">Choose from gallery</span>
                       </div>
                     </button>
                   </div>
@@ -708,7 +708,7 @@ export function InventoryScreen({
                   value={editingProduct.name || ''}
                   onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
                   placeholder="e.g. Lucky Me Pancit Canton Kalamansi 60g"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -721,7 +721,7 @@ export function InventoryScreen({
                     value={editingProduct.sku || ''}
                     onChange={(e) => setEditingProduct({ ...editingProduct, sku: e.target.value })}
                     placeholder="BEV-001"
-                    className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
                 <div>
@@ -731,7 +731,7 @@ export function InventoryScreen({
                     value={editingProduct.barcode || ''}
                     onChange={(e) => setEditingProduct({ ...editingProduct, barcode: e.target.value })}
                     placeholder="4800016644810"
-                    className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
@@ -745,7 +745,7 @@ export function InventoryScreen({
                       <p className="text-xs font-bold text-amber-200 truncate">
                         Official DTI SRP: ₱{(detectedSrp.market_price_c / 100).toFixed(2)}
                       </p>
-                      <p className="text-[10px] text-stone-400 truncate">
+                      <p className="text-[0.75rem] text-stone-400 truncate">
                         {detectedSrp.product_name} · {detectedSrp.source_name || 'DTI SRP Guide'}
                       </p>
                     </div>
@@ -765,7 +765,7 @@ export function InventoryScreen({
                             : null
                         )
                       }}
-                      className="btn-press px-2.5 py-1 rounded-lg bg-amber-500/25 hover:bg-amber-500/35 text-amber-200 border border-amber-500/40 text-[11px] font-bold"
+                      className="btn-press px-2.5 py-1 rounded-lg bg-amber-500/25 hover:bg-amber-500/35 text-amber-200 border border-amber-500/40 text-[0.8125rem] font-bold"
                     >
                       Apply SRP
                     </button>
@@ -780,7 +780,7 @@ export function InventoryScreen({
                   <select
                     value={editingProduct.category_id || ''}
                     onChange={(e) => setEditingProduct({ ...editingProduct, category_id: Number(e.target.value) || null })}
-                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
                   >
                     <option value="">No Category</option>
                     {categories.map((c) => (
@@ -795,7 +795,7 @@ export function InventoryScreen({
                     value={editingProduct.base_unit || 'piece'}
                     onChange={(e) => setEditingProduct({ ...editingProduct, base_unit: e.target.value })}
                     placeholder="piece, bottle, pack"
-                    className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-medium text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
@@ -810,14 +810,14 @@ export function InventoryScreen({
                     value={editingProduct.cost_c ?? ''}
                     onChange={(e) => setEditingProduct({ ...editingProduct, cost_c: parseFloat(e.target.value) || 0 })}
                     placeholder="0.00"
-                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-mono text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-mono text-slate-900 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-amber-300 mb-1 flex items-center justify-between">
                     <span>SRP (₱)</span>
-                    <span className="text-[9px] text-amber-400/80 font-mono">DTI</span>
+                    <span className="text-[0.6875rem] text-amber-400/80 font-mono">DTI</span>
                   </label>
                   <input
                     type="number"
@@ -843,7 +843,7 @@ export function InventoryScreen({
                     value={editingProduct.default_price_c ?? ''}
                     onChange={(e) => setEditingProduct({ ...editingProduct, default_price_c: parseFloat(e.target.value) || 0 })}
                     placeholder="0.00"
-                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-mono font-bold text-emerald-400 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-mono font-bold text-emerald-400 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
@@ -853,17 +853,17 @@ export function InventoryScreen({
                     type="number"
                     value={editingProduct.stock ?? 0}
                     onChange={(e) => setEditingProduct({ ...editingProduct, stock: parseInt(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-white/[0.08] text-xs font-mono text-white focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-mono text-slate-900 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
 
               {/* Submit Buttons */}
-              <div className="flex gap-3 pt-3 border-t border-white/[0.08]">
+              <div className="flex gap-3 pt-3 border-t border-slate-900/20/[0.08]">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="btn-press flex-1 py-2.5 rounded-xl border border-white/[0.12] bg-obsidian-900 text-xs font-bold text-slate-300"
+                  className="btn-press flex-1 py-2.5 rounded-xl border border-slate-900/20/[0.12] bg-obsidian-900 text-xs font-bold text-slate-300"
                 >
                   Cancel
                 </button>

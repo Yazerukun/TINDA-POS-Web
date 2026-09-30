@@ -57,7 +57,7 @@ export function ExpirationTrackerModal({
             status: 'UNDATED' as const,
             daysRemaining: null,
             label: 'No Expiry Set',
-            color: 'text-stone-400 bg-white/5 border-white/10'
+            color: 'text-stone-400 bg-slate-900/40 border-slate-900/15'
           }
         }
 
@@ -151,19 +151,19 @@ export function ExpirationTrackerModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 animate-fade-in">
-      <div className="w-full max-w-4xl h-[88vh] bg-[#0A0B0E] border border-amber-500/30 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+      <div className="w-full max-w-4xl h-[88vh] bg-[#F8FAFC] border border-amber-500/30 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-5 border-b border-white/10 bg-zinc-950/80 flex items-center justify-between shrink-0">
+        <div className="p-5 border-b border-slate-900/15 bg-zinc-950/80 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3.5">
             <div className="h-11 w-11 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
               <CalendarClock className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-serif font-bold text-white tracking-wide">
+                <h2 className="text-lg font-serif font-bold text-slate-900 tracking-wide">
                   Product Expiration Tracker
                 </h2>
-                <span className="text-[10px] font-mono tracking-widest text-gold-muted border border-gold/30 px-2 py-0.5 rounded-full uppercase">
+                <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted border border-gold/30 px-2 py-0.5 rounded-full uppercase">
                   Perishables & Batches
                 </span>
               </div>
@@ -175,20 +175,20 @@ export function ExpirationTrackerModal({
 
           <button
             onClick={onClose}
-            className="btn-press h-9 w-9 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 flex items-center justify-center text-stone-400 hover:text-white transition-colors"
+            className="btn-press h-9 w-9 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-slate-900/15 flex items-center justify-center text-stone-400 hover:text-slate-900 transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Filter Summary Tabs */}
-        <div className="p-4 border-b border-white/[0.08] bg-black/40 space-y-3 shrink-0">
+        <div className="p-4 border-b border-slate-900/20/[0.08] bg-black/40 space-y-3 shrink-0">
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setActiveFilter('ALL')}
               className={`btn-press px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 activeFilter === 'ALL'
-                  ? 'bg-[#D4AF37] text-black shadow-glow-gold'
+                  ? 'bg-[#2563EB] text-black shadow-glow-gold'
                   : 'bg-white/[0.04] text-stone-400 hover:text-stone-200'
               }`}
             >
@@ -204,7 +204,7 @@ export function ExpirationTrackerModal({
               }`}
             >
               <span>🚨 Expired</span>
-              <span className="px-1.5 py-0.2 rounded-full bg-black/40 text-[10px] font-mono font-bold">
+              <span className="px-1.5 py-0.2 rounded-full bg-black/40 text-[0.75rem] font-mono font-bold">
                 {counts.expired}
               </span>
             </button>
@@ -213,12 +213,12 @@ export function ExpirationTrackerModal({
               onClick={() => setActiveFilter('SOON')}
               className={`btn-press px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
                 activeFilter === 'SOON'
-                  ? 'bg-orange-500 text-white shadow-lg'
+                  ? 'bg-orange-500 text-slate-900 shadow-lg'
                   : 'bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 border border-orange-500/20'
               }`}
             >
               <span>⚠️ Expiring in 7 Days</span>
-              <span className="px-1.5 py-0.2 rounded-full bg-black/40 text-[10px] font-mono font-bold">
+              <span className="px-1.5 py-0.2 rounded-full bg-black/40 text-[0.75rem] font-mono font-bold">
                 {counts.soon}
               </span>
             </button>
@@ -232,7 +232,7 @@ export function ExpirationTrackerModal({
               }`}
             >
               <span>🟡 Within 30 Days</span>
-              <span className="px-1.5 py-0.2 rounded-full bg-black/40 text-[10px] font-mono font-bold">
+              <span className="px-1.5 py-0.2 rounded-full bg-black/40 text-[0.75rem] font-mono font-bold">
                 {counts.near}
               </span>
             </button>
@@ -241,12 +241,12 @@ export function ExpirationTrackerModal({
               onClick={() => setActiveFilter('UNDATED')}
               className={`btn-press px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
                 activeFilter === 'UNDATED'
-                  ? 'bg-stone-600 text-white shadow-lg'
-                  : 'bg-white/5 text-stone-400 hover:text-stone-200 border border-white/5'
+                  ? 'bg-stone-600 text-slate-900 shadow-lg'
+                  : 'bg-slate-900/40 text-stone-400 hover:text-stone-200 border border-slate-900/10'
               }`}
             >
               <span>⚪ No Date Set</span>
-              <span className="px-1.5 py-0.2 rounded-full bg-black/40 text-[10px] font-mono font-bold">
+              <span className="px-1.5 py-0.2 rounded-full bg-black/40 text-[0.75rem] font-mono font-bold">
                 {counts.undated}
               </span>
             </button>
@@ -259,7 +259,7 @@ export function ExpirationTrackerModal({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search product name or barcode..."
-              className="w-full h-10 pl-10 pr-4 rounded-xl bg-zinc-950 border border-white/15 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#D4AF37]"
+              className="w-full h-10 pl-10 pr-4 rounded-xl bg-zinc-950 border border-slate-900/20 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#2563EB]"
             />
           </div>
         </div>
@@ -281,14 +281,14 @@ export function ExpirationTrackerModal({
                 className="py-3 flex items-center justify-between gap-3 hover:bg-white/[0.02] px-2 rounded-xl transition-colors"
               >
                 <div className="min-w-0 flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-xl bg-zinc-900 border border-white/10 flex items-center justify-center text-stone-400 shrink-0">
+                  <div className="h-9 w-9 rounded-xl bg-zinc-900 border border-slate-900/15 flex items-center justify-center text-stone-400 shrink-0">
                     <Package className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs sm:text-sm font-bold text-white truncate">
+                    <p className="text-xs sm:text-sm font-bold text-slate-900 truncate">
                       {product.name}
                     </p>
-                    <p className="text-[10px] font-mono text-stone-400 mt-0.5">
+                    <p className="text-[0.75rem] font-mono text-stone-400 mt-0.5">
                       Stock: <strong className="text-stone-200">{product.stock} {product.base_unit}</strong> · Expiry:{' '}
                       <span className="text-gold-light font-bold">
                         {product.expiration_date || 'Not configured'}
@@ -299,7 +299,7 @@ export function ExpirationTrackerModal({
 
                 <div className="flex items-center gap-2.5 shrink-0">
                   <span
-                    className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase border ${color}`}
+                    className={`px-2.5 py-1 rounded-full text-[0.75rem] font-mono font-bold uppercase border ${color}`}
                   >
                     {label}
                   </span>
@@ -309,7 +309,7 @@ export function ExpirationTrackerModal({
                       setEditingProduct(product)
                       setEditDate(product.expiration_date || '')
                     }}
-                    className="btn-press px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-stone-300 text-xs font-medium flex items-center gap-1"
+                    className="btn-press px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] border border-slate-900/15 text-stone-300 text-xs font-medium flex items-center gap-1"
                     title="Edit expiration date"
                   >
                     <Pencil className="h-3 w-3" />
@@ -324,15 +324,15 @@ export function ExpirationTrackerModal({
         {/* Date Edit Modal Overlay */}
         {editingProduct && (
           <div className="fixed inset-0 z-60 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-            <div className="w-full max-w-sm bg-[#0E0F14] border border-amber-500/30 rounded-3xl p-5 shadow-2xl space-y-4">
-              <div className="flex items-start justify-between border-b border-white/10 pb-3">
+            <div className="w-full max-w-sm bg-[#F1F5F9] border border-amber-500/30 rounded-3xl p-5 shadow-2xl space-y-4">
+              <div className="flex items-start justify-between border-b border-slate-900/15 pb-3">
                 <div>
-                  <p className="text-[10px] font-mono tracking-widest text-gold-muted uppercase">Set Shelf Expiration</p>
-                  <h4 className="text-sm font-bold text-white mt-0.5">{editingProduct.name}</h4>
+                  <p className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted uppercase">Set Shelf Expiration</p>
+                  <h4 className="text-sm font-bold text-slate-900 mt-0.5">{editingProduct.name}</h4>
                 </div>
                 <button
                   onClick={() => setEditingProduct(null)}
-                  className="btn-press p-1 text-stone-400 hover:text-white"
+                  className="btn-press p-1 text-stone-400 hover:text-slate-900"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -346,7 +346,7 @@ export function ExpirationTrackerModal({
                   type="date"
                   value={editDate}
                   onChange={(e) => setEditDate(e.target.value)}
-                  className="w-full h-11 px-3 rounded-xl bg-black border border-white/15 text-stone-100 text-xs focus:outline-none focus:border-[#D4AF37]"
+                  className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-[#2563EB]"
                 />
               </div>
 
@@ -359,7 +359,7 @@ export function ExpirationTrackerModal({
                 </button>
                 <button
                   onClick={handleSaveDate}
-                  className="btn-press flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-[#D4AF37] text-black text-xs font-bold uppercase tracking-wider shadow-glow-gold"
+                  className="btn-press flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-[#2563EB] text-black text-xs font-bold uppercase tracking-wider shadow-glow-gold"
                 >
                   Save Date
                 </button>

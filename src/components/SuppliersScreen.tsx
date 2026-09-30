@@ -136,13 +136,13 @@ export function SuppliersScreen(): React.JSX.Element {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-900/15 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-serif font-bold text-white tracking-wide">
+            <h1 className="text-2xl font-serif font-bold text-slate-900 tracking-wide">
               Suppliers Directory
             </h1>
-            <span className="text-[10px] font-mono tracking-widest text-gold-muted border border-gold/30 px-2 py-0.5 rounded-full uppercase">
+            <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted border border-gold/30 px-2 py-0.5 rounded-full uppercase">
               {suppliers.length} Vendor Partners
             </span>
           </div>
@@ -153,7 +153,7 @@ export function SuppliersScreen(): React.JSX.Element {
 
         <button
           onClick={handleOpenAdd}
-          className="btn-press px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-[#D4AF37] hover:from-amber-300 hover:to-gold text-black text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-gold transition-all self-start sm:self-auto"
+          className="btn-press px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-[#2563EB] hover:from-amber-300 hover:to-gold text-black text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-gold transition-all self-start sm:self-auto"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>New Supplier</span>
@@ -168,18 +168,18 @@ export function SuppliersScreen(): React.JSX.Element {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by vendor name, contact person, or phone..."
-          className="w-full h-11 pl-10 pr-4 rounded-xl bg-zinc-950 border border-white/15 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#D4AF37]"
+          className="w-full h-11 pl-10 pr-4 rounded-xl bg-zinc-950 border border-slate-900/20 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#2563EB]"
         />
       </div>
 
       {/* Suppliers Grid */}
       {loading ? (
         <div className="py-20 flex flex-col items-center justify-center space-y-2 text-stone-400">
-          <div className="h-7 w-7 rounded-full border-2 border-[#D4AF37] border-t-transparent animate-spin" />
+          <div className="h-7 w-7 rounded-full border-2 border-[#2563EB] border-t-transparent animate-spin" />
           <p className="text-xs font-mono">Loading suppliers directory...</p>
         </div>
       ) : filteredSuppliers.length === 0 ? (
-        <div className="py-16 text-center space-y-2 glass-panel rounded-3xl border border-white/[0.08]">
+        <div className="py-16 text-center space-y-2 glass-panel rounded-3xl border border-slate-900/20/[0.08]">
           <Truck className="h-10 w-10 text-stone-600 mx-auto" />
           <p className="text-sm font-bold text-stone-300">No suppliers found</p>
           <p className="text-xs text-stone-500 font-mono">
@@ -191,7 +191,7 @@ export function SuppliersScreen(): React.JSX.Element {
           {filteredSuppliers.map((s) => (
             <div
               key={s.id}
-              className="p-5 rounded-3xl bg-zinc-950/80 border border-white/[0.08] hover:border-amber-500/30 transition-all flex flex-col justify-between space-y-4 group"
+              className="p-5 rounded-3xl bg-zinc-950/80 border border-slate-900/20/[0.08] hover:border-amber-500/30 transition-all flex flex-col justify-between space-y-4 group"
             >
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-2">
@@ -200,10 +200,10 @@ export function SuppliersScreen(): React.JSX.Element {
                       <Truck className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-white group-hover:text-gold-light transition-colors line-clamp-1">
+                      <h3 className="text-sm font-bold text-slate-900 group-hover:text-gold-light transition-colors line-clamp-1">
                         {s.name}
                       </h3>
-                      <p className="text-[10px] font-mono text-stone-400">
+                      <p className="text-[0.75rem] font-mono text-stone-400">
                         {s.contact_person ? `Agent: ${s.contact_person}` : 'Vendor Partner'}
                       </p>
                     </div>
@@ -212,7 +212,7 @@ export function SuppliersScreen(): React.JSX.Element {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleOpenEdit(s)}
-                      className="btn-press p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-stone-400 hover:text-white transition-colors"
+                      className="btn-press p-1.5 rounded-lg bg-slate-900/40 hover:bg-slate-900/50 text-stone-400 hover:text-slate-900 transition-colors"
                       title="Edit supplier"
                     >
                       <Pencil className="w-3.5 h-3.5" />
@@ -227,7 +227,7 @@ export function SuppliersScreen(): React.JSX.Element {
                   </div>
                 </div>
 
-                <div className="space-y-2 pt-2 border-t border-white/[0.06] text-xs">
+                <div className="space-y-2 pt-2 border-t border-slate-900/20/[0.06] text-xs">
                   {s.phone && (
                     <div className="flex items-center justify-between text-stone-300 font-mono">
                       <div className="flex items-center gap-2">
@@ -236,7 +236,7 @@ export function SuppliersScreen(): React.JSX.Element {
                       </div>
                       <button
                         onClick={() => copyToClipboard(s.phone!)}
-                        className="btn-press p-1 rounded hover:bg-white/10 text-stone-400 hover:text-gold transition-colors text-[10px] flex items-center gap-1"
+                        className="btn-press p-1 rounded hover:bg-slate-900/50 text-stone-400 hover:text-gold transition-colors text-[0.75rem] flex items-center gap-1"
                         title="Copy phone number"
                       >
                         {copiedPhone === s.phone ? (
@@ -257,7 +257,7 @@ export function SuppliersScreen(): React.JSX.Element {
                   )}
 
                   {s.notes && (
-                    <div className="flex items-start gap-2 text-stone-500 text-[11px] bg-black/40 p-2.5 rounded-xl border border-white/5">
+                    <div className="flex items-start gap-2 text-stone-500 text-[0.8125rem] bg-black/40 p-2.5 rounded-xl border border-slate-900/10">
                       <FileText className="h-3.5 w-3.5 text-stone-600 shrink-0 mt-0.5" />
                       <span className="line-clamp-2">{s.notes}</span>
                     </div>
@@ -265,7 +265,7 @@ export function SuppliersScreen(): React.JSX.Element {
                 </div>
               </div>
 
-              <div className="pt-2 text-[10px] font-mono text-stone-600 border-t border-white/5 flex items-center justify-between">
+              <div className="pt-2 text-[0.75rem] font-mono text-stone-600 border-t border-slate-900/10 flex items-center justify-between">
                 <span>Status: <strong className="text-emerald-400">Active Partner</strong></span>
                 <span>ID: #{s.id}</span>
               </div>
@@ -277,17 +277,17 @@ export function SuppliersScreen(): React.JSX.Element {
       {/* Supplier Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="w-full max-w-lg bg-[#0C0D11] border border-amber-500/30 rounded-3xl p-6 shadow-2xl space-y-5">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <div className="w-full max-w-lg bg-[#F1F5F9] border border-amber-500/30 rounded-3xl p-6 shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-900/15 pb-4">
               <div>
-                <p className="text-[10px] font-mono tracking-widest text-gold-muted uppercase">Vendor Directory</p>
-                <h3 className="text-base font-bold text-white mt-0.5">
+                <p className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted uppercase">Vendor Directory</p>
+                <h3 className="text-base font-bold text-slate-900 mt-0.5">
                   {editingSupplier ? 'Edit Supplier Details' : 'Register New Supplier'}
                 </h3>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="btn-press h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 text-stone-400 hover:text-white flex items-center justify-center"
+                className="btn-press h-8 w-8 rounded-lg bg-slate-900/40 hover:bg-slate-900/50 text-stone-400 hover:text-slate-900 flex items-center justify-center"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -305,7 +305,7 @@ export function SuppliersScreen(): React.JSX.Element {
                   placeholder="e.g. San Miguel Brewery, Puregold Wholesale, Local Bagsakan..."
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
-                  className="w-full h-11 px-3.5 rounded-xl bg-black border border-white/15 text-stone-100 text-xs sm:text-sm focus:outline-none focus:border-[#D4AF37]"
+                  className="w-full h-11 px-3.5 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs sm:text-sm focus:outline-none focus:border-[#2563EB]"
                 />
               </div>
 
@@ -319,7 +319,7 @@ export function SuppliersScreen(): React.JSX.Element {
                     placeholder="e.g. Kuya Mark, Sales Agent..."
                     value={formContactPerson}
                     onChange={(e) => setFormContactPerson(e.target.value)}
-                    className="w-full h-11 px-3 rounded-xl bg-black border border-white/15 text-stone-100 text-xs focus:outline-none focus:border-[#D4AF37]"
+                    className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-[#2563EB]"
                   />
                 </div>
 
@@ -332,7 +332,7 @@ export function SuppliersScreen(): React.JSX.Element {
                     placeholder="e.g. 0917-123-4567"
                     value={formPhone}
                     onChange={(e) => setFormPhone(e.target.value)}
-                    className="w-full h-11 px-3 rounded-xl bg-black border border-white/15 text-stone-100 text-xs font-mono focus:outline-none focus:border-[#D4AF37]"
+                    className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs font-mono focus:outline-none focus:border-[#2563EB]"
                   />
                 </div>
               </div>
@@ -346,7 +346,7 @@ export function SuppliersScreen(): React.JSX.Element {
                   placeholder="e.g. National Highway, Public Market, Plant Depot..."
                   value={formAddress}
                   onChange={(e) => setFormAddress(e.target.value)}
-                  className="w-full h-11 px-3.5 rounded-xl bg-black border border-white/15 text-stone-100 text-xs focus:outline-none focus:border-[#D4AF37]"
+                  className="w-full h-11 px-3.5 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-[#2563EB]"
                 />
               </div>
 
@@ -359,7 +359,7 @@ export function SuppliersScreen(): React.JSX.Element {
                   placeholder="e.g. Delivers every Tuesday and Friday morning. Minimum order ₱5,000 for free delivery."
                   value={formNotes}
                   onChange={(e) => setFormNotes(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-black border border-white/15 text-stone-100 text-xs focus:outline-none focus:border-[#D4AF37] resize-none"
+                  className="w-full p-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-[#2563EB] resize-none"
                 />
               </div>
 
@@ -367,13 +367,13 @@ export function SuppliersScreen(): React.JSX.Element {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="btn-press flex-1 py-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-stone-300 text-xs font-bold uppercase tracking-wider transition-colors"
+                  className="btn-press flex-1 py-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-slate-900/15 text-stone-300 text-xs font-bold uppercase tracking-wider transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="btn-press flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-[#D4AF37] text-black text-xs font-bold uppercase tracking-wider shadow-glow-gold transition-all"
+                  className="btn-press flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-[#2563EB] text-black text-xs font-bold uppercase tracking-wider shadow-glow-gold transition-all"
                 >
                   {editingSupplier ? 'Update Supplier' : 'Save Supplier'}
                 </button>

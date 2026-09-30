@@ -207,19 +207,19 @@ export function UserProfileModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/80 backdrop-blur-md animate-fade-in">
       <div className="w-full max-w-md glass-panel rounded-3xl border border-gold/40 shadow-2xl overflow-hidden flex flex-col">
         {/* Top Header */}
-        <div className="p-5 border-b border-white/[0.08] flex items-center justify-between bg-zinc-950/40">
+        <div className="p-5 border-b border-slate-900/20/[0.08] flex items-center justify-between bg-zinc-950/40">
           <div className="flex items-center gap-2.5">
             <div className="h-9 w-9 rounded-xl bg-amber-500/10 border border-gold/30 flex items-center justify-center text-gold-light">
               <User className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white tracking-wide">Account Profile</h3>
-              <p className="text-[11px] text-stone-400 font-mono">Terminal Staff Identity</p>
+              <h3 className="text-base font-bold text-slate-900 tracking-wide">Account Profile</h3>
+              <p className="text-[0.8125rem] text-stone-400 font-mono">Terminal Staff Identity</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-stone-400 hover:text-white hover:bg-white/[0.08] transition-colors"
+            className="p-1.5 rounded-xl text-stone-400 hover:text-slate-900 hover:bg-white/[0.08] transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -256,7 +256,7 @@ export function UserProfileModal({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-amber-300 to-[#D4AF37] flex items-center justify-center text-obsidian-950 font-serif font-black text-2xl">
+                  <div className="w-full h-full bg-gradient-to-br from-amber-300 to-[#2563EB] flex items-center justify-center text-obsidian-950 font-serif font-black text-2xl">
                     {initials}
                   </div>
                 )}
@@ -290,7 +290,7 @@ export function UserProfileModal({
             </div>
 
             <div>
-              <h4 className="text-lg font-bold text-white flex items-center justify-center gap-1.5">
+              <h4 className="text-lg font-bold text-slate-900 flex items-center justify-center gap-1.5">
                 {isMasterAdmin && <Crown className="w-4 h-4 text-gold" />}
                 <span>{currentCashierName}</span>
               </h4>
@@ -298,11 +298,11 @@ export function UserProfileModal({
                 <p className="text-xs font-mono text-stone-400">@{currentUsername}</p>
               )}
               <div className="flex items-center justify-center gap-2 mt-2">
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-gold/30 text-gold-light text-[10px] font-mono font-bold uppercase tracking-wider">
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-gold/30 text-gold-light text-[0.75rem] font-sans font-semibold font-bold uppercase tracking-wider">
                   {currentCashierRole}
                 </span>
                 {currentStoreName && (
-                  <span className="px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-stone-300 text-[10px] font-mono flex items-center gap-1">
+                  <span className="px-2.5 py-0.5 rounded-full bg-slate-900/40 border border-slate-900/15 text-stone-300 text-[0.75rem] font-mono flex items-center gap-1">
                     <Store className="w-3 h-3 text-stone-400" />
                     <span>{currentStoreName}</span>
                   </span>
@@ -334,17 +334,17 @@ export function UserProfileModal({
                 </button>
               )}
             </div>
-            <p className="text-[10px] text-stone-500 font-mono">
+            <p className="text-[0.75rem] text-stone-500 font-mono">
               Auto-compressed to high-speed offline profile image.
             </p>
           </div>
 
           {/* Security PIN Section */}
-          <div className="border-t border-white/[0.08] pt-4 space-y-3">
+          <div className="border-t border-slate-900/20/[0.08] pt-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <KeyRound className="w-4 h-4 text-gold-light" />
-                <span className="text-xs font-semibold text-white">Security PIN</span>
+                <span className="text-xs font-semibold text-slate-900">Security PIN</span>
               </div>
               <button
                 type="button"
@@ -359,7 +359,7 @@ export function UserProfileModal({
               <form onSubmit={handleUpdatePinSubmit} className="space-y-2.5 animate-fade-in pt-1">
                 {!isMasterAdmin && (
                   <div>
-                    <label className="block text-[10px] font-mono uppercase tracking-wider text-stone-400 mb-1">
+                    <label className="block text-[0.75rem] font-sans font-semibold uppercase tracking-wider text-stone-400 mb-1">
                       Current PIN
                     </label>
                     <input
@@ -368,12 +368,12 @@ export function UserProfileModal({
                       value={currentPin}
                       onChange={(e) => setCurrentPin(e.target.value.replace(/[^0-9]/g, ''))}
                       placeholder="Enter current PIN"
-                      className="w-full px-3 py-2 rounded-xl bg-zinc-950/70 border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-gold"
+                      className="w-full px-3 py-2 rounded-xl bg-zinc-950/70 border border-slate-900/15 text-slate-900 font-mono text-xs focus:outline-none focus:border-gold"
                     />
                   </div>
                 )}
                 <div>
-                  <label className="block text-[10px] font-mono uppercase tracking-wider text-stone-400 mb-1">
+                  <label className="block text-[0.75rem] font-sans font-semibold uppercase tracking-wider text-stone-400 mb-1">
                     New PIN (4 to 6 Digits)
                   </label>
                   <input
@@ -382,11 +382,11 @@ export function UserProfileModal({
                     value={newPin}
                     onChange={(e) => setNewPin(e.target.value.replace(/[^0-9]/g, ''))}
                     placeholder="Enter new PIN"
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-950/70 border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-gold"
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-950/70 border border-slate-900/15 text-slate-900 font-mono text-xs focus:outline-none focus:border-gold"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-mono uppercase tracking-wider text-stone-400 mb-1">
+                  <label className="block text-[0.75rem] font-sans font-semibold uppercase tracking-wider text-stone-400 mb-1">
                     Confirm New PIN
                   </label>
                   <input
@@ -395,7 +395,7 @@ export function UserProfileModal({
                     value={confirmPin}
                     onChange={(e) => setConfirmPin(e.target.value.replace(/[^0-9]/g, ''))}
                     placeholder="Re-enter new PIN"
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-950/70 border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-gold"
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-950/70 border border-slate-900/15 text-slate-900 font-mono text-xs focus:outline-none focus:border-gold"
                   />
                 </div>
                 <button
@@ -412,11 +412,11 @@ export function UserProfileModal({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-white/[0.08] bg-zinc-950/50 flex justify-end">
+        <div className="p-4 border-t border-slate-900/20/[0.08] bg-zinc-950/50 flex justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="btn-press px-5 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-stone-200 text-xs font-semibold transition-all"
+            className="btn-press px-5 py-2 rounded-xl bg-slate-900/50 hover:bg-slate-900/60 text-stone-200 text-xs font-semibold transition-all"
           >
             Close
           </button>

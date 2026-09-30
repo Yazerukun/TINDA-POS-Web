@@ -115,19 +115,19 @@ export function Receipt({
         </h1>
 
         {finalAddress && (
-          <p className="text-[10px] text-gray-700 max-w-[90%] leading-tight">
+          <p className="text-[0.75rem] text-gray-700 max-w-[90%] leading-tight">
             {finalAddress}
           </p>
         )}
 
         {finalContact && (
-          <p className="text-[10px] text-gray-700">Tel: {finalContact}</p>
+          <p className="text-[0.75rem] text-gray-700">Tel: {finalContact}</p>
         )}
 
         <div className="pt-1">
           <span
             className={`font-bold tracking-widest uppercase inline-block px-2 py-0.5 border border-black ${
-              isReprint ? 'bg-black text-white text-[9px]' : 'text-[10px]'
+              isReprint ? 'bg-black text-slate-900 text-[0.6875rem]' : 'text-[0.75rem]'
             }`}
           >
             {isReprint ? '*** DUPLICATE REPRINT ***' : '*** OFFICIAL SALES INVOICE ***'}
@@ -177,7 +177,7 @@ export function Receipt({
 
       {/* ── ITEMIZED PRODUCTS TABLE ── */}
       <div className="space-y-1">
-        <div className="flex justify-between font-bold text-[10px] border-b border-black pb-0.5 tracking-wider">
+        <div className="flex justify-between font-bold text-[0.75rem] border-b border-black pb-0.5 tracking-wider">
           <span className="flex-1 text-left">ITEM DESCRIPTION</span>
           <span className={is58mm ? 'w-12 text-right' : 'w-16 text-right'}>QTY</span>
           <span className={is58mm ? 'w-14 text-right' : 'w-20 text-right'}>AMOUNT</span>
@@ -195,7 +195,7 @@ export function Receipt({
               </span>
             </div>
             {item.quantity > 1 && (
-              <div className="text-[9px] text-gray-500 pl-1">
+              <div className="text-[0.6875rem] text-gray-500 pl-1">
                 @ {money(item.unit_price_c)} each
               </div>
             )}
@@ -207,13 +207,13 @@ export function Receipt({
 
       {/* ── SETTLEMENT SUMMARY ── */}
       <div className="space-y-1">
-        <div className="flex justify-between text-[11px]">
+        <div className="flex justify-between text-[0.8125rem]">
           <span>SUBTOTAL:</span>
           <span>{money(activeTx.subtotal_c)}</span>
         </div>
 
         {activeTx.discount_c > 0 && (
-          <div className="flex justify-between text-[11px] font-bold">
+          <div className="flex justify-between text-[0.8125rem] font-bold">
             <span>
               DISCOUNT ({activeTx.discount_type === 'SENIOR_PWD_20' ? 'SENIOR/PWD 20%' : 'VIP PROMO'}):
             </span>
@@ -264,7 +264,7 @@ export function Receipt({
 
       {/* ── VERIFICATION SIGNATURE LINE ── */}
       <div className="mt-4 pt-2 border-t border-dotted border-gray-400 space-y-1">
-        <div className="flex justify-between text-[9px] text-gray-600">
+        <div className="flex justify-between text-[0.6875rem] text-gray-600">
           <span>Auth Cashier: {activeTx.cashier_name || 'Staff'}</span>
           <span>ID: {activeTx.id ? `#${activeTx.id}` : 'SYS'}</span>
         </div>

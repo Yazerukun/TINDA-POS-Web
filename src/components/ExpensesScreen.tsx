@@ -165,13 +165,13 @@ export function ExpensesScreen({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fade-in">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-900/15 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-serif font-bold text-white tracking-wide">
+            <h1 className="text-2xl font-serif font-bold text-slate-900 tracking-wide">
               Store Expenses
             </h1>
-            <span className="text-[10px] font-mono tracking-widest text-gold-muted border border-gold/30 px-2 py-0.5 rounded-full uppercase">
+            <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted border border-gold/30 px-2 py-0.5 rounded-full uppercase">
               Financial Outflow
             </span>
           </div>
@@ -182,7 +182,7 @@ export function ExpensesScreen({
 
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="btn-press px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-[#D4AF37] hover:from-amber-300 hover:to-gold text-black text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-gold transition-all self-start sm:self-auto"
+          className="btn-press px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-[#2563EB] hover:from-amber-300 hover:to-gold text-black text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-gold transition-all self-start sm:self-auto"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>New Expense</span>
@@ -192,9 +192,9 @@ export function ExpensesScreen({
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Today's Expenses */}
-        <div className="glass-panel p-5 rounded-3xl border border-white/[0.08] relative overflow-hidden">
+        <div className="glass-panel p-5 rounded-3xl border border-slate-900/20/[0.08] relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono tracking-widest text-stone-400 uppercase font-semibold">
+            <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-stone-400 uppercase font-semibold">
               Today's Expenses
             </span>
             <div className="h-8 w-8 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center">
@@ -204,15 +204,15 @@ export function ExpensesScreen({
           <p className="mt-3 text-2xl font-serif font-bold text-red-400">
             {money(todayTotal_c)}
           </p>
-          <p className="text-[10px] text-stone-500 font-mono mt-1">
+          <p className="text-[0.75rem] text-stone-500 font-mono mt-1">
             Recorded for today's shift
           </p>
         </div>
 
         {/* This Month's Expenses */}
-        <div className="glass-panel p-5 rounded-3xl border border-white/[0.08] relative overflow-hidden">
+        <div className="glass-panel p-5 rounded-3xl border border-slate-900/20/[0.08] relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono tracking-widest text-stone-400 uppercase font-semibold">
+            <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-stone-400 uppercase font-semibold">
               This Month Total
             </span>
             <div className="h-8 w-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
@@ -222,15 +222,15 @@ export function ExpensesScreen({
           <p className="mt-3 text-2xl font-serif font-bold text-gold-light">
             {money(monthTotal_c)}
           </p>
-          <p className="text-[10px] text-stone-500 font-mono mt-1">
+          <p className="text-[0.75rem] text-stone-500 font-mono mt-1">
             Cumulative month-to-date
           </p>
         </div>
 
         {/* Filtered Range Total */}
-        <div className="glass-panel p-5 rounded-3xl border border-white/[0.08] relative overflow-hidden">
+        <div className="glass-panel p-5 rounded-3xl border border-slate-900/20/[0.08] relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono tracking-widest text-stone-400 uppercase font-semibold">
+            <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-stone-400 uppercase font-semibold">
               Filtered Total ({filteredExpenses.length} entries)
             </span>
             <div className="h-8 w-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
@@ -240,14 +240,14 @@ export function ExpensesScreen({
           <p className="mt-3 text-2xl font-serif font-bold text-stone-200">
             {money(totalFiltered_c)}
           </p>
-          <p className="text-[10px] text-stone-500 font-mono mt-1">
+          <p className="text-[0.75rem] text-stone-500 font-mono mt-1">
             Based on active date & category filters
           </p>
         </div>
       </div>
 
       {/* Filters Bar */}
-      <div className="p-4 rounded-2xl bg-zinc-950/80 border border-white/[0.08] flex flex-wrap items-center justify-between gap-3">
+      <div className="p-4 rounded-2xl bg-zinc-950/80 border border-slate-900/20/[0.08] flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2 text-xs font-mono text-stone-400">
             <span>From:</span>
@@ -255,7 +255,7 @@ export function ExpensesScreen({
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="bg-black/60 border border-white/15 rounded-lg px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-[#D4AF37]"
+              className="bg-black/60 border border-slate-900/20 rounded-lg px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-[#2563EB]"
             />
           </div>
 
@@ -265,7 +265,7 @@ export function ExpensesScreen({
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="bg-black/60 border border-white/15 rounded-lg px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-[#D4AF37]"
+              className="bg-black/60 border border-slate-900/20 rounded-lg px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-[#2563EB]"
             />
           </div>
 
@@ -274,7 +274,7 @@ export function ExpensesScreen({
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-black/60 border border-white/15 rounded-lg px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-[#D4AF37]"
+              className="bg-black/60 border border-slate-900/20 rounded-lg px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-[#2563EB]"
             >
               <option value="ALL">All Categories</option>
               {categories.map((c) => (
@@ -292,17 +292,17 @@ export function ExpensesScreen({
             setToDate('')
             setSelectedCategory('ALL')
           }}
-          className="btn-press text-xs font-mono text-gold-muted hover:text-white transition-colors"
+          className="btn-press text-xs font-mono text-gold-muted hover:text-slate-900 transition-colors"
         >
           Reset Filters
         </button>
       </div>
 
       {/* Expenses Table */}
-      <div className="rounded-3xl border border-white/[0.08] bg-zinc-950/70 overflow-hidden">
+      <div className="rounded-3xl border border-slate-900/20/[0.08] bg-zinc-950/70 overflow-hidden">
         {loading ? (
           <div className="py-20 flex flex-col items-center justify-center space-y-2 text-stone-400">
-            <div className="h-7 w-7 rounded-full border-2 border-[#D4AF37] border-t-transparent animate-spin" />
+            <div className="h-7 w-7 rounded-full border-2 border-[#2563EB] border-t-transparent animate-spin" />
             <p className="text-xs font-mono">Loading expense records...</p>
           </div>
         ) : filteredExpenses.length === 0 ? (
@@ -316,7 +316,7 @@ export function ExpensesScreen({
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-black/50 border-b border-white/[0.08] text-[10px] font-mono uppercase tracking-wider text-stone-400">
+              <thead className="bg-black/50 border-b border-slate-900/20/[0.08] text-[0.75rem] font-sans font-semibold uppercase tracking-wider text-stone-400">
                 <tr>
                   <th className="py-3.5 px-4 font-semibold">Date</th>
                   <th className="py-3.5 px-4 font-semibold">Category</th>
@@ -333,14 +333,14 @@ export function ExpensesScreen({
                       {e.date}
                     </td>
                     <td className="py-3 px-4">
-                      <span className="px-2.5 py-1 rounded-lg bg-white/[0.06] border border-white/10 text-gold-light font-mono font-medium text-[11px]">
+                      <span className="px-2.5 py-1 rounded-lg bg-white/[0.06] border border-slate-900/15 text-gold-light font-mono font-medium text-[0.8125rem]">
                         {e.category}
                       </span>
                     </td>
                     <td className="py-3 px-4 text-stone-200 font-medium">
                       {e.description || <span className="text-stone-500 italic">No notes</span>}
                     </td>
-                    <td className="py-3 px-4 text-stone-400 font-mono text-[11px]">
+                    <td className="py-3 px-4 text-stone-400 font-mono text-[0.8125rem]">
                       {e.cashier_name || 'Admin'}
                     </td>
                     <td className="py-3 px-4 text-right font-serif font-bold text-red-400 text-sm">
@@ -366,15 +366,15 @@ export function ExpensesScreen({
       {/* New Expense Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="w-full max-w-lg bg-[#0C0D11] border border-amber-500/30 rounded-3xl p-6 shadow-2xl space-y-5">
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <div className="w-full max-w-lg bg-[#F1F5F9] border border-amber-500/30 rounded-3xl p-6 shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-900/15 pb-4">
               <div>
-                <p className="text-[10px] font-mono tracking-widest text-gold-muted uppercase">Operating Outflow</p>
-                <h3 className="text-base font-bold text-white mt-0.5">Record New Store Expense</h3>
+                <p className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted uppercase">Operating Outflow</p>
+                <h3 className="text-base font-bold text-slate-900 mt-0.5">Record New Store Expense</h3>
               </div>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="btn-press h-8 w-8 rounded-lg bg-white/5 hover:bg-white/10 text-stone-400 hover:text-white flex items-center justify-center"
+                className="btn-press h-8 w-8 rounded-lg bg-slate-900/40 hover:bg-slate-900/50 text-stone-400 hover:text-slate-900 flex items-center justify-center"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -398,7 +398,7 @@ export function ExpensesScreen({
                     placeholder="0.00"
                     value={newAmount}
                     onChange={(e) => setNewAmount(e.target.value)}
-                    className="w-full h-12 pl-9 pr-4 rounded-xl bg-black border border-white/15 text-gold-light font-mono text-xl font-bold focus:outline-none focus:border-[#D4AF37]"
+                    className="w-full h-12 pl-9 pr-4 rounded-xl bg-black border border-slate-900/20 text-gold-light font-mono text-xl font-bold focus:outline-none focus:border-[#2563EB]"
                   />
                 </div>
               </div>
@@ -411,7 +411,7 @@ export function ExpensesScreen({
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
-                    className="w-full h-11 px-3 rounded-xl bg-black border border-white/15 text-stone-100 text-xs focus:outline-none focus:border-[#D4AF37]"
+                    className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-[#2563EB]"
                   >
                     {categories.map((c) => (
                       <option key={c.id || c.name} value={c.name}>
@@ -430,7 +430,7 @@ export function ExpensesScreen({
                     required
                     value={newDate}
                     onChange={(e) => setNewDate(e.target.value)}
-                    className="w-full h-11 px-3 rounded-xl bg-black border border-white/15 text-stone-100 text-xs focus:outline-none focus:border-[#D4AF37]"
+                    className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-[#2563EB]"
                   />
                 </div>
               </div>
@@ -444,24 +444,24 @@ export function ExpensesScreen({
                   placeholder="e.g. 5 bags of ice, kuryente payment, sando bags..."
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
-                  className="w-full h-11 px-3 rounded-xl bg-black border border-white/15 text-stone-100 text-xs focus:outline-none focus:border-[#D4AF37]"
+                  className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-[#2563EB]"
                 />
               </div>
 
               {/* Add Custom Category Shortcut */}
-              <div className="pt-2 border-t border-white/[0.08]">
+              <div className="pt-2 border-t border-slate-900/20/[0.08]">
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
                     placeholder="New category name..."
                     value={newCustomCategory}
                     onChange={(e) => setNewCustomCategory(e.target.value)}
-                    className="flex-1 h-9 px-3 rounded-xl bg-zinc-950 border border-white/10 text-xs text-stone-300 focus:outline-none focus:border-[#D4AF37]"
+                    className="flex-1 h-9 px-3 rounded-xl bg-zinc-950 border border-slate-900/15 text-xs text-stone-300 focus:outline-none focus:border-[#2563EB]"
                   />
                   <button
                     type="button"
                     onClick={handleAddCategory}
-                    className="btn-press px-3 h-9 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-stone-200 text-xs font-medium"
+                    className="btn-press px-3 h-9 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-slate-900/15 text-stone-200 text-xs font-medium"
                   >
                     Add Category
                   </button>
@@ -472,13 +472,13 @@ export function ExpensesScreen({
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="btn-press flex-1 py-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-stone-300 text-xs font-bold uppercase tracking-wider transition-colors"
+                  className="btn-press flex-1 py-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-slate-900/15 text-stone-300 text-xs font-bold uppercase tracking-wider transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="btn-press flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-[#D4AF37] text-black text-xs font-bold uppercase tracking-wider shadow-glow-gold transition-all"
+                  className="btn-press flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-[#2563EB] text-black text-xs font-bold uppercase tracking-wider shadow-glow-gold transition-all"
                 >
                   Save Expense
                 </button>

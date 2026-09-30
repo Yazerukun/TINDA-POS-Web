@@ -46,7 +46,7 @@ export class ErrorBoundary extends Component<Props, State> {
             {this.state.error?.message || 'An unexpected rendering error occurred.'}
           </p>
           {this.state.error?.stack && (
-            <pre className="p-3 rounded-xl bg-black/60 border border-white/10 text-[10px] font-mono text-stone-400 overflow-x-auto max-h-48 mb-4">
+            <pre className="p-3 rounded-xl bg-black/60 border border-slate-900/15 text-[0.75rem] font-mono text-stone-400 overflow-x-auto max-h-48 mb-4">
               {this.state.error.stack}
             </pre>
           )}
@@ -60,7 +60,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="px-4 py-2 rounded-xl bg-zinc-900 border border-white/10 text-stone-300 text-xs font-mono hover:text-white"
+              className="px-4 py-2 rounded-xl bg-zinc-900 border border-slate-900/15 text-stone-300 text-xs font-mono hover:text-slate-900"
             >
               Reload Page
             </button>

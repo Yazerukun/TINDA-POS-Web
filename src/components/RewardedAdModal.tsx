@@ -219,9 +219,9 @@ export function RewardedAdModal({
     <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-obsidian-950/85 backdrop-blur-2xl animate-fade-in">
       {/* ── VIDEO AD PLAYER SCREEN ── */}
       {isPlayingAd ? (
-        <div className="relative w-full max-w-lg rounded-3xl bg-zinc-950 border border-gold/40 shadow-vault p-6 text-center overflow-hidden animate-scale-up">
+        <div className="relative w-full max-w-lg rounded-3xl bg-obsidian-900 border border-gold/40 shadow-vault p-6 text-center overflow-hidden animate-scale-up">
           {/* Top Bar inside Ad Player */}
-          <div className="flex items-center justify-between pb-4 border-b border-slate-900/20/[0.08]">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-900/[0.08]">
             <div className="flex items-center gap-2">
               <span className="px-2 py-0.5 rounded-full bg-gold/20 text-gold-light font-sans font-semibold text-[0.75rem] font-bold tracking-wider uppercase border border-gold/30">
                 Sponsor Video
@@ -251,7 +251,7 @@ export function RewardedAdModal({
           </div>
 
           {/* Video Mock Player Body */}
-          <div className="my-6 relative aspect-video w-full rounded-2xl bg-gradient-to-br from-zinc-900 via-obsidian-950 to-zinc-950 border border-slate-900/20/[0.06] flex flex-col items-center justify-center p-6 overflow-hidden shadow-inner">
+          <div className="my-6 relative aspect-video w-full rounded-2xl bg-gradient-to-br from-zinc-900 via-obsidian-950 to-zinc-950 border border-slate-900/[0.06] flex flex-col items-center justify-center p-6 overflow-hidden shadow-inner">
             {/* Animated Background Rays */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0,transparent_70%)] animate-pulse" />
 
@@ -283,14 +283,14 @@ export function RewardedAdModal({
                 <span>Click / Re-open Sponsor Ad</span>
               </a>
 
-              <div className="flex items-center gap-2 text-[0.75rem] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-full">
+              <div className="flex items-center gap-2 text-[0.75rem] font-mono text-emerald-600 bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-full">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 <span>Monetag Direct Link Zone ({activeAdUrl.split('/').pop() || '11879014'})</span>
               </div>
             </div>
 
             {/* Progress Bar along bottom of video container */}
-            <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-zinc-800">
+            <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-obsidian-850">
               <div
                 className="h-full bg-gradient-to-r from-amber-400 via-gold to-emerald-400 transition-all duration-1000 ease-linear"
                 style={{ width: `${((20 - adSecondsLeft) / 20) * 100}%` }}
@@ -304,7 +304,7 @@ export function RewardedAdModal({
         </div>
       ) : (
         /* ── REWARD SELECTION / PRO EXPIRY MODAL ── */
-        <div className="relative w-full max-w-lg rounded-3xl bg-zinc-950 border border-slate-900/20/[0.08] shadow-vault p-6 text-left overflow-hidden">
+        <div className="relative w-full max-w-lg rounded-3xl bg-obsidian-900 border border-slate-900/[0.08] shadow-vault p-6 text-left overflow-hidden">
           {/* Close button — only shown when user has active pro OR is master admin */}
           {(isPro || isMasterAdmin) && (
             <button
@@ -320,10 +320,10 @@ export function RewardedAdModal({
             <div
               className={`h-11 w-11 rounded-2xl flex items-center justify-center shrink-0 border ${
                 isPro
-                  ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+                  ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-600'
                   : tokens >= 1
                   ? 'bg-gold/15 border-gold/30 text-gold-light'
-                  : 'bg-rose-950/40 border-rose-800/40 text-rose-400'
+                  : 'bg-rose-50/40 border-rose-800/40 text-rose-600'
               }`}
             >
               <Zap className="w-6 h-6" />
@@ -346,10 +346,10 @@ export function RewardedAdModal({
 
           {/* Expired alert — shown when shift pass is expired and user is not master admin */}
           {!isPro && !isMasterAdmin && (
-            <div className="mb-4 p-3.5 rounded-2xl bg-rose-950/40 border border-rose-700/50 flex items-start gap-3 animate-fade-in">
-              <span className="text-rose-400 text-lg shrink-0">⚠️</span>
+            <div className="mb-4 p-3.5 rounded-2xl bg-rose-50/40 border border-rose-700/50 flex items-start gap-3 animate-fade-in">
+              <span className="text-rose-600 text-lg shrink-0">⚠️</span>
               <div className="text-xs">
-                <p className="font-semibold text-rose-200">Store Shift Pass Expired</p>
+                <p className="font-semibold text-rose-700">Store Shift Pass Expired</p>
                 <p className="text-stone-300 mt-0.5 leading-relaxed">
                   Watch a sponsor ad below to earn tokens, then select a shift pass duration to reactivate your store access.
                 </p>
@@ -359,8 +359,8 @@ export function RewardedAdModal({
 
           {/* Success Banner if just credited */}
           {adSuccessMessage && (
-            <div className="mb-4 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2.5 text-xs text-emerald-300 font-semibold animate-fade-in">
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
+            <div className="mb-4 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-2.5 text-xs text-emerald-600 font-semibold animate-fade-in">
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
               <span>{adSuccessMessage}</span>
             </div>
           )}
@@ -368,9 +368,9 @@ export function RewardedAdModal({
           {/* AdBlocker Warning Banner */}
           {isAdBlockerActive && !isMasterAdmin && (
             <div className="mb-4 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3 animate-fade-in">
-              <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+              <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
               <div className="text-xs">
-                <p className="font-semibold text-amber-200">
+                <p className="font-semibold text-amber-700">
                   Ad Blocker Detected (Brave Shield / uBlock / AdBlock)
                 </p>
                 <p className="text-stone-300 mt-1 leading-relaxed">
@@ -380,7 +380,7 @@ export function RewardedAdModal({
                   type="button"
                   onClick={() => checkAdBlocker()}
                   disabled={isCheckingAdBlocker}
-                  className="mt-2.5 px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-amber-300 font-mono text-[0.8125rem] font-semibold flex items-center gap-1.5 transition-colors"
+                  className="mt-2.5 px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-amber-600 font-mono text-[0.8125rem] font-semibold flex items-center gap-1.5 transition-colors"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isCheckingAdBlocker ? 'animate-spin' : ''}`} />
                   <span>{isCheckingAdBlocker ? 'Re-checking...' : 'I disabled it, Re-check now'}</span>
@@ -396,19 +396,19 @@ export function RewardedAdModal({
               className={`p-3 rounded-2xl border flex flex-col justify-between ${
                 isPro
                   ? 'bg-amber-500/[0.06] border-gold/30'
-                  : 'bg-rose-950/20 border-rose-800/30'
+                  : 'bg-rose-50/20 border-rose-800/30'
               }`}
             >
               <div className="flex items-center justify-between">
                 <span className="text-[0.75rem] font-sans font-semibold tracking-wider uppercase text-stone-400">
                   Shift Timer
                 </span>
-                <Clock className={`w-3.5 h-3.5 ${isPro ? 'text-gold-light' : 'text-rose-400'}`} />
+                <Clock className={`w-3.5 h-3.5 ${isPro ? 'text-gold-light' : 'text-rose-600'}`} />
               </div>
               <div className="my-1">
                 <span
                   className={`font-mono text-xs sm:text-sm font-bold tracking-tight block truncate ${
-                    isPro ? 'text-gold-light' : 'text-rose-400'
+                    isPro ? 'text-gold-light' : 'text-rose-600'
                   }`}
                 >
                   {formattedTime}
@@ -427,7 +427,7 @@ export function RewardedAdModal({
             </div>
 
             {/* Stat 2: Token Wallet Balance */}
-            <div className="p-3 rounded-2xl border bg-zinc-900/60 border-slate-900/20/[0.08] flex flex-col justify-between">
+            <div className="p-3 rounded-2xl border bg-slate-850/60 border-slate-900/[0.08] flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-[0.75rem] font-sans font-semibold tracking-wider uppercase text-stone-400">
                   Token Wallet
@@ -446,15 +446,15 @@ export function RewardedAdModal({
             </div>
 
             {/* Stat 3: Banked Days */}
-            <div className="p-3 rounded-2xl border bg-zinc-900/60 border-slate-900/20/[0.08] flex flex-col justify-between">
+            <div className="p-3 rounded-2xl border bg-slate-850/60 border-slate-900/[0.08] flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <span className="text-[0.75rem] font-sans font-semibold tracking-wider uppercase text-stone-400">
                   Banked Days
                 </span>
-                <Calendar className="w-3.5 h-3.5 text-amber-300" />
+                <Calendar className="w-3.5 h-3.5 text-amber-600" />
               </div>
               <div className="my-1 flex items-baseline gap-1">
-                <span className="font-mono text-base sm:text-lg font-extrabold text-amber-200">
+                <span className="font-mono text-base sm:text-lg font-extrabold text-amber-700">
                   {(tokens / 3).toFixed(1)}
                 </span>
                 <span className="text-[0.75rem] font-mono text-stone-400">DAYS</span>
@@ -481,12 +481,12 @@ export function RewardedAdModal({
               <div
                 className={`p-3 rounded-2xl border flex flex-col justify-between transition-all ${
                   tokens >= 1
-                    ? 'bg-zinc-900/80 border-gold/30 hover:border-gold/60'
-                    : 'bg-zinc-950/40 border-slate-900/20/[0.05] opacity-60'
+                    ? 'bg-slate-850/80 border-gold/30 hover:border-gold/60'
+                    : 'bg-obsidian-900/[0.07] border-slate-900/[0.05] opacity-60'
                 }`}
               >
                 <div>
-                  <span className="text-[0.75rem] font-mono font-bold text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                  <span className="text-[0.75rem] font-mono font-bold text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
                     1 TOKEN
                   </span>
                   <h4 className="text-xs font-bold text-stone-100 mt-1.5">
@@ -499,7 +499,7 @@ export function RewardedAdModal({
                 <button
                   disabled={tokens < 1 || redeemingPackage === 1}
                   onClick={() => handleRedeem(1, 8)}
-                  className="mt-2.5 w-full py-1.5 px-2 rounded-xl text-[0.8125rem] font-sans font-semibold font-bold tracking-wider uppercase flex items-center justify-center gap-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/30"
+                  className="mt-2.5 w-full py-1.5 px-2 rounded-xl text-[0.8125rem] font-sans font-semibold font-bold tracking-wider uppercase flex items-center justify-center gap-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-amber-500/20 hover:bg-amber-500/30 text-amber-700 border border-amber-500/30"
                 >
                   <span>{tokens >= 1 ? 'Redeem 1 Token' : 'Need 1 Token'}</span>
                 </button>
@@ -510,10 +510,10 @@ export function RewardedAdModal({
                 className={`relative p-3 rounded-2xl border flex flex-col justify-between transition-all ${
                   tokens >= 3
                     ? 'bg-gradient-to-b from-amber-500/[0.08] to-zinc-900/80 border-gold/40 hover:border-gold shadow-sm'
-                    : 'bg-zinc-950/40 border-slate-900/20/[0.05] opacity-60'
+                    : 'bg-obsidian-900/[0.07] border-slate-900/[0.05] opacity-60'
                 }`}
               >
-                <div className="absolute -top-2 right-2 px-1.5 py-0.5 rounded-full bg-gold text-obsidian-950 text-[0.6875rem] font-sans font-semibold font-black uppercase tracking-wider">
+                <div className="absolute -top-2 right-2 px-1.5 py-0.5 rounded-full bg-gold text-stone-100 text-[0.75rem] font-sans font-semibold font-black uppercase tracking-wider">
                   Best Value
                 </div>
                 <div>
@@ -540,12 +540,12 @@ export function RewardedAdModal({
               <div
                 className={`p-3 rounded-2xl border flex flex-col justify-between transition-all ${
                   tokens >= 6
-                    ? 'bg-zinc-900/80 border-gold/30 hover:border-gold/60'
-                    : 'bg-zinc-950/40 border-slate-900/20/[0.05] opacity-60'
+                    ? 'bg-slate-850/80 border-gold/30 hover:border-gold/60'
+                    : 'bg-obsidian-900/[0.07] border-slate-900/[0.05] opacity-60'
                 }`}
               >
                 <div>
-                  <span className="text-[0.75rem] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                  <span className="text-[0.75rem] font-mono font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
                     6 TOKENS
                   </span>
                   <h4 className="text-xs font-bold text-stone-100 mt-1.5">
@@ -558,7 +558,7 @@ export function RewardedAdModal({
                 <button
                   disabled={tokens < 6 || redeemingPackage === 6}
                   onClick={() => handleRedeem(6, 48)}
-                  className="mt-2.5 w-full py-1.5 px-2 rounded-xl text-[0.8125rem] font-sans font-semibold font-bold tracking-wider uppercase flex items-center justify-center gap-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30"
+                  className="mt-2.5 w-full py-1.5 px-2 rounded-xl text-[0.8125rem] font-sans font-semibold font-bold tracking-wider uppercase flex items-center justify-center gap-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-600 border border-emerald-500/30"
                 >
                   <span>{tokens >= 6 ? 'Redeem 6 Tokens' : `Need ${6 - tokens} More`}</span>
                 </button>
@@ -568,12 +568,12 @@ export function RewardedAdModal({
               <div
                 className={`p-3 rounded-2xl border flex flex-col justify-between transition-all ${
                   tokens >= 9
-                    ? 'bg-zinc-900/80 border-gold/30 hover:border-gold/60'
-                    : 'bg-zinc-950/40 border-slate-900/20/[0.05] opacity-60'
+                    ? 'bg-slate-850/80 border-gold/30 hover:border-gold/60'
+                    : 'bg-obsidian-900/[0.07] border-slate-900/[0.05] opacity-60'
                 }`}
               >
                 <div>
-                  <span className="text-[0.75rem] font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20">
+                  <span className="text-[0.75rem] font-mono font-bold text-indigo-600 bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20">
                     9 TOKENS
                   </span>
                   <h4 className="text-xs font-bold text-stone-100 mt-1.5">
@@ -586,7 +586,7 @@ export function RewardedAdModal({
                 <button
                   disabled={tokens < 9 || redeemingPackage === 9}
                   onClick={() => handleRedeem(9, 72)}
-                  className="mt-2.5 w-full py-1.5 px-2 rounded-xl text-[0.8125rem] font-sans font-semibold font-bold tracking-wider uppercase flex items-center justify-center gap-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30"
+                  className="mt-2.5 w-full py-1.5 px-2 rounded-xl text-[0.8125rem] font-sans font-semibold font-bold tracking-wider uppercase flex items-center justify-center gap-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-600 border border-indigo-500/30"
                 >
                   <span>{tokens >= 9 ? 'Redeem 9 Tokens' : `Need ${9 - tokens} More`}</span>
                 </button>
@@ -595,7 +595,7 @@ export function RewardedAdModal({
           </div>
 
           {/* ── EARN TOKENS (WATCH SPONSOR AD) ── */}
-          <div className="mb-4 p-3.5 rounded-2xl bg-zinc-900/90 border border-gold/25 flex items-center justify-between">
+          <div className="mb-4 p-3.5 rounded-2xl bg-slate-850/90 border border-gold/25 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-gold/15 border border-gold/30 flex items-center justify-center text-gold-light shrink-0">
                 <Play className="w-4 h-4 fill-current" />
@@ -605,7 +605,7 @@ export function RewardedAdModal({
                   <h4 className="text-xs font-bold text-stone-100">
                     Watch Sponsor Ad
                   </h4>
-                  <span className="text-[0.75rem] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded-full border border-emerald-500/20">
+                  <span className="text-[0.75rem] font-mono font-bold text-emerald-600 bg-emerald-500/10 px-1.5 py-0.2 rounded-full border border-emerald-500/20">
                     +1 Token
                   </span>
                 </div>
@@ -627,14 +627,14 @@ export function RewardedAdModal({
 
           {/* Cooldown Notice */}
           {!canWatchAd && (
-            <div className="p-2.5 rounded-xl bg-amber-500/[0.08] border border-amber-500/25 flex items-center justify-between text-xs text-amber-300 font-mono mb-4">
+            <div className="p-2.5 rounded-xl bg-amber-500/[0.08] border border-amber-500/25 flex items-center justify-between text-xs text-amber-600 font-mono mb-4">
               <span>Next ad available in:</span>
-              <span className="font-bold text-amber-200">{cooldownRemaining}s</span>
+              <span className="font-bold text-amber-700">{cooldownRemaining}s</span>
             </div>
           )}
 
           {/* Footer Notice */}
-          <div className="pt-3 border-t border-slate-900/20/[0.06] flex items-center justify-between">
+          <div className="pt-3 border-t border-slate-900/[0.06] flex items-center justify-between">
             <span className="text-[0.75rem] text-stone-500 font-sans">
               Watch one sponsor ad to earn 1 token. Redeem tokens to unlock your store shift.
             </span>
@@ -652,12 +652,12 @@ export function RewardedAdModal({
 
           {/* Quick Testing Tools - Master Admin Only */}
           {isMasterAdmin && showDevTools && (
-            <div className="mt-3 p-3 rounded-xl bg-zinc-900/90 border border-slate-900/20/[0.08] space-y-2 text-xs font-mono text-stone-300">
+            <div className="mt-3 p-3 rounded-xl bg-slate-850/90 border border-slate-900/[0.08] space-y-2 text-xs font-mono text-stone-300">
               <div className="flex items-center justify-between">
                 <span>Fast 3-Second Test Ad (+1 Token +8h):</span>
                 <button
                   onClick={() => handleFastTestAd()}
-                  className="px-2 py-1 rounded bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 text-[0.75rem]"
+                  className="px-2 py-1 rounded bg-amber-500/20 text-amber-600 hover:bg-amber-500/30 text-[0.75rem]"
                 >
                   Run (3s)
                 </button>
@@ -667,7 +667,7 @@ export function RewardedAdModal({
                 <span>Expire Now (Test Gate):</span>
                 <button
                   onClick={onExpireTest}
-                  className="px-2 py-1 rounded bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 text-[0.75rem]"
+                  className="px-2 py-1 rounded bg-rose-500/20 text-rose-600 hover:bg-rose-500/30 text-[0.75rem]"
                 >
                   Set to 00:00
                 </button>
@@ -678,7 +678,7 @@ export function RewardedAdModal({
                 <button
                   onClick={() => onToggleOwnerBypass(!ownerBypass)}
                   className={`px-2 py-1 rounded text-[0.75rem] ${
-                    ownerBypass ? 'bg-emerald-500/20 text-emerald-300' : 'bg-zinc-800 text-stone-400'
+                    ownerBypass ? 'bg-emerald-500/20 text-emerald-600' : 'bg-obsidian-850 text-stone-400'
                   }`}
                 >
                   {ownerBypass ? 'ENABLED' : 'DISABLED'}

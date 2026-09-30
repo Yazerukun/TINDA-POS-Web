@@ -28,7 +28,7 @@ export function getPresenceInfo(user?: UserAccount | null, nowMs: number = Date.
       status: 'OFFLINE',
       label: 'Offline',
       dotClass: 'bg-stone-500',
-      badgeClass: 'bg-zinc-900/80 text-stone-400 border-slate-900/20/[0.08]'
+      badgeClass: 'bg-slate-850/80 text-stone-400 border-slate-900/[0.08]'
     }
   }
 
@@ -38,7 +38,7 @@ export function getPresenceInfo(user?: UserAccount | null, nowMs: number = Date.
       status: 'OFFLINE',
       label: 'Offline',
       dotClass: 'bg-stone-500',
-      badgeClass: 'bg-zinc-900/80 text-stone-400 border-slate-900/20/[0.08]'
+      badgeClass: 'bg-slate-850/80 text-stone-400 border-slate-900/[0.08]'
     }
   }
 
@@ -48,7 +48,7 @@ export function getPresenceInfo(user?: UserAccount | null, nowMs: number = Date.
       status: 'OFFLINE',
       label: 'Offline',
       dotClass: 'bg-stone-500',
-      badgeClass: 'bg-zinc-900/80 text-stone-400 border-slate-900/20/[0.08]'
+      badgeClass: 'bg-slate-850/80 text-stone-400 border-slate-900/[0.08]'
     }
   }
 
@@ -61,7 +61,7 @@ export function getPresenceInfo(user?: UserAccount | null, nowMs: number = Date.
       status: 'ONLINE',
       label: 'Active Now',
       dotClass: 'bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]',
-      badgeClass: 'bg-emerald-950/70 text-emerald-300 border-emerald-500/40 shadow-sm'
+      badgeClass: 'bg-emerald-50/70 text-emerald-600 border-emerald-500/40 shadow-sm'
     }
   }
 
@@ -72,7 +72,7 @@ export function getPresenceInfo(user?: UserAccount | null, nowMs: number = Date.
       status: 'IDLE',
       label: `${mins}m ago`,
       dotClass: 'bg-amber-400',
-      badgeClass: 'bg-amber-950/60 text-amber-300 border-amber-500/30'
+      badgeClass: 'bg-amber-50/60 text-amber-600 border-amber-500/30'
     }
   }
 
@@ -90,7 +90,7 @@ export function getPresenceInfo(user?: UserAccount | null, nowMs: number = Date.
     status: 'OFFLINE',
     label: `Offline (${timeAgo})`,
     dotClass: 'bg-stone-600',
-    badgeClass: 'bg-zinc-950/80 text-stone-400 border-slate-900/20/[0.06]'
+    badgeClass: 'bg-obsidian-900/[0.04] text-stone-400 border-slate-900/[0.06]'
   }
 }
 
@@ -707,15 +707,15 @@ export function MasterControlScreen({
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div className="space-y-2">
             <div className="flex items-center gap-2.5">
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-amber-300 via-gold to-amber-600 flex items-center justify-center text-obsidian-950 font-serif font-black shadow-glow-gold">
-                <Crown className="w-5 h-5 text-obsidian-950" />
+              <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-amber-300 via-gold to-amber-600 flex items-center justify-center text-stone-100 font-serif font-black shadow-glow-gold">
+                <Crown className="w-5 h-5 text-stone-100" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="font-serif text-xl sm:text-2xl font-bold tracking-wider text-stone-100 uppercase">
                     Platform Master Control
                   </h1>
-                  <span className="px-2 py-0.5 rounded-full bg-gold/20 text-gold-light font-sans font-semibold text-[0.6875rem] font-extrabold uppercase tracking-widest border border-gold/40">
+                  <span className="px-2 py-0.5 rounded-full bg-gold/20 text-gold-light font-sans font-semibold text-[0.75rem] font-extrabold uppercase tracking-widest border border-gold/40">
                     SUPER ADMIN
                   </span>
                 </div>
@@ -726,12 +726,12 @@ export function MasterControlScreen({
             </div>
 
             {/* Master Credentials Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-gold/30 font-mono text-xs text-amber-200">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-gold/30 font-mono text-xs text-amber-700">
               <ShieldCheck className="w-4 h-4 text-gold-light" />
               <span>Logged in as:</span>
               <span className="font-bold text-gold-light">skorts188@gmail.com</span>
               <span className="text-stone-500">•</span>
-              <span className="text-emerald-400 font-semibold">Zero-Ads Master Bypass Active</span>
+              <span className="text-emerald-600 font-semibold">Zero-Ads Master Bypass Active</span>
             </div>
           </div>
 
@@ -747,7 +747,7 @@ export function MasterControlScreen({
 
             <button
               onClick={handleExportFullMasterBackup}
-              className="btn-press px-3.5 py-2.5 rounded-xl bg-zinc-900/80 border border-slate-900/20/[0.08] hover:border-gold/40 text-stone-300 hover:text-stone-100 text-xs font-mono flex items-center gap-2 transition-all shadow-sm"
+              className="btn-press px-3.5 py-2.5 rounded-xl bg-slate-850/80 border border-slate-900/[0.08] hover:border-gold/40 text-stone-300 hover:text-stone-100 text-xs font-mono flex items-center gap-2 transition-all shadow-sm"
               title="Download full database JSON backup"
             >
               <Download className="w-3.5 h-3.5 text-gold-light" />
@@ -757,7 +757,7 @@ export function MasterControlScreen({
             <button
               onClick={loadData}
               disabled={loading}
-              className="btn-press p-2.5 rounded-xl bg-zinc-900/80 border border-slate-900/20/[0.08] hover:border-gold/40 text-stone-400 hover:text-gold-light transition-all"
+              className="btn-press p-2.5 rounded-xl bg-slate-850/80 border border-slate-900/[0.08] hover:border-gold/40 text-stone-400 hover:text-gold-light transition-all"
               title="Refresh"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -770,8 +770,8 @@ export function MasterControlScreen({
       {notification && (
         <div className={`p-3.5 rounded-2xl border font-mono text-xs flex items-center justify-between animate-fade-in ${
           notification.type === 'error'
-            ? 'bg-rose-950/60 border-rose-700/60 text-rose-300'
-            : 'bg-emerald-950/60 border-emerald-700/60 text-emerald-300'
+            ? 'bg-rose-50/60 border-rose-700/60 text-rose-600'
+            : 'bg-emerald-50/60 border-emerald-700/60 text-emerald-600'
         }`}>
           <div className="flex items-center gap-2.5">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
@@ -786,7 +786,7 @@ export function MasterControlScreen({
       {/* ── KPI STATS CARDS ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Total Stores */}
-        <div className="p-4 sm:p-5 rounded-2xl glass-card border border-slate-900/20/[0.08] relative overflow-hidden">
+        <div className="p-4 sm:p-5 rounded-2xl glass-card border border-slate-900/[0.08] relative overflow-hidden">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[0.75rem] sm:text-xs font-sans font-semibold uppercase tracking-widest text-stone-400">
               Registered Stores
@@ -800,19 +800,19 @@ export function MasterControlScreen({
         </div>
 
         {/* Realtime Live Active Users */}
-        <div className="p-4 sm:p-5 rounded-2xl glass-card border border-emerald-500/30 relative overflow-hidden bg-emerald-950/[0.15]">
+        <div className="p-4 sm:p-5 rounded-2xl glass-card border border-emerald-500/30 relative overflow-hidden bg-emerald-50/[0.15]">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[0.75rem] sm:text-xs font-sans font-semibold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5 font-bold">
+            <span className="text-[0.75rem] sm:text-xs font-sans font-semibold uppercase tracking-widest text-emerald-600 flex items-center gap-1.5 font-bold">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
               Live Realtime Status
             </span>
-            <Activity className="w-4 h-4 text-emerald-400" />
+            <Activity className="w-4 h-4 text-emerald-600" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="font-serif text-2xl sm:text-3xl font-bold text-emerald-300">
+            <span className="font-serif text-2xl sm:text-3xl font-bold text-emerald-600">
               {presenceCounts.online}
             </span>
-            <span className="text-xs font-mono text-emerald-400/80 font-semibold">Online Now</span>
+            <span className="text-xs font-mono text-emerald-600/80 font-semibold">Online Now</span>
           </div>
           <p className="text-[0.75rem] font-mono text-stone-400 mt-1">
             {presenceCounts.idle} idle (&lt;5m) • {presenceCounts.offline} offline
@@ -832,7 +832,7 @@ export function MasterControlScreen({
             <span className="font-serif text-2xl sm:text-3xl font-bold text-gold-light">
               {totalPlatformAds}
             </span>
-            <span className="text-[0.75rem] font-mono text-emerald-400 font-bold">● Monetag Live</span>
+            <span className="text-[0.75rem] font-mono text-emerald-600 font-bold">● Monetag Live</span>
           </div>
           <p className="text-[0.75rem] font-mono text-stone-400 mt-1 truncate">
             Across all merchant accounts
@@ -840,16 +840,16 @@ export function MasterControlScreen({
         </div>
 
         {/* Total Tokens Distributed */}
-        <div className="p-4 sm:p-5 rounded-2xl glass-card border border-gold/30 relative overflow-hidden bg-zinc-900/60">
+        <div className="p-4 sm:p-5 rounded-2xl glass-card border border-gold/30 relative overflow-hidden bg-slate-850/60">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[0.75rem] sm:text-xs font-sans font-semibold uppercase tracking-widest text-amber-300 flex items-center gap-1.5">
+            <span className="text-[0.75rem] sm:text-xs font-sans font-semibold uppercase tracking-widest text-amber-600 flex items-center gap-1.5">
               <Coins className="w-3.5 h-3.5 text-gold" />
               Merchant Tokens
             </span>
-            <Wallet className="w-4 h-4 text-amber-300" />
+            <Wallet className="w-4 h-4 text-amber-600" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="font-serif text-2xl sm:text-3xl font-bold text-amber-200">
+            <span className="font-serif text-2xl sm:text-3xl font-bold text-amber-700">
               {totalPlatformTokens}
             </span>
             <span className="text-[0.75rem] font-mono text-gold-light font-semibold">🪙 Tokens</span>
@@ -861,43 +861,43 @@ export function MasterControlScreen({
       </div>
 
       {/* ── REALTIME PRESENCE & ADS TICKER BAR ── */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-zinc-950/90 border border-gold/20 shadow-inner text-xs font-mono">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-obsidian-900/[0.04] border border-gold/20 shadow-inner text-xs font-mono">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="flex items-center gap-1.5 text-emerald-400 font-bold tracking-wider uppercase text-[0.8125rem]">
+          <span className="flex items-center gap-1.5 text-emerald-600 font-bold tracking-wider uppercase text-[0.8125rem]">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
             Cloudflare D1 Realtime Presence
           </span>
-          <span className="text-stone-600">|</span>
+          <span className="text-stone-500">|</span>
           <span className="text-stone-400 text-[0.8125rem]">
             Auto-refreshing every <span className="text-gold-light font-bold">5s</span>
           </span>
         </div>
 
         <div className="flex items-center gap-3 text-[0.8125rem] flex-wrap">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-semibold">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 font-semibold">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             {presenceCounts.online} Online
           </span>
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-amber-500/10 text-amber-300 border border-amber-500/20">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-amber-500/10 text-amber-600 border border-amber-500/20">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
             {presenceCounts.idle} Idle (&lt;5m)
           </span>
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-zinc-900 text-stone-400 border border-slate-900/20/[0.06]">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-slate-850 text-stone-400 border border-slate-900/[0.06]">
             <span className="w-1.5 h-1.5 rounded-full bg-stone-500" />
             {presenceCounts.offline} Offline
           </span>
-          <span className="text-stone-600">|</span>
+          <span className="text-stone-500">|</span>
           <span className="text-gold-light font-bold flex items-center gap-1">
             <Tv className="w-3 h-3" /> {totalPlatformAds} Total Ads
           </span>
-          <span className="text-amber-300 font-bold flex items-center gap-1">
+          <span className="text-amber-600 font-bold flex items-center gap-1">
             <Coins className="w-3 h-3" /> {totalPlatformTokens} Tokens
           </span>
         </div>
       </div>
 
       {/* ── SEARCH & FILTER CONTROLS ── */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-2xl bg-zinc-950/70 border border-slate-900/20/[0.08]">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-2xl bg-obsidian-900/[0.05] border border-slate-900/[0.08]">
         {/* Search */}
         <div className="relative flex-1">
           <Search className="w-4 h-4 text-stone-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -906,7 +906,7 @@ export function MasterControlScreen({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search stores, owners, staff names, or usernames..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-zinc-900/60 border border-slate-900/20/[0.07] focus:border-gold/60 text-stone-100 text-xs font-medium placeholder-stone-600 focus:outline-none transition-all"
+            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-850/60 border border-slate-900/[0.07] focus:border-gold/60 text-stone-100 text-xs font-medium placeholder-stone-600 focus:outline-none transition-all"
           />
         </div>
 
@@ -919,7 +919,7 @@ export function MasterControlScreen({
               className={`px-3 py-1.5 rounded-xl text-[0.75rem] font-mono font-bold tracking-wider uppercase border transition-all ${
                 filterRole === mode
                   ? 'bg-amber-500/20 border-gold text-gold-light shadow-glow-gold'
-                  : 'bg-zinc-900/40 border-slate-900/20/[0.06] text-stone-400 hover:text-stone-200'
+                  : 'bg-slate-850/40 border-slate-900/[0.06] text-stone-400 hover:text-stone-200'
               }`}
             >
               {mode}
@@ -931,8 +931,8 @@ export function MasterControlScreen({
       {/* ── STORES & USERS REGISTRY ── */}
       <div className="space-y-4">
         {filteredStoreEntries.length === 0 ? (
-          <div className="p-8 text-center rounded-3xl glass-card border border-slate-900/20/[0.08]">
-            <Store className="w-8 h-8 text-stone-600 mx-auto mb-2" />
+          <div className="p-8 text-center rounded-3xl glass-card border border-slate-900/[0.08]">
+            <Store className="w-8 h-8 text-stone-500 mx-auto mb-2" />
             <p className="text-sm font-semibold text-stone-300">No matching stores or users found</p>
             <p className="text-xs font-mono text-stone-500 mt-1">Try changing search query or register a new store</p>
           </div>
@@ -962,19 +962,19 @@ export function MasterControlScreen({
             return (
               <div
                 key={storeName}
-                className="rounded-3xl glass-card border border-slate-900/20/[0.08] hover:border-gold/30 transition-all overflow-hidden"
+                className="rounded-3xl glass-card border border-slate-900/[0.08] hover:border-gold/30 transition-all overflow-hidden"
               >
                 {/* Store Header Row */}
-                <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-zinc-950/40 border-b border-slate-900/20/[0.06]">
+                <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-obsidian-900/[0.07] border-b border-slate-900/[0.06]">
                   <div className="flex items-start sm:items-center gap-3.5">
                     <button
                       onClick={() => toggleStoreExpand(storeName)}
-                      className="p-1 rounded-lg hover:bg-slate-900/[0.07] text-stone-400 transition-colors mt-0.5 sm:mt-0"
+                      className="p-1 rounded-lg hover:bg-obsidian-900/[0.07] text-stone-400 transition-colors mt-0.5 sm:mt-0"
                     >
                       {isExpanded ? <ChevronDown className="w-4 h-4 text-gold-light" /> : <ChevronRight className="w-4 h-4" />}
                     </button>
 
-                    <div className="h-10 w-10 rounded-2xl bg-amber-500/10 border border-gold/30 flex items-center justify-center text-amber-300 shrink-0 font-serif font-bold text-sm">
+                    <div className="h-10 w-10 rounded-2xl bg-amber-500/10 border border-gold/30 flex items-center justify-center text-amber-600 shrink-0 font-serif font-bold text-sm">
                       <Store className="w-5 h-5 text-gold-light" />
                     </div>
 
@@ -984,29 +984,29 @@ export function MasterControlScreen({
                           {storeName}
                         </h3>
                         {isPlatformMasterStore ? (
-                          <span className="px-2 py-0.5 rounded-full bg-gold/20 text-gold-light font-sans font-semibold text-[0.6875rem] font-extrabold uppercase border border-gold/40 flex items-center gap-1">
+                          <span className="px-2 py-0.5 rounded-full bg-gold/20 text-gold-light font-sans font-semibold text-[0.75rem] font-extrabold uppercase border border-gold/40 flex items-center gap-1">
                             <Crown className="w-3 h-3 text-gold" />
                             PLATFORM HQ
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 font-sans font-semibold text-[0.6875rem] font-semibold uppercase border border-amber-500/30">
+                          <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 font-sans font-semibold text-[0.75rem] font-semibold uppercase border border-amber-500/30">
                             Merchant Store
                           </span>
                         )}
 
                         {/* Realtime Store Online Badge */}
                         {hasOnlineUser ? (
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 font-sans font-semibold text-[0.6875rem] font-bold uppercase border border-emerald-500/40 flex items-center gap-1 shadow-sm">
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 font-sans font-semibold text-[0.75rem] font-bold uppercase border border-emerald-500/40 flex items-center gap-1 shadow-sm">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(52,211,153,0.9)]" />
                             STORE ONLINE
                           </span>
                         ) : hasIdleUser ? (
-                          <span className="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-sans font-semibold text-[0.6875rem] font-bold uppercase border border-amber-500/30 flex items-center gap-1">
+                          <span className="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 font-sans font-semibold text-[0.75rem] font-bold uppercase border border-amber-500/30 flex items-center gap-1">
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                             IDLE (&lt;5M)
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-full bg-zinc-900/80 text-stone-400 font-sans font-semibold text-[0.6875rem] uppercase border border-slate-900/20/[0.06] flex items-center gap-1">
+                          <span className="px-2 py-0.5 rounded-full bg-slate-850/80 text-stone-400 font-sans font-semibold text-[0.75rem] uppercase border border-slate-900/[0.06] flex items-center gap-1">
                             <span className="w-1.5 h-1.5 rounded-full bg-stone-500" />
                             OFFLINE
                           </span>
@@ -1025,14 +1025,14 @@ export function MasterControlScreen({
                         <span>• <span className="text-gold-light font-bold">{staffList.length}</span> Staff</span>
 
                         {/* Store Ads & Tokens Pill */}
-                        <span className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-lg bg-zinc-900/90 border border-gold/20 text-stone-200">
+                        <span className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-lg bg-slate-850/90 border border-gold/20 text-stone-200">
                           <span className="text-gold-light font-semibold flex items-center gap-1">
                             <Tv className="w-3 h-3 text-gold" />
                             {isPlatformMasterStore ? '0 Ads (Master Admin)' : `${storeAds} Ads Watched`}
                           </span>
-                          <span className="text-stone-600">•</span>
-                          <span className="text-amber-300 font-semibold flex items-center gap-1">
-                            <Coins className="w-3 h-3 text-amber-400" />
+                          <span className="text-stone-500">•</span>
+                          <span className="text-amber-600 font-semibold flex items-center gap-1">
+                            <Coins className="w-3 h-3 text-amber-600" />
                             {storeTokens} Tokens
                           </span>
                         </span>
@@ -1056,10 +1056,10 @@ export function MasterControlScreen({
                     {!isPlatformMasterStore && owner && (
                       <button
                         onClick={() => handleOpenStorePassModal(storeName, owner)}
-                        className="btn-press px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-sans font-semibold text-[0.75rem] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm"
+                        className="btn-press px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 font-sans font-semibold text-[0.75rem] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-sm"
                         title="Manage Store Pass, Time & Tokens"
                       >
-                        <Zap className="w-3.5 h-3.5 text-emerald-400" />
+                        <Zap className="w-3.5 h-3.5 text-emerald-600" />
                         <span>Manage Pass</span>
                       </button>
                     )}
@@ -1081,7 +1081,7 @@ export function MasterControlScreen({
                     {owner && (
                       <button
                         onClick={() => setEditingPinUser(owner)}
-                        className="btn-press px-2.5 py-1.5 rounded-xl bg-zinc-900 border border-slate-900/20/[0.08] hover:border-gold/40 text-stone-300 text-[0.75rem] font-mono flex items-center gap-1.5"
+                        className="btn-press px-2.5 py-1.5 rounded-xl bg-slate-850 border border-slate-900/[0.08] hover:border-gold/40 text-stone-300 text-[0.75rem] font-mono flex items-center gap-1.5"
                         title="Reset Owner PIN"
                       >
                         <KeyRound className="w-3 h-3 text-gold-light" />
@@ -1097,7 +1097,7 @@ export function MasterControlScreen({
                     <div className="overflow-x-auto">
                       <table className="w-full text-left font-sans text-xs">
                         <thead>
-                          <tr className="border-b border-slate-900/20/[0.08] text-[0.75rem] font-sans font-semibold uppercase tracking-widest text-stone-400 pb-2">
+                          <tr className="border-b border-slate-900/[0.08] text-[0.75rem] font-sans font-semibold uppercase tracking-widest text-stone-400 pb-2">
                             <th className="py-2.5 px-3">Account / User</th>
                             <th className="py-2.5 px-3">Role</th>
                             <th className="py-2.5 px-3">Realtime Status</th>
@@ -1120,7 +1120,7 @@ export function MasterControlScreen({
                                       className="w-8 h-8 rounded-xl object-cover border border-gold/40 shadow-glow-gold shrink-0"
                                     />
                                   ) : (
-                                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-300 to-[#2563EB] text-obsidian-950 font-serif font-bold text-xs flex items-center justify-center shrink-0">
+                                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-300 to-[#2563EB] text-stone-100 font-serif font-bold text-xs flex items-center justify-center shrink-0">
                                       {(owner.name || owner.username || 'OW').substring(0, 2).toUpperCase()}
                                     </div>
                                   )}
@@ -1134,10 +1134,10 @@ export function MasterControlScreen({
                                 </div>
                               </td>
                               <td className="py-3 px-3">
-                                <span className={`px-2 py-0.5 rounded-md font-mono text-[0.6875rem] font-bold uppercase tracking-wider ${
+                                <span className={`px-2 py-0.5 rounded-md font-mono text-[0.75rem] font-bold uppercase tracking-wider ${
                                   isPlatformMasterStore
                                     ? 'bg-gradient-to-r from-amber-500/20 to-gold/20 text-gold-light border border-gold/40'
-                                    : 'bg-amber-500/10 text-amber-200 border border-amber-500/20'
+                                    : 'bg-amber-500/10 text-amber-700 border border-amber-500/20'
                                 }`}>
                                   {isPlatformMasterStore ? 'PLATFORM MASTER' : 'STORE OWNER'}
                                 </span>
@@ -1156,10 +1156,10 @@ export function MasterControlScreen({
                               <td className="py-3 px-3 font-mono text-[0.8125rem]">
                                 {isPlatformMasterStore ? (
                                   <div className="flex flex-col">
-                                    <span className="text-emerald-400 font-bold flex items-center gap-1">
+                                    <span className="text-emerald-600 font-bold flex items-center gap-1">
                                       <Crown className="w-3 h-3 text-gold" /> MASTER ADMIN
                                     </span>
-                                    <span className="text-[0.6875rem] text-stone-400">Zero-Ads Bypass</span>
+                                    <span className="text-[0.75rem] text-stone-400">Zero-Ads Bypass</span>
                                   </div>
                                 ) : (
                                   (() => {
@@ -1174,11 +1174,11 @@ export function MasterControlScreen({
                                             <Tv className="w-3 h-3 text-gold" /> {adsCount} Ads
                                           </span>
                                           <span className="text-stone-500">•</span>
-                                          <span className="text-amber-300 font-bold flex items-center gap-1">
-                                            <Coins className="w-3 h-3 text-amber-400" /> {tokenCount} 🪙
+                                          <span className="text-amber-600 font-bold flex items-center gap-1">
+                                            <Coins className="w-3 h-3 text-amber-600" /> {tokenCount} 🪙
                                           </span>
                                         </div>
-                                        <span className="text-[0.6875rem] text-stone-400 font-mono">
+                                        <span className="text-[0.75rem] text-stone-400 font-mono">
                                           {pro?.unlimited_until && !isNaN(new Date(pro.unlimited_until).getTime()) && new Date(pro.unlimited_until).getTime() > currentTime
                                             ? `Pass: until ${new Date(pro.unlimited_until).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
                                             : 'Requires Ad Shift'}
@@ -1206,7 +1206,7 @@ export function MasterControlScreen({
                                     title="Copy PIN"
                                   >
                                     {copiedUserId === owner.id ? (
-                                      <Check className="w-3 h-3 text-emerald-400" />
+                                      <Check className="w-3 h-3 text-emerald-600" />
                                     ) : (
                                       <Copy className="w-3 h-3" />
                                     )}
@@ -1214,7 +1214,7 @@ export function MasterControlScreen({
                                 </div>
                               </td>
                               <td className="py-3 px-3">
-                                <span className="inline-flex items-center gap-1 font-mono text-[0.75rem] text-emerald-400">
+                                <span className="inline-flex items-center gap-1 font-mono text-[0.75rem] text-emerald-600">
                                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                                   ACTIVE
                                 </span>
@@ -1223,7 +1223,7 @@ export function MasterControlScreen({
                                 <div className="flex items-center justify-end gap-1.5">
                                   <button
                                     onClick={() => setEditingPinUser(owner)}
-                                    className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-stone-300 border border-slate-900/20/[0.08]"
+                                    className="p-1.5 rounded-lg bg-slate-850 hover:bg-obsidian-850 text-stone-300 border border-slate-900/[0.08]"
                                     title="Reset PIN"
                                   >
                                     <KeyRound className="w-3.5 h-3.5 text-gold-light" />
@@ -1245,7 +1245,7 @@ export function MasterControlScreen({
                                       className="w-8 h-8 rounded-xl object-cover border border-slate-900/30 shrink-0"
                                     />
                                   ) : (
-                                    <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-slate-900/15 text-stone-300 font-serif font-bold text-xs flex items-center justify-center shrink-0">
+                                    <div className="w-8 h-8 rounded-xl bg-obsidian-850 border border-slate-900/15 text-stone-300 font-serif font-bold text-xs flex items-center justify-center shrink-0">
                                       {(staff.name || staff.username || 'ST').substring(0, 2).toUpperCase()}
                                     </div>
                                   )}
@@ -1256,10 +1256,10 @@ export function MasterControlScreen({
                                 </div>
                               </td>
                               <td className="py-3 px-3">
-                                <span className={`px-2 py-0.5 rounded-md font-mono text-[0.6875rem] font-bold uppercase tracking-wider ${
+                                <span className={`px-2 py-0.5 rounded-md font-mono text-[0.75rem] font-bold uppercase tracking-wider ${
                                   staff.role === 'INVENTORY_LEAD'
-                                    ? 'bg-sky-500/10 text-sky-300 border border-sky-500/20'
-                                    : 'bg-zinc-800 text-stone-300 border border-slate-900/20/[0.08]'
+                                    ? 'bg-sky-500/10 text-sky-600 border border-sky-500/20'
+                                    : 'bg-obsidian-850 text-stone-300 border border-slate-900/[0.08]'
                                 }`}>
                                   {staff.role}
                                 </span>
@@ -1288,11 +1288,11 @@ export function MasterControlScreen({
                                           <Tv className="w-3 h-3 text-gold" /> {adsCount} Ads
                                         </span>
                                         <span className="text-stone-500">•</span>
-                                        <span className="text-amber-300 font-bold flex items-center gap-1">
-                                          <Coins className="w-3 h-3 text-amber-400" /> {tokenCount} 🪙
+                                        <span className="text-amber-600 font-bold flex items-center gap-1">
+                                          <Coins className="w-3 h-3 text-amber-600" /> {tokenCount} 🪙
                                         </span>
                                       </div>
-                                      <span className="text-[0.6875rem] text-stone-400 font-mono">
+                                      <span className="text-[0.75rem] text-stone-400 font-mono">
                                         30s Cooldown Shift
                                       </span>
                                     </div>
@@ -1317,7 +1317,7 @@ export function MasterControlScreen({
                                     title="Copy PIN"
                                   >
                                     {copiedUserId === staff.id ? (
-                                      <Check className="w-3 h-3 text-emerald-400" />
+                                      <Check className="w-3 h-3 text-emerald-600" />
                                     ) : (
                                       <Copy className="w-3 h-3" />
                                     )}
@@ -1329,8 +1329,8 @@ export function MasterControlScreen({
                                   onClick={() => handleToggleStatus(staff)}
                                   className={`inline-flex items-center gap-1 font-mono text-[0.75rem] px-2 py-0.5 rounded-full border transition-all ${
                                     staff.status === 'ACTIVE'
-                                      ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25'
-                                      : 'bg-rose-500/10 text-rose-300 border-rose-500/25'
+                                      ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/25'
+                                      : 'bg-rose-500/10 text-rose-600 border-rose-500/25'
                                   }`}
                                 >
                                   <span className={`w-1.5 h-1.5 rounded-full ${staff.status === 'ACTIVE' ? 'bg-emerald-400' : 'bg-rose-400'}`} />
@@ -1341,14 +1341,14 @@ export function MasterControlScreen({
                                 <div className="flex items-center justify-end gap-1.5">
                                   <button
                                     onClick={() => setEditingPinUser(staff)}
-                                    className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-stone-300 border border-slate-900/20/[0.08]"
+                                    className="p-1.5 rounded-lg bg-slate-850 hover:bg-obsidian-850 text-stone-300 border border-slate-900/[0.08]"
                                     title="Reset PIN"
                                   >
                                     <KeyRound className="w-3.5 h-3.5 text-gold-light" />
                                   </button>
                                   <button
                                     onClick={() => handleDeleteUser(staff)}
-                                    className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20"
+                                    className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 border border-red-500/20"
                                     title="Delete Staff"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -1362,7 +1362,7 @@ export function MasterControlScreen({
                     </div>
 
                     {staffList.length === 0 && (
-                      <div className="p-3 text-center rounded-xl bg-zinc-900/40 border border-slate-900/20/[0.04]">
+                      <div className="p-3 text-center rounded-xl bg-slate-850/40 border border-slate-900/[0.04]">
                         <p className="font-mono text-[0.8125rem] text-stone-500">
                           No sub-staff accounts created yet for this store. Store owner can add staff via Settings.
                         </p>
@@ -1380,7 +1380,7 @@ export function MasterControlScreen({
       {showAddStoreModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/85 backdrop-blur-2xl animate-fade-in">
           <div className="w-full max-w-md rounded-3xl glass-vault border border-gold/40 p-6 sm:p-7 shadow-vault text-stone-100 animate-scale-up">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-900/20/[0.08] mb-4">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-900/[0.08] mb-4">
               <div className="flex items-center gap-2.5">
                 <Store className="w-5 h-5 text-gold-light" />
                 <h3 className="font-serif text-base font-bold text-stone-100 uppercase tracking-wider">
@@ -1405,7 +1405,7 @@ export function MasterControlScreen({
                   value={newStoreName}
                   onChange={(e) => setNewStoreName(e.target.value)}
                   placeholder="e.g. Aling Nena's Sari-Sari Store"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950/80 border border-slate-900/20/[0.08] focus:border-gold/60 text-stone-100 text-xs font-medium placeholder-stone-600 focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] focus:border-gold/60 text-stone-100 text-xs font-medium placeholder-stone-600 focus:outline-none"
                 />
               </div>
 
@@ -1418,7 +1418,7 @@ export function MasterControlScreen({
                   value={newOwnerName}
                   onChange={(e) => setNewOwnerName(e.target.value)}
                   placeholder="e.g. Maria Santos"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950/80 border border-slate-900/20/[0.08] focus:border-gold/60 text-stone-100 text-xs font-medium placeholder-stone-600 focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] focus:border-gold/60 text-stone-100 text-xs font-medium placeholder-stone-600 focus:outline-none"
                 />
               </div>
 
@@ -1431,7 +1431,7 @@ export function MasterControlScreen({
                   value={newOwnerUsername}
                   onChange={(e) => setNewOwnerUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
                   placeholder="e.g. mariasari"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950/80 border border-slate-900/20/[0.08] focus:border-gold/60 text-stone-100 text-xs font-mono placeholder-stone-600 focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] focus:border-gold/60 text-stone-100 text-xs font-mono placeholder-stone-600 focus:outline-none"
                 />
               </div>
 
@@ -1444,7 +1444,7 @@ export function MasterControlScreen({
                   value={newOwnerEmail}
                   onChange={(e) => setNewOwnerEmail(e.target.value)}
                   placeholder="e.g. 0917-123-4567 or maria@gmail.com"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950/80 border border-slate-900/20/[0.08] focus:border-gold/60 text-stone-100 text-xs placeholder-stone-600 focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] focus:border-gold/60 text-stone-100 text-xs placeholder-stone-600 focus:outline-none"
                 />
               </div>
 
@@ -1457,19 +1457,19 @@ export function MasterControlScreen({
                   value={newOwnerPin}
                   onChange={(e) => setNewOwnerPin(e.target.value)}
                   placeholder="e.g. 1234 or secret123"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950/80 border border-slate-900/20/[0.08] focus:border-gold/60 text-gold-light font-mono text-xs placeholder-stone-600 focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] focus:border-gold/60 text-gold-light font-mono text-xs placeholder-stone-600 focus:outline-none"
                 />
               </div>
 
               {storeModalError && (
-                <p className="text-[0.8125rem] font-mono text-red-400">{storeModalError}</p>
+                <p className="text-[0.8125rem] font-mono text-red-600">{storeModalError}</p>
               )}
 
               <div className="pt-2 flex items-center justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setShowAddStoreModal(false)}
-                  className="btn-press px-4 py-2.5 rounded-xl bg-zinc-900 text-stone-400 font-sans font-semibold text-xs uppercase"
+                  className="btn-press px-4 py-2.5 rounded-xl bg-slate-850 text-stone-400 font-sans font-semibold text-xs uppercase"
                 >
                   Cancel
                 </button>
@@ -1489,7 +1489,7 @@ export function MasterControlScreen({
       {showAddStaffModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/85 backdrop-blur-2xl animate-fade-in">
           <div className="w-full max-w-md rounded-3xl glass-vault border border-gold/40 p-6 sm:p-7 shadow-vault text-stone-100 animate-scale-up">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-900/20/[0.08] mb-4">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-900/[0.08] mb-4">
               <div>
                 <h3 className="font-serif text-base font-bold text-stone-100 uppercase tracking-wider">
                   Add Staff Account
@@ -1516,7 +1516,7 @@ export function MasterControlScreen({
                   value={newStaffName}
                   onChange={(e) => setNewStaffName(e.target.value)}
                   placeholder="e.g. Juan De La Cruz"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950/80 border border-slate-900/20/[0.08] focus:border-gold/60 text-stone-100 text-xs font-medium placeholder-stone-600 focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] focus:border-gold/60 text-stone-100 text-xs font-medium placeholder-stone-600 focus:outline-none"
                 />
               </div>
 
@@ -1529,7 +1529,7 @@ export function MasterControlScreen({
                   value={newStaffUsername}
                   onChange={(e) => setNewStaffUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
                   placeholder="e.g. juan_cashier"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950/80 border border-slate-900/20/[0.08] focus:border-gold/60 text-stone-100 text-xs font-mono placeholder-stone-600 focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] focus:border-gold/60 text-stone-100 text-xs font-mono placeholder-stone-600 focus:outline-none"
                 />
               </div>
 
@@ -1549,11 +1549,11 @@ export function MasterControlScreen({
                       className={`p-2.5 rounded-xl text-left border transition-all ${
                         newStaffRole === r.role
                           ? 'bg-amber-500/20 border-gold text-gold-light'
-                          : 'bg-zinc-900/60 border-slate-900/20/[0.06] text-stone-400'
+                          : 'bg-slate-850/60 border-slate-900/[0.06] text-stone-400'
                       }`}
                     >
                       <div className="text-xs font-semibold text-stone-200">{r.label}</div>
-                      <div className="text-[0.6875rem] font-mono text-stone-500">{r.desc}</div>
+                      <div className="text-[0.75rem] font-mono text-stone-500">{r.desc}</div>
                     </button>
                   ))}
                 </div>
@@ -1570,19 +1570,19 @@ export function MasterControlScreen({
                   value={newStaffPin}
                   onChange={(e) => setNewStaffPin(e.target.value.replace(/[^0-9]/g, ''))}
                   placeholder="••••"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950/80 border border-slate-900/20/[0.08] focus:border-gold/60 text-gold-light font-mono text-center tracking-widest focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] focus:border-gold/60 text-gold-light font-mono text-center tracking-widest focus:outline-none"
                 />
               </div>
 
               {staffModalError && (
-                <p className="text-[0.8125rem] font-mono text-red-400">{staffModalError}</p>
+                <p className="text-[0.8125rem] font-mono text-red-600">{staffModalError}</p>
               )}
 
               <div className="pt-2 flex items-center justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setShowAddStaffModal(false)}
-                  className="btn-press px-4 py-2.5 rounded-xl bg-zinc-900 text-stone-400 font-sans font-semibold text-xs uppercase"
+                  className="btn-press px-4 py-2.5 rounded-xl bg-slate-850 text-stone-400 font-sans font-semibold text-xs uppercase"
                 >
                   Cancel
                 </button>
@@ -1602,7 +1602,7 @@ export function MasterControlScreen({
       {editingPinUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/85 backdrop-blur-2xl animate-fade-in">
           <div className="w-full max-w-sm rounded-3xl glass-vault border border-gold/40 p-6 shadow-vault text-stone-100 animate-scale-up">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-900/20/[0.08] mb-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-900/[0.08] mb-4">
               <div className="flex items-center gap-2">
                 <KeyRound className="w-4 h-4 text-gold-light" />
                 <h3 className="font-serif text-sm font-bold text-stone-100 uppercase tracking-wider">
@@ -1631,7 +1631,7 @@ export function MasterControlScreen({
                   value={newPinValue}
                   onChange={(e) => setNewPinValue(e.target.value)}
                   placeholder="Enter new PIN or password"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-950/80 border border-slate-900/20/[0.08] focus:border-gold/60 text-gold-light font-mono text-center tracking-widest focus:outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] focus:border-gold/60 text-gold-light font-mono text-center tracking-widest focus:outline-none"
                   autoFocus
                 />
               </div>
@@ -1640,7 +1640,7 @@ export function MasterControlScreen({
                 <button
                   type="button"
                   onClick={() => setEditingPinUser(null)}
-                  className="btn-press px-3.5 py-2 rounded-xl bg-zinc-900 text-stone-400 font-sans font-semibold text-xs uppercase"
+                  className="btn-press px-3.5 py-2 rounded-xl bg-slate-850 text-stone-400 font-sans font-semibold text-xs uppercase"
                 >
                   Cancel
                 </button>
@@ -1661,7 +1661,7 @@ export function MasterControlScreen({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/85 backdrop-blur-2xl animate-fade-in">
           <div className="w-full max-w-lg rounded-3xl glass-vault border border-gold/50 p-6 sm:p-7 shadow-vault text-stone-100 animate-scale-up space-y-5">
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-slate-900/20/[0.08]">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-900/[0.08]">
               <div className="flex items-center gap-2.5">
                 <div className="h-10 w-10 rounded-2xl bg-amber-500/20 border border-gold/40 flex items-center justify-center text-gold-light">
                   <Zap className="w-5 h-5 text-gold-light" />
@@ -1691,7 +1691,7 @@ export function MasterControlScreen({
             ) : (
               <div className="space-y-4">
                 {/* Status summary */}
-                <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-zinc-950/80 border border-slate-900/20/[0.08]">
+                <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-obsidian-900/[0.04] border border-slate-900/[0.08]">
                   <div>
                     <span className="text-[0.75rem] font-sans font-semibold uppercase text-stone-400 block">
                       Current Shift Pass
@@ -1708,7 +1708,7 @@ export function MasterControlScreen({
                     <span className="text-[0.75rem] font-sans font-semibold uppercase text-stone-400 block">
                       Token Balance
                     </span>
-                    <span className="font-mono text-xs sm:text-sm font-bold text-emerald-300 block truncate">
+                    <span className="font-mono text-xs sm:text-sm font-bold text-emerald-600 block truncate">
                       {passOwnerState?.tokens || 0} Tokens ({((passOwnerState?.tokens || 0) / 3).toFixed(1)} Days)
                     </span>
                   </div>
@@ -1749,19 +1749,19 @@ export function MasterControlScreen({
                   <div className="grid grid-cols-3 gap-2">
                     <button
                       onClick={() => handleGrantTokens(3)}
-                      className="py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-slate-900/20/[0.08] text-stone-200 font-mono text-xs font-bold transition-all text-center"
+                      className="py-2 px-3 rounded-xl bg-slate-850 hover:bg-obsidian-850 border border-slate-900/[0.08] text-stone-200 font-mono text-xs font-bold transition-all text-center"
                     >
                       +3 Tokens (1d)
                     </button>
                     <button
                       onClick={() => handleGrantTokens(9)}
-                      className="py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-slate-900/20/[0.08] text-stone-200 font-mono text-xs font-bold transition-all text-center"
+                      className="py-2 px-3 rounded-xl bg-slate-850 hover:bg-obsidian-850 border border-slate-900/[0.08] text-stone-200 font-mono text-xs font-bold transition-all text-center"
                     >
                       +9 Tokens (3d)
                     </button>
                     <button
                       onClick={() => handleGrantTokens(30)}
-                      className="py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-slate-900/20/[0.08] text-stone-200 font-mono text-xs font-bold transition-all text-center"
+                      className="py-2 px-3 rounded-xl bg-slate-850 hover:bg-obsidian-850 border border-slate-900/[0.08] text-stone-200 font-mono text-xs font-bold transition-all text-center"
                     >
                       +30 Tokens (10d)
                     </button>
@@ -1769,13 +1769,13 @@ export function MasterControlScreen({
                 </div>
 
                 {/* Supreme Overrides */}
-                <div className="pt-2 border-t border-slate-900/20/[0.06] flex items-center justify-between gap-3 flex-wrap">
+                <div className="pt-2 border-t border-slate-900/[0.06] flex items-center justify-between gap-3 flex-wrap">
                   <button
                     onClick={handleToggleVipBypass}
                     className={`py-2 px-3.5 rounded-xl font-mono text-xs font-bold transition-all border ${
                       passOwnerState?.owner_bypass
-                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                        : 'bg-zinc-900 text-stone-300 border-slate-900/20/[0.1] hover:border-gold/40'
+                        ? 'bg-emerald-500/20 text-emerald-600 border-emerald-500/40'
+                        : 'bg-slate-850 text-stone-300 border-slate-900/[0.1] hover:border-gold/40'
                     }`}
                   >
                     {passOwnerState?.owner_bypass ? '👑 VIP Bypass Active (Disable)' : '👑 Grant Lifetime VIP Bypass'}
@@ -1783,7 +1783,7 @@ export function MasterControlScreen({
 
                   <button
                     onClick={handleExpireStorePassNow}
-                    className="py-2 px-3.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-mono text-xs font-bold transition-all"
+                    className="py-2 px-3.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-600 font-mono text-xs font-bold transition-all"
                   >
                     🔴 Expire & Lock Now
                   </button>

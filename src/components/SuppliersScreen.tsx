@@ -153,7 +153,7 @@ export function SuppliersScreen(): React.JSX.Element {
 
         <button
           onClick={handleOpenAdd}
-          className="btn-press px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-[#2563EB] hover:from-amber-300 hover:to-gold text-black text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-gold transition-all self-start sm:self-auto"
+          className="btn-press px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-[#2563EB] hover:from-blue-400 hover:to-[#1D4ED8] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-gold transition-all self-start sm:self-auto"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>New Supplier</span>
@@ -168,7 +168,7 @@ export function SuppliersScreen(): React.JSX.Element {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by vendor name, contact person, or phone..."
-          className="w-full h-11 pl-10 pr-4 rounded-xl bg-zinc-950 border border-slate-900/20 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#2563EB]"
+          className="w-full h-11 pl-10 pr-4 rounded-xl bg-obsidian-900 border border-slate-900/20 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#2563EB]"
         />
       </div>
 
@@ -179,8 +179,8 @@ export function SuppliersScreen(): React.JSX.Element {
           <p className="text-xs font-mono">Loading suppliers directory...</p>
         </div>
       ) : filteredSuppliers.length === 0 ? (
-        <div className="py-16 text-center space-y-2 glass-panel rounded-3xl border border-slate-900/20/[0.08]">
-          <Truck className="h-10 w-10 text-stone-600 mx-auto" />
+        <div className="py-16 text-center space-y-2 glass-panel rounded-3xl border border-slate-900/[0.08]">
+          <Truck className="h-10 w-10 text-stone-500 mx-auto" />
           <p className="text-sm font-bold text-stone-300">No suppliers found</p>
           <p className="text-xs text-stone-500 font-mono">
             Click "+ New Supplier" to add a distributor or vendor partner.
@@ -191,7 +191,7 @@ export function SuppliersScreen(): React.JSX.Element {
           {filteredSuppliers.map((s) => (
             <div
               key={s.id}
-              className="p-5 rounded-3xl bg-zinc-950/80 border border-slate-900/20/[0.08] hover:border-amber-500/30 transition-all flex flex-col justify-between space-y-4 group"
+              className="p-5 rounded-3xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] hover:border-amber-500/30 transition-all flex flex-col justify-between space-y-4 group"
             >
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-2">
@@ -212,14 +212,14 @@ export function SuppliersScreen(): React.JSX.Element {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleOpenEdit(s)}
-                      className="btn-press p-1.5 rounded-lg bg-slate-900/40 hover:bg-slate-900/50 text-stone-400 hover:text-slate-900 transition-colors"
+                      className="btn-press p-1.5 rounded-lg bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.06] text-stone-400 hover:text-slate-900 transition-colors"
                       title="Edit supplier"
                     >
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => handleDelete(s.id)}
-                      className="btn-press p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
+                      className="btn-press p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 transition-colors"
                       title="Delete supplier"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -227,7 +227,7 @@ export function SuppliersScreen(): React.JSX.Element {
                   </div>
                 </div>
 
-                <div className="space-y-2 pt-2 border-t border-slate-900/20/[0.06] text-xs">
+                <div className="space-y-2 pt-2 border-t border-slate-900/[0.06] text-xs">
                   {s.phone && (
                     <div className="flex items-center justify-between text-stone-300 font-mono">
                       <div className="flex items-center gap-2">
@@ -236,11 +236,11 @@ export function SuppliersScreen(): React.JSX.Element {
                       </div>
                       <button
                         onClick={() => copyToClipboard(s.phone!)}
-                        className="btn-press p-1 rounded hover:bg-slate-900/50 text-stone-400 hover:text-gold transition-colors text-[0.75rem] flex items-center gap-1"
+                        className="btn-press p-1 rounded hover:bg-obsidian-900/[0.06] text-stone-400 hover:text-gold transition-colors text-[0.75rem] flex items-center gap-1"
                         title="Copy phone number"
                       >
                         {copiedPhone === s.phone ? (
-                          <Check className="h-3 w-3 text-emerald-400" />
+                          <Check className="h-3 w-3 text-emerald-600" />
                         ) : (
                           <Copy className="h-3 w-3" />
                         )}
@@ -258,15 +258,15 @@ export function SuppliersScreen(): React.JSX.Element {
 
                   {s.notes && (
                     <div className="flex items-start gap-2 text-stone-500 text-[0.8125rem] bg-black/40 p-2.5 rounded-xl border border-slate-900/10">
-                      <FileText className="h-3.5 w-3.5 text-stone-600 shrink-0 mt-0.5" />
+                      <FileText className="h-3.5 w-3.5 text-stone-500 shrink-0 mt-0.5" />
                       <span className="line-clamp-2">{s.notes}</span>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="pt-2 text-[0.75rem] font-mono text-stone-600 border-t border-slate-900/10 flex items-center justify-between">
-                <span>Status: <strong className="text-emerald-400">Active Partner</strong></span>
+              <div className="pt-2 text-[0.75rem] font-mono text-stone-500 border-t border-slate-900/10 flex items-center justify-between">
+                <span>Status: <strong className="text-emerald-600">Active Partner</strong></span>
                 <span>ID: #{s.id}</span>
               </div>
             </div>
@@ -287,7 +287,7 @@ export function SuppliersScreen(): React.JSX.Element {
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="btn-press h-8 w-8 rounded-lg bg-slate-900/40 hover:bg-slate-900/50 text-stone-400 hover:text-slate-900 flex items-center justify-center"
+                className="btn-press h-8 w-8 rounded-lg bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.06] text-stone-400 hover:text-slate-900 flex items-center justify-center"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -373,7 +373,7 @@ export function SuppliersScreen(): React.JSX.Element {
                 </button>
                 <button
                   type="submit"
-                  className="btn-press flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-[#2563EB] text-black text-xs font-bold uppercase tracking-wider shadow-glow-gold transition-all"
+                  className="btn-press flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-[#2563EB] text-white text-xs font-bold uppercase tracking-wider shadow-glow-gold transition-all"
                 >
                   {editingSupplier ? 'Update Supplier' : 'Save Supplier'}
                 </button>

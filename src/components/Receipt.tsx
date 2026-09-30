@@ -127,7 +127,7 @@ export function Receipt({
         <div className="pt-1">
           <span
             className={`font-bold tracking-widest uppercase inline-block px-2 py-0.5 border border-black ${
-              isReprint ? 'bg-black text-slate-900 text-[0.6875rem]' : 'text-[0.75rem]'
+              isReprint ? 'bg-black text-slate-900 text-[0.75rem]' : 'text-[0.75rem]'
             }`}
           >
             {isReprint ? '*** DUPLICATE REPRINT ***' : '*** OFFICIAL SALES INVOICE ***'}
@@ -195,7 +195,7 @@ export function Receipt({
               </span>
             </div>
             {item.quantity > 1 && (
-              <div className="text-[0.6875rem] text-gray-500 pl-1">
+              <div className="text-[0.75rem] text-gray-500 pl-1">
                 @ {money(item.unit_price_c)} each
               </div>
             )}
@@ -264,7 +264,7 @@ export function Receipt({
 
       {/* ── VERIFICATION SIGNATURE LINE ── */}
       <div className="mt-4 pt-2 border-t border-dotted border-gray-400 space-y-1">
-        <div className="flex justify-between text-[0.6875rem] text-gray-600">
+        <div className="flex justify-between text-[0.75rem] text-gray-600">
           <span>Auth Cashier: {activeTx.cashier_name || 'Staff'}</span>
           <span>ID: {activeTx.id ? `#${activeTx.id}` : 'SYS'}</span>
         </div>

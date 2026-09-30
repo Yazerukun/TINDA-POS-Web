@@ -182,7 +182,7 @@ export function ExpensesScreen({
 
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="btn-press px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-[#2563EB] hover:from-amber-300 hover:to-gold text-black text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-gold transition-all self-start sm:self-auto"
+          className="btn-press px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-[#2563EB] hover:from-blue-400 hover:to-[#1D4ED8] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-gold transition-all self-start sm:self-auto"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>New Expense</span>
@@ -192,16 +192,16 @@ export function ExpensesScreen({
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Today's Expenses */}
-        <div className="glass-panel p-5 rounded-3xl border border-slate-900/20/[0.08] relative overflow-hidden">
+        <div className="glass-panel p-5 rounded-3xl border border-slate-900/[0.08] relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-stone-400 uppercase font-semibold">
               Today's Expenses
             </span>
-            <div className="h-8 w-8 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-xl bg-red-500/20 text-red-600 flex items-center justify-center">
               <TrendingDown className="h-4 w-4" />
             </div>
           </div>
-          <p className="mt-3 text-2xl font-serif font-bold text-red-400">
+          <p className="mt-3 text-2xl font-serif font-bold text-red-600">
             {money(todayTotal_c)}
           </p>
           <p className="text-[0.75rem] text-stone-500 font-mono mt-1">
@@ -210,12 +210,12 @@ export function ExpensesScreen({
         </div>
 
         {/* This Month's Expenses */}
-        <div className="glass-panel p-5 rounded-3xl border border-slate-900/20/[0.08] relative overflow-hidden">
+        <div className="glass-panel p-5 rounded-3xl border border-slate-900/[0.08] relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-stone-400 uppercase font-semibold">
               This Month Total
             </span>
-            <div className="h-8 w-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-xl bg-amber-500/20 text-amber-600 flex items-center justify-center">
               <Calendar className="h-4 w-4" />
             </div>
           </div>
@@ -228,12 +228,12 @@ export function ExpensesScreen({
         </div>
 
         {/* Filtered Range Total */}
-        <div className="glass-panel p-5 rounded-3xl border border-slate-900/20/[0.08] relative overflow-hidden">
+        <div className="glass-panel p-5 rounded-3xl border border-slate-900/[0.08] relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-stone-400 uppercase font-semibold">
               Filtered Total ({filteredExpenses.length} entries)
             </span>
-            <div className="h-8 w-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-xl bg-blue-500/20 text-blue-600 flex items-center justify-center">
               <Receipt className="h-4 w-4" />
             </div>
           </div>
@@ -247,7 +247,7 @@ export function ExpensesScreen({
       </div>
 
       {/* Filters Bar */}
-      <div className="p-4 rounded-2xl bg-zinc-950/80 border border-slate-900/20/[0.08] flex flex-wrap items-center justify-between gap-3">
+      <div className="p-4 rounded-2xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2 text-xs font-mono text-stone-400">
             <span>From:</span>
@@ -299,7 +299,7 @@ export function ExpensesScreen({
       </div>
 
       {/* Expenses Table */}
-      <div className="rounded-3xl border border-slate-900/20/[0.08] bg-zinc-950/70 overflow-hidden">
+      <div className="rounded-3xl border border-slate-900/[0.08] bg-obsidian-900/[0.05] overflow-hidden">
         {loading ? (
           <div className="py-20 flex flex-col items-center justify-center space-y-2 text-stone-400">
             <div className="h-7 w-7 rounded-full border-2 border-[#2563EB] border-t-transparent animate-spin" />
@@ -307,7 +307,7 @@ export function ExpensesScreen({
           </div>
         ) : filteredExpenses.length === 0 ? (
           <div className="py-16 text-center space-y-2">
-            <Receipt className="h-10 w-10 text-stone-600 mx-auto" />
+            <Receipt className="h-10 w-10 text-stone-500 mx-auto" />
             <p className="text-sm font-bold text-stone-300">No expenses recorded for this period</p>
             <p className="text-xs text-stone-500 font-mono">
               Click "+ New Expense" to record store operating expenses.
@@ -316,7 +316,7 @@ export function ExpensesScreen({
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-black/50 border-b border-slate-900/20/[0.08] text-[0.75rem] font-sans font-semibold uppercase tracking-wider text-stone-400">
+              <thead className="bg-black/50 border-b border-slate-900/[0.08] text-[0.75rem] font-sans font-semibold uppercase tracking-wider text-stone-400">
                 <tr>
                   <th className="py-3.5 px-4 font-semibold">Date</th>
                   <th className="py-3.5 px-4 font-semibold">Category</th>
@@ -343,13 +343,13 @@ export function ExpensesScreen({
                     <td className="py-3 px-4 text-stone-400 font-mono text-[0.8125rem]">
                       {e.cashier_name || 'Admin'}
                     </td>
-                    <td className="py-3 px-4 text-right font-serif font-bold text-red-400 text-sm">
+                    <td className="py-3 px-4 text-right font-serif font-bold text-red-600 text-sm">
                       {money(e.amount_c)}
                     </td>
                     <td className="py-3 px-4 text-center">
                       <button
                         onClick={() => handleDeleteExpense(e.id)}
-                        className="btn-press p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
+                        className="btn-press p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 transition-colors"
                         title="Delete expense"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -374,7 +374,7 @@ export function ExpensesScreen({
               </div>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="btn-press h-8 w-8 rounded-lg bg-slate-900/40 hover:bg-slate-900/50 text-stone-400 hover:text-slate-900 flex items-center justify-center"
+                className="btn-press h-8 w-8 rounded-lg bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.06] text-stone-400 hover:text-slate-900 flex items-center justify-center"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -449,14 +449,14 @@ export function ExpensesScreen({
               </div>
 
               {/* Add Custom Category Shortcut */}
-              <div className="pt-2 border-t border-slate-900/20/[0.08]">
+              <div className="pt-2 border-t border-slate-900/[0.08]">
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
                     placeholder="New category name..."
                     value={newCustomCategory}
                     onChange={(e) => setNewCustomCategory(e.target.value)}
-                    className="flex-1 h-9 px-3 rounded-xl bg-zinc-950 border border-slate-900/15 text-xs text-stone-300 focus:outline-none focus:border-[#2563EB]"
+                    className="flex-1 h-9 px-3 rounded-xl bg-obsidian-900 border border-slate-900/15 text-xs text-stone-300 focus:outline-none focus:border-[#2563EB]"
                   />
                   <button
                     type="button"
@@ -478,7 +478,7 @@ export function ExpensesScreen({
                 </button>
                 <button
                   type="submit"
-                  className="btn-press flex-1 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-[#2563EB] text-black text-xs font-bold uppercase tracking-wider shadow-glow-gold transition-all"
+                  className="btn-press flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-[#2563EB] text-white text-xs font-bold uppercase tracking-wider shadow-glow-gold transition-all"
                 >
                   Save Expense
                 </button>

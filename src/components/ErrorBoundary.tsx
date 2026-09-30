@@ -36,7 +36,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="max-w-2xl mx-auto my-8 p-6 rounded-3xl glass-vault border border-rose-500/40 text-stone-100 shadow-vault">
-          <div className="flex items-center gap-3 mb-4 text-rose-400">
+          <div className="flex items-center gap-3 mb-4 text-rose-600">
             <AlertTriangle className="w-6 h-6 shrink-0" />
             <h2 className="font-serif text-lg font-bold">
               {this.props.fallbackTitle || 'Component Encountered an Issue'}
@@ -60,7 +60,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="px-4 py-2 rounded-xl bg-zinc-900 border border-slate-900/15 text-stone-300 text-xs font-mono hover:text-slate-900"
+              className="px-4 py-2 rounded-xl bg-slate-850 border border-slate-900/15 text-stone-300 text-xs font-mono hover:text-slate-900"
             >
               Reload Page
             </button>

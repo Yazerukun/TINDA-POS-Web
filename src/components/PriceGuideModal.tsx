@@ -173,9 +173,9 @@ export function PriceGuideModal({
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 animate-fade-in">
       <div className="w-full max-w-5xl h-[90vh] bg-[#F8FAFC] border border-amber-500/30 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-5 border-b border-slate-900/15 bg-zinc-950/80 flex items-center justify-between shrink-0">
+        <div className="p-5 border-b border-slate-900/15 bg-obsidian-900/[0.04] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3.5">
-            <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-amber-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0 shadow-sm">
+            <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-amber-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-600 shrink-0 shadow-sm">
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
@@ -183,7 +183,7 @@ export function PriceGuideModal({
                 <h2 className="text-lg font-serif font-bold text-slate-900 tracking-wide">
                   TINDA BANTAY · Price Guide
                 </h2>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-mono text-[0.75rem] font-bold">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 font-mono text-[0.75rem] font-bold">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   DTI SRP LIVE
                 </span>
@@ -198,10 +198,10 @@ export function PriceGuideModal({
             <button
               onClick={handleSyncOnline}
               disabled={syncing}
-              className="btn-press flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 font-mono text-xs font-bold transition-all shadow-sm"
+              className="btn-press flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-600 font-mono text-xs font-bold transition-all shadow-sm"
               title="Sync latest prices from DTI & Retail Cloud"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin text-amber-400' : 'text-amber-400'}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin text-amber-600' : 'text-amber-600'}`} />
               <span>{syncing ? 'Syncing...' : 'Sync Cloud Prices'}</span>
             </button>
 
@@ -215,10 +215,10 @@ export function PriceGuideModal({
         </div>
 
         {/* Search & Filters */}
-        <div className="p-4 border-b border-slate-900/20/[0.08] bg-black/40 space-y-3 shrink-0">
+        <div className="p-4 border-b border-slate-900/[0.08] bg-black/40 space-y-3 shrink-0">
           {syncMessage && (
-            <div className="p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-semibold flex items-center gap-2 animate-fade-in">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <div className="p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 text-xs font-mono font-semibold flex items-center gap-2 animate-fade-in">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>{syncMessage}</span>
             </div>
           )}
@@ -230,7 +230,7 @@ export function PriceGuideModal({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search brand or item (e.g. Coke Sakto, Coke Kasalo, Coke Litro, Royal, Sprite, Bear Brand...)"
-              className="w-full h-11 pl-10 pr-4 rounded-xl bg-zinc-950 border border-slate-900/20 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#2563EB]"
+              className="w-full h-11 pl-10 pr-4 rounded-xl bg-obsidian-900 border border-slate-900/20 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#2563EB]"
             />
           </div>
 
@@ -241,7 +241,7 @@ export function PriceGuideModal({
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`btn-press px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                   selectedCategory === cat.id
-                    ? 'bg-[#2563EB] text-black shadow-glow-gold'
+                    ? 'bg-[#2563EB] text-white shadow-glow-gold'
                     : 'bg-white/[0.04] text-stone-400 hover:text-stone-200 border border-slate-900/10'
                 }`}
               >
@@ -252,7 +252,7 @@ export function PriceGuideModal({
         </div>
 
         {/* Results Counter */}
-        <div className="px-5 py-2.5 bg-zinc-950/60 border-b border-slate-900/10 flex items-center justify-between text-xs font-mono text-stone-400 shrink-0">
+        <div className="px-5 py-2.5 bg-obsidian-900/[0.05] border-b border-slate-900/10 flex items-center justify-between text-xs font-mono text-stone-400 shrink-0">
           <span>Showing {filteredReferences.length} verified products</span>
           <span className="text-[0.8125rem] text-gold-muted">Tip: Click "+ Add to Inventory" to auto-create item with official barcode & SRP</span>
         </div>
@@ -268,7 +268,7 @@ export function PriceGuideModal({
             </div>
           ) : filteredReferences.length === 0 ? (
             <div className="h-64 flex flex-col items-center justify-center space-y-2 text-stone-500 text-center">
-              <Barcode className="h-10 w-10 text-stone-600" />
+              <Barcode className="h-10 w-10 text-stone-500" />
               <p className="text-sm font-bold text-stone-400">No products match your search</p>
               <p className="text-xs font-mono">Try searching with a brand or product name (e.g. "Silver Swan", "Bear Brand", "Pancit Canton")</p>
             </div>
@@ -282,7 +282,7 @@ export function PriceGuideModal({
                 return (
                   <div
                     key={ref.barcode}
-                    className="p-4 rounded-2xl bg-zinc-950/80 border border-slate-900/20/[0.08] hover:border-amber-500/30 transition-all flex flex-col justify-between gap-3 group"
+                    className="p-4 rounded-2xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] hover:border-amber-500/30 transition-all flex flex-col justify-between gap-3 group"
                   >
                     <div className="space-y-2">
                       <div className="flex items-start justify-between gap-2">
@@ -301,7 +301,7 @@ export function PriceGuideModal({
                       </h4>
                     </div>
 
-                    <div className="pt-3 border-t border-slate-900/20/[0.06] flex items-end justify-between gap-3">
+                    <div className="pt-3 border-t border-slate-900/[0.06] flex items-end justify-between gap-3">
                       <div>
                         <p className="text-[0.75rem] font-sans font-semibold text-stone-500 uppercase tracking-wider">
                           DTI Suggested SRP
@@ -317,14 +317,14 @@ export function PriceGuideModal({
                       </div>
 
                       {isAlreadyInCatalog ? (
-                        <div className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 shrink-0">
+                        <div className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 text-xs font-semibold flex items-center gap-1.5 shrink-0">
                           <Check className="h-3.5 w-3.5" />
                           <span>In Catalog</span>
                         </div>
                       ) : (
                         <button
                           onClick={() => handleAddToInventory(ref)}
-                          className="btn-press px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-[#2563EB] hover:from-amber-300 hover:to-gold text-black text-xs font-bold flex items-center gap-1.5 shadow-glow-gold transition-all shrink-0"
+                          className="btn-press px-3.5 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-[#2563EB] hover:from-blue-400 hover:to-[#1D4ED8] text-white text-xs font-bold flex items-center gap-1.5 shadow-glow-gold transition-all shrink-0"
                         >
                           <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
                           <span>Add to Inventory</span>

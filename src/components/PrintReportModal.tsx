@@ -135,7 +135,7 @@ export function PrintReportModal({
   return (
     <div className="fixed inset-0 z-60 bg-black/85 backdrop-blur-md flex flex-col items-center justify-start p-3 sm:p-6 overflow-y-auto animate-fade-in">
       {/* ── TOP CONTROLS BAR (Hidden during printing) ── */}
-      <div className="no-print w-full max-w-4xl bg-zinc-900 border border-slate-900/15 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
+      <div className="no-print w-full max-w-4xl bg-slate-850 border border-slate-900/15 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-gold/30 flex items-center justify-center text-gold-light">
             <FileText className="w-5 h-5" />
@@ -150,7 +150,7 @@ export function PrintReportModal({
 
         {/* Paper Selector & Print Actions */}
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center bg-zinc-950 p-1 rounded-xl border border-slate-900/15 text-xs font-mono">
+          <div className="flex items-center bg-obsidian-900 p-1 rounded-xl border border-slate-900/15 text-xs font-mono">
             <button
               onClick={() => setPaperWidth('58mm')}
               className={`px-3 py-1 rounded-lg transition-all ${
@@ -181,7 +181,7 @@ export function PrintReportModal({
             <button
               onClick={handleConfirmSaveZRead}
               disabled={isSaving || saveSuccess}
-              className="btn-press px-3.5 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/25 text-xs font-mono font-bold flex items-center gap-1.5 transition-all"
+              className="btn-press px-3.5 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/25 text-xs font-mono font-bold flex items-center gap-1.5 transition-all"
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>{saveSuccess ? 'Archived!' : isSaving ? 'Saving...' : 'Archive Z-Read'}</span>
@@ -190,7 +190,7 @@ export function PrintReportModal({
 
           <button
             onClick={handlePrint}
-            className="btn-press px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 via-gold to-amber-500 text-obsidian-950 font-bold text-xs font-mono flex items-center gap-1.5 shadow-glow-gold hover:brightness-110 transition-all"
+            className="btn-press px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 via-gold to-amber-500 text-stone-100 font-bold text-xs font-mono flex items-center gap-1.5 shadow-glow-gold hover:brightness-110 transition-all"
           >
             <Printer className="w-4 h-4" />
             <span>Print Report</span>
@@ -198,7 +198,7 @@ export function PrintReportModal({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-slate-900/40 hover:bg-slate-900/50 text-stone-400 hover:text-slate-900 transition-colors"
+            className="p-2 rounded-xl bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.06] text-stone-400 hover:text-slate-900 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -384,7 +384,7 @@ export function PrintReportModal({
             </div>
           </div>
 
-          <div className="text-center text-[0.6875rem] text-gray-500 pt-2 border-t border-dashed border-gray-400">
+          <div className="text-center text-[0.75rem] text-gray-500 pt-2 border-t border-dashed border-gray-400">
             <p>*** END OF {reportType}-READING AUDIT ARCHIVE ***</p>
             <p className="pt-0.5">TINDA POS Web · Universal Cloud Ledger</p>
           </div>

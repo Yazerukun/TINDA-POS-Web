@@ -398,7 +398,7 @@ export function SettingsScreen({
       {/* Header */}
       <div>
         <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-          <Settings className="h-6 w-6 text-emerald-400" />
+          <Settings className="h-6 w-6 text-emerald-600" />
           <span>Store Settings &amp; Administration</span>
         </h2>
         <p className="text-xs text-slate-400">
@@ -411,7 +411,7 @@ export function SettingsScreen({
         <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5">
           <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
             <div className="relative group">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-gold/60 shadow-glow-gold bg-zinc-900 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-gold/60 shadow-glow-gold bg-slate-850 flex items-center justify-center">
                 {currentUser?.avatar_url || currentUserAvatar ? (
                   <img
                     src={currentUser?.avatar_url || currentUserAvatar}
@@ -419,7 +419,7 @@ export function SettingsScreen({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-amber-300 to-[#2563EB] flex items-center justify-center text-obsidian-950 font-serif font-black text-2xl">
+                  <div className="w-full h-full bg-gradient-to-br from-amber-300 to-[#2563EB] flex items-center justify-center text-stone-100 font-serif font-black text-2xl">
                     {(currentCashierName || 'User').substring(0, 2).toUpperCase()}
                   </div>
                 )}
@@ -433,7 +433,7 @@ export function SettingsScreen({
                 type="button"
                 onClick={() => myFileInputRef.current?.click()}
                 disabled={isUploadingCurrentAvatar}
-                className="absolute -bottom-1 -right-1 p-1.5 rounded-lg bg-amber-500 text-obsidian-950 font-bold hover:bg-amber-400 transition-all shadow-md"
+                className="absolute -bottom-1 -right-1 p-1.5 rounded-lg bg-amber-500 text-stone-100 font-bold hover:bg-amber-400 transition-all shadow-md"
                 title="Upload Photo"
               >
                 <Camera className="w-3.5 h-3.5" />
@@ -481,7 +481,7 @@ export function SettingsScreen({
                 type="button"
                 onClick={handleRemoveMyAvatar}
                 disabled={isUploadingCurrentAvatar}
-                className="btn-press flex items-center gap-1 px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-semibold transition-all"
+                className="btn-press flex items-center gap-1 px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-600 text-xs font-semibold transition-all"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Remove</span>
@@ -494,13 +494,13 @@ export function SettingsScreen({
       {/* Cloudflare Edge Status Card */}
       <div className="glass-panel rounded-3xl p-5 border border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-obsidian-900 to-obsidian-850 flex items-center justify-between">
         <div className="flex items-center gap-3.5">
-          <div className="h-12 w-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+          <div className="h-12 w-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600">
             <Globe className="h-6 w-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-bold text-slate-900">Cloudflare Pages Edge Architecture</h3>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[0.75rem] font-black border border-emerald-500/30">
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 text-[0.75rem] font-black border border-emerald-500/30">
                 0ms Latency
               </span>
             </div>
@@ -512,11 +512,11 @@ export function SettingsScreen({
       </div>
 
       {/* ── STAFF & CASHIER ACCOUNTS (Master Admin Section) ── */}
-      <div className="glass-panel rounded-3xl border border-slate-900/20/[0.1] p-6 shadow-2xl space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-900/20/[0.08] pb-4 gap-3">
+      <div className="glass-panel rounded-3xl border border-slate-900/[0.1] p-6 shadow-2xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-900/[0.08] pb-4 gap-3">
           <div>
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <Users className="h-4 w-4 text-amber-400" />
+              <Users className="h-4 w-4 text-amber-600" />
               <span>Staff &amp; Cashier Accounts</span>
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
@@ -527,7 +527,7 @@ export function SettingsScreen({
           {isAdmin && (
             <button
               onClick={() => setShowAddUserModal(true)}
-              className="btn-press flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold text-xs hover:bg-amber-500/25 transition-all self-start sm:self-auto shrink-0"
+              className="btn-press flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 font-bold text-xs hover:bg-amber-500/25 transition-all self-start sm:self-auto shrink-0"
             >
               <UserPlus className="h-4 w-4" />
               <span>Add Staff / Cashier</span>
@@ -536,7 +536,7 @@ export function SettingsScreen({
         </div>
 
         {userSuccessMessage && (
-          <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-2 animate-fade-in">
+          <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 text-xs font-semibold flex items-center gap-2 animate-fade-in">
             <CheckCircle2 className="h-4 w-4" />
             <span>{userSuccessMessage}</span>
           </div>
@@ -560,8 +560,8 @@ export function SettingsScreen({
                   key={u.id}
                   className={`p-3.5 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
                     u.status === 'ACTIVE'
-                      ? 'bg-zinc-950/60 border-slate-900/20/[0.08]'
-                      : 'bg-zinc-950/30 border-red-500/20 opacity-60'
+                      ? 'bg-obsidian-900/[0.05] border-slate-900/[0.08]'
+                      : 'bg-obsidian-900/[0.08] border-red-500/20 opacity-60'
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -574,8 +574,8 @@ export function SettingsScreen({
                     ) : (
                       <div className={`h-10 w-10 rounded-xl flex items-center justify-center font-serif font-bold text-xs shrink-0 ${
                         isMaster
-                          ? 'bg-gradient-to-br from-amber-300 to-amber-500 text-black shadow-glow-gold'
-                          : 'bg-zinc-900 border border-slate-900/15 text-stone-200'
+                          ? 'bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-glow-gold'
+                          : 'bg-slate-850 border border-slate-900/15 text-stone-200'
                       }`}>
                         {u.name.substring(0, 2).toUpperCase()}
                       </div>
@@ -584,25 +584,25 @@ export function SettingsScreen({
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="text-xs sm:text-sm font-semibold text-slate-900">{u.name}</p>
-                        <span className="text-[0.75rem] font-mono px-2 py-0.5 rounded-full bg-slate-900/40 text-stone-400">
+                        <span className="text-[0.75rem] font-mono px-2 py-0.5 rounded-full bg-obsidian-900/[0.07] text-stone-400">
                           @{u.username}
                         </span>
-                        <span className={`text-[0.6875rem] font-mono font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                        <span className={`text-[0.75rem] font-mono font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
                           isMaster
-                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                            ? 'bg-amber-500/20 text-amber-600 border border-amber-500/30'
                             : u.role === 'INVENTORY_LEAD'
-                            ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
-                            : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                            ? 'bg-indigo-500/20 text-indigo-600 border border-indigo-500/30'
+                            : 'bg-emerald-500/20 text-emerald-600 border border-emerald-500/30'
                         }`}>
                           {u.role === 'ADMIN' ? 'Master Admin' : u.role === 'INVENTORY_LEAD' ? 'Inventory Lead' : 'Cashier'}
                         </span>
                         {u.store_name && (
-                          <span className="text-[0.6875rem] font-mono px-2 py-0.5 rounded-full bg-gold/10 text-gold-light border border-gold/30">
+                          <span className="text-[0.75rem] font-mono px-2 py-0.5 rounded-full bg-gold/10 text-gold-light border border-gold/30">
                             {u.store_name}
                           </span>
                         )}
                         {u.status === 'DISABLED' && (
-                          <span className="text-[0.6875rem] font-sans font-semibold font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30 uppercase">
+                          <span className="text-[0.75rem] font-sans font-semibold font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-600 border border-red-500/30 uppercase">
                             Disabled
                           </span>
                         )}
@@ -625,11 +625,11 @@ export function SettingsScreen({
                             placeholder="New PIN"
                             value={newPinValue}
                             onChange={(e) => setNewPinValue(e.target.value.replace(/[^0-9]/g, ''))}
-                            className="w-20 px-2 py-1 rounded-lg bg-zinc-900 border border-gold/50 text-xs font-mono text-gold-light focus:outline-none"
+                            className="w-20 px-2 py-1 rounded-lg bg-slate-850 border border-gold/50 text-xs font-mono text-gold-light focus:outline-none"
                           />
                           <button
                             onClick={() => u.id && handleUpdatePin(u.id)}
-                            className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30"
+                            className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-600 hover:bg-emerald-500/30"
                             title="Save PIN"
                           >
                             <Check className="h-3.5 w-3.5" />
@@ -639,7 +639,7 @@ export function SettingsScreen({
                               setEditingPinUserId(null)
                               setNewPinValue('')
                             }}
-                            className="p-1.5 rounded-lg bg-slate-900/50 text-stone-400 hover:bg-slate-900/70"
+                            className="p-1.5 rounded-lg bg-obsidian-900/[0.06] text-stone-400 hover:bg-obsidian-900/[0.05]"
                             title="Cancel"
                           >
                             <X className="h-3.5 w-3.5" />
@@ -651,7 +651,7 @@ export function SettingsScreen({
                             setEditingPinUserId(u.id ?? null)
                             setNewPinValue('')
                           }}
-                          className="btn-press px-2.5 py-1 rounded-lg bg-slate-900/40 border border-slate-900/15 text-stone-300 hover:text-slate-900 text-xs flex items-center gap-1"
+                          className="btn-press px-2.5 py-1 rounded-lg bg-obsidian-900/[0.07] border border-slate-900/15 text-stone-300 hover:text-slate-900 text-xs flex items-center gap-1"
                           title="Change PIN"
                         >
                           <Key className="h-3 w-3 text-gold-muted" />
@@ -661,7 +661,7 @@ export function SettingsScreen({
 
                       {/* Photo management for staff */}
                       <label
-                        className="btn-press px-2 py-1 rounded-lg bg-slate-900/40 border border-slate-900/15 text-stone-300 hover:text-gold-light hover:border-gold/40 text-xs flex items-center gap-1 cursor-pointer"
+                        className="btn-press px-2 py-1 rounded-lg bg-obsidian-900/[0.07] border border-slate-900/15 text-stone-300 hover:text-gold-light hover:border-gold/40 text-xs flex items-center gap-1 cursor-pointer"
                         title={u.avatar_url ? 'Change Photo' : 'Upload Photo'}
                       >
                         <Camera className="h-3 w-3 text-gold-muted" />
@@ -677,7 +677,7 @@ export function SettingsScreen({
                       {u.avatar_url && (
                         <button
                           onClick={() => handleRemoveStaffAvatar(u)}
-                          className="btn-press p-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs"
+                          className="btn-press p-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-600 hover:bg-red-500/20 text-xs"
                           title="Remove Photo"
                         >
                           <Trash2 className="h-3 w-3" />
@@ -689,8 +689,8 @@ export function SettingsScreen({
                         onClick={() => handleToggleUserStatus(u)}
                         className={`btn-press p-1.5 rounded-lg border text-xs flex items-center gap-1 ${
                           u.status === 'ACTIVE'
-                            ? 'bg-zinc-900/60 border-slate-900/15 text-stone-400 hover:text-stone-200'
-                            : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                            ? 'bg-slate-850/60 border-slate-900/15 text-stone-400 hover:text-stone-200'
+                            : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600'
                         }`}
                         title={u.status === 'ACTIVE' ? 'Disable Account' : 'Activate Account'}
                       >
@@ -701,7 +701,7 @@ export function SettingsScreen({
                       {(!isMaster || users.filter((x) => x.role === 'ADMIN').length > 1) && (
                         <button
                           onClick={() => handleDeleteUser(u)}
-                          className="btn-press p-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs"
+                          className="btn-press p-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-600 hover:bg-red-500/20 text-xs"
                           title="Delete User"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -720,9 +720,9 @@ export function SettingsScreen({
       {showAddUserModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/80 backdrop-blur-md animate-fade-in">
           <div className="w-full max-w-md glass-panel rounded-3xl border border-gold/30 p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-900/20/[0.08] pb-3">
+            <div className="flex items-center justify-between border-b border-slate-900/[0.08] pb-3">
               <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                <div className="h-8 w-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600">
                   <UserPlus className="h-4 w-4" />
                 </div>
                 <div>
@@ -735,14 +735,14 @@ export function SettingsScreen({
                   setShowAddUserModal(false)
                   setUserFormError('')
                 }}
-                className="p-1.5 rounded-xl text-stone-400 hover:text-slate-900 hover:bg-slate-900/40"
+                className="p-1.5 rounded-xl text-stone-400 hover:text-slate-900 hover:bg-obsidian-900/[0.07]"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             {userFormError && (
-              <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 p-2.5 rounded-xl font-medium">
+              <p className="text-xs text-red-600 bg-red-500/10 border border-red-500/20 p-2.5 rounded-xl font-medium">
                 {userFormError}
               </p>
             )}
@@ -750,7 +750,7 @@ export function SettingsScreen({
             <form onSubmit={handleCreateUser} className="space-y-3.5">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Full Name <span className="text-red-400">*</span>
+                  Full Name <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -758,14 +758,14 @@ export function SettingsScreen({
                   placeholder="e.g. Maria Clara"
                   value={newFullName}
                   onChange={(e) => setNewFullName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-400"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Username / ID <span className="text-red-400">*</span>
+                    Username / ID <span className="text-red-600">*</span>
                   </label>
                   <input
                     type="text"
@@ -774,13 +774,13 @@ export function SettingsScreen({
                     placeholder="e.g. maria"
                     value={newUsername}
                     onChange={(e) => setNewUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-mono text-slate-900 focus:outline-none focus:border-amber-400"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-mono text-slate-900 focus:outline-none focus:border-amber-400"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Security PIN (4-6 digits) <span className="text-red-400">*</span>
+                    Security PIN (4-6 digits) <span className="text-red-600">*</span>
                   </label>
                   <input
                     type="password"
@@ -789,7 +789,7 @@ export function SettingsScreen({
                     placeholder="e.g. 1234"
                     value={newUserPin}
                     onChange={(e) => setNewUserPin(e.target.value.replace(/[^0-9]/g, ''))}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-mono text-gold-light focus:outline-none focus:border-amber-400 tracking-widest"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-mono text-gold-light focus:outline-none focus:border-amber-400 tracking-widest"
                   />
                 </div>
               </div>
@@ -801,7 +801,7 @@ export function SettingsScreen({
                 <select
                   value={newUserRole}
                   onChange={(e) => setNewUserRole(e.target.value as UserRole)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-400"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-amber-400"
                 >
                   <option value="CASHIER">Cashier (POS Counter &amp; Sales)</option>
                   <option value="INVENTORY_LEAD">Inventory Lead (POS Counter + Inventory Management)</option>
@@ -814,7 +814,7 @@ export function SettingsScreen({
                   Profile Photo (Optional)
                 </label>
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-xl border border-slate-900/15 bg-zinc-950 flex items-center justify-center overflow-hidden shrink-0">
+                  <div className="w-11 h-11 rounded-xl border border-slate-900/15 bg-obsidian-900 flex items-center justify-center overflow-hidden shrink-0">
                     {newUserAvatar ? (
                       <img src={newUserAvatar} alt="Staff Preview" className="w-full h-full object-cover" />
                     ) : (
@@ -825,7 +825,7 @@ export function SettingsScreen({
                     <button
                       type="button"
                       onClick={() => newUserAvatarInputRef.current?.click()}
-                      className="px-3 py-1.5 rounded-xl bg-slate-900/40 border border-slate-900/15 text-stone-300 hover:text-slate-900 text-xs font-semibold"
+                      className="px-3 py-1.5 rounded-xl bg-obsidian-900/[0.07] border border-slate-900/15 text-stone-300 hover:text-slate-900 text-xs font-semibold"
                     >
                       {newUserAvatar ? 'Change Photo' : 'Choose Photo'}
                     </button>
@@ -833,7 +833,7 @@ export function SettingsScreen({
                       <button
                         type="button"
                         onClick={() => setNewUserAvatar(undefined)}
-                        className="px-2.5 py-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold"
+                        className="px-2.5 py-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 text-xs font-semibold"
                       >
                         Remove
                       </button>
@@ -870,14 +870,14 @@ export function SettingsScreen({
       )}
 
       {/* Store Profile Form */}
-      <div className="glass-panel rounded-3xl border border-slate-900/20/[0.1] p-6 shadow-2xl space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-900/20/[0.08] pb-3">
+      <div className="glass-panel rounded-3xl border border-slate-900/[0.1] p-6 shadow-2xl space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-900/[0.08] pb-3">
           <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <Store className="h-4 w-4 text-emerald-400" />
+            <Store className="h-4 w-4 text-emerald-600" />
             <span>Store Profile &amp; Receipt Branding</span>
           </h3>
           {saved && (
-            <span className="flex items-center gap-1 text-xs font-bold text-emerald-400 animate-fade-in">
+            <span className="flex items-center gap-1 text-xs font-bold text-emerald-600 animate-fade-in">
               <CheckCircle2 className="h-4 w-4" />
               <span>Saved!</span>
             </span>
@@ -893,7 +893,7 @@ export function SettingsScreen({
                 required
                 value={form.store_name}
                 onChange={(e) => setForm({ ...form, store_name: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
               />
             </div>
             <div>
@@ -902,7 +902,7 @@ export function SettingsScreen({
                 type="text"
                 value={form.owner_name}
                 onChange={(e) => setForm({ ...form, owner_name: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
@@ -914,7 +914,7 @@ export function SettingsScreen({
                 type="text"
                 value={form.contact_number}
                 onChange={(e) => setForm({ ...form, contact_number: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
               />
             </div>
             <div>
@@ -923,7 +923,7 @@ export function SettingsScreen({
                 type="text"
                 value={form.address}
                 onChange={(e) => setForm({ ...form, address: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
@@ -934,12 +934,12 @@ export function SettingsScreen({
               type="text"
               value={form.receipt_footer}
               onChange={(e) => setForm({ ...form, receipt_footer: e.target.value })}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/20/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
             />
           </div>
 
           {/* ── PRINTER & RECEIPT HARDWARE CONFIGURATION ── */}
-          <div className="pt-4 border-t border-slate-900/20/[0.08] space-y-4">
+          <div className="pt-4 border-t border-slate-900/[0.08] space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
@@ -974,7 +974,7 @@ export function SettingsScreen({
                   className={`p-3.5 rounded-2xl border text-left transition-all ${
                     form.printer_paper_width === '58mm'
                       ? 'bg-amber-500/15 border-gold shadow-glow-gold'
-                      : 'bg-zinc-950/60 border-slate-900/20/[0.08] hover:border-slate-900/30'
+                      : 'bg-obsidian-900/[0.05] border-slate-900/[0.08] hover:border-slate-900/30'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
@@ -993,7 +993,7 @@ export function SettingsScreen({
                   className={`p-3.5 rounded-2xl border text-left transition-all ${
                     (form.printer_paper_width || '80mm') === '80mm'
                       ? 'bg-amber-500/15 border-gold shadow-glow-gold'
-                      : 'bg-zinc-950/60 border-slate-900/20/[0.08] hover:border-slate-900/30'
+                      : 'bg-obsidian-900/[0.05] border-slate-900/[0.08] hover:border-slate-900/30'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
@@ -1012,7 +1012,7 @@ export function SettingsScreen({
                   className={`p-3.5 rounded-2xl border text-left transition-all ${
                     form.printer_paper_width === 'A4'
                       ? 'bg-amber-500/15 border-gold shadow-glow-gold'
-                      : 'bg-zinc-950/60 border-slate-900/20/[0.08] hover:border-slate-900/30'
+                      : 'bg-obsidian-900/[0.05] border-slate-900/[0.08] hover:border-slate-900/30'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
@@ -1028,12 +1028,12 @@ export function SettingsScreen({
 
             {/* Customization Checkboxes */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-950/60 border border-slate-900/20/[0.06] cursor-pointer hover:border-slate-900/30 transition-all">
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/[0.06] cursor-pointer hover:border-slate-900/30 transition-all">
                 <input
                   type="checkbox"
                   checked={form.printer_show_barcode ?? true}
                   onChange={(e) => setForm({ ...form, printer_show_barcode: e.target.checked })}
-                  className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-zinc-900 cursor-pointer"
+                  className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-slate-850 cursor-pointer"
                 />
                 <div>
                   <span className="text-xs font-semibold text-slate-900 block">Print Code128 Barcode</span>
@@ -1041,12 +1041,12 @@ export function SettingsScreen({
                 </div>
               </label>
 
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-950/60 border border-slate-900/20/[0.06] cursor-pointer hover:border-slate-900/30 transition-all">
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/[0.06] cursor-pointer hover:border-slate-900/30 transition-all">
                 <input
                   type="checkbox"
                   checked={form.printer_show_logo ?? true}
                   onChange={(e) => setForm({ ...form, printer_show_logo: e.target.checked })}
-                  className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-zinc-900 cursor-pointer"
+                  className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-slate-850 cursor-pointer"
                 />
                 <div>
                   <span className="text-xs font-semibold text-slate-900 block">Print Store Crest Monogram</span>
@@ -1054,12 +1054,12 @@ export function SettingsScreen({
                 </div>
               </label>
 
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-950/60 border border-slate-900/20/[0.06] cursor-pointer hover:border-slate-900/30 transition-all">
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/[0.06] cursor-pointer hover:border-slate-900/30 transition-all">
                 <input
                   type="checkbox"
                   checked={form.printer_show_customer_info ?? true}
                   onChange={(e) => setForm({ ...form, printer_show_customer_info: e.target.checked })}
-                  className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-zinc-900 cursor-pointer"
+                  className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-slate-850 cursor-pointer"
                 />
                 <div>
                   <span className="text-xs font-semibold text-slate-900 block">Customer Utang &amp; Credit Balance</span>
@@ -1067,12 +1067,12 @@ export function SettingsScreen({
                 </div>
               </label>
 
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-950/60 border border-slate-900/20/[0.06] cursor-pointer hover:border-slate-900/30 transition-all">
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/[0.06] cursor-pointer hover:border-slate-900/30 transition-all">
                 <input
                   type="checkbox"
                   checked={form.printer_auto_print ?? false}
                   onChange={(e) => setForm({ ...form, printer_auto_print: e.target.checked })}
-                  className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-zinc-900 cursor-pointer"
+                  className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-slate-850 cursor-pointer"
                 />
                 <div>
                   <span className="text-xs font-semibold text-slate-900 block">Auto-Prompt Print on Checkout</span>
@@ -1085,7 +1085,7 @@ export function SettingsScreen({
           <div className="pt-2">
             <button
               type="submit"
-              className="btn-press px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-obsidian-950 font-black text-xs shadow-glow-emerald"
+              className="btn-press px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-stone-100 font-black text-xs shadow-glow-emerald"
             >
               Save Settings
             </button>
@@ -1094,10 +1094,10 @@ export function SettingsScreen({
       </div>
 
       {/* Universal Backup Archive */}
-      <div className="glass-panel rounded-3xl border border-slate-900/20/[0.1] p-6 shadow-2xl space-y-4">
-        <div className="border-b border-slate-900/20/[0.08] pb-3">
+      <div className="glass-panel rounded-3xl border border-slate-900/[0.1] p-6 shadow-2xl space-y-4">
+        <div className="border-b border-slate-900/[0.08] pb-3">
           <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <Database className="h-4 w-4 text-indigo-400" />
+            <Database className="h-4 w-4 text-indigo-600" />
             <span>Universal .tinda-backup Archive</span>
           </h3>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -1107,10 +1107,10 @@ export function SettingsScreen({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Export Box */}
-          <div className="p-4 rounded-2xl bg-obsidian-900/60 border border-slate-900/20/[0.06] flex flex-col justify-between space-y-3">
+          <div className="p-4 rounded-2xl bg-obsidian-900/60 border border-slate-900/[0.06] flex flex-col justify-between space-y-3">
             <div>
               <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                <Download className="h-4 w-4 text-emerald-400" />
+                <Download className="h-4 w-4 text-emerald-600" />
                 <span>Export .tinda-backup</span>
               </h4>
               <p className="text-[0.8125rem] text-slate-400 mt-1">
@@ -1119,17 +1119,17 @@ export function SettingsScreen({
             </div>
             <button
               onClick={() => void downloadBackupFile()}
-              className="btn-press w-full py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 font-bold text-xs"
+              className="btn-press w-full py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-600 font-bold text-xs"
             >
               Download Backup File
             </button>
           </div>
 
           {/* Import Box */}
-          <div className="p-4 rounded-2xl bg-obsidian-900/60 border border-slate-900/20/[0.06] flex flex-col justify-between space-y-3">
+          <div className="p-4 rounded-2xl bg-obsidian-900/60 border border-slate-900/[0.06] flex flex-col justify-between space-y-3">
             <div>
               <h4 className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                <Upload className="h-4 w-4 text-indigo-400" />
+                <Upload className="h-4 w-4 text-indigo-600" />
                 <span>Restore .tinda-backup</span>
               </h4>
               <p className="text-[0.8125rem] text-slate-400 mt-1">
@@ -1146,7 +1146,7 @@ export function SettingsScreen({
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={importing}
-              className="btn-press w-full py-2.5 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-400 font-bold text-xs"
+              className="btn-press w-full py-2.5 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-600 font-bold text-xs"
             >
               {importing ? 'Restoring Database...' : 'Select & Restore File'}
             </button>
@@ -1154,11 +1154,11 @@ export function SettingsScreen({
         </div>
 
         {/* Reset Database */}
-        <div className="pt-3 border-t border-slate-900/20/[0.06] flex justify-between items-center">
+        <div className="pt-3 border-t border-slate-900/[0.06] flex justify-between items-center">
           <span className="text-xs text-slate-500">Clear entire store database (products, sales, customers, held tickets, restocking history).</span>
           <button
             onClick={handleResetData}
-            className="btn-press px-3 py-1.5 rounded-xl border border-slate-900/20/[0.08] text-slate-400 hover:text-slate-900 text-xs font-semibold flex items-center gap-1.5"
+            className="btn-press px-3 py-1.5 rounded-xl border border-slate-900/[0.08] text-slate-400 hover:text-slate-900 text-xs font-semibold flex items-center gap-1.5"
           >
             <RefreshCw className="h-3.5 w-3.5" />
             <span>Clear All Data</span>
@@ -1169,7 +1169,7 @@ export function SettingsScreen({
       {/* ── TEST PRINT RECEIPT MODAL ── */}
       {showTestPrintModal && (
         <div className="fixed inset-0 z-60 bg-black/85 backdrop-blur-md flex flex-col items-center justify-start p-4 sm:p-6 overflow-y-auto animate-fade-in">
-          <div className="no-print w-full max-w-2xl bg-zinc-900 border border-slate-900/15 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
+          <div className="no-print w-full max-w-2xl bg-slate-850 border border-slate-900/15 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-gold/30 flex items-center justify-center text-gold-light">
                 <Printer className="w-5 h-5" />
@@ -1183,7 +1183,7 @@ export function SettingsScreen({
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="flex items-center bg-zinc-950 p-1 rounded-xl border border-slate-900/15 text-xs font-mono">
+              <div className="flex items-center bg-obsidian-900 p-1 rounded-xl border border-slate-900/15 text-xs font-mono">
                 <button
                   type="button"
                   onClick={() => setTestPaperWidth('58mm')}
@@ -1222,7 +1222,7 @@ export function SettingsScreen({
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="btn-press px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 via-gold to-amber-500 text-obsidian-950 font-bold text-xs font-mono flex items-center gap-1.5 shadow-glow-gold hover:brightness-110"
+                className="btn-press px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 via-gold to-amber-500 text-stone-100 font-bold text-xs font-mono flex items-center gap-1.5 shadow-glow-gold hover:brightness-110"
               >
                 <Printer className="w-4 h-4" />
                 <span>Print Paper</span>
@@ -1231,7 +1231,7 @@ export function SettingsScreen({
               <button
                 type="button"
                 onClick={() => setShowTestPrintModal(false)}
-                className="p-2 rounded-xl bg-slate-900/40 hover:bg-slate-900/50 text-stone-400 hover:text-slate-900"
+                className="p-2 rounded-xl bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.06] text-stone-400 hover:text-slate-900"
               >
                 <X className="w-5 h-5" />
               </button>

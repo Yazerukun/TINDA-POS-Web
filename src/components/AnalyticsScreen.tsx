@@ -228,12 +228,12 @@ export function AnalyticsScreen({
         </div>
 
         {/* Tab switchers */}
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-zinc-950 border border-slate-900/15">
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-obsidian-900 border border-slate-900/15">
           <button
             onClick={() => setActiveTab('SALES')}
             className={`btn-press px-3.5 py-1.5 rounded-xl text-xs font-bold font-mono transition-all ${
               activeTab === 'SALES'
-                ? 'bg-[#2563EB] text-black shadow-glow-gold'
+                ? 'bg-[#2563EB] text-white shadow-glow-gold'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -244,7 +244,7 @@ export function AnalyticsScreen({
             onClick={() => setActiveTab('CASHCOUNT')}
             className={`btn-press px-3.5 py-1.5 rounded-xl text-xs font-bold font-mono transition-all ${
               activeTab === 'CASHCOUNT'
-                ? 'bg-[#2563EB] text-black shadow-glow-gold'
+                ? 'bg-[#2563EB] text-white shadow-glow-gold'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -255,7 +255,7 @@ export function AnalyticsScreen({
             onClick={() => setActiveTab('READINGS')}
             className={`btn-press px-3.5 py-1.5 rounded-xl text-xs font-bold font-mono transition-all ${
               activeTab === 'READINGS'
-                ? 'bg-[#2563EB] text-black shadow-glow-gold'
+                ? 'bg-[#2563EB] text-white shadow-glow-gold'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -268,7 +268,7 @@ export function AnalyticsScreen({
       {activeTab === 'SALES' && (
         <div className="space-y-6">
           {/* Executive Report Action Bar */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-zinc-950/80 border border-slate-900/20/[0.08] p-4 rounded-3xl">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-obsidian-900/[0.04] border border-slate-900/[0.08] p-4 rounded-3xl">
             <div className="flex items-center gap-3">
               <div className="h-9 w-9 rounded-xl bg-amber-500/10 border border-gold/30 flex items-center justify-center text-gold-light">
                 <Sparkles className="w-4 h-4" />
@@ -289,7 +289,7 @@ export function AnalyticsScreen({
 
           {/* 4 Financial Metric Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="glass-panel rounded-3xl p-5 border border-slate-900/20/[0.08]">
+            <div className="glass-panel rounded-3xl p-5 border border-slate-900/[0.08]">
               <div className="flex items-center justify-between">
                 <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-stone-400 uppercase">Gross Sales</span>
                 <div className="h-8 w-8 rounded-xl bg-gold/15 text-gold-light flex items-center justify-center">
@@ -304,14 +304,14 @@ export function AnalyticsScreen({
               </p>
             </div>
 
-            <div className="glass-panel rounded-3xl p-5 border border-slate-900/20/[0.08]">
+            <div className="glass-panel rounded-3xl p-5 border border-slate-900/[0.08]">
               <div className="flex items-center justify-between">
                 <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-stone-400 uppercase">Est. Gross Profit</span>
-                <div className="h-8 w-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+                <div className="h-8 w-8 rounded-xl bg-emerald-500/15 text-emerald-600 flex items-center justify-center">
                   <TrendingUp className="h-4 w-4" />
                 </div>
               </div>
-              <h3 className="mt-3 text-2xl font-serif font-black text-emerald-400">
+              <h3 className="mt-3 text-2xl font-serif font-black text-emerald-600">
                 {money(metrics.grossProfit_c)}
               </h3>
               <p className="text-[0.8125rem] text-stone-400 mt-1 font-mono">
@@ -319,14 +319,14 @@ export function AnalyticsScreen({
               </p>
             </div>
 
-            <div className="glass-panel rounded-3xl p-5 border border-slate-900/20/[0.08]">
+            <div className="glass-panel rounded-3xl p-5 border border-slate-900/[0.08]">
               <div className="flex items-center justify-between">
                 <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-stone-400 uppercase">Total Expenses</span>
-                <div className="h-8 w-8 rounded-xl bg-red-500/15 text-red-400 flex items-center justify-center">
+                <div className="h-8 w-8 rounded-xl bg-red-500/15 text-red-600 flex items-center justify-center">
                   <Receipt className="h-4 w-4" />
                 </div>
               </div>
-              <h3 className="mt-3 text-2xl font-serif font-black text-red-400">
+              <h3 className="mt-3 text-2xl font-serif font-black text-red-600">
                 {money(metrics.totalExpenses_c)}
               </h3>
               <p className="text-[0.8125rem] text-stone-400 mt-1 font-mono">
@@ -334,10 +334,10 @@ export function AnalyticsScreen({
               </p>
             </div>
 
-            <div className="glass-panel rounded-3xl p-5 border border-slate-900/20/[0.08]">
+            <div className="glass-panel rounded-3xl p-5 border border-slate-900/[0.08]">
               <div className="flex items-center justify-between">
                 <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-stone-400 uppercase">True Net Margin</span>
-                <div className="h-8 w-8 rounded-xl bg-amber-500/15 text-amber-300 flex items-center justify-center">
+                <div className="h-8 w-8 rounded-xl bg-amber-500/15 text-amber-600 flex items-center justify-center">
                   <Sparkles className="h-4 w-4" />
                 </div>
               </div>
@@ -352,28 +352,28 @@ export function AnalyticsScreen({
 
           {/* Payment Method Distribution */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="glass-panel p-5 rounded-3xl border border-slate-900/20/[0.08] space-y-3">
+            <div className="glass-panel p-5 rounded-3xl border border-slate-900/[0.08] space-y-3">
               <span className="text-xs font-sans font-semibold font-bold text-stone-300 uppercase tracking-wider block">
                 Payment Channel Breakdown
               </span>
               <div className="space-y-2.5">
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950 border border-slate-900/10">
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-obsidian-900 border border-slate-900/10">
                   <span className="text-xs font-mono text-stone-300">CASH (Physical Drawer)</span>
-                  <span className="font-serif font-bold text-emerald-400">{money(metrics.cashSales_c)}</span>
+                  <span className="font-serif font-bold text-emerald-600">{money(metrics.cashSales_c)}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950 border border-slate-900/10">
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-obsidian-900 border border-slate-900/10">
                   <span className="text-xs font-mono text-stone-300">GCASH (Digital E-Wallet)</span>
-                  <span className="font-serif font-bold text-blue-400">{money(metrics.gcashSales_c)}</span>
+                  <span className="font-serif font-bold text-blue-600">{money(metrics.gcashSales_c)}</span>
                 </div>
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950 border border-slate-900/10">
+                <div className="flex items-center justify-between p-3 rounded-2xl bg-obsidian-900 border border-slate-900/10">
                   <span className="text-xs font-mono text-stone-300">STORE CREDIT (Receivables)</span>
-                  <span className="font-serif font-bold text-amber-400">{money(metrics.utangSales_c)}</span>
+                  <span className="font-serif font-bold text-amber-600">{money(metrics.utangSales_c)}</span>
                 </div>
               </div>
             </div>
 
             {/* Top 5 Best Sellers */}
-            <div className="lg:col-span-2 glass-panel p-5 rounded-3xl border border-slate-900/20/[0.08] space-y-3">
+            <div className="lg:col-span-2 glass-panel p-5 rounded-3xl border border-slate-900/[0.08] space-y-3">
               <span className="text-xs font-sans font-semibold font-bold text-stone-300 uppercase tracking-wider block">
                 Top 5 Best-Selling Products by Revenue
               </span>
@@ -384,7 +384,7 @@ export function AnalyticsScreen({
                   {topProducts.map((p, i) => (
                     <div
                       key={p.name}
-                      className="p-3 rounded-2xl bg-zinc-950 border border-slate-900/10 flex items-center justify-between gap-3 text-xs"
+                      className="p-3 rounded-2xl bg-obsidian-900 border border-slate-900/10 flex items-center justify-between gap-3 text-xs"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <span className="h-6 w-6 rounded-lg bg-gold/15 text-gold-light font-mono font-bold flex items-center justify-center shrink-0 text-[0.8125rem]">
@@ -410,7 +410,7 @@ export function AnalyticsScreen({
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left 2 Cols: Denomination Input Table */}
-            <div className="lg:col-span-2 glass-panel p-5 rounded-3xl border border-slate-900/20/[0.08] space-y-4">
+            <div className="lg:col-span-2 glass-panel p-5 rounded-3xl border border-slate-900/[0.08] space-y-4">
               <div className="flex items-center justify-between border-b border-slate-900/15 pb-3">
                 <div>
                   <h3 className="text-sm font-bold text-slate-900">Philippine Peso Denomination Counter</h3>
@@ -447,7 +447,7 @@ export function AnalyticsScreen({
                   return (
                     <div
                       key={d.key}
-                      className="p-3 rounded-2xl bg-zinc-950 border border-slate-900/10 flex items-center justify-between gap-3"
+                      className="p-3 rounded-2xl bg-obsidian-900 border border-slate-900/10 flex items-center justify-between gap-3"
                     >
                       <div className="min-w-0">
                         <p className="text-xs font-bold text-slate-900 font-mono">{d.label}</p>
@@ -465,7 +465,7 @@ export function AnalyticsScreen({
                               [d.key]: Math.max(0, (prev[d.key] || 0) - 1)
                             }))
                           }
-                          className="h-8 w-8 rounded-lg bg-slate-900/40 hover:bg-slate-900/50 text-stone-300 font-bold flex items-center justify-center text-sm"
+                          className="h-8 w-8 rounded-lg bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.06] text-stone-300 font-bold flex items-center justify-center text-sm"
                         >
                           -
                         </button>
@@ -488,7 +488,7 @@ export function AnalyticsScreen({
                               [d.key]: (prev[d.key] || 0) + 1
                             }))
                           }
-                          className="h-8 w-8 rounded-lg bg-slate-900/40 hover:bg-slate-900/50 text-stone-300 font-bold flex items-center justify-center text-sm"
+                          className="h-8 w-8 rounded-lg bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.06] text-stone-300 font-bold flex items-center justify-center text-sm"
                         >
                           +
                         </button>
@@ -500,7 +500,7 @@ export function AnalyticsScreen({
             </div>
 
             {/* Right Col: Drawer Audit Reconciliation */}
-            <div className="glass-panel p-5 rounded-3xl border border-slate-900/20/[0.08] space-y-5 flex flex-col justify-between">
+            <div className="glass-panel p-5 rounded-3xl border border-slate-900/[0.08] space-y-5 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="border-b border-slate-900/15 pb-3">
                   <h3 className="text-sm font-bold text-slate-900">Drawer Audit Summary</h3>
@@ -508,7 +508,7 @@ export function AnalyticsScreen({
                 </div>
 
                 <div className="space-y-3 font-mono text-xs">
-                  <div className="p-3.5 rounded-2xl bg-zinc-950 border border-slate-900/15">
+                  <div className="p-3.5 rounded-2xl bg-obsidian-900 border border-slate-900/15">
                     <p className="text-[0.75rem] text-stone-400 uppercase">Actual Physical Cash Counted</p>
                     <p className="text-2xl font-serif font-black text-gold-light mt-1">
                       {money(countedPhysicalCash_c)}
@@ -520,7 +520,7 @@ export function AnalyticsScreen({
                     <span className="text-stone-200">{money(todayCashSales_c)}</span>
                   </div>
 
-                  <div className="flex justify-between text-red-400">
+                  <div className="flex justify-between text-red-600">
                     <span>Today's Cash Expenses:</span>
                     <span>-{money(todayCashExpenses_c)}</span>
                   </div>
@@ -535,26 +535,26 @@ export function AnalyticsScreen({
                 <div
                   className={`p-3.5 rounded-2xl border text-xs font-mono space-y-1 ${
                     cashDiscrepancy_c === 0
-                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600'
                       : cashDiscrepancy_c > 0
-                      ? 'bg-blue-500/10 border-blue-500/30 text-blue-300'
-                      : 'bg-red-500/10 border-red-500/30 text-red-400'
+                      ? 'bg-blue-500/10 border-blue-500/30 text-blue-600'
+                      : 'bg-red-500/10 border-red-500/30 text-red-600'
                   }`}
                 >
                   <p className="font-bold flex items-center gap-1.5 uppercase text-[0.8125rem]">
                     {cashDiscrepancy_c === 0 ? (
                       <>
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                         <span>Drawer is 100% Balanced</span>
                       </>
                     ) : cashDiscrepancy_c > 0 ? (
                       <>
-                        <Coins className="w-4 h-4 text-blue-400" />
+                        <Coins className="w-4 h-4 text-blue-600" />
                         <span>Cash Over: +{money(cashDiscrepancy_c)}</span>
                       </>
                     ) : (
                       <>
-                        <AlertTriangle className="w-4 h-4 text-red-400" />
+                        <AlertTriangle className="w-4 h-4 text-red-600" />
                         <span>Cash Short: {money(cashDiscrepancy_c)}</span>
                       </>
                     )}
@@ -571,13 +571,13 @@ export function AnalyticsScreen({
 
               <div className="space-y-2 pt-4 border-t border-slate-900/15">
                 {cashCountSavedMessage && (
-                  <p className="text-xs text-emerald-400 font-mono text-center font-bold animate-pulse">
+                  <p className="text-xs text-emerald-600 font-mono text-center font-bold animate-pulse">
                     ✓ Cash count record saved successfully!
                   </p>
                 )}
                 <button
                   onClick={handleSaveCashCount}
-                  className="btn-press w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-[#2563EB] hover:from-amber-300 hover:to-gold text-black text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-glow-gold"
+                  className="btn-press w-full py-3 rounded-xl bg-gradient-to-r from-blue-500 to-[#2563EB] hover:from-blue-400 hover:to-[#1D4ED8] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-glow-gold"
                 >
                   <Save className="w-4 h-4" />
                   <span>Save Cash Count Record</span>
@@ -586,7 +586,7 @@ export function AnalyticsScreen({
                 <button
                   type="button"
                   onClick={() => handleOpenPrintReport('CASHCOUNT')}
-                  className="btn-press w-full py-2.5 rounded-xl bg-zinc-950 border border-slate-900/20 hover:border-gold/40 text-stone-200 text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all"
+                  className="btn-press w-full py-2.5 rounded-xl bg-obsidian-900 border border-slate-900/20 hover:border-gold/40 text-stone-200 text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all"
                 >
                   <Printer className="w-4 h-4 text-gold-light" />
                   <span>Print Drawer Reconciliation Audit</span>
@@ -605,8 +605,8 @@ export function AnalyticsScreen({
               onClick={() => setReadingType('X')}
               className={`btn-press px-4 py-2 rounded-xl text-xs font-bold font-mono transition-all ${
                 readingType === 'X'
-                  ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40'
-                  : 'bg-slate-900/40 text-stone-400 hover:text-stone-200'
+                  ? 'bg-blue-500/20 text-blue-600 border border-blue-500/40'
+                  : 'bg-obsidian-900/[0.07] text-stone-400 hover:text-stone-200'
               }`}
             >
               X-Reading (Mid-Day Audit)
@@ -616,7 +616,7 @@ export function AnalyticsScreen({
               className={`btn-press px-4 py-2 rounded-xl text-xs font-bold font-mono transition-all ${
                 readingType === 'Z'
                   ? 'bg-amber-500/20 text-gold-light border border-gold/40'
-                  : 'bg-slate-900/40 text-stone-400 hover:text-stone-200'
+                  : 'bg-obsidian-900/[0.07] text-stone-400 hover:text-stone-200'
               }`}
             >
               Z-Reading (End of Day Store Closure)

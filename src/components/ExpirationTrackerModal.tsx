@@ -57,7 +57,7 @@ export function ExpirationTrackerModal({
             status: 'UNDATED' as const,
             daysRemaining: null,
             label: 'No Expiry Set',
-            color: 'text-stone-400 bg-slate-900/40 border-slate-900/15'
+            color: 'text-stone-400 bg-obsidian-900/[0.07] border-slate-900/15'
           }
         }
 
@@ -70,7 +70,7 @@ export function ExpirationTrackerModal({
             status: 'EXPIRED' as const,
             daysRemaining: diffDays,
             label: `Expired (${Math.abs(diffDays)}d ago)`,
-            color: 'text-red-400 bg-red-500/15 border-red-500/30'
+            color: 'text-red-600 bg-red-500/15 border-red-500/30'
           }
         }
         if (diffDays <= 7) {
@@ -79,7 +79,7 @@ export function ExpirationTrackerModal({
             status: 'SOON' as const,
             daysRemaining: diffDays,
             label: `Expiring in ${diffDays} day${diffDays === 1 ? '' : 's'}`,
-            color: 'text-orange-400 bg-orange-500/15 border-orange-500/30'
+            color: 'text-orange-600 bg-orange-500/15 border-orange-500/30'
           }
         }
         if (diffDays <= 30) {
@@ -88,7 +88,7 @@ export function ExpirationTrackerModal({
             status: 'NEAR' as const,
             daysRemaining: diffDays,
             label: `Expiring in ${diffDays} days`,
-            color: 'text-amber-400 bg-amber-500/15 border-amber-500/30'
+            color: 'text-amber-600 bg-amber-500/15 border-amber-500/30'
           }
         }
 
@@ -97,7 +97,7 @@ export function ExpirationTrackerModal({
           status: 'SAFE' as const,
           daysRemaining: diffDays,
           label: `Safe (${diffDays}d left)`,
-          color: 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30'
+          color: 'text-emerald-600 bg-emerald-500/15 border-emerald-500/30'
         }
       })
   }, [products, todayStr])
@@ -153,9 +153,9 @@ export function ExpirationTrackerModal({
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 animate-fade-in">
       <div className="w-full max-w-4xl h-[88vh] bg-[#F8FAFC] border border-amber-500/30 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-5 border-b border-slate-900/15 bg-zinc-950/80 flex items-center justify-between shrink-0">
+        <div className="p-5 border-b border-slate-900/15 bg-obsidian-900/[0.04] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3.5">
-            <div className="h-11 w-11 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+            <div className="h-11 w-11 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 shrink-0">
               <CalendarClock className="h-5 w-5" />
             </div>
             <div>
@@ -182,13 +182,13 @@ export function ExpirationTrackerModal({
         </div>
 
         {/* Filter Summary Tabs */}
-        <div className="p-4 border-b border-slate-900/20/[0.08] bg-black/40 space-y-3 shrink-0">
+        <div className="p-4 border-b border-slate-900/[0.08] bg-black/40 space-y-3 shrink-0">
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setActiveFilter('ALL')}
               className={`btn-press px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 activeFilter === 'ALL'
-                  ? 'bg-[#2563EB] text-black shadow-glow-gold'
+                  ? 'bg-[#2563EB] text-white shadow-glow-gold'
                   : 'bg-white/[0.04] text-stone-400 hover:text-stone-200'
               }`}
             >
@@ -200,7 +200,7 @@ export function ExpirationTrackerModal({
               className={`btn-press px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
                 activeFilter === 'EXPIRED'
                   ? 'bg-red-500 text-white shadow-lg'
-                  : 'bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20'
+                  : 'bg-red-500/10 text-red-600 hover:bg-red-500/20 border border-red-500/20'
               }`}
             >
               <span>🚨 Expired</span>
@@ -214,7 +214,7 @@ export function ExpirationTrackerModal({
               className={`btn-press px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
                 activeFilter === 'SOON'
                   ? 'bg-orange-500 text-slate-900 shadow-lg'
-                  : 'bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 border border-orange-500/20'
+                  : 'bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 border border-orange-500/20'
               }`}
             >
               <span>⚠️ Expiring in 7 Days</span>
@@ -227,8 +227,8 @@ export function ExpirationTrackerModal({
               onClick={() => setActiveFilter('NEAR')}
               className={`btn-press px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
                 activeFilter === 'NEAR'
-                  ? 'bg-amber-500 text-black shadow-lg'
-                  : 'bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/20'
+                  ? 'bg-blue-600 text-white shadow-lg'
+                  : 'bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 border border-amber-500/20'
               }`}
             >
               <span>🟡 Within 30 Days</span>
@@ -242,7 +242,7 @@ export function ExpirationTrackerModal({
               className={`btn-press px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
                 activeFilter === 'UNDATED'
                   ? 'bg-stone-600 text-slate-900 shadow-lg'
-                  : 'bg-slate-900/40 text-stone-400 hover:text-stone-200 border border-slate-900/10'
+                  : 'bg-obsidian-900/[0.07] text-stone-400 hover:text-stone-200 border border-slate-900/10'
               }`}
             >
               <span>⚪ No Date Set</span>
@@ -259,7 +259,7 @@ export function ExpirationTrackerModal({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search product name or barcode..."
-              className="w-full h-10 pl-10 pr-4 rounded-xl bg-zinc-950 border border-slate-900/20 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#2563EB]"
+              className="w-full h-10 pl-10 pr-4 rounded-xl bg-obsidian-900 border border-slate-900/20 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#2563EB]"
             />
           </div>
         </div>
@@ -268,7 +268,7 @@ export function ExpirationTrackerModal({
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 divide-y divide-white/[0.05]">
           {filteredItems.length === 0 ? (
             <div className="py-20 text-center space-y-2">
-              <Calendar className="h-10 w-10 text-stone-600 mx-auto" />
+              <Calendar className="h-10 w-10 text-stone-500 mx-auto" />
               <p className="text-sm font-bold text-stone-400">No products match this filter</p>
               <p className="text-xs font-mono text-stone-500">
                 Select "All Items" or set expiration dates for products in Inventory.
@@ -281,7 +281,7 @@ export function ExpirationTrackerModal({
                 className="py-3 flex items-center justify-between gap-3 hover:bg-white/[0.02] px-2 rounded-xl transition-colors"
               >
                 <div className="min-w-0 flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-xl bg-zinc-900 border border-slate-900/15 flex items-center justify-center text-stone-400 shrink-0">
+                  <div className="h-9 w-9 rounded-xl bg-slate-850 border border-slate-900/15 flex items-center justify-center text-stone-400 shrink-0">
                     <Package className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
@@ -359,7 +359,7 @@ export function ExpirationTrackerModal({
                 </button>
                 <button
                   onClick={handleSaveDate}
-                  className="btn-press flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-[#2563EB] text-black text-xs font-bold uppercase tracking-wider shadow-glow-gold"
+                  className="btn-press flex-1 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-[#2563EB] text-white text-xs font-bold uppercase tracking-wider shadow-glow-gold"
                 >
                   Save Date
                 </button>

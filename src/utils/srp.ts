@@ -72,7 +72,7 @@ export function getSrpComparison(
       status: 'NO_SRP',
       label: 'No SRP',
       diffC: 0,
-      badgeClass: 'bg-zinc-800 text-stone-400 border border-zinc-700/50'
+      badgeClass: 'bg-obsidian-850 text-stone-400 border border-slate-300'
     }
   }
 
@@ -83,7 +83,7 @@ export function getSrpComparison(
         status: 'WITHIN_RANGE',
         label: 'SRP OK',
         diffC: sellingPriceC - suggestedPriceC,
-        badgeClass: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+        badgeClass: 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/30'
       }
     }
   }
@@ -95,7 +95,7 @@ export function getSrpComparison(
       status: 'MATCH',
       label: 'Exact SRP',
       diffC: 0,
-      badgeClass: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+      badgeClass: 'bg-emerald-500/15 text-emerald-600 border border-emerald-500/30'
     }
   }
 
@@ -104,7 +104,7 @@ export function getSrpComparison(
       status: 'ABOVE_SRP',
       label: `+${money(diffC)} Above SRP`,
       diffC,
-      badgeClass: 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
+      badgeClass: 'bg-amber-500/15 text-amber-600 border border-amber-500/30'
     }
   }
 
@@ -112,6 +112,6 @@ export function getSrpComparison(
     status: 'BELOW_SRP',
     label: `${money(diffC)} Below SRP`,
     diffC,
-    badgeClass: 'bg-sky-500/15 text-sky-400 border border-sky-500/30'
+    badgeClass: 'bg-sky-500/15 text-sky-600 border border-sky-500/30'
   }
 }

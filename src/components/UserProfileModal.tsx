@@ -207,7 +207,7 @@ export function UserProfileModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/80 backdrop-blur-md animate-fade-in">
       <div className="w-full max-w-md glass-panel rounded-3xl border border-gold/40 shadow-2xl overflow-hidden flex flex-col">
         {/* Top Header */}
-        <div className="p-5 border-b border-slate-900/20/[0.08] flex items-center justify-between bg-zinc-950/40">
+        <div className="p-5 border-b border-slate-900/[0.08] flex items-center justify-between bg-obsidian-900/[0.07]">
           <div className="flex items-center gap-2.5">
             <div className="h-9 w-9 rounded-xl bg-amber-500/10 border border-gold/30 flex items-center justify-center text-gold-light">
               <User className="h-5 w-5" />
@@ -230,14 +230,14 @@ export function UserProfileModal({
           <div
             className={`mx-5 mt-4 p-3 rounded-xl border flex items-center gap-2.5 text-xs font-semibold animate-fade-in ${
               feedback.type === 'success'
-                ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
-                : 'bg-red-500/15 border-red-500/30 text-red-300'
+                ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-600'
+                : 'bg-red-500/15 border-red-500/30 text-red-600'
             }`}
           >
             {feedback.type === 'success' ? (
-              <Check className="h-4 w-4 shrink-0 text-emerald-400" />
+              <Check className="h-4 w-4 shrink-0 text-emerald-600" />
             ) : (
-              <AlertCircle className="h-4 w-4 shrink-0 text-red-400" />
+              <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
             )}
             <span>{feedback.message}</span>
           </div>
@@ -248,7 +248,7 @@ export function UserProfileModal({
           {/* Avatar Upload Hub */}
           <div className="flex flex-col items-center justify-center text-center space-y-3">
             <div className="relative group">
-              <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-gold/60 shadow-glow-gold bg-zinc-900 flex items-center justify-center relative">
+              <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-gold/60 shadow-glow-gold bg-slate-850 flex items-center justify-center relative">
                 {avatar ? (
                   <img
                     src={avatar}
@@ -256,7 +256,7 @@ export function UserProfileModal({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-amber-300 to-[#2563EB] flex items-center justify-center text-obsidian-950 font-serif font-black text-2xl">
+                  <div className="w-full h-full bg-gradient-to-br from-amber-300 to-[#2563EB] flex items-center justify-center text-stone-100 font-serif font-black text-2xl">
                     {initials}
                   </div>
                 )}
@@ -274,7 +274,7 @@ export function UserProfileModal({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="absolute -bottom-1.5 -right-1.5 p-2 rounded-xl bg-amber-500 text-obsidian-950 font-bold shadow-lg hover:bg-amber-400 hover:scale-105 transition-all"
+                className="absolute -bottom-1.5 -right-1.5 p-2 rounded-xl bg-amber-500 text-stone-100 font-bold shadow-lg hover:bg-amber-400 hover:scale-105 transition-all"
                 title="Upload Photo"
               >
                 <Camera className="w-4 h-4" />
@@ -302,7 +302,7 @@ export function UserProfileModal({
                   {currentCashierRole}
                 </span>
                 {currentStoreName && (
-                  <span className="px-2.5 py-0.5 rounded-full bg-slate-900/40 border border-slate-900/15 text-stone-300 text-[0.75rem] font-mono flex items-center gap-1">
+                  <span className="px-2.5 py-0.5 rounded-full bg-obsidian-900/[0.07] border border-slate-900/15 text-stone-300 text-[0.75rem] font-mono flex items-center gap-1">
                     <Store className="w-3 h-3 text-stone-400" />
                     <span>{currentStoreName}</span>
                   </span>
@@ -327,7 +327,7 @@ export function UserProfileModal({
                   type="button"
                   onClick={handleRemovePhoto}
                   disabled={isUploading}
-                  className="btn-press px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/25 text-red-400 text-xs font-semibold flex items-center gap-1.5 transition-all"
+                  className="btn-press px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/25 text-red-600 text-xs font-semibold flex items-center gap-1.5 transition-all"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Remove</span>
@@ -340,7 +340,7 @@ export function UserProfileModal({
           </div>
 
           {/* Security PIN Section */}
-          <div className="border-t border-slate-900/20/[0.08] pt-4 space-y-3">
+          <div className="border-t border-slate-900/[0.08] pt-4 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <KeyRound className="w-4 h-4 text-gold-light" />
@@ -368,7 +368,7 @@ export function UserProfileModal({
                       value={currentPin}
                       onChange={(e) => setCurrentPin(e.target.value.replace(/[^0-9]/g, ''))}
                       placeholder="Enter current PIN"
-                      className="w-full px-3 py-2 rounded-xl bg-zinc-950/70 border border-slate-900/15 text-slate-900 font-mono text-xs focus:outline-none focus:border-gold"
+                      className="w-full px-3 py-2 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/15 text-slate-900 font-mono text-xs focus:outline-none focus:border-gold"
                     />
                   </div>
                 )}
@@ -382,7 +382,7 @@ export function UserProfileModal({
                     value={newPin}
                     onChange={(e) => setNewPin(e.target.value.replace(/[^0-9]/g, ''))}
                     placeholder="Enter new PIN"
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-950/70 border border-slate-900/15 text-slate-900 font-mono text-xs focus:outline-none focus:border-gold"
+                    className="w-full px-3 py-2 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/15 text-slate-900 font-mono text-xs focus:outline-none focus:border-gold"
                   />
                 </div>
                 <div>
@@ -395,13 +395,13 @@ export function UserProfileModal({
                     value={confirmPin}
                     onChange={(e) => setConfirmPin(e.target.value.replace(/[^0-9]/g, ''))}
                     placeholder="Re-enter new PIN"
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-950/70 border border-slate-900/15 text-slate-900 font-mono text-xs focus:outline-none focus:border-gold"
+                    className="w-full px-3 py-2 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/15 text-slate-900 font-mono text-xs focus:outline-none focus:border-gold"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={pinLoading}
-                  className="w-full py-2 rounded-xl bg-gradient-to-r from-amber-400 via-gold to-amber-500 text-obsidian-950 font-bold text-xs shadow-md hover:brightness-110 transition-all flex items-center justify-center gap-1.5"
+                  className="w-full py-2 rounded-xl bg-gradient-to-r from-amber-400 via-gold to-amber-500 text-stone-100 font-bold text-xs shadow-md hover:brightness-110 transition-all flex items-center justify-center gap-1.5"
                 >
                   {pinLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
                   <span>Save New PIN</span>
@@ -412,11 +412,11 @@ export function UserProfileModal({
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-slate-900/20/[0.08] bg-zinc-950/50 flex justify-end">
+        <div className="p-4 border-t border-slate-900/[0.08] bg-obsidian-900/[0.06] flex justify-end">
           <button
             type="button"
             onClick={onClose}
-            className="btn-press px-5 py-2 rounded-xl bg-slate-900/50 hover:bg-slate-900/60 text-stone-200 text-xs font-semibold transition-all"
+            className="btn-press px-5 py-2 rounded-xl bg-obsidian-900/[0.06] hover:bg-obsidian-900/[0.05] text-stone-200 text-xs font-semibold transition-all"
           >
             Close
           </button>

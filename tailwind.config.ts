@@ -26,13 +26,13 @@ export default {
           200: '#1E293B',
           300: '#334155',
           400: '#475569',
-          500: '#64748B',
+          500: '#56657D',
           600: '#94A3B8',
           800: '#CBD5E1'
         },
         gold: {
           DEFAULT: '#2563EB',
-          light: '#93C5FD',
+          light: '#1D4ED8',
           muted: '#3B82F6',
           dark: '#1E40AF',
           glow: 'rgba(37, 99, 235, 0.16)'
@@ -50,6 +50,8 @@ export default {
           glow: 'rgba(16, 185, 129, 0.2)'
         },
         amber: {
+          200: '#DBEAFE',
+          300: '#BFDBFE',
           400: '#60A5FA',
           500: '#2563EB',
           600: '#1D4ED8',

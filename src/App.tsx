@@ -412,7 +412,7 @@ export default function App(): React.JSX.Element {
   }
 
   return (
-    <div className="min-h-screen bg-obsidian-950 text-stone-100 flex flex-col md:flex-row selection:bg-amber-400 selection:text-obsidian-950 font-sans">
+    <div className="min-h-screen bg-obsidian-950 text-stone-100 flex flex-col md:flex-row selection:bg-amber-400 selection:text-stone-100 font-sans">
       {/* Executive Vertical Navigation Sidebar & Mobile Bottom Nav */}
       <Navigation
         activeTab={activeTab}
@@ -436,14 +436,14 @@ export default function App(): React.JSX.Element {
       <main className="flex-1 min-w-0 overflow-y-auto pb-20 md:pb-6 flex flex-col">
         {/* Master Admin Masquerade / Store Impersonate Top Bar */}
         {masqueradeSession && (
-          <div className="bg-gradient-to-r from-amber-600 via-gold to-amber-500 text-obsidian-950 px-4 py-2 flex items-center justify-between shadow-xl sticky top-0 z-50 animate-fade-in font-mono text-xs">
+          <div className="bg-gradient-to-r from-amber-600 via-gold to-amber-500 text-stone-100 px-4 py-2 flex items-center justify-between shadow-xl sticky top-0 z-50 animate-fade-in font-mono text-xs">
             <div className="flex items-center gap-2 font-bold tracking-wide">
-              <Crown className="w-4 h-4 fill-current text-obsidian-950" />
+              <Crown className="w-4 h-4 fill-current text-stone-100" />
               <span>MASQUERADE MODE: Managing Store "{masqueradeSession.activeStore}" as Master Admin</span>
             </div>
             <button
               onClick={handleExitMasquerade}
-              className="bg-obsidian-950 text-gold-light hover:bg-zinc-900 border border-gold/40 px-3 py-1 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
+              className="bg-obsidian-950 text-gold-light hover:bg-slate-850 border border-gold/40 px-3 py-1 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
             >
               <span>↩ Return to Master Control</span>
             </button>
@@ -451,12 +451,12 @@ export default function App(): React.JSX.Element {
         )}
 
         {/* Desktop & Tablet Top Status Bar with real-time shift time limit */}
-        <div className="hidden md:flex items-center justify-between px-4 lg:px-6 py-2.5 bg-obsidian-950/80 backdrop-blur-md border-b border-slate-900/20/[0.06] sticky top-0 z-30 min-w-0 gap-3">
+        <div className="hidden md:flex items-center justify-between px-4 lg:px-6 py-2.5 bg-obsidian-950/80 backdrop-blur-md border-b border-slate-900/[0.06] sticky top-0 z-30 min-w-0 gap-3">
           <div className="flex items-center gap-2 lg:gap-3 min-w-0 truncate">
             <span className="font-sans font-semibold text-[0.8125rem] tracking-widest uppercase text-stone-400 shrink-0">
               Terminal <span className="text-gold-light font-bold">{vaultSession?.terminalId || 'TRM-8891'}</span>
             </span>
-            <span className="text-stone-600 shrink-0">•</span>
+            <span className="text-stone-500 shrink-0">•</span>
             <button
               type="button"
               onClick={() => setIsProfileModalOpen(true)}
@@ -493,7 +493,7 @@ export default function App(): React.JSX.Element {
               className={`flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-mono font-bold transition-all shrink-0 ${
                 proAccess.isPro
                   ? 'bg-amber-500/10 border-gold/40 text-gold-light hover:border-gold shadow-glow-gold'
-                  : 'bg-rose-950/60 border-rose-700/60 text-rose-300 hover:border-rose-500 animate-pulse'
+                  : 'bg-rose-50/60 border-rose-700/60 text-rose-600 hover:border-rose-500 animate-pulse'
               }`}
             >
               <Clock className="w-3.5 h-3.5 text-gold-muted shrink-0" />
@@ -691,9 +691,9 @@ export default function App(): React.JSX.Element {
       />
       {/* HARD GATE: Full app lockout when store shift pass expires — non-master-admin */}
       {!isVaultLocked && vaultSession && !vaultSession.isMasterAdmin && !proAccess.isPro && !proAccess.gateModalOpen && (
-        <div className="fixed inset-0 z-[200] bg-zinc-950/98 backdrop-blur-2xl flex flex-col items-center justify-center p-6 text-center">
+        <div className="fixed inset-0 z-[200] bg-obsidian-900/[0.03] backdrop-blur-2xl flex flex-col items-center justify-center p-6 text-center">
           <div className="max-w-md w-full space-y-6">
-            <div className="h-20 w-20 mx-auto rounded-3xl bg-rose-950/60 border border-rose-700/40 flex items-center justify-center">
+            <div className="h-20 w-20 mx-auto rounded-3xl bg-rose-50/60 border border-rose-700/40 flex items-center justify-center">
               <span className="text-5xl select-none">🔒</span>
             </div>
             <div>
@@ -703,10 +703,10 @@ export default function App(): React.JSX.Element {
                 then activate a shift pass to continue using TINDA POS.
               </p>
             </div>
-            <div className="p-4 rounded-2xl bg-rose-950/30 border border-rose-700/30">
+            <div className="p-4 rounded-2xl bg-rose-50/30 border border-rose-700/30">
               <p className="text-[0.75rem] font-sans font-semibold text-stone-500 uppercase tracking-widest">Shift Pass Timer</p>
-              <p className="text-4xl font-mono font-bold text-rose-400 mt-1">00:00:00</p>
-              <p className="text-[0.75rem] font-mono text-stone-600 mt-1">Expired — watch ads to earn tokens</p>
+              <p className="text-4xl font-mono font-bold text-rose-600 mt-1">00:00:00</p>
+              <p className="text-[0.75rem] font-mono text-stone-500 mt-1">Expired — watch ads to earn tokens</p>
             </div>
             <button
               onClick={() => proAccess.openRewardModal('Store Shift Pass')}
@@ -719,7 +719,7 @@ export default function App(): React.JSX.Element {
                 try { localStorage.removeItem('tinda_vault_session') } catch {}
                 window.location.reload()
               }}
-              className="text-xs font-mono text-stone-600 hover:text-stone-300 underline transition-colors mt-2"
+              className="text-xs font-mono text-stone-500 hover:text-stone-300 underline transition-colors mt-2"
             >
               Switch Account / Sign Out
             </button>

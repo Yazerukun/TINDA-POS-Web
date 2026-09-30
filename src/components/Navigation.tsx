@@ -83,7 +83,7 @@ export function Navigation({
       label: 'Dashboard',
       icon: LayoutDashboard,
       badge: lowStockCount && lowStockCount > 0 ? lowStockCount : undefined,
-      badgeClass: 'bg-red-500/20 text-red-300 border border-red-500/30'
+      badgeClass: 'bg-red-500/20 text-red-600 border border-red-500/30'
     },
     { id: 'pos', label: 'Counter', icon: ShoppingBag, badge: cartCount },
     { id: 'transactions', label: 'Transactions', icon: Receipt },
@@ -124,8 +124,8 @@ export function Navigation({
       <aside className="hidden md:flex flex-col w-60 xl:w-64 h-screen sticky top-0 shrink-0 bg-[#F8FAFC] border-r border-slate-900/15 p-4 justify-between z-30 transition-all select-none overflow-y-auto custom-scrollbar">
         {/* Brand & Logo Header */}
         <div className="space-y-5">
-          <div className="flex items-center gap-3 px-2 py-2 border-b border-slate-900/20/[0.08]">
-            <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-950/80 border border-gold/40 shadow-glow-gold shrink-0 p-1 overflow-hidden">
+          <div className="flex items-center gap-3 px-2 py-2 border-b border-slate-900/[0.08]">
+            <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-obsidian-900/[0.04] border border-gold/40 shadow-glow-gold shrink-0 p-1 overflow-hidden">
               <img
                 src="/tinda-pos-crest.png"
                 alt="TINDA POS"
@@ -137,7 +137,7 @@ export function Navigation({
               <p className="font-serif text-base font-bold tracking-[0.2em] text-stone-100 uppercase truncate">
                 TINDA
               </p>
-              <p className="font-sans font-semibold text-[0.6875rem] tracking-[0.22em] uppercase text-gold-muted font-medium truncate">
+              <p className="font-sans font-semibold text-[0.75rem] tracking-[0.22em] uppercase text-gold-muted font-medium truncate">
                 BUSINESS POS
               </p>
             </div>
@@ -159,7 +159,7 @@ export function Navigation({
                     className={`btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium transition-all duration-200 text-left ${
                       isActive
                         ? 'bg-amber-500/10 text-[#2563EB] border border-[#2563EB]/35 shadow-glow-gold font-bold'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-slate-900/[0.05] border border-transparent'
+                        : 'text-stone-400 hover:text-stone-200 hover:bg-obsidian-900/[0.05] border border-transparent'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
@@ -169,7 +169,7 @@ export function Navigation({
                     {item.badge !== undefined && item.badge > 0 && (
                       <span
                         className={`px-2 py-0.5 rounded-full text-[0.75rem] font-mono font-bold shrink-0 ${
-                          item.badgeClass || 'bg-[#2563EB] text-black'
+                          item.badgeClass || 'bg-[#2563EB] text-white'
                         }`}
                       >
                         {item.badge}
@@ -197,7 +197,7 @@ export function Navigation({
                     className={`btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium transition-all duration-200 text-left ${
                       isActive
                         ? 'bg-amber-500/10 text-[#2563EB] border border-[#2563EB]/35 shadow-glow-gold font-bold'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-slate-900/[0.05] border border-transparent'
+                        : 'text-stone-400 hover:text-stone-200 hover:bg-obsidian-900/[0.05] border border-transparent'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
@@ -220,22 +220,22 @@ export function Navigation({
                 {onOpenPriceGuide && (
                   <button
                     onClick={onOpenPriceGuide}
-                    className="btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium text-amber-300/80 hover:text-amber-200 bg-amber-500/[0.04] hover:bg-amber-500/[0.08] border border-amber-500/20 text-left transition-all"
+                    className="btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium text-amber-600/80 hover:text-amber-700 bg-amber-500/[0.04] hover:bg-amber-500/[0.08] border border-amber-500/20 text-left transition-all"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <Sparkles className="w-4 h-4 shrink-0 text-amber-400" />
+                      <Sparkles className="w-4 h-4 shrink-0 text-amber-600" />
                       <span className="truncate">DTI Price Guide</span>
                     </div>
-                    <span className="text-[0.75rem] font-mono bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">SRP</span>
+                    <span className="text-[0.75rem] font-mono bg-amber-500/20 text-amber-600 px-1.5 py-0.5 rounded">SRP</span>
                   </button>
                 )}
                 {onOpenExpiration && (
                   <button
                     onClick={onOpenExpiration}
-                    className="btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium text-rose-300/80 hover:text-rose-200 bg-rose-500/[0.04] hover:bg-rose-500/[0.08] border border-rose-500/20 text-left transition-all"
+                    className="btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium text-rose-600/80 hover:text-rose-700 bg-rose-500/[0.04] hover:bg-rose-500/[0.08] border border-rose-500/20 text-left transition-all"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <CalendarClock className="w-4 h-4 shrink-0 text-rose-400" />
+                      <CalendarClock className="w-4 h-4 shrink-0 text-rose-600" />
                       <span className="truncate">Expiry Watch</span>
                     </div>
                   </button>
@@ -255,14 +255,14 @@ export function Navigation({
                 className={`btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-bold transition-all duration-200 text-left ${
                   activeTab === 'master-control'
                     ? 'bg-gradient-to-r from-amber-500/25 to-gold/20 text-gold-light border border-gold shadow-glow-gold'
-                    : 'bg-amber-500/[0.08] text-amber-200 border border-gold/30 hover:border-gold hover:bg-amber-500/15'
+                    : 'bg-amber-500/[0.08] text-amber-700 border border-gold/30 hover:border-gold hover:bg-amber-500/15'
                 }`}
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <ShieldCheck className="w-4 h-4 text-gold-light shrink-0" />
                   <span className="truncate">Master Control</span>
                 </div>
-                <span className="px-1.5 py-0.5 rounded-md bg-gold/20 text-[0.6875rem] font-mono text-gold-light font-extrabold border border-gold/40">
+                <span className="px-1.5 py-0.5 rounded-md bg-gold/20 text-[0.75rem] font-mono text-gold-light font-extrabold border border-gold/40">
                   ROOT
                 </span>
               </button>
@@ -271,7 +271,7 @@ export function Navigation({
         </div>
 
         {/* Footer: Pro Access HUD & User Profile & Log Out */}
-        <div className="space-y-3 pt-4 border-t border-slate-900/20/[0.08] mt-4">
+        <div className="space-y-3 pt-4 border-t border-slate-900/[0.08] mt-4">
           {/* Real-Time Pro Access Time Limit Status Card / Master License Card */}
           {isMasterAdmin ? (
             <div
@@ -281,11 +281,11 @@ export function Navigation({
               className="cursor-pointer group p-2.5 rounded-2xl border border-gold/40 bg-gradient-to-r from-amber-500/15 via-gold/10 to-amber-500/10 shadow-glow-gold transition-all"
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="flex items-center gap-1.5 text-[0.6875rem] font-sans font-semibold tracking-widest uppercase font-bold text-gold-light">
+                <span className="flex items-center gap-1.5 text-[0.75rem] font-sans font-semibold tracking-widest uppercase font-bold text-gold-light">
                   <Crown className="w-3.5 h-3.5 text-gold" />
                   <span>MASTER LICENSE</span>
                 </span>
-                <span className="text-[0.625rem] font-sans font-semibold px-1.5 py-0.5 rounded font-extrabold uppercase bg-gold/20 text-gold-light border border-gold/40">
+                <span className="text-[0.75rem] font-sans font-semibold px-1.5 py-0.5 rounded font-extrabold uppercase bg-gold/20 text-gold-light border border-gold/40">
                   AD-FREE
                 </span>
               </div>
@@ -302,19 +302,19 @@ export function Navigation({
               className={`cursor-pointer group p-2.5 rounded-2xl border transition-all duration-300 ${
                 isPro
                   ? 'bg-amber-500/[0.05] border-gold/30 hover:border-gold hover:bg-amber-500/[0.09]'
-                  : 'bg-rose-950/25 border-rose-700/50 hover:border-rose-500 animate-pulse'
+                  : 'bg-rose-50/25 border-rose-700/50 hover:border-rose-500 animate-pulse'
               }`}
             >
               <div className="flex items-center justify-between mb-1.5">
-                <span className="flex items-center gap-1.5 text-[0.6875rem] font-sans font-semibold tracking-widest uppercase font-semibold text-stone-400">
-                  <Clock className={`w-3 h-3 ${isPro ? 'text-gold-light' : 'text-rose-400'}`} />
+                <span className="flex items-center gap-1.5 text-[0.75rem] font-sans font-semibold tracking-widest uppercase font-semibold text-stone-400">
+                  <Clock className={`w-3 h-3 ${isPro ? 'text-gold-light' : 'text-rose-600'}`} />
                   <span>{isPro ? 'PRO ACCESS' : 'FREE MODE'}</span>
                 </span>
                 <span
-                  className={`text-[0.6875rem] font-mono px-1.5 py-0.5 rounded font-bold uppercase ${
+                  className={`text-[0.75rem] font-mono px-1.5 py-0.5 rounded font-bold uppercase ${
                     isPro
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                      : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                      ? 'bg-emerald-500/20 text-emerald-600 border border-emerald-500/30'
+                      : 'bg-rose-500/20 text-rose-600 border border-rose-500/30'
                   }`}
                 >
                   {isPro ? 'ACTIVE' : 'EXPIRED'}
@@ -324,7 +324,7 @@ export function Navigation({
               <div className="flex items-center justify-between">
                 <span
                   className={`font-mono text-xs font-bold tracking-wider ${
-                    isPro ? 'text-gold-light' : 'text-rose-400'
+                    isPro ? 'text-gold-light' : 'text-rose-600'
                   }`}
                 >
                   {proFormattedTime}
@@ -340,7 +340,7 @@ export function Navigation({
           <button
             type="button"
             onClick={onOpenProfile}
-            className="flex items-center gap-3 p-2.5 rounded-xl bg-zinc-950/60 border border-slate-900/10 hover:border-gold/40 hover:bg-zinc-900/80 transition-all text-left group w-full cursor-pointer"
+            className="flex items-center gap-3 p-2.5 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/10 hover:border-gold/40 hover:bg-slate-850/80 transition-all text-left group w-full cursor-pointer"
             title="View & Edit Profile"
           >
             {avatarUrl ? (
@@ -350,7 +350,7 @@ export function Navigation({
                 className="h-9 w-9 shrink-0 rounded-xl object-cover border border-gold/40 shadow-glow-gold"
               />
             ) : (
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-[#2563EB] text-obsidian-950 text-xs font-serif font-bold shadow-sm">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-[#2563EB] text-stone-100 text-xs font-serif font-bold shadow-sm">
                 {cashierInitials}
               </div>
             )}
@@ -367,7 +367,7 @@ export function Navigation({
           <button
             onClick={onLockTerminal}
             title="Log Out Terminal"
-            className="btn-press w-full py-2.5 px-3 rounded-xl bg-red-500/10 border border-red-500/25 hover:bg-red-500/20 hover:border-red-500/40 text-red-400 text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm"
+            className="btn-press w-full py-2.5 px-3 rounded-xl bg-red-500/10 border border-red-500/25 hover:bg-red-500/20 hover:border-red-500/40 text-red-600 text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm"
           >
             <LogOut className="w-4 h-4 shrink-0" />
             <span className="tracking-wider uppercase text-[0.8125rem] font-bold">Log Out</span>
@@ -379,7 +379,7 @@ export function Navigation({
       <header className="md:hidden sticky top-0 z-40 h-13 w-full flex items-center justify-between px-3 sm:px-4 bg-[#F8FAFC]/95 backdrop-blur-xl border-b border-slate-900/15 gap-2 select-none">
         {/* Left: Brand logo & name */}
         <div className="flex items-center gap-2 shrink-0 min-w-0">
-          <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-zinc-950/90 border border-gold/40 shadow-glow-gold p-0.5 shrink-0 overflow-hidden">
+          <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-obsidian-900/[0.04] border border-gold/40 shadow-glow-gold p-0.5 shrink-0 overflow-hidden">
             <img
               src="/tinda-pos-crest.png"
               alt="TINDA POS"
@@ -391,7 +391,7 @@ export function Navigation({
             <span className="font-serif font-bold text-sm sm:text-base tracking-[0.18em] uppercase text-stone-100 truncate">
               TINDA
             </span>
-            <span className="text-[0.625rem] sm:text-[0.6875rem] tracking-widest text-[#2563EB] border border-[#2563EB]/30 px-1 py-0.2 rounded-full uppercase font-sans font-semibold shrink-0">
+            <span className="text-[0.75rem] sm:text-[0.75rem] tracking-widest text-[#2563EB] border border-[#2563EB]/30 px-1 py-0.2 rounded-full uppercase font-sans font-semibold shrink-0">
               POS
             </span>
           </div>
@@ -414,7 +414,7 @@ export function Navigation({
               className={`flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full border text-[0.75rem] sm:text-[0.8125rem] font-mono font-bold transition-all shrink-0 active:scale-95 ${
                 isPro
                   ? 'bg-amber-500/10 border-gold/40 text-gold-light'
-                  : 'bg-rose-950/60 border-rose-700/60 text-rose-300 animate-pulse'
+                  : 'bg-rose-50/60 border-rose-700/60 text-rose-600 animate-pulse'
               }`}
             >
               <Clock className="w-3 h-3 text-gold-muted shrink-0" />
@@ -426,7 +426,7 @@ export function Navigation({
           <button
             type="button"
             onClick={onOpenProfile}
-            className="flex items-center gap-1.5 p-1 sm:px-2 sm:py-1 rounded-lg bg-zinc-900/60 border border-slate-900/10 hover:border-gold/40 transition-all shrink-0 cursor-pointer"
+            className="flex items-center gap-1.5 p-1 sm:px-2 sm:py-1 rounded-lg bg-slate-850/60 border border-slate-900/10 hover:border-gold/40 transition-all shrink-0 cursor-pointer"
             title={`View profile (${cashierName})`}
           >
             {avatarUrl ? (
@@ -436,7 +436,7 @@ export function Navigation({
                 className="h-6 w-6 shrink-0 rounded-full object-cover border border-gold/40"
               />
             ) : (
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-[#2563EB] text-black text-[0.75rem] font-serif font-bold">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-[#2563EB] text-white text-[0.75rem] font-serif font-bold">
                 {cashierInitials}
               </div>
             )}
@@ -449,7 +449,7 @@ export function Navigation({
           <button
             onClick={onLockTerminal}
             title="Log Out Terminal"
-            className="btn-press flex items-center justify-center h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-red-500/10 border border-red-500/25 text-red-400 shrink-0 transition-all hover:bg-red-500/20"
+            className="btn-press flex items-center justify-center h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-red-500/10 border border-red-500/25 text-red-600 shrink-0 transition-all hover:bg-red-500/20"
           >
             <LogOut className="w-3.5 h-3.5" />
           </button>
@@ -467,12 +467,12 @@ export function Navigation({
           <div className="relative">
             <LayoutDashboard className="w-4 h-4 shrink-0" />
             {lowStockCount !== undefined && lowStockCount > 0 && (
-              <span className="absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[0.625rem] font-mono font-bold leading-none bg-red-500 text-white">
+              <span className="absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[0.75rem] font-mono font-bold leading-none bg-red-500 text-white">
                 {lowStockCount}
               </span>
             )}
           </div>
-          <span className="truncate max-w-full tracking-tight uppercase text-[0.6875rem] font-medium leading-none">
+          <span className="truncate max-w-full tracking-tight uppercase text-[0.75rem] font-medium leading-none">
             Dash
           </span>
         </button>
@@ -486,12 +486,12 @@ export function Navigation({
           <div className="relative">
             <ShoppingBag className="w-4 h-4 shrink-0" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[0.625rem] font-mono font-bold leading-none bg-[#2563EB] text-black">
+              <span className="absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[0.75rem] font-mono font-bold leading-none bg-[#2563EB] text-white">
                 {cartCount}
               </span>
             )}
           </div>
-          <span className="truncate max-w-full tracking-tight uppercase text-[0.6875rem] font-medium leading-none">
+          <span className="truncate max-w-full tracking-tight uppercase text-[0.75rem] font-medium leading-none">
             Counter
           </span>
         </button>
@@ -503,7 +503,7 @@ export function Navigation({
           }`}
         >
           <Receipt className="w-4 h-4 shrink-0" />
-          <span className="truncate max-w-full tracking-tight uppercase text-[0.6875rem] font-medium leading-none">
+          <span className="truncate max-w-full tracking-tight uppercase text-[0.75rem] font-medium leading-none">
             Sales
           </span>
         </button>
@@ -515,7 +515,7 @@ export function Navigation({
           }`}
         >
           <Package className="w-4 h-4 shrink-0" />
-          <span className="truncate max-w-full tracking-tight uppercase text-[0.6875rem] font-medium leading-none">
+          <span className="truncate max-w-full tracking-tight uppercase text-[0.75rem] font-medium leading-none">
             Stocks
           </span>
         </button>
@@ -529,7 +529,7 @@ export function Navigation({
           }`}
         >
           <Menu className="w-4 h-4 shrink-0" />
-          <span className="truncate max-w-full tracking-tight uppercase text-[0.6875rem] font-medium leading-none">
+          <span className="truncate max-w-full tracking-tight uppercase text-[0.75rem] font-medium leading-none">
             More
           </span>
         </button>
@@ -548,14 +548,14 @@ export function Navigation({
                 <img
                   src="/tinda-pos-crest.png"
                   alt="TINDA POS"
-                  className="w-7 h-7 rounded-lg object-contain border border-gold/40 p-0.5 bg-zinc-950 shadow-glow-gold"
+                  className="w-7 h-7 rounded-lg object-contain border border-gold/40 p-0.5 bg-obsidian-900 shadow-glow-gold"
                 />
                 <span className="font-serif font-bold text-sm tracking-wider uppercase text-gold">TINDA APPS</span>
                 <span className="text-[0.75rem] font-sans font-semibold text-stone-500 uppercase tracking-widest">Directory</span>
               </div>
               <button
                 onClick={() => setMobileDrawerOpen(false)}
-                className="p-1 rounded-lg hover:bg-slate-900/50 text-stone-400"
+                className="p-1 rounded-lg hover:bg-obsidian-900/[0.06] text-stone-400"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -596,16 +596,16 @@ export function Navigation({
                 className={`p-3 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
                   isPro
                     ? 'bg-amber-500/[0.08] border-gold/30'
-                    : 'bg-rose-950/30 border-rose-700/60 animate-pulse'
+                    : 'bg-rose-50/30 border-rose-700/60 animate-pulse'
                 }`}
               >
                 <div className="flex items-center gap-2.5">
-                  <Clock className={`w-4 h-4 ${isPro ? 'text-gold-light' : 'text-rose-400'}`} />
+                  <Clock className={`w-4 h-4 ${isPro ? 'text-gold-light' : 'text-rose-600'}`} />
                   <div>
                     <span className="text-[0.75rem] font-sans font-semibold tracking-widest uppercase text-stone-400 block leading-tight">
                       {isPro ? 'PRO ACCESS ACTIVE' : 'PRO EXPIRED (FREE MODE)'}
                     </span>
-                    <span className={`font-mono text-xs font-bold ${isPro ? 'text-gold-light' : 'text-rose-400'}`}>
+                    <span className={`font-mono text-xs font-bold ${isPro ? 'text-gold-light' : 'text-rose-600'}`}>
                       {proFormattedTime}
                     </span>
                   </div>
@@ -627,12 +627,12 @@ export function Navigation({
                         setMobileDrawerOpen(false)
                         onOpenPriceGuide()
                       }}
-                      className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-left flex flex-col justify-between"
+                      className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 text-left flex flex-col justify-between"
                     >
-                      <Sparkles className="w-5 h-5 text-amber-400 mb-1" />
+                      <Sparkles className="w-5 h-5 text-amber-600 mb-1" />
                       <div>
                         <div className="text-xs font-bold uppercase tracking-wider">DTI Price Guide</div>
-                        <div className="text-[0.75rem] text-amber-300/70 font-mono">172+ DTI SRP Items</div>
+                        <div className="text-[0.75rem] text-amber-600/70 font-mono">172+ DTI SRP Items</div>
                       </div>
                     </button>
                   )}
@@ -642,12 +642,12 @@ export function Navigation({
                         setMobileDrawerOpen(false)
                         onOpenExpiration()
                       }}
-                      className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-200 text-left flex flex-col justify-between"
+                      className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-700 text-left flex flex-col justify-between"
                     >
-                      <CalendarClock className="w-5 h-5 text-rose-400 mb-1" />
+                      <CalendarClock className="w-5 h-5 text-rose-600 mb-1" />
                       <div>
                         <div className="text-xs font-bold uppercase tracking-wider">Expiry Watch</div>
-                        <div className="text-[0.75rem] text-rose-300/70 font-mono">Perishable Alerts</div>
+                        <div className="text-[0.75rem] text-rose-600/70 font-mono">Perishable Alerts</div>
                       </div>
                     </button>
                   )}
@@ -664,17 +664,17 @@ export function Navigation({
                   className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
                     activeTab === 'customers'
                       ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
-                      : 'bg-zinc-950/50 border-slate-900/10 text-stone-300 hover:bg-slate-900/40'
+                      : 'bg-obsidian-900/[0.06] border-slate-900/10 text-stone-300 hover:bg-obsidian-900/[0.07]'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Users className="w-4 h-4 text-emerald-400" />
+                    <Users className="w-4 h-4 text-emerald-600" />
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-wider">Customer Credit Ledger</div>
                       <div className="text-[0.75rem] text-stone-500">Track customer credit & balances</div>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-stone-600" />
+                  <ChevronRight className="w-4 h-4 text-stone-500" />
                 </button>
 
                 <button
@@ -682,17 +682,17 @@ export function Navigation({
                   className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
                     activeTab === 'expenses'
                       ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
-                      : 'bg-zinc-950/50 border-slate-900/10 text-stone-300 hover:bg-slate-900/40'
+                      : 'bg-obsidian-900/[0.06] border-slate-900/10 text-stone-300 hover:bg-obsidian-900/[0.07]'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <TrendingDown className="w-4 h-4 text-rose-400" />
+                    <TrendingDown className="w-4 h-4 text-rose-600" />
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-wider">Expenses Tracker</div>
                       <div className="text-[0.75rem] text-stone-500">Operating costs & net profit math</div>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-stone-600" />
+                  <ChevronRight className="w-4 h-4 text-stone-500" />
                 </button>
 
                 <button
@@ -700,17 +700,17 @@ export function Navigation({
                   className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
                     activeTab === 'suppliers'
                       ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
-                      : 'bg-zinc-950/50 border-slate-900/10 text-stone-300 hover:bg-slate-900/40'
+                      : 'bg-obsidian-900/[0.06] border-slate-900/10 text-stone-300 hover:bg-obsidian-900/[0.07]'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Truck className="w-4 h-4 text-sky-400" />
+                    <Truck className="w-4 h-4 text-sky-600" />
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-wider">Suppliers Directory</div>
                       <div className="text-[0.75rem] text-stone-500">Vendor contacts & delivery notes</div>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-stone-600" />
+                  <ChevronRight className="w-4 h-4 text-stone-500" />
                 </button>
 
                 <button
@@ -718,17 +718,17 @@ export function Navigation({
                   className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
                     activeTab === 'analytics'
                       ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
-                      : 'bg-zinc-950/50 border-slate-900/10 text-stone-300 hover:bg-slate-900/40'
+                      : 'bg-obsidian-900/[0.06] border-slate-900/10 text-stone-300 hover:bg-obsidian-900/[0.07]'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <BarChart3 className="w-4 h-4 text-indigo-400" />
+                    <BarChart3 className="w-4 h-4 text-indigo-600" />
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-wider">Analytics & Z-Read</div>
                       <div className="text-[0.75rem] text-stone-500">Cash drawer audit & closure readings</div>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-stone-600" />
+                  <ChevronRight className="w-4 h-4 text-stone-500" />
                 </button>
 
                 <button
@@ -736,17 +736,17 @@ export function Navigation({
                   className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
                     activeTab === 'settings'
                       ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
-                      : 'bg-zinc-950/50 border-slate-900/10 text-stone-300 hover:bg-slate-900/40'
+                      : 'bg-obsidian-900/[0.06] border-slate-900/10 text-stone-300 hover:bg-obsidian-900/[0.07]'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Settings className="w-4 h-4 text-amber-400" />
+                    <Settings className="w-4 h-4 text-amber-600" />
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-wider">Settings & Backup</div>
                       <div className="text-[0.75rem] text-stone-500">Store config, JSON export & user accounts</div>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-stone-600" />
+                  <ChevronRight className="w-4 h-4 text-stone-500" />
                 </button>
               </div>
             </div>
@@ -783,7 +783,7 @@ export function Navigation({
                   setMobileDrawerOpen(false)
                   onLockTerminal()
                 }}
-                className="px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-semibold flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-600 text-xs font-semibold flex items-center gap-1.5"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Log Out</span>

@@ -81,7 +81,7 @@ function useClock(): Date {
 
 function SecurityBadge({ icon: Icon, label }: { icon: typeof Lock; label: string }): React.JSX.Element {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full glass-pill px-3 py-1 text-[0.75rem] font-sans font-semibold tracking-widest uppercase text-stone-300 border border-gold/20 bg-zinc-950/70 shadow-sm">
+    <span className="inline-flex items-center gap-1.5 rounded-full glass-pill px-3 py-1 text-[0.75rem] font-sans font-semibold tracking-widest uppercase text-stone-300 border border-gold/20 bg-obsidian-900/[0.05] shadow-sm">
       <Icon className="h-3 w-3 text-gold-light" />
       <span>{label}</span>
     </span>
@@ -145,7 +145,7 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
       {/* Top Header: Refined Gold Luxury Crest Logo next to "TINDA POS" (Business Point of Sale · Terminal Session) */}
       <div className="relative z-10">
         <div className="flex items-center gap-3">
-          <div className="relative flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-zinc-950/80 border border-gold/50 shadow-glow-gold p-1 shrink-0 overflow-hidden">
+          <div className="relative flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-obsidian-900/[0.04] border border-gold/50 shadow-glow-gold p-1 shrink-0 overflow-hidden">
             <img
               src="/tinda-pos-crest.png"
               alt="TINDA POS Crest"
@@ -155,7 +155,7 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
           </div>
           <div>
             <p className="font-serif text-lg sm:text-xl font-bold tracking-[0.2em] text-stone-100 uppercase">TINDA POS</p>
-            <p className="font-sans font-semibold text-[0.625rem] sm:text-[0.6875rem] tracking-[0.25em] uppercase text-gold-muted font-medium">
+            <p className="font-sans font-semibold text-[0.75rem] sm:text-[0.75rem] tracking-[0.25em] uppercase text-gold-muted font-medium">
               Business Point of Sale · Terminal Session
             </p>
           </div>
@@ -164,7 +164,7 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
 
       {/* Main Headline: Bold serif typography */}
       <div className="relative z-10 my-4 lg:my-auto max-w-xl">
-        <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-gold/10 border border-gold/25 text-gold-light font-sans font-semibold text-[0.6875rem] tracking-widest uppercase mb-3 shadow-sm">
+        <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-gold/10 border border-gold/25 text-gold-light font-sans font-semibold text-[0.75rem] tracking-widest uppercase mb-3 shadow-sm">
           <Sparkles className="h-3 w-3 text-gold" />
           <span>Point of Sale Terminal</span>
         </div>
@@ -185,7 +185,7 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
           {FEATURES.map((item) => (
             <div
               key={item.title}
-              className="flex items-start gap-2.5 p-2.5 sm:p-3 rounded-xl bg-zinc-950/60 border border-slate-900/20/[0.06] hover:border-gold/30 hover:bg-zinc-900/50 transition-all duration-200 group"
+              className="flex items-start gap-2.5 p-2.5 sm:p-3 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/[0.06] hover:border-gold/30 hover:bg-slate-850/50 transition-all duration-200 group"
             >
               <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gold/10 border border-gold/25 text-gold-light group-hover:scale-105 group-hover:bg-gold/20 transition-all">
                 <item.icon className="h-3.5 w-3.5" />
@@ -200,7 +200,7 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
       </div>
 
       {/* Security pill badges at the bottom */}
-      <div className="relative z-10 pt-3 border-t border-slate-900/20/[0.08] space-y-2 sm:space-y-3">
+      <div className="relative z-10 pt-3 border-t border-slate-900/[0.08] space-y-2 sm:space-y-3">
         <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <SecurityBadge icon={Lock} label="AES-256 Sealed" />
           <SecurityBadge icon={Fingerprint} label="Staff-Authorized" />
@@ -209,12 +209,12 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
 
         <div className="flex items-end justify-between pt-0.5">
           <div>
-            <p className="font-sans font-semibold text-[0.6875rem] tracking-[0.25em] uppercase text-stone-500 mb-0.5">Terminal</p>
+            <p className="font-sans font-semibold text-[0.75rem] tracking-[0.25em] uppercase text-stone-500 mb-0.5">Terminal</p>
             <p className="font-mono text-xs sm:text-sm text-gold-light font-bold">{terminalId}</p>
           </div>
           <div className="text-right">
             <p className="font-mono text-base sm:text-lg text-stone-100 tabular-nums font-bold tracking-wider">{clock}</p>
-            <p className="font-sans font-semibold text-[0.6875rem] text-stone-500 tracking-wider uppercase">{date}</p>
+            <p className="font-sans font-semibold text-[0.75rem] text-stone-500 tracking-wider uppercase">{date}</p>
           </div>
         </div>
       </div>
@@ -630,13 +630,13 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
         <main className="flex flex-col items-center justify-center w-full flex-1 px-3.5 sm:px-6 py-6 sm:py-8 lg:p-6 relative z-10 lg:overflow-y-auto custom-scrollbar">
 
           {/* Modern Dark Glassmorphism Card with Soft Gold Border Highlight */}
-          <div className="w-full max-w-[390px] sm:max-w-[430px] md:max-w-[450px] glass-vault rounded-3xl border border-gold/35 shadow-vault text-stone-100 animate-fade-in relative overflow-hidden backdrop-blur-3xl bg-zinc-950/90 my-auto p-4 sm:p-6">
+          <div className="w-full max-w-[390px] sm:max-w-[430px] md:max-w-[450px] glass-vault rounded-3xl border border-gold/35 shadow-vault text-stone-100 animate-fade-in relative overflow-hidden backdrop-blur-3xl bg-obsidian-900/[0.04] my-auto p-4 sm:p-6">
 
             {/* Elegant Luxury Verification Loading Overlay */}
             {isVerifying && (
-              <div className="absolute inset-0 z-40 bg-zinc-950/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+              <div className="absolute inset-0 z-40 bg-obsidian-900/[0.04] backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-fade-in">
                 <div className="relative flex items-center justify-center mb-3">
-                  <div className="w-14 h-14 rounded-2xl border border-gold/40 bg-zinc-900/90 flex items-center justify-center shadow-glow-gold relative overflow-hidden">
+                  <div className="w-14 h-14 rounded-2xl border border-gold/40 bg-slate-850/90 flex items-center justify-center shadow-glow-gold relative overflow-hidden">
                     <img src="/tinda-pos-crest.png" alt="Loading" className="w-9 h-9 object-contain animate-pulse" />
                     <div className="absolute inset-0 border-2 border-gold/70 border-t-transparent rounded-2xl animate-spin" />
                   </div>
@@ -644,10 +644,10 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                 <p className="font-serif text-sm font-bold tracking-widest uppercase text-gold-light animate-pulse">
                   Authenticating Session
                 </p>
-                <p className="font-sans font-semibold text-[0.6875rem] text-stone-400 tracking-widest uppercase mt-0.5">
+                <p className="font-sans font-semibold text-[0.75rem] text-stone-400 tracking-widest uppercase mt-0.5">
                   Validating Terminal Credentials
                 </p>
-                <div className="w-36 h-1 bg-zinc-800 rounded-full mt-3 overflow-hidden border border-slate-900/20/[0.08]">
+                <div className="w-36 h-1 bg-obsidian-850 rounded-full mt-3 overflow-hidden border border-slate-900/[0.08]">
                   <div className="h-full bg-gradient-to-r from-amber-400 via-gold to-amber-200 rounded-full w-2/3 animate-pulse" />
                 </div>
               </div>
@@ -659,7 +659,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
             {/* Top of Card: Luxury Crest Logo + Brand & Step Title (One Single Clean Header) */}
             <div className="flex flex-col items-center justify-center text-center select-none mb-1">
               <div className="relative mb-2.5 flex items-center justify-center">
-                <div className="relative flex h-11 w-11 sm:h-13 sm:w-13 items-center justify-center rounded-2xl bg-zinc-950/80 border border-gold/50 shadow-glow-gold p-1 overflow-hidden">
+                <div className="relative flex h-11 w-11 sm:h-13 sm:w-13 items-center justify-center rounded-2xl bg-obsidian-900/[0.04] border border-gold/50 shadow-glow-gold p-1 overflow-hidden">
                   <img
                     src="/tinda-pos-crest.png"
                     alt="TINDA POS Crest"
@@ -673,7 +673,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                 <span className="font-serif text-lg sm:text-xl font-bold tracking-[0.16em] uppercase text-stone-100">
                   TINDA POS
                 </span>
-                <span className="text-[0.625rem] sm:text-[0.6875rem] font-sans font-semibold tracking-widest text-gold-light border border-gold/40 px-1.5 py-0.2 rounded-full uppercase bg-gold/10 shrink-0">
+                <span className="text-[0.75rem] sm:text-[0.75rem] font-sans font-semibold tracking-widest text-gold-light border border-gold/40 px-1.5 py-0.2 rounded-full uppercase bg-gold/10 shrink-0">
                   {TERMINAL_ID}
                 </span>
               </div>
@@ -686,7 +686,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
             {/* Tabs switcher: "Sign In" (active) and "Sign Up" */}
             {step !== 'FLOAT' && (
               <div className="pt-2.5">
-                <div className="grid grid-cols-2 p-1 rounded-xl bg-zinc-950/90 border border-slate-900/20/[0.08] shadow-inner">
+                <div className="grid grid-cols-2 p-1 rounded-xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] shadow-inner">
                   <button
                     type="button"
                     onClick={() => {
@@ -696,7 +696,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                     className={`py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider uppercase transition-all flex items-center justify-center gap-1.5 ${
                       step === 'LOGIN'
                         ? 'bg-gradient-to-r from-gold/25 to-amber-500/20 text-gold-light border border-gold/45 shadow-glow-gold'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-slate-900/[0.05]'
+                        : 'text-stone-400 hover:text-stone-200 hover:bg-obsidian-900/[0.05]'
                     }`}
                   >
                     <LogIn className="w-3.5 h-3.5 text-gold-light" />
@@ -711,7 +711,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                     className={`py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider uppercase transition-all flex items-center justify-center gap-1.5 ${
                       step === 'SIGNUP'
                         ? 'bg-gradient-to-r from-gold/25 to-amber-500/20 text-gold-light border border-gold/45 shadow-glow-gold'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-slate-900/[0.05]'
+                        : 'text-stone-400 hover:text-stone-200 hover:bg-obsidian-900/[0.05]'
                     }`}
                   >
                     <UserPlus className="w-3.5 h-3.5 text-gold-light" />
@@ -729,7 +729,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                 <form onSubmit={handleLoginSubmit} className="animate-fade-in space-y-2.5">
                   {/* Staff ID field */}
                   <div>
-                    <label className="block text-[0.6875rem] font-sans font-semibold tracking-[0.2em] uppercase text-stone-300 mb-1 flex items-center justify-between">
+                    <label className="block text-[0.75rem] font-sans font-semibold tracking-[0.2em] uppercase text-stone-300 mb-1 flex items-center justify-between">
                       <span>Staff ID / Username</span>
                       <span className="text-gold-light/70 font-semibold">*Required</span>
                     </label>
@@ -749,7 +749,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                         autoCorrect="off"
                         spellCheck="false"
                         placeholder="Enter Staff ID or Username"
-                        className="w-full pl-10 pr-4 h-10 rounded-xl bg-zinc-900/90 border border-gold/30 focus:border-gold/80 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-medium tracking-wide placeholder-stone-500 focus:outline-none transition-all shadow-inner"
+                        className="w-full pl-10 pr-4 h-10 rounded-xl bg-slate-850/90 border border-gold/30 focus:border-gold/80 focus:bg-obsidian-900 text-stone-100 text-xs sm:text-sm font-medium tracking-wide placeholder-stone-500 focus:outline-none transition-all shadow-inner"
                       />
                     </div>
                   </div>
@@ -757,11 +757,11 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                   {/* Security Credential Header with Segmented Mode Switcher (PIN vs Password) */}
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-1.5">
-                      <label className="text-[0.6875rem] sm:text-[0.75rem] font-sans font-semibold tracking-[0.18em] uppercase text-stone-300 flex items-center gap-1.5 shrink-0">
+                      <label className="text-[0.75rem] sm:text-[0.75rem] font-sans font-semibold tracking-[0.18em] uppercase text-stone-300 flex items-center gap-1.5 shrink-0">
                         <KeyRound className="h-3 w-3 text-gold-light shrink-0" />
                         <span>{authMode === 'PIN' ? 'PIN Code' : 'Password'}</span>
                       </label>
-                      <div className="flex items-center p-0.5 rounded-lg bg-zinc-900 border border-slate-900/20/[0.08] shadow-inner shrink-0">
+                      <div className="flex items-center p-0.5 rounded-lg bg-slate-850 border border-slate-900/[0.08] shadow-inner shrink-0">
                         <button
                           type="button"
                           onClick={() => {
@@ -769,7 +769,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                             setPin((p) => p.replace(/\D/g, '').slice(0, 4))
                             setErrorMessage('')
                           }}
-                          className={`px-2 py-0.5 rounded text-[0.6875rem] font-mono tracking-wider uppercase transition-all flex items-center gap-1 ${
+                          className={`px-2 py-0.5 rounded text-[0.75rem] font-mono tracking-wider uppercase transition-all flex items-center gap-1 ${
                             authMode === 'PIN'
                               ? 'bg-gradient-to-r from-gold/30 to-amber-500/20 text-gold-light font-bold border border-gold/50 shadow-glow-gold'
                               : 'text-stone-400 hover:text-stone-200'
@@ -785,7 +785,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                             setErrorMessage('')
                             setTimeout(() => passwordInputRef.current?.focus(), 50)
                           }}
-                          className={`px-2 py-0.5 rounded text-[0.6875rem] font-mono tracking-wider uppercase transition-all flex items-center gap-1 ${
+                          className={`px-2 py-0.5 rounded text-[0.75rem] font-mono tracking-wider uppercase transition-all flex items-center gap-1 ${
                             authMode === 'PASSWORD'
                               ? 'bg-gradient-to-r from-gold/30 to-amber-500/20 text-gold-light font-bold border border-gold/50 shadow-glow-gold'
                               : 'text-stone-400 hover:text-stone-200'
@@ -801,7 +801,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                       /* 4-digit circular indicator slots */
                       <div
                         onClick={() => pinInputRef.current?.focus()}
-                        className="cursor-pointer flex items-center justify-center gap-4 py-2 px-3 rounded-xl bg-zinc-900/90 border border-gold/30 focus-within:border-gold/80 transition-all shadow-inner w-full h-10"
+                        className="cursor-pointer flex items-center justify-center gap-4 py-2 px-3 rounded-xl bg-slate-850/90 border border-gold/30 focus-within:border-gold/80 transition-all shadow-inner w-full h-10"
                       >
                         {[0, 1, 2, 3].map((idx) => {
                           const isFilled = pin.length > idx
@@ -811,7 +811,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                               className={`h-3.5 w-3.5 rounded-full transition-all duration-200 ${
                                 isFilled
                                   ? 'bg-gradient-to-br from-amber-200 to-gold shadow-glow-gold scale-125'
-                                  : 'border-2 border-slate-900/30 bg-zinc-900/60'
+                                  : 'border-2 border-slate-900/30 bg-slate-850/60'
                               }`}
                             />
                           )
@@ -847,7 +847,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                             setErrorMessage('')
                           }}
                           placeholder="Enter account password"
-                          className="w-full pl-10 pr-10 h-10 rounded-xl bg-zinc-900/90 border border-gold/30 focus:border-gold/80 focus:bg-zinc-950 text-stone-100 text-xs sm:text-sm font-medium tracking-wide placeholder-stone-500 focus:outline-none transition-all shadow-inner"
+                          className="w-full pl-10 pr-10 h-10 rounded-xl bg-slate-850/90 border border-gold/30 focus:border-gold/80 focus:bg-obsidian-900 text-stone-100 text-xs sm:text-sm font-medium tracking-wide placeholder-stone-500 focus:outline-none transition-all shadow-inner"
                         />
                         <button
                           type="button"
@@ -864,7 +864,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
 
                   {/* Error Alert Display */}
                   {errorMessage && (
-                    <div className="p-2 rounded-xl bg-red-500/10 border border-red-500/30 text-[0.8125rem] font-mono text-red-400 text-center animate-fade-in">
+                    <div className="p-2 rounded-xl bg-red-500/10 border border-red-500/30 text-[0.8125rem] font-mono text-red-600 text-center animate-fade-in">
                       {errorMessage}
                     </div>
                   )}
@@ -878,7 +878,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                             type="button"
                             key={digit}
                             onClick={() => handleKeypadPress(digit)}
-                            className="btn-press flex items-center justify-center rounded-xl bg-zinc-900/90 hover:bg-gold/20 border border-slate-900/20/[0.08] hover:border-gold/50 text-gold-light font-mono font-bold text-lg sm:text-xl py-2 sm:py-2.5 w-full transition-all shadow-sm active:scale-95 text-center"
+                            className="btn-press flex items-center justify-center rounded-xl bg-slate-850/90 hover:bg-gold/20 border border-slate-900/[0.08] hover:border-gold/50 text-gold-light font-mono font-bold text-lg sm:text-xl py-2 sm:py-2.5 w-full transition-all shadow-sm active:scale-95 text-center"
                           >
                             {digit}
                           </button>
@@ -888,7 +888,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                         <button
                           type="button"
                           onClick={handleClearPin}
-                          className="btn-press flex items-center justify-center rounded-xl bg-zinc-900/90 hover:bg-slate-900/50 border border-slate-900/20/[0.08] text-[0.75rem] sm:text-[0.8125rem] font-sans font-semibold tracking-widest text-stone-400 hover:text-stone-200 uppercase py-2 sm:py-2.5 w-full transition-all active:scale-95"
+                          className="btn-press flex items-center justify-center rounded-xl bg-slate-850/90 hover:bg-obsidian-900/[0.06] border border-slate-900/[0.08] text-[0.75rem] sm:text-[0.8125rem] font-sans font-semibold tracking-widest text-stone-400 hover:text-stone-200 uppercase py-2 sm:py-2.5 w-full transition-all active:scale-95"
                         >
                           Clear
                         </button>
@@ -897,7 +897,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                         <button
                           type="button"
                           onClick={() => handleKeypadPress('0')}
-                          className="btn-press flex items-center justify-center rounded-xl bg-zinc-900/90 hover:bg-gold/20 border border-slate-900/20/[0.08] hover:border-gold/50 text-gold-light font-mono font-bold text-lg sm:text-xl py-2 sm:py-2.5 w-full transition-all shadow-sm active:scale-95 text-center"
+                          className="btn-press flex items-center justify-center rounded-xl bg-slate-850/90 hover:bg-gold/20 border border-slate-900/[0.08] hover:border-gold/50 text-gold-light font-mono font-bold text-lg sm:text-xl py-2 sm:py-2.5 w-full transition-all shadow-sm active:scale-95 text-center"
                         >
                           0
                         </button>
@@ -906,7 +906,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                         <button
                           type="button"
                           onClick={handleDeletePin}
-                          className="btn-press flex items-center justify-center rounded-xl bg-zinc-900/90 hover:bg-slate-900/50 border border-slate-900/20/[0.08] text-stone-400 hover:text-gold-light py-2 sm:py-2.5 w-full transition-all active:scale-95"
+                          className="btn-press flex items-center justify-center rounded-xl bg-slate-850/90 hover:bg-obsidian-900/[0.06] border border-slate-900/[0.08] text-stone-400 hover:text-gold-light py-2 sm:py-2.5 w-full transition-all active:scale-95"
                         >
                           <Delete className="h-4 w-4 sm:h-5 sm:w-5" />
                         </button>
@@ -927,15 +927,15 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                       </>
                     ) : (
                       <>
-                        <Lock className="h-3.5 w-3.5 text-obsidian-950" />
+                        <Lock className="h-3.5 w-3.5 text-stone-100" />
                         <span>SIGN IN TO TERMINAL</span>
-                        <ArrowRight className="h-3.5 w-3.5 text-obsidian-950" />
+                        <ArrowRight className="h-3.5 w-3.5 text-stone-100" />
                       </>
                     )}
                   </button>
 
                   <div className="pt-0.5 text-center">
-                    <p className="font-mono text-[0.625rem] sm:text-[0.6875rem] text-stone-500 tracking-wider flex items-center justify-center gap-1.5">
+                    <p className="font-mono text-[0.75rem] sm:text-[0.75rem] text-stone-500 tracking-wider flex items-center justify-center gap-1.5">
                       <Clock className="h-2.5 w-2.5 text-gold-light/60" />
                       <span>Authorized Station Gateway · Cloud Session</span>
                     </p>
@@ -948,14 +948,14 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                 <form onSubmit={handleSignupSubmit} className="animate-fade-in space-y-2.5">
 
                   {/* Section label */}
-                  <p className="font-sans font-semibold text-[0.6875rem] tracking-[0.25em] uppercase text-gold-muted font-semibold flex items-center gap-1.5 px-0.5">
+                  <p className="font-sans font-semibold text-[0.75rem] tracking-[0.25em] uppercase text-gold-muted font-semibold flex items-center gap-1.5 px-0.5">
                     <Store className="h-3 w-3 text-gold-light" />
                     <span>Store Profile</span>
                   </p>
 
                   {/* Store Name */}
                   <div>
-                    <label className="block text-[0.6875rem] font-sans font-semibold tracking-wider uppercase text-stone-400 mb-1">
+                    <label className="block text-[0.75rem] font-sans font-semibold tracking-wider uppercase text-stone-400 mb-1">
                       Store / Business Name *
                     </label>
                     <input
@@ -964,13 +964,13 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                       value={signupStoreName}
                       onChange={(e) => { setSignupStoreName(e.target.value); setErrorMessage('') }}
                       placeholder="e.g. Aling Nena's Sari-Sari"
-                      className="w-full h-10 px-3.5 rounded-xl bg-zinc-900/80 border border-slate-900/20/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs font-medium placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                      className="w-full h-10 px-3.5 rounded-xl bg-slate-850/80 border border-slate-900/[0.09] focus:border-gold/60 focus:bg-obsidian-900 text-stone-100 text-xs font-medium placeholder-stone-600 focus:outline-none transition-all shadow-inner"
                     />
                   </div>
 
                   {/* Owner Name */}
                   <div>
-                    <label className="block text-[0.6875rem] font-sans font-semibold tracking-wider uppercase text-stone-400 mb-1">
+                    <label className="block text-[0.75rem] font-sans font-semibold tracking-wider uppercase text-stone-400 mb-1">
                       Owner Full Name *
                     </label>
                     <input
@@ -978,22 +978,22 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                       value={signupName}
                       onChange={(e) => { setSignupName(e.target.value); setErrorMessage('') }}
                       placeholder="e.g. Maria Santos"
-                      className="w-full h-10 px-3.5 rounded-xl bg-zinc-900/80 border border-slate-900/20/[0.09] focus:border-gold/60 focus:bg-zinc-950 text-stone-100 text-xs font-medium placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                      className="w-full h-10 px-3.5 rounded-xl bg-slate-850/80 border border-slate-900/[0.09] focus:border-gold/60 focus:bg-obsidian-900 text-stone-100 text-xs font-medium placeholder-stone-600 focus:outline-none transition-all shadow-inner"
                     />
                   </div>
 
                   {/* Divider */}
-                  <div className="pt-1 border-t border-slate-900/20/[0.06]" />
+                  <div className="pt-1 border-t border-slate-900/[0.06]" />
 
                   {/* Section label */}
-                  <p className="font-sans font-semibold text-[0.6875rem] tracking-[0.25em] uppercase text-gold-muted font-semibold flex items-center gap-1.5 px-0.5">
+                  <p className="font-sans font-semibold text-[0.75rem] tracking-[0.25em] uppercase text-gold-muted font-semibold flex items-center gap-1.5 px-0.5">
                     <KeyRound className="h-3 w-3 text-gold-light" />
                     <span>Account Credentials</span>
                   </p>
 
                   {/* Username */}
                   <div>
-                    <label className="block text-[0.6875rem] font-sans font-semibold tracking-wider uppercase text-stone-400 mb-1">
+                    <label className="block text-[0.75rem] font-sans font-semibold tracking-wider uppercase text-stone-400 mb-1">
                       Username (Staff ID) *
                     </label>
                     <input
@@ -1001,13 +1001,13 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                       value={signupUsername}
                       onChange={(e) => { setSignupUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '')); setErrorMessage('') }}
                       placeholder="e.g. mariasari"
-                      className="w-full h-10 px-3 rounded-xl bg-zinc-900/80 border border-slate-900/20/[0.09] focus:border-gold/60 text-stone-100 text-xs font-mono placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                      className="w-full h-10 px-3 rounded-xl bg-slate-850/80 border border-slate-900/[0.09] focus:border-gold/60 text-stone-100 text-xs font-mono placeholder-stone-600 focus:outline-none transition-all shadow-inner"
                     />
                   </div>
 
                   {/* Contact */}
                   <div>
-                    <label className="block text-[0.6875rem] font-sans font-semibold tracking-wider uppercase text-stone-400 mb-1">
+                    <label className="block text-[0.75rem] font-sans font-semibold tracking-wider uppercase text-stone-400 mb-1">
                       Contact (Phone / Email)
                     </label>
                     <input
@@ -1015,7 +1015,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                       value={signupEmail}
                       onChange={(e) => { setSignupEmail(e.target.value); setErrorMessage('') }}
                       placeholder="e.g. 0917xxxxxxx or email"
-                      className="w-full h-10 px-3 rounded-xl bg-zinc-900/80 border border-slate-900/20/[0.09] focus:border-gold/60 text-stone-100 text-xs font-mono placeholder-stone-600 focus:outline-none transition-all shadow-inner"
+                      className="w-full h-10 px-3 rounded-xl bg-slate-850/80 border border-slate-900/[0.09] focus:border-gold/60 text-stone-100 text-xs font-mono placeholder-stone-600 focus:outline-none transition-all shadow-inner"
                     />
                   </div>
 
@@ -1023,7 +1023,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                   <div className="grid grid-cols-2 gap-2.5">
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="text-[0.6875rem] font-sans font-semibold tracking-wider uppercase text-stone-400">PIN *</label>
+                        <label className="text-[0.75rem] font-sans font-semibold tracking-wider uppercase text-stone-400">PIN *</label>
                         <button type="button" onClick={() => setShowSignupPin(!showSignupPin)} className="text-stone-500 hover:text-gold-light">
                           {showSignupPin ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
                         </button>
@@ -1035,11 +1035,11 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                         value={signupPin}
                         onChange={(e) => { setSignupPin(e.target.value.replace(/[^0-9]/g, '')); setErrorMessage('') }}
                         placeholder="4 digits"
-                        className="w-full h-10 text-center px-2 rounded-xl bg-zinc-900/80 border border-slate-900/20/[0.09] focus:border-gold/60 text-gold-light font-mono text-sm tracking-widest focus:outline-none shadow-inner"
+                        className="w-full h-10 text-center px-2 rounded-xl bg-slate-850/80 border border-slate-900/[0.09] focus:border-gold/60 text-gold-light font-mono text-sm tracking-widest focus:outline-none shadow-inner"
                       />
                     </div>
                     <div>
-                      <label className="block text-[0.6875rem] font-sans font-semibold tracking-wider uppercase text-stone-400 mb-1">Confirm PIN *</label>
+                      <label className="block text-[0.75rem] font-sans font-semibold tracking-wider uppercase text-stone-400 mb-1">Confirm PIN *</label>
                       <input
                         type={showSignupPin ? 'text' : 'password'}
                         inputMode="numeric"
@@ -1047,14 +1047,14 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                         value={signupConfirmPin}
                         onChange={(e) => { setSignupConfirmPin(e.target.value.replace(/[^0-9]/g, '')); setErrorMessage('') }}
                         placeholder="Repeat"
-                        className="w-full h-10 text-center px-2 rounded-xl bg-zinc-900/80 border border-slate-900/20/[0.09] focus:border-gold/60 text-gold-light font-mono text-sm tracking-widest focus:outline-none shadow-inner"
+                        className="w-full h-10 text-center px-2 rounded-xl bg-slate-850/80 border border-slate-900/[0.09] focus:border-gold/60 text-gold-light font-mono text-sm tracking-widest focus:outline-none shadow-inner"
                       />
                     </div>
                   </div>
 
                   {/* Error */}
                   {errorMessage && (
-                    <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-[0.8125rem] font-mono text-red-400 text-center animate-fade-in">
+                    <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-[0.8125rem] font-mono text-red-600 text-center animate-fade-in">
                       {errorMessage}
                     </div>
                   )}
@@ -1072,7 +1072,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                       </>
                     ) : (
                       <>
-                        <UserPlus className="h-4 w-4 text-obsidian-950" />
+                        <UserPlus className="h-4 w-4 text-stone-100" />
                         <span>CREATE STORE ACCOUNT</span>
                       </>
                     )}
@@ -1091,7 +1091,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <p className="text-xs sm:text-sm font-bold text-stone-100 truncate">{authenticatedUser?.name}</p>
-                        <span className="px-1.5 py-0.5 rounded bg-gold/15 border border-gold/30 text-[0.6875rem] font-mono text-gold-light font-semibold">
+                        <span className="px-1.5 py-0.5 rounded bg-gold/15 border border-gold/30 text-[0.75rem] font-mono text-gold-light font-semibold">
                           {authenticatedUser?.role === 'ADMIN' ? 'OWNER / ADMIN' : authenticatedUser?.role}
                         </span>
                       </div>
@@ -1103,7 +1103,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                   </div>
 
                   {/* Big Currency Display */}
-                  <div className="text-center p-4 rounded-2xl bg-zinc-950/70 border border-gold/35 shadow-inner">
+                  <div className="text-center p-4 rounded-2xl bg-obsidian-900/[0.05] border border-gold/35 shadow-inner">
                     <label className="block text-[0.75rem] font-sans font-semibold tracking-[0.25em] uppercase text-stone-400 mb-1.5">
                       Opening Cash Register Float
                     </label>
@@ -1117,7 +1117,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
 
                   {/* Presets */}
                   <div>
-                    <span className="block text-[0.6875rem] font-sans font-semibold tracking-widest uppercase text-stone-400 mb-2 text-center">
+                    <span className="block text-[0.75rem] font-sans font-semibold tracking-widest uppercase text-stone-400 mb-2 text-center">
                       Quick Denomination Presets
                     </span>
                     <div className="grid grid-cols-4 gap-2">
@@ -1131,7 +1131,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                             className={`btn-press py-2 rounded-xl text-xs font-mono font-bold border transition-all ${
                               isSelected
                                 ? 'bg-gold/25 border-gold text-gold-light shadow-glow-gold'
-                                : 'bg-zinc-900/60 border-slate-900/20/[0.08] text-stone-300 hover:border-gold/30'
+                                : 'bg-slate-850/60 border-slate-900/[0.08] text-stone-300 hover:border-gold/30'
                             }`}
                           >
                             ₱{amt.toLocaleString()}
@@ -1140,7 +1140,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                       })}
                     </div>
 
-                    <div className="mt-3 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-950/60 border border-slate-900/20/[0.08] focus-within:border-gold/60">
+                    <div className="mt-3 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/[0.08] focus-within:border-gold/60">
                       <span className="text-xs font-mono text-gold-light font-bold">Custom ₱</span>
                       <input
                         type="text"
@@ -1160,9 +1160,9 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
                       onClick={handleConfirmSession}
                       className="btn-gold w-full h-12 rounded-2xl flex items-center justify-center gap-2 text-xs font-bold tracking-[0.2em] uppercase shadow-glow-gold hover:shadow-glow-amber transition-all"
                     >
-                      <Lock className="h-4 w-4 text-obsidian-950" />
+                      <Lock className="h-4 w-4 text-stone-100" />
                       <span>CONFIRM &amp; OPEN REGISTER</span>
-                      <ArrowRight className="h-4 w-4 text-obsidian-950" />
+                      <ArrowRight className="h-4 w-4 text-stone-100" />
                     </button>
 
                     <button
@@ -1181,7 +1181,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
 
           {/* Footer Terminal Info */}
           <div className="mt-5 flex flex-col items-center gap-1.5 text-center">
-            <p className="font-mono text-[0.6875rem] text-stone-600 tracking-wider flex items-center gap-1.5">
+            <p className="font-mono text-[0.75rem] text-stone-500 tracking-wider flex items-center gap-1.5">
               <Clock className="h-3 w-3" />
               Terminal {TERMINAL_ID} · Private Counter Session
             </p>

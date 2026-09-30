@@ -24,6 +24,10 @@ const CORS = {
   'Access-Control-Allow-Headers': 'Content-Type'
 }
 
+// Never expose `pin` — it is a plaintext credential, not profile data.
+const PUBLIC_COLUMNS =
+  'id, username, name, email, role, status, store_name, avatar_url, created_at, updated_at, last_active_at'
+
 export async function onRequestOptions() {
   return new Response(null, { headers: CORS })
 }
@@ -36,11 +40,11 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
     let stmt: D1PreparedStatement
     if (username) {
-      stmt = env.TINDAPOS_DB.prepare('SELECT * FROM users WHERE username = ? COLLATE NOCASE LIMIT 1').bind(username)
+      stmt = env.TINDAPOS_DB.prepare(`SELECT ${PUBLIC_COLUMNS} FROM users WHERE username = ? COLLATE NOCASE LIMIT 1`).bind(username)
     } else if (storeName) {
-      stmt = env.TINDAPOS_DB.prepare('SELECT * FROM users WHERE store_name = ? ORDER BY created_at ASC').bind(storeName)
+      stmt = env.TINDAPOS_DB.prepare(`SELECT ${PUBLIC_COLUMNS} FROM users WHERE store_name = ? ORDER BY created_at ASC`).bind(storeName)
     } else {
-      stmt = env.TINDAPOS_DB.prepare('SELECT id, username, name, email, role, status, store_name, is_owner, avatar_url, created_at, updated_at, last_active_at FROM users ORDER BY created_at ASC')
+      stmt = env.TINDAPOS_DB.prepare(`SELECT ${PUBLIC_COLUMNS} FROM users ORDER BY created_at ASC`)
     }
 
     const { results } = await stmt.all()
@@ -62,16 +66,16 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     }
 
     const now = new Date().toISOString()
+    // role/is_owner/pin are set on INSERT only. An existing account keeps its
+    // stored role, ownership and PIN so a client cannot escalate itself.
     await env.TINDAPOS_DB.prepare(`
       INSERT INTO users (username, name, email, role, pin, status, store_name, is_owner, avatar_url, created_at, updated_at, last_active_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(username) DO UPDATE SET
         name = excluded.name,
         email = excluded.email,
-        role = excluded.role,
         status = excluded.status,
         store_name = excluded.store_name,
-        is_owner = excluded.is_owner,
         avatar_url = excluded.avatar_url,
         updated_at = excluded.updated_at,
         last_active_at = excluded.last_active_at

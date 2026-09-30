@@ -409,11 +409,9 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
         username: user.username,
         name: user.name,
         email: user.email,
-        role: user.role,
         pin: user.pin,
         status: user.status ?? 'ACTIVE',
         store_name: user.store_name,
-        is_owner: user.is_owner ?? false,
         avatar_url: user.avatar_url,
         created_at: user.created_at
       }).catch(() => {})
@@ -488,12 +486,11 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
         username: newUser.username,
         name: newUser.name,
         email: newUser.email,
-        role: newUser.role,
         pin: newUser.pin,
-        status: (newUser as Record<string, unknown>).status as string ?? 'ACTIVE',
+        status: (newUser as unknown as Record<string, unknown>).status as string ?? 'ACTIVE',
         store_name: newUser.store_name,
-        is_owner: (newUser as Record<string, unknown>).is_owner as boolean ?? false,
-        avatar_url: (newUser as Record<string, unknown>).avatar_url as string | undefined,
+        is_owner: (newUser as unknown as Record<string, unknown>).is_owner as boolean ?? false,
+        avatar_url: (newUser as unknown as Record<string, unknown>).avatar_url as string | undefined,
         created_at: newUser.created_at
       }).catch(() => {})
 
@@ -534,11 +531,9 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
   const handleConfirmSession = () => {
     if (!authenticatedUser) return
 
-    const lower = authenticatedUser.username?.toLowerCase() || ''
-    const isMaster =
-      lower === 'skorts188@gmail.com' ||
-      authenticatedUser.email?.toLowerCase() === 'skorts188@gmail.com' ||
-      (authenticatedUser.role === 'ADMIN' && authenticatedUser.pin === 'muyco155')
+    // Master is granted by the server on account creation. Never derived from a
+    // PIN in this bundle — client-side PIN checks are not a security boundary.
+    const isMaster = Boolean((authenticatedUser as { is_master?: number }).is_master)
 
     let userStoreName = authenticatedUser.store_name
     if (!userStoreName) {

@@ -29,6 +29,10 @@ CREATE TABLE IF NOT EXISTS pro_access (
   updated_at TEXT NOT NULL
 );
 
+-- Platform master flag. Server-owned: never written from a client request body.
+-- Grants cross-store visibility in the Master Control console.
+ALTER TABLE users ADD COLUMN is_master INTEGER NOT NULL DEFAULT 0;
+
 -- Registered stores
 CREATE TABLE IF NOT EXISTS stores (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

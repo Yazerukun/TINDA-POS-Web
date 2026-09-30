@@ -98,8 +98,7 @@ export function useProAccess() {
             pro_expires_at: updated.pro_expires_at,
             tokens: updated.tokens,
             last_ad_watched_at: updated.last_ad_watched_at,
-            total_ads_watched: updated.total_ads_watched,
-            owner_bypass: Boolean(updated.owner_bypass)
+            total_ads_watched: updated.total_ads_watched
           })
         }
       }

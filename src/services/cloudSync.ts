@@ -8,10 +8,10 @@ export interface CloudUserPayload {
   username: string
   name: string
   email?: string
-  role: string
   pin: string
   status: string
   store_name?: string
+  /** Signup only. The server ignores it for accounts that already exist. */
   is_owner?: boolean
   avatar_url?: string
   created_at: string
@@ -25,7 +25,7 @@ export interface CloudProPayload {
   tokens: number
   last_ad_watched_at: number
   total_ads_watched: number
-  owner_bypass: boolean
+  owner_bypass?: boolean
 }
 
 /** Upsert a user account to Cloudflare D1. Fire-and-forget. */

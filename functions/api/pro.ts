@@ -54,26 +54,27 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     const body = await request.json() as {
       user_id?: number; username: string; store_name?: string;
       pro_expires_at: number; tokens: number; last_ad_watched_at: number;
-      total_ads_watched: number; owner_bypass: boolean;
+      total_ads_watched: number;
     }
 
     if (!body.username) return Response.json({ ok: false, error: 'username required' }, { status: 400, headers: CORS })
 
+    // owner_bypass is a server-owned grant: it is not inserted from the client
+    // body, and an existing row keeps its stored value on update.
     const now = new Date().toISOString()
     await env.TINDAPOS_DB.prepare(`
       INSERT INTO pro_access (user_id, username, store_name, pro_expires_at, tokens, last_ad_watched_at, total_ads_watched, owner_bypass, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)
       ON CONFLICT(username) DO UPDATE SET
         pro_expires_at = excluded.pro_expires_at,
         tokens = excluded.tokens,
         last_ad_watched_at = excluded.last_ad_watched_at,
         total_ads_watched = excluded.total_ads_watched,
-        owner_bypass = excluded.owner_bypass,
         updated_at = excluded.updated_at
     `).bind(
       body.user_id ?? 0, body.username, body.store_name ?? null,
       body.pro_expires_at ?? 0, body.tokens ?? 0, body.last_ad_watched_at ?? 0,
-      body.total_ads_watched ?? 0, body.owner_bypass ? 1 : 0, now
+      body.total_ads_watched ?? 0, now
     ).run()
 
     return Response.json({ ok: true }, { headers: CORS })

@@ -1,7 +1,28 @@
-import React, { useState } from 'react'
-import { X, CheckCircle2, Banknote, CreditCard, UserCheck, Printer, ShieldCheck, Sparkles } from 'lucide-react'
+import React, { useState, useEffect, useRef } from 'react'
+import {
+  X,
+  Check,
+  CheckCircle2,
+  Banknote,
+  Smartphone,
+  Landmark,
+  Wallet,
+  Layers,
+  Printer,
+  Loader2,
+  Sparkles,
+  ArrowRight
+} from 'lucide-react'
 import confetti from 'canvas-confetti'
-import type { CartItem, Customer, DiscountType, StoreSettings, Transaction } from '../types'
+import type {
+  CartItem,
+  Customer,
+  DiscountType,
+  PaymentMethod,
+  SplitPaymentRecord,
+  StoreSettings,
+  Transaction
+} from '../types'
 import { money } from '../utils/format'
 import { db } from '../db'
 import { Receipt } from './Receipt'
@@ -16,6 +37,7 @@ interface CheckoutModalProps {
   customers: Customer[]
   selectedCustomerId: number | null
   presetTender_c?: number
+  initialMethod?: PaymentMethod
   cashierName?: string
   storeName?: string
   settings?: StoreSettings
@@ -33,45 +55,249 @@ export function CheckoutModal({
   customers,
   selectedCustomerId,
   presetTender_c,
+  initialMethod = 'CASH',
   cashierName = 'Master Concierge',
-  storeName = 'PLATFORM_HQ',
+  storeName = 'TINDA POS & RETAIL',
   settings,
   terminalId,
   onClose,
   onComplete
 }: CheckoutModalProps): React.JSX.Element {
-  const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'GCASH' | 'UTANG'>('CASH')
-  const [tenderedInput, setTenderedInput] = useState<string>(
-    presetTender_c ? (presetTender_c / 100).toString() : (total_c / 100).toString()
+  const [isSplit, setIsSplit] = useState(initialMethod === 'SPLIT')
+  const [method, setMethod] = useState<'CASH' | 'GCASH' | 'MAYA' | 'MARIBANK' | 'UTANG'>(
+    initialMethod === 'SPLIT' ? 'CASH' : initialMethod
   )
+  const [cash, setCash] = useState<string>(
+    presetTender_c ? (presetTender_c / 100).toFixed(2) : (total_c / 100).toFixed(2)
+  )
+  const [reference, setReference] = useState('')
   const [customerId, setCustomerId] = useState<number | null>(selectedCustomerId)
   const [completedTx, setCompletedTx] = useState<Transaction | null>(null)
   const [processing, setProcessing] = useState(false)
-  const [paperWidth, setPaperWidth] = useState<'58mm' | '80mm' | 'A4'>(
-    settings?.printer_paper_width || '80mm'
+
+  // Split payment state
+  const [splitState, setSplitState] = useState({
+    cashAmount: '',
+    cashTendered: '',
+    gcashAmount: '',
+    gcashRef: '',
+    mayaAmount: '',
+    mayaRef: '',
+    maribankAmount: '',
+    maribankRef: '',
+    utangAmount: ''
+  })
+
+  const cashInputRef = useRef<HTMLInputElement>(null)
+  const refInputRef = useRef<HTMLInputElement>(null)
+
+  const cashC = Math.round((parseFloat(cash) || 0) * 100)
+  const changeC = cashC - total_c
+
+  // Split calculations
+  const splitCashAllocatedC = Math.max(0, Math.round((parseFloat(splitState.cashAmount) || 0) * 100))
+  const splitCashTenderedC = Math.max(
+    0,
+    Math.round((parseFloat(splitState.cashTendered || splitState.cashAmount) || 0) * 100)
   )
+  const splitGcashC = Math.max(0, Math.round((parseFloat(splitState.gcashAmount) || 0) * 100))
+  const splitMayaC = Math.max(0, Math.round((parseFloat(splitState.mayaAmount) || 0) * 100))
+  const splitMaribankC = Math.max(0, Math.round((parseFloat(splitState.maribankAmount) || 0) * 100))
+  const splitUtangC = Math.max(0, Math.round((parseFloat(splitState.utangAmount) || 0) * 100))
 
-  const tendered_c = Math.round((parseFloat(tenderedInput) || 0) * 100)
-  const change_c = Math.max(0, tendered_c - total_c)
-  const isInsufficient = paymentMethod === 'CASH' && tendered_c < total_c
+  const totalAllocatedC =
+    splitCashAllocatedC + splitGcashC + splitMayaC + splitMaribankC + splitUtangC
+  const remainingC = total_c - totalAllocatedC
+  const splitCashChangeC =
+    splitCashAllocatedC > 0 ? Math.max(0, splitCashTenderedC - splitCashAllocatedC) : 0
 
-  const quickCashPresets = [100, 200, 500, 1000, 2000, 5000]
+  const fillRemaining = (target: 'cash' | 'gcash' | 'maya' | 'maribank' | 'utang') => {
+    const otherAllocatedC =
+      (target === 'cash' ? 0 : splitCashAllocatedC) +
+      (target === 'gcash' ? 0 : splitGcashC) +
+      (target === 'maya' ? 0 : splitMayaC) +
+      (target === 'maribank' ? 0 : splitMaribankC) +
+      (target === 'utang' ? 0 : splitUtangC)
+    const neededC = Math.max(0, total_c - otherAllocatedC)
+    const neededPesos = neededC > 0 ? (neededC / 100).toFixed(2) : ''
+
+    setSplitState((prev) => {
+      switch (target) {
+        case 'cash':
+          return { ...prev, cashAmount: neededPesos, cashTendered: neededPesos }
+        case 'gcash':
+          return { ...prev, gcashAmount: neededPesos }
+        case 'maya':
+          return { ...prev, mayaAmount: neededPesos }
+        case 'maribank':
+          return { ...prev, maribankAmount: neededPesos }
+        case 'utang':
+          return { ...prev, utangAmount: neededPesos }
+      }
+    })
+  }
+
+  // Hotkeys
+  useEffect(() => {
+    const handleCheckoutHotkeys = (e: KeyboardEvent) => {
+      if (completedTx) {
+        if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
+          e.preventDefault()
+          onComplete(completedTx)
+        }
+        return
+      }
+
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        onClose()
+        return
+      }
+
+      if (e.key === 'Enter' && !isSplit) {
+        // Prevent enter submission while focused on inputs unless valid
+        if (method === 'CASH' && cashC < total_c) return
+        e.preventDefault()
+        void handleCharge()
+        return
+      }
+
+      if (!isSplit) {
+        if (e.key === 'F9') {
+          e.preventDefault()
+          setMethod('CASH')
+          setTimeout(() => {
+            cashInputRef.current?.focus()
+            cashInputRef.current?.select()
+          }, 50)
+          return
+        }
+        if (e.key === 'F10') {
+          e.preventDefault()
+          setMethod('GCASH')
+          setTimeout(() => {
+            refInputRef.current?.focus()
+            refInputRef.current?.select()
+          }, 50)
+          return
+        }
+        if (e.key === 'F11') {
+          e.preventDefault()
+          setMethod('MAYA')
+          setTimeout(() => {
+            refInputRef.current?.focus()
+            refInputRef.current?.select()
+          }, 50)
+          return
+        }
+        if (e.key === 'F12') {
+          e.preventDefault()
+          setMethod('MARIBANK')
+          setTimeout(() => {
+            refInputRef.current?.focus()
+            refInputRef.current?.select()
+          }, 50)
+          return
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleCheckoutHotkeys)
+    return () => window.removeEventListener('keydown', handleCheckoutHotkeys)
+  }, [completedTx, isSplit, method, cashC, total_c, cash, reference, customerId])
 
   const handleCharge = async () => {
     if (processing) return
-    if (paymentMethod === 'UTANG' && !customerId) {
-      alert('Please select a customer account for Store Credit.')
-      return
-    }
-    if (isInsufficient) {
-      alert('Insufficient tender amount. Please enter an amount equal to or greater than the total.')
-      return
+
+    if (isSplit) {
+      if (remainingC !== 0) {
+        alert(
+          `Payment mismatch: Please allocate exactly ${money(total_c)}. Currently allocated: ${money(totalAllocatedC)}.`
+        )
+        return
+      }
+      if (splitUtangC > 0 && !customerId) {
+        alert('Please select a customer account for the Utang portion.')
+        return
+      }
+    } else {
+      if (method === 'UTANG' && !customerId) {
+        alert('Please select a customer account for Store Credit (Utang).')
+        return
+      }
+      if (method === 'CASH' && cashC < total_c) {
+        alert('Insufficient cash tendered. Please enter at least ' + money(total_c))
+        cashInputRef.current?.focus()
+        return
+      }
     }
 
     setProcessing(true)
     try {
       const invoiceNumber = `INV-${Date.now().toString().slice(-6)}`
       const now = new Date().toISOString()
+
+      let payments: SplitPaymentRecord[] = []
+      let finalPaymentMethod: PaymentMethod = isSplit ? 'SPLIT' : method
+      let finalTenderedC = total_c
+      let finalChangeC = 0
+
+      if (!isSplit) {
+        if (method === 'CASH') {
+          finalTenderedC = cashC
+          finalChangeC = Math.max(0, changeC)
+          payments = [{ method: 'CASH', amount_c: cashC, reference: null }]
+        } else if (method === 'GCASH') {
+          payments = [{ method: 'GCASH', amount_c: total_c, reference: reference.trim() || null }]
+        } else if (method === 'MAYA') {
+          payments = [{ method: 'MAYA', amount_c: total_c, reference: reference.trim() || null }]
+        } else if (method === 'MARIBANK') {
+          payments = [{ method: 'MARIBANK', amount_c: total_c, reference: reference.trim() || null }]
+        } else if (method === 'UTANG') {
+          payments = [{ method: 'UTANG', amount_c: total_c, reference: null }]
+        }
+      } else {
+        if (splitCashAllocatedC > 0) {
+          payments.push({
+            method: 'CASH',
+            amount_c: splitCashTenderedC > splitCashAllocatedC ? splitCashTenderedC : splitCashAllocatedC,
+            reference: null
+          })
+        }
+        if (splitGcashC > 0) {
+          payments.push({
+            method: 'GCASH',
+            amount_c: splitGcashC,
+            reference: splitState.gcashRef.trim() || null
+          })
+        }
+        if (splitMayaC > 0) {
+          payments.push({
+            method: 'MAYA',
+            amount_c: splitMayaC,
+            reference: splitState.mayaRef.trim() || null
+          })
+        }
+        if (splitMaribankC > 0) {
+          payments.push({
+            method: 'MARIBANK',
+            amount_c: splitMaribankC,
+            reference: splitState.maribankRef.trim() || null
+          })
+        }
+        if (splitUtangC > 0) {
+          payments.push({
+            method: 'UTANG',
+            amount_c: splitUtangC,
+            reference: null
+          })
+        }
+        finalTenderedC =
+          splitCashTenderedC > splitCashAllocatedC
+            ? totalAllocatedC + (splitCashTenderedC - splitCashAllocatedC)
+            : totalAllocatedC
+        finalChangeC = splitCashChangeC
+      }
 
       const newTx: Omit<Transaction, 'id'> = {
         invoice_number: invoiceNumber,
@@ -88,38 +314,43 @@ export function CheckoutModal({
         discount_c,
         discount_type,
         total_c,
-        payment_method: paymentMethod,
-        amount_tendered_c: paymentMethod === 'CASH' ? tendered_c : total_c,
-        change_c: paymentMethod === 'CASH' ? change_c : 0,
+        payment_method: finalPaymentMethod,
+        payments,
+        amount_tendered_c: finalTenderedC,
+        change_c: finalChangeC,
         customer_id: customerId,
         cashier_name: cashierName,
-        store_name: storeName
+        store_name: storeName,
+        status: 'COMPLETED'
       }
 
-      const txId = await db.transactions.add(newTx as Transaction)
+      const txId = await db.transactions.add(newTx as unknown as Transaction)
       const fullTx: Transaction = { ...newTx, id: txId }
 
       // Deduct inventory stock
       for (const item of items) {
-        const prod = await db.products.get(item.product.id)
-        if (prod) {
-          const newStock = Math.max(0, prod.stock - item.quantity)
-          await db.products.update(prod.id, { stock: newStock, updated_at: now })
+        if (item.product.id > 0) {
+          const prod = await db.products.get(item.product.id)
+          if (prod) {
+            const newStock = Math.max(0, prod.stock - item.quantity)
+            await db.products.update(prod.id, { stock: newStock, updated_at: now })
+          }
         }
       }
 
       // If Utang, increase customer balance
-      if (paymentMethod === 'UTANG' && customerId) {
+      const utangAmountC = isSplit ? splitUtangC : method === 'UTANG' ? total_c : 0
+      if (utangAmountC > 0 && customerId) {
         const cust = await db.customers.get(customerId)
         if (cust) {
           await db.customers.update(customerId, {
-            balance_c: cust.balance_c + total_c,
+            balance_c: (cust.balance_c || 0) + utangAmountC,
             updated_at: now
           })
         }
       }
 
-      // Trigger refined celebration confetti
+      // Celebratory confetti
       try {
         confetti({
           particleCount: 50,
@@ -127,20 +358,19 @@ export function CheckoutModal({
           colors: ['#10b981', '#34d399', '#f59e0b', '#fbbf24'],
           origin: { y: 0.6 }
         })
-      } catch {
-        // ignore
-      }
+      } catch {}
 
       setCompletedTx(fullTx)
       playCheckoutChime()
+
       if (settings?.printer_auto_print) {
         setTimeout(() => {
           window.print()
-        }, 400)
+        }, 300)
       }
     } catch (err) {
-      console.error(err)
-      alert('Settlement failed: ' + (err as Error)?.message)
+      console.error('Checkout error:', err)
+      alert('Checkout settlement failed: ' + (err as Error)?.message)
     } finally {
       setProcessing(false)
     }
@@ -148,386 +378,623 @@ export function CheckoutModal({
 
   const selectedCustomerObj = customers.find((c) => c.id === customerId)
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/85 backdrop-blur-2xl animate-fade-in">
-      {/* Ambient gold glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-amber-500/[0.03] blur-[100px] pointer-events-none" />
-
-      <div className="relative w-full max-w-lg glass-vault rounded-3xl border border-gold/25 p-6 sm:p-7 shadow-vault text-stone-100 animate-slide-up">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-900/[0.06] pb-4 mb-5">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-500/[0.12] text-gold-light border border-gold/30 shadow-glow-gold">
-              <ShieldCheck className="h-5 w-5" />
+  // -------------------------------------------------------------
+  // SUCCESS / CELEBRATION VIEW
+  // -------------------------------------------------------------
+  if (completedTx) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/85 backdrop-blur-md animate-fade-in select-none">
+        <div className="relative w-full max-w-lg bg-obsidian-900 border border-slate-800 rounded-3xl shadow-2xl p-6 flex flex-col max-h-[92vh] overflow-y-auto custom-scrollbar text-stone-100">
+          <div className="text-center mb-4">
+            <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 border-2 border-emerald-500/40 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.25)] animate-bounce">
+              <Check className="h-9 w-9 stroke-[3]" />
             </div>
-            <div>
-              <h3 className="font-serif font-bold text-base tracking-wider uppercase text-stone-100">
-                {completedTx ? 'Settlement Authorized' : 'Authorize Settlement'}
-              </h3>
-              <p className="font-sans font-semibold text-[0.75rem] tracking-widest uppercase text-gold-muted mt-0.5">
-                {completedTx ? `INVOICE #${completedTx.invoice_number}` : 'PRIVATE CLIENT TENDER PROTOCOL'}
-              </p>
+            <h3 className="text-xl font-black text-white tracking-tight">Payment Successful</h3>
+            <p className="mt-1 text-2xl font-black text-emerald-400 tabular-nums">
+              {money(completedTx.total_c)}
+            </p>
+            <p className="mt-0.5 text-xs text-stone-400 font-mono">{completedTx.invoice_number}</p>
+            <div className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300">
+              <kbd className="rounded bg-emerald-950/80 px-1.5 py-0.5 font-mono text-[10px] text-emerald-200 border border-emerald-500/40">
+                Enter
+              </kbd>
+              <span>or</span>
+              <kbd className="rounded bg-emerald-950/80 px-1.5 py-0.5 font-mono text-[10px] text-emerald-200 border border-emerald-500/40">
+                Esc
+              </kbd>
+              <span>to start next transaction</span>
             </div>
           </div>
 
+          <div className="my-2 border-t border-slate-800 pt-4">
+            <Receipt
+              tx={completedTx}
+              storeName={storeName}
+              customerName={selectedCustomerObj?.name}
+              customerBalance_c={selectedCustomerObj?.balance_c}
+              terminalId={terminalId}
+              allowCustomization={true}
+            />
+          </div>
+
+          <div className="mt-4 flex items-center justify-end gap-2 border-t border-slate-800 pt-4">
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="px-4 py-2 rounded-xl border border-slate-700 bg-obsidian-950 text-stone-300 hover:text-white hover:border-slate-600 flex items-center gap-1.5 text-xs font-bold transition-all"
+            >
+              <Printer className="w-4 h-4 text-sky-400" />
+              <span>Print Receipt</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onComplete(completedTx)}
+              className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 font-black text-xs transition-all shadow-glow-emerald active:scale-95"
+            >
+              Done (Enter)
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Single payment methods matching desktop
+  const methods = [
+    {
+      key: 'CASH',
+      label: 'Cash',
+      icon: <Banknote className="h-4 w-4" />,
+      shortcut: 'F9',
+      activeClass: '!border-emerald-500 !text-emerald-400 bg-emerald-500/10 shadow-[0_0_12px_rgba(16,185,129,0.15)]'
+    },
+    {
+      key: 'GCASH',
+      label: 'GCash',
+      icon: <Smartphone className="h-4 w-4" />,
+      shortcut: 'F10',
+      activeClass: '!border-sky-500 !text-sky-400 bg-sky-500/10 shadow-[0_0_12px_rgba(14,165,233,0.15)]'
+    },
+    {
+      key: 'MAYA',
+      label: 'Maya',
+      icon: <Smartphone className="h-4 w-4" />,
+      shortcut: 'F11',
+      activeClass: '!border-teal-500 !text-teal-300 bg-teal-500/10 shadow-[0_0_12px_rgba(20,184,166,0.15)]'
+    },
+    {
+      key: 'MARIBANK',
+      label: 'MariBank',
+      icon: <Landmark className="h-4 w-4 text-[#FF8533]" />,
+      shortcut: 'F12',
+      activeClass: '!border-[#FF6A00] !text-[#FF8533] bg-[#FF6A00]/10 shadow-[0_0_12px_rgba(255,106,0,0.2)]'
+    },
+    {
+      key: 'UTANG',
+      label: 'Utang',
+      icon: <Wallet className="h-4 w-4 text-rose-400" />,
+      shortcut: '',
+      activeClass: '!border-rose-500 !text-rose-400 bg-rose-500/10 shadow-[0_0_12px_rgba(244,63,94,0.15)]'
+    }
+  ]
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/80 backdrop-blur-md animate-fade-in select-none">
+      <div className="relative w-full max-w-lg bg-obsidian-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] bg-obsidian-950/60">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-stone-100 text-base font-sans tracking-wide">
+              Checkout & Settlement
+            </span>
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              {terminalId}
+            </span>
+          </div>
           <button
-            onClick={() => {
-              if (completedTx) onComplete(completedTx)
-              else onClose()
-            }}
-            className="btn-press rounded-xl p-2 text-stone-400 hover:text-stone-100 hover:bg-white/[0.05]"
+            onClick={onClose}
+            className="w-8 h-8 rounded-xl bg-white/[0.04] hover:bg-white/[0.1] text-stone-400 hover:text-stone-100 flex items-center justify-center transition-colors"
           >
-            <X className="h-5 w-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {completedTx ? (
-          /* Receipt / Success View */
-          <div className="space-y-5 animate-fade-in">
-            <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-amber-500/[0.08] border border-gold/30 text-center">
-              <CheckCircle2 className="h-12 w-12 text-gold-light mb-2 drop-shadow-sm" />
-              <p className="font-serif text-base font-bold tracking-widest uppercase text-stone-100">
-                Transaction Completed
-              </p>
-              <p className="font-serif text-3xl sm:text-4xl font-bold tracking-wider text-gold-light my-1.5 drop-shadow-[0_2px_15px_rgba(212,175,55,0.25)]">
-                {money(completedTx.total_c)}
-              </p>
-              {completedTx.payment_method === 'CASH' && completedTx.change_c > 0 && (
-                <div className="mt-2.5 px-3.5 py-1 rounded-full bg-obsidian-900/[0.04] border border-gold/30 text-xs font-mono font-medium text-stone-300">
-                  Change:{' '}
-                  <span className="text-gold-light font-bold font-mono">
-                    {money(completedTx.change_c)}
-                  </span>
+        {/* Content */}
+        <div className="p-6 overflow-y-auto space-y-4 custom-scrollbar flex-1">
+          {/* Total Summary Card */}
+          <div className="rounded-2xl border border-slate-800 bg-obsidian-950 p-4 text-center">
+            <p className="text-[11px] text-stone-400 font-bold uppercase tracking-wider">
+              Total Amount to Pay
+            </p>
+            <p className="text-3xl font-black text-white font-mono mt-0.5">
+              {money(total_c)}
+            </p>
+            <p className="mt-1 text-xs text-stone-500">
+              Subtotal: {money(subtotal_c)} {discount_c > 0 && `· Discount: -${money(discount_c)}`}
+            </p>
+          </div>
+
+          {/* Single vs Split Mode Switcher */}
+          <div className="grid grid-cols-2 p-1 bg-obsidian-950 border border-slate-800 rounded-xl text-xs">
+            <button
+              type="button"
+              onClick={() => setIsSplit(false)}
+              className={`py-1.5 font-bold rounded-lg transition-all ${
+                !isSplit
+                  ? 'bg-slate-800 text-white shadow-sm'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              Single Payment
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsSplit(true)
+                if (
+                  !splitState.cashAmount &&
+                  !splitState.gcashAmount &&
+                  !splitState.mayaAmount &&
+                  !splitState.maribankAmount &&
+                  !splitState.utangAmount
+                ) {
+                  const initialPesos = (total_c / 100).toFixed(2)
+                  if (method === 'CASH')
+                    setSplitState((s) => ({
+                      ...s,
+                      cashAmount: initialPesos,
+                      cashTendered: initialPesos
+                    }))
+                  else if (method === 'GCASH')
+                    setSplitState((s) => ({ ...s, gcashAmount: initialPesos }))
+                  else if (method === 'MAYA')
+                    setSplitState((s) => ({ ...s, mayaAmount: initialPesos }))
+                  else if (method === 'MARIBANK')
+                    setSplitState((s) => ({ ...s, maribankAmount: initialPesos }))
+                  else if (method === 'UTANG')
+                    setSplitState((s) => ({ ...s, utangAmount: initialPesos }))
+                }
+              }}
+              className={`py-1.5 font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                isSplit
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              <Layers className="h-3.5 w-3.5" />
+              <span>Split / Mixed Payment</span>
+            </button>
+          </div>
+
+          {/* SINGLE PAYMENT MODE */}
+          {!isSplit ? (
+            <>
+              {/* Payment Method Selector Grid */}
+              <div className="grid grid-cols-5 gap-1.5">
+                {methods.map((m) => (
+                  <button
+                    key={m.key}
+                    type="button"
+                    onClick={() => {
+                      setMethod(m.key as typeof method)
+                      if (m.key === 'CASH') {
+                        setTimeout(() => {
+                          cashInputRef.current?.focus()
+                          cashInputRef.current?.select()
+                        }, 50)
+                      } else if (
+                        m.key === 'GCASH' ||
+                        m.key === 'MAYA' ||
+                        m.key === 'MARIBANK'
+                      ) {
+                        setTimeout(() => {
+                          refInputRef.current?.focus()
+                          refInputRef.current?.select()
+                        }, 50)
+                      }
+                    }}
+                    className={`flex flex-col items-center justify-center gap-1 py-2.5 px-1 rounded-xl border text-xs transition-all ${
+                      method === m.key
+                        ? m.activeClass
+                        : 'border-slate-800 bg-obsidian-950/60 text-stone-400 hover:text-stone-200 hover:border-slate-700'
+                    }`}
+                  >
+                    {m.icon}
+                    <span className="truncate w-full text-center text-[11px] font-bold">
+                      {m.label}
+                    </span>
+                    {m.shortcut ? (
+                      <span className="text-[9px] text-stone-500 font-mono">[{m.shortcut}]</span>
+                    ) : (
+                      <span className="text-[9px] opacity-0 font-mono">[--]</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* CASH PAYMENT SECTION */}
+              {method === 'CASH' && (
+                <div className="space-y-3 p-4 rounded-2xl bg-obsidian-950 border border-slate-800">
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-xs font-semibold text-stone-300">
+                        Cash Received / Tendered
+                      </label>
+                      <span className="text-[11px] text-stone-500 font-mono">Press F9 to focus</span>
+                    </div>
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xl font-bold text-stone-400">
+                        ₱
+                      </span>
+                      <input
+                        ref={cashInputRef}
+                        type="number"
+                        step="any"
+                        value={cash}
+                        onChange={(e) => setCash(e.target.value)}
+                        className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-obsidian-900 border border-slate-800 text-2xl font-black text-white focus:border-emerald-500 outline-none font-mono"
+                        placeholder="0.00"
+                        autoFocus
+                      />
+                    </div>
+                  </div>
+
+                  {/* Fast Banknote Tender Grid */}
+                  <div>
+                    <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5">
+                      Fast Tender Banknotes
+                    </p>
+                    <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setCash((total_c / 100).toFixed(2))}
+                        className="col-span-2 sm:col-span-1 rounded-lg border border-emerald-500/40 bg-emerald-500/10 py-1.5 px-2 text-xs font-black text-emerald-300 hover:bg-emerald-500/20 active:scale-95 transition-all"
+                        title="Exact amount"
+                      >
+                        Exact
+                      </button>
+                      {[20, 50, 100, 200, 500, 1000].map((bill) => (
+                        <button
+                          key={`bill-${bill}`}
+                          type="button"
+                          onClick={() => setCash(String(bill))}
+                          className={`rounded-lg border py-1.5 px-1 text-xs font-bold transition-all active:scale-95 ${
+                            parseFloat(cash) === bill
+                              ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 font-black'
+                              : 'border-slate-800 bg-obsidian-900 text-stone-300 hover:border-slate-700 hover:bg-obsidian-850'
+                          }`}
+                        >
+                          ₱{bill}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Quick Add Increments & Smart Rounding */}
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <span className="text-[10px] text-stone-500 font-medium mr-0.5">Quick Add:</span>
+                      {[20, 50, 100, 500].map((addAmount) => (
+                        <button
+                          key={`add-${addAmount}`}
+                          type="button"
+                          onClick={() => {
+                            const currentVal = parseFloat(cash) || total_c / 100
+                            setCash(String(Math.round((currentVal + addAmount) * 100) / 100))
+                          }}
+                          className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/20 active:scale-95 transition-all"
+                        >
+                          +₱{addAmount}
+                        </button>
+                      ))}
+
+                      {total_c > 0 &&
+                        (() => {
+                          const totalPesos = total_c / 100
+                          const next50 = Math.ceil(totalPesos / 50) * 50
+                          const next100 = Math.ceil(totalPesos / 100) * 100
+                          const targets = Array.from(new Set([next50, next100])).filter(
+                            (t) => t > totalPesos && t !== 1000 && t !== 500
+                          )
+                          return targets.map((t) => (
+                            <button
+                              key={`next-round-${t}`}
+                              type="button"
+                              onClick={() => setCash(String(t))}
+                              className="rounded-md border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 text-xs font-semibold text-sky-300 hover:bg-sky-500/20 active:scale-95 transition-all"
+                            >
+                              Round ₱{t}
+                            </button>
+                          ))
+                        })()}
+                    </div>
+                  </div>
+
+                  {/* Grand Change Due Showcase Display */}
+                  <div
+                    className={`rounded-xl border p-3 transition-all duration-150 ${
+                      changeC >= 0
+                        ? 'border-emerald-500/40 bg-gradient-to-br from-emerald-950/40 to-obsidian-900 shadow-inner'
+                        : 'border-rose-500/40 bg-rose-950/20'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-stone-300">
+                        {changeC >= 0 ? 'Sukli (Change Due)' : 'Kulang (Remaining Due)'}
+                      </span>
+                      {changeC > 0 && (
+                        <span className="text-[10px] font-bold text-emerald-400">Ready to dispense</span>
+                      )}
+                    </div>
+                    <p
+                      className={`text-2xl font-black font-mono mt-0.5 ${
+                        changeC >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                      }`}
+                    >
+                      {money(Math.abs(changeC))}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* DIGITAL PAYMENT SECTION (GCASH, MAYA, MARIBANK) */}
+              {(method === 'GCASH' || method === 'MAYA' || method === 'MARIBANK') && (
+                <div className="p-4 rounded-2xl bg-obsidian-950 border border-slate-800 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-stone-200">
+                      {method} Payment Confirmation
+                    </span>
+                    <span className="text-xs font-mono font-bold text-emerald-400">
+                      {money(total_c)}
+                    </span>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-stone-400 uppercase font-semibold mb-1">
+                      Reference / Trace No. (Optional)
+                    </label>
+                    <input
+                      ref={refInputRef}
+                      type="text"
+                      value={reference}
+                      onChange={(e) => setReference(e.target.value)}
+                      placeholder="e.g. 10928347102"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900 border border-slate-800 text-stone-100 text-xs font-mono focus:border-indigo-500 outline-none"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* UTANG SECTION */}
+              {method === 'UTANG' && (
+                <div className="p-4 rounded-2xl bg-obsidian-950 border border-rose-500/30 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-rose-300">
+                      Store Credit / Utang Charge
+                    </span>
+                    <span className="text-xs font-mono font-bold text-rose-400">
+                      {money(total_c)}
+                    </span>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] text-stone-400 uppercase font-semibold mb-1">
+                      Select Customer / Suki Account *
+                    </label>
+                    <select
+                      value={customerId || ''}
+                      onChange={(e) => setCustomerId(e.target.value ? Number(e.target.value) : null)}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900 border border-slate-800 text-stone-100 text-xs focus:border-rose-500 outline-none"
+                    >
+                      <option value="">-- Pumili ng Suki Account --</option>
+                      {customers.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name} {c.balance_c > 0 ? `(Balanse: ${money(c.balance_c)})` : ''}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {selectedCustomerObj && (
+                    <div className="p-3 rounded-xl bg-obsidian-900 border border-slate-800 text-xs space-y-1">
+                      <div className="flex justify-between text-stone-400">
+                        <span>Kasalukuyang Utang:</span>
+                        <span className="font-mono font-bold text-rose-400">
+                          {money(selectedCustomerObj.balance_c || 0)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-stone-200 font-bold border-t border-slate-800 pt-1">
+                        <span>Bagong Balanse Matapos nito:</span>
+                        <span className="font-mono text-rose-300">
+                          {money((selectedCustomerObj.balance_c || 0) + total_c)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          ) : (
+            /* SPLIT PAYMENT MODE */
+            <div className="space-y-3 p-4 rounded-2xl bg-obsidian-950 border border-slate-800 text-xs">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span className="font-bold text-stone-300 uppercase tracking-wider text-[11px]">
+                  Split Payment Breakdown
+                </span>
+                <span
+                  className={`font-mono font-bold text-xs ${
+                    remainingC === 0
+                      ? 'text-emerald-400'
+                      : remainingC > 0
+                      ? 'text-amber-400'
+                      : 'text-rose-400'
+                  }`}
+                >
+                  {remainingC === 0
+                    ? '✓ 100% Allocated'
+                    : remainingC > 0
+                    ? `Allocate ${money(remainingC)} More`
+                    : `Over by ${money(Math.abs(remainingC))}`}
+                </span>
+              </div>
+
+              {/* Cash Row */}
+              <div className="flex items-center gap-2">
+                <span className="w-16 font-semibold text-stone-400">Cash:</span>
+                <input
+                  type="number"
+                  step="any"
+                  value={splitState.cashAmount}
+                  onChange={(e) =>
+                    setSplitState((s) => ({
+                      ...s,
+                      cashAmount: e.target.value,
+                      cashTendered: e.target.value
+                    }))
+                  }
+                  placeholder="₱0.00"
+                  className="flex-1 px-3 py-1.5 rounded-lg bg-obsidian-900 border border-slate-800 text-stone-100 font-mono outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => fillRemaining('cash')}
+                  className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-bold text-stone-300"
+                >
+                  Fill
+                </button>
+              </div>
+
+              {/* GCash Row */}
+              <div className="flex items-center gap-2">
+                <span className="w-16 font-semibold text-stone-400">GCash:</span>
+                <input
+                  type="number"
+                  step="any"
+                  value={splitState.gcashAmount}
+                  onChange={(e) => setSplitState((s) => ({ ...s, gcashAmount: e.target.value }))}
+                  placeholder="₱0.00"
+                  className="flex-1 px-3 py-1.5 rounded-lg bg-obsidian-900 border border-slate-800 text-stone-100 font-mono outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => fillRemaining('gcash')}
+                  className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-bold text-stone-300"
+                >
+                  Fill
+                </button>
+              </div>
+
+              {/* Maya Row */}
+              <div className="flex items-center gap-2">
+                <span className="w-16 font-semibold text-stone-400">Maya:</span>
+                <input
+                  type="number"
+                  step="any"
+                  value={splitState.mayaAmount}
+                  onChange={(e) => setSplitState((s) => ({ ...s, mayaAmount: e.target.value }))}
+                  placeholder="₱0.00"
+                  className="flex-1 px-3 py-1.5 rounded-lg bg-obsidian-900 border border-slate-800 text-stone-100 font-mono outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => fillRemaining('maya')}
+                  className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-bold text-stone-300"
+                >
+                  Fill
+                </button>
+              </div>
+
+              {/* MariBank Row */}
+              <div className="flex items-center gap-2">
+                <span className="w-16 font-semibold text-stone-400">MariBank:</span>
+                <input
+                  type="number"
+                  step="any"
+                  value={splitState.maribankAmount}
+                  onChange={(e) => setSplitState((s) => ({ ...s, maribankAmount: e.target.value }))}
+                  placeholder="₱0.00"
+                  className="flex-1 px-3 py-1.5 rounded-lg bg-obsidian-900 border border-slate-800 text-stone-100 font-mono outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => fillRemaining('maribank')}
+                  className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-bold text-stone-300"
+                >
+                  Fill
+                </button>
+              </div>
+
+              {/* Utang Row */}
+              <div className="flex items-center gap-2">
+                <span className="w-16 font-semibold text-stone-400">Utang:</span>
+                <input
+                  type="number"
+                  step="any"
+                  value={splitState.utangAmount}
+                  onChange={(e) => setSplitState((s) => ({ ...s, utangAmount: e.target.value }))}
+                  placeholder="₱0.00"
+                  className="flex-1 px-3 py-1.5 rounded-lg bg-obsidian-900 border border-slate-800 text-stone-100 font-mono outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => fillRemaining('utang')}
+                  className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-bold text-stone-300"
+                >
+                  Fill
+                </button>
+              </div>
+
+              {splitUtangC > 0 && (
+                <div className="pt-2 border-t border-slate-800">
+                  <label className="block text-[11px] text-stone-400 uppercase font-semibold mb-1">
+                    Select Suki Account for Utang Portion:
+                  </label>
+                  <select
+                    value={customerId || ''}
+                    onChange={(e) =>
+                      setCustomerId(e.target.value ? Number(e.target.value) : null)
+                    }
+                    className="w-full px-3 py-1.5 rounded-lg bg-obsidian-900 border border-slate-800 text-stone-100 text-xs focus:border-rose-500 outline-none"
+                  >
+                    <option value="">-- Pumili ng Suki Account --</option>
+                    {customers.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               )}
             </div>
+          )}
+        </div>
 
-            {/* Receipt Summary Box */}
-            <div className="rounded-2xl bg-obsidian-900/[0.05] border border-slate-900/[0.06] p-4 text-xs font-mono space-y-2">
-              <div className="flex justify-between border-b border-slate-900/[0.06] pb-2 text-stone-400 text-[0.8125rem] uppercase tracking-wider">
-                <span>Items ({completedTx.items.length})</span>
-                <span>Qty x Price</span>
-              </div>
-              <div className="max-h-36 overflow-y-auto space-y-1.5 pr-1">
-                {completedTx.items.map((it, idx) => (
-                  <div key={idx} className="flex justify-between text-stone-300">
-                    <span className="truncate pr-2">{it.name}</span>
-                    <span className="shrink-0 text-stone-400">
-                      {it.quantity}x {money(it.unit_price_c)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="border-t border-slate-900/[0.06] pt-2 space-y-1 text-stone-400">
-                <div className="flex justify-between">
-                  <span>Subtotal:</span>
-                  <span className="text-stone-200">{money(completedTx.subtotal_c)}</span>
-                </div>
-                {completedTx.discount_c > 0 && (
-                  <div className="flex justify-between text-gold-muted font-medium">
-                    <span>Privilege Discount (20%):</span>
-                    <span>-{money(completedTx.discount_c)}</span>
-                  </div>
-                )}
-                <div className="flex justify-between font-bold text-stone-100 text-sm pt-1.5 border-t border-slate-900/[0.04]">
-                  <span>Total Settled:</span>
-                  <span className="text-gold-light font-serif text-base">{money(completedTx.total_c)}</span>
-                </div>
-              </div>
-            </div>
+        {/* Footer Actions */}
+        <div className="flex items-center justify-between px-6 py-4 border-t border-white/[0.08] bg-obsidian-950/60">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 rounded-xl border border-slate-800 hover:bg-slate-850 text-stone-400 hover:text-stone-200 text-xs font-bold transition-all"
+          >
+            Cancel (Esc)
+          </button>
 
-            {/* Quick Printer Format Selector */}
-            <div className="flex items-center justify-between p-2 rounded-xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] text-xs font-mono">
-              <span className="text-[0.8125rem] text-stone-400 pl-1">Print Format:</span>
-              <div className="flex items-center gap-1">
-                {(['58mm', '80mm', 'A4'] as const).map((w) => (
-                  <button
-                    key={w}
-                    type="button"
-                    onClick={() => setPaperWidth(w)}
-                    className={`px-2.5 py-1 rounded-lg text-[0.75rem] font-bold transition-all ${
-                      paperWidth === w
-                        ? 'bg-amber-500/20 text-gold-light border border-gold/40 font-bold'
-                        : 'text-stone-400 hover:text-stone-100 bg-obsidian-900/[0.07]'
-                    }`}
-                  >
-                    {w === '58mm' ? '58mm Roll' : w === '80mm' ? '80mm Roll' : 'A4 Invoice'}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Print-only VIP Receipt document */}
-            <Receipt
-              tx={completedTx}
-              paperWidth={paperWidth}
-              storeSettings={settings}
-              storeName={settings?.store_name || storeName}
-              address={settings?.address}
-              contact={settings?.contact_number}
-              receiptFooter={settings?.receipt_footer}
-              terminalId={terminalId}
-              showBarcode={settings?.printer_show_barcode ?? true}
-              showLogo={settings?.printer_show_logo ?? true}
-              showCustomerInfo={settings?.printer_show_customer_info ?? true}
-            />
-
-            {/* Print & Close Actions */}
-            <div className="flex gap-2.5">
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="btn-press flex-1 py-3 px-4 rounded-2xl bg-obsidian-900 border border-slate-900/[0.08] hover:border-gold/40 text-stone-300 text-xs font-sans font-semibold tracking-wider uppercase flex items-center justify-center gap-2"
-              >
-                <Printer className="h-4 w-4 text-gold-muted" />
-                <span>Print Receipt ({paperWidth})</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onComplete(completedTx)}
-                className="btn-gold flex-1 py-3.5 px-4 rounded-2xl text-xs font-bold tracking-[0.2em] uppercase shadow-glow-gold"
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        ) : (
-          /* Settlement Form View */
-          <div className="space-y-4">
-            {/* Payment Method Selector: Cash, GCash, Client Credit (Utang) */}
-            <div>
-              <label className="block text-[0.75rem] font-sans font-semibold tracking-[0.2em] uppercase text-stone-400 mb-2">
-                SELECT SETTLEMENT METHOD
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: 'CASH', label: 'Cash Tender', icon: Banknote },
-                  { id: 'GCASH', label: 'E-Transfer', icon: CreditCard },
-                  { id: 'UTANG', label: 'Store Credit', icon: UserCheck }
-                ].map((m) => {
-                  const isSelected = paymentMethod === m.id
-                  const Icon = m.icon
-                  return (
-                    <button
-                      key={m.id}
-                      type="button"
-                      onClick={() => setPaymentMethod(m.id as any)}
-                      className={`btn-press flex flex-col items-center gap-1.5 p-3 rounded-2xl border transition-all ${
-                        isSelected
-                          ? 'bg-amber-500/[0.12] border-gold text-gold-light shadow-glow-gold'
-                          : 'bg-obsidian-900/[0.06] border-slate-900/[0.06] text-stone-400 hover:text-stone-200 hover:border-gold/20'
-                      }`}
-                    >
-                      <Icon className={`h-5 w-5 ${isSelected ? 'text-gold' : 'text-stone-500'}`} />
-                      <span className="text-[0.8125rem] font-semibold tracking-wider font-mono">{m.label}</span>
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Client Assignment for Credit Ledger */}
-            {paymentMethod === 'UTANG' && (
-              <div className="p-3.5 rounded-2xl bg-amber-500/[0.08] border border-gold/30 space-y-2">
-                <label className="block text-[0.75rem] font-sans font-semibold tracking-wider uppercase text-gold-light font-bold">
-                  ASSIGN TO CUSTOMER ACCOUNT (STORE CREDIT)
-                </label>
-                <select
-                  value={customerId || ''}
-                  onChange={(e) => setCustomerId(e.target.value ? Number(e.target.value) : null)}
-                  className="w-full bg-obsidian-900 border border-gold/30 rounded-xl px-3 py-2 text-xs font-mono text-stone-100 focus:outline-none focus:border-gold"
-                >
-                  <option value="">-- Choose Customer Profile --</option>
-                  {customers.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} — Current Balance: ₱{(c.balance_c / 100).toFixed(2)}
-                    </option>
-                  ))}
-                </select>
-                {selectedCustomerObj && (
-                  <p className="text-[0.75rem] font-mono text-stone-400">
-                    New Balance after this tender:{' '}
-                    <span className="text-gold-light font-bold">
-                      ₱{((selectedCustomerObj.balance_c + total_c) / 100).toFixed(2)}
-                    </span>
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Cash Tender Input & Presets */}
-            {paymentMethod === 'CASH' && (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-[0.75rem] font-sans font-semibold tracking-[0.2em] uppercase text-stone-400">
-                    AMOUNT TENDERED (₱)
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setTenderedInput((total_c / 100).toString())}
-                    className="text-[0.75rem] font-sans font-bold text-emerald-400 hover:underline uppercase flex items-center gap-1"
-                  >
-                    Exact (₱{(total_c / 100).toFixed(2)})
-                  </button>
-                </div>
-
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-serif text-xl text-emerald-400 font-bold">
-                    ₱
-                  </span>
-                  <input
-                    type="number"
-                    step="any"
-                    value={tenderedInput}
-                    onChange={(e) => setTenderedInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !isInsufficient && !processing) {
-                        e.preventDefault()
-                        void handleCharge()
-                      }
-                    }}
-                    className="w-full pl-9 pr-4 py-3 rounded-2xl bg-ink-950 border border-ink-line focus:border-emerald-500 text-slate-100 text-lg font-mono font-bold focus:outline-none"
-                    placeholder="0.00"
-                    autoFocus
-                  />
-                </div>
-
-                {/* Fast Tender Banknote Denominations (Philippine Banknotes) */}
-                <div>
-                  <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
-                    Fast Tender Banknotes
-                  </p>
-                  <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5" role="group" aria-label="Fast cash tender buttons">
-                    <button
-                      type="button"
-                      onClick={() => setTenderedInput((total_c / 100).toString())}
-                      className="col-span-2 sm:col-span-1 rounded-lg border border-brand-500/40 bg-brand-500/10 py-1.5 px-2 text-xs font-black text-brand-300 hover:bg-brand-500/20 active:scale-95 active:translate-y-0.5 transition-all shadow-sm"
-                      title="Exact amount"
-                    >
-                      Exact
-                    </button>
-                    {[20, 50, 100, 200, 500, 1000].map((bill) => (
-                      <button
-                        key={`bill-${bill}`}
-                        type="button"
-                        onClick={() => setTenderedInput(String(bill))}
-                        className={`rounded-lg border py-1.5 px-1 text-xs font-bold transition-all active:scale-95 active:translate-y-0.5 shadow-sm ${
-                          parseFloat(tenderedInput) === bill
-                            ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 font-black'
-                            : 'border-ink-line bg-ink-900 text-slate-200 hover:border-slate-600 hover:bg-ink-800'
-                        }`}
-                      >
-                        ₱{bill}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Increments & Smart Rounding */}
-                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                    <span className="text-[10px] text-slate-500 font-medium mr-0.5">Quick Add:</span>
-                    {[20, 50, 100, 500].map((addAmount) => (
-                      <button
-                        key={`add-${addAmount}`}
-                        type="button"
-                        onClick={() => {
-                          const currentVal = parseFloat(tenderedInput) || (total_c / 100)
-                          setTenderedInput(String(Math.round((currentVal + addAmount) * 100) / 100))
-                        }}
-                        className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/20 active:scale-95 active:translate-y-0.5 transition-all"
-                        title={`Add ₱${addAmount} to cash tendered`}
-                      >
-                        +₱{addAmount}
-                      </button>
-                    ))}
-
-                    {/* Smart Next-Round Suggestion */}
-                    {total_c > 0 && (() => {
-                      const totalPesos = total_c / 100
-                      const next50 = Math.ceil(totalPesos / 50) * 50
-                      const next100 = Math.ceil(totalPesos / 100) * 100
-                      const targets = Array.from(new Set([next50, next100])).filter(t => t > totalPesos && t !== 1000 && t !== 500)
-                      return targets.map(t => (
-                        <button
-                          key={`next-round-${t}`}
-                          type="button"
-                          onClick={() => setTenderedInput(String(t))}
-                          className="rounded-md border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 text-xs font-semibold text-sky-300 hover:bg-sky-500/20 active:scale-95 active:translate-y-0.5 transition-all"
-                          title={`Round up to ₱${t}`}
-                        >
-                          Round ₱{t}
-                        </button>
-                      ))
-                    })()}
-                  </div>
-                </div>
-
-                {/* Grand Change Due Showcase Display */}
-                <div
-                  className={`rounded-xl border p-3.5 transition-all duration-150 ${
-                    change_c >= 0 && !isInsufficient
-                      ? 'border-emerald-500/40 bg-gradient-to-br from-emerald-950/40 to-ink-950 shadow-inner'
-                      : 'border-danger-500/40 bg-danger-950/20'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={`text-[11px] font-black uppercase tracking-wider ${
-                        !isInsufficient ? 'text-emerald-400' : 'text-danger-400'
-                      }`}
-                    >
-                      {!isInsufficient ? 'Change Due' : 'Insufficient Cash'}
-                    </span>
-                    {!isInsufficient && (
-                      <span className="text-[11px] font-medium text-emerald-300/80">
-                        Press Enter to Complete Sale
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-1 flex items-baseline justify-between">
-                    <span
-                      className={`text-3xl font-black tracking-tight tabular-nums transition-all ${
-                        !isInsufficient
-                          ? 'text-emerald-300 drop-shadow-[0_0_12px_rgba(16,185,129,0.3)]'
-                          : 'text-danger-400'
-                      }`}
-                    >
-                      {!isInsufficient ? money(change_c) : `Short of ${money(Math.abs(total_c - tendered_c))}`}
-                    </span>
-                    {tendered_c > 0 && !isInsufficient && (
-                      <span className="text-xs text-slate-400 font-medium font-mono">
-                        Tendered: {money(tendered_c)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Total Display */}
-            <div className="p-3.5 rounded-2xl bg-obsidian-900/[0.05] border border-gold/30 flex items-center justify-between">
-              <span className="font-sans font-semibold text-xs tracking-wider uppercase text-stone-400">
-                FINAL CHARGE TOTAL:
-              </span>
-              <span className="font-serif text-2xl font-bold tracking-wider text-gold-light">
-                {money(total_c)}
-              </span>
-            </div>
-
-            {/* Submit Action */}
-            <button
-              type="button"
-              disabled={processing || isInsufficient}
-              onClick={handleCharge}
-              className={`btn-gold w-full py-4 px-6 rounded-2xl text-xs font-bold tracking-[0.2em] uppercase shadow-glow-gold flex items-center justify-center gap-2 ${
-                processing || isInsufficient ? 'opacity-40 cursor-not-allowed' : ''
-              }`}
-            >
-              <ShieldCheck className="h-4 w-4" />
-              <span>{processing ? 'AUTHORIZING TRANSACTION...' : 'CONFIRM & AUTHORIZE SETTLEMENT'}</span>
-            </button>
-          </div>
-        )}
+          <button
+            type="button"
+            onClick={handleCharge}
+            disabled={
+              processing ||
+              (isSplit ? remainingC !== 0 : method === 'CASH' && cashC < total_c)
+            }
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:brightness-110 text-obsidian-950 font-black text-xs transition-all shadow-glow-emerald disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
+          >
+            {processing && <Loader2 className="w-4 h-4 animate-spin" />}
+            <span>
+              {isSplit
+                ? remainingC === 0
+                  ? `Charge Split ${money(total_c)} (Enter)`
+                  : remainingC > 0
+                  ? `Allocate ${money(remainingC)} More`
+                  : `Over by ${money(Math.abs(remainingC))}`
+                : `Charge ${money(total_c)} (Enter)`}
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   )

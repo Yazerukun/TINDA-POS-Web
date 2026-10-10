@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Clock, Crown } from 'lucide-react'
-import type { Product, Category, Transaction, HeldCart, Customer, StoreSettings, CartItem, DiscountType, Expense } from './types'
+import type { Product, Category, Transaction, HeldCart, Customer, StoreSettings, CartItem, DiscountType, Expense, PaymentMethod } from './types'
 import { db, DEFAULT_SETTINGS, initDatabase } from './db'
 import { Navigation, type ActiveTab } from './components/Navigation'
 import { DashboardScreen } from './components/DashboardScreen'
@@ -131,6 +131,7 @@ export default function App(): React.JSX.Element {
     total_c: number
     customerId?: number | null
     quickTender_c?: number
+    initialMethod?: PaymentMethod
   } | null>(null)
 
   // Master Admin Store Masquerade / Impersonate State
@@ -286,7 +287,8 @@ export default function App(): React.JSX.Element {
     discount_type: DiscountType,
     total_c: number,
     customerId?: number | null,
-    quickTender_c?: number
+    quickTender_c?: number,
+    initialMethod?: PaymentMethod
   ) => {
     setCheckoutData({
       subtotal_c,
@@ -294,7 +296,8 @@ export default function App(): React.JSX.Element {
       discount_type,
       total_c,
       customerId,
-      quickTender_c
+      quickTender_c,
+      initialMethod
     })
   }
 
@@ -752,6 +755,9 @@ export default function App(): React.JSX.Element {
             onHoldCart={handleHoldCart}
             onResumeCart={handleResumeCart}
             onCheckout={handleInitiateCheckout}
+            cashierName={vaultSession?.cashierName}
+            storeName={activeStoreName}
+            onRefreshData={loadData}
           />
         )}
 
@@ -888,6 +894,7 @@ export default function App(): React.JSX.Element {
           customers={customers}
           selectedCustomerId={checkoutData.customerId || null}
           presetTender_c={checkoutData.quickTender_c}
+          initialMethod={checkoutData.initialMethod || 'CASH'}
           cashierName={vaultSession?.cashierName}
           storeName={activeStoreName}
           settings={settings}

@@ -34,9 +34,19 @@ export interface CartItem {
   quantity: number
   unit_price_c: number
   total_c: number
+  is_custom_price?: boolean
+  original_price_c?: number
 }
 
 export type DiscountType = 'NONE' | 'SENIOR_PWD_20' | 'CUSTOM'
+
+export type PaymentMethod = 'CASH' | 'GCASH' | 'MAYA' | 'MARIBANK' | 'UTANG' | 'SPLIT'
+
+export interface SplitPaymentRecord {
+  method: 'CASH' | 'GCASH' | 'MAYA' | 'MARIBANK' | 'UTANG'
+  amount_c: number
+  reference?: string | null
+}
 
 export interface HeldCart {
   id: string
@@ -67,7 +77,8 @@ export interface Transaction {
   discount_c: number
   discount_type: DiscountType
   total_c: number
-  payment_method: 'CASH' | 'GCASH' | 'UTANG'
+  payment_method: PaymentMethod
+  payments?: SplitPaymentRecord[]
   amount_tendered_c: number
   change_c: number
   customer_id: number | null
@@ -77,6 +88,24 @@ export interface Transaction {
   void_reason?: string
   voided_at?: string
   voided_by?: string
+}
+
+export interface PrinterCustomizationSettings {
+  receipt_paper_width: '58mm' | '80mm'
+  receipt_feed_lines_end: number
+  receipt_font_scale: number
+  receipt_line_spacing: 'compact' | 'balanced' | 'spacious'
+  receipt_ultra_black: boolean
+  receipt_custom_header: string
+  receipt_custom_footer: string
+  receipt_show_cashier: boolean
+  receipt_show_customer: boolean
+  receipt_show_change_breakdown: boolean
+  receipt_show_logo: boolean
+  receipt_show_barcode: boolean
+  receipt_store_name?: string
+  receipt_address?: string
+  receipt_contact?: string
 }
 
 export interface Customer {

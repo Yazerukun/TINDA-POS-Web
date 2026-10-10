@@ -302,7 +302,28 @@ export function VaultAuthModal({
 
       let user = await db.users.where('username').equalsIgnoreCase(trimmedUser).first()
       if (!user) {
-        user = await db.users.where('email').equalsIgnoreCase(trimmedUser).first()
+        user = await db.users.filter((u) => u.email?.toLowerCase() === lower).first()
+      }
+
+      // Seed default admin if user is logging in as admin and no admin exists yet
+      if (!user && lower === 'admin') {
+        const existingAdmin = await db.users.where('role').equals('ADMIN').first()
+        if (!existingAdmin) {
+          const newAdmin: UserAccount = {
+            username: 'admin',
+            name: 'Master Admin',
+            role: 'ADMIN',
+            pin: '1234',
+            status: 'ACTIVE',
+            created_at: new Date().toISOString(),
+            store_name: 'PLATFORM_HQ',
+            is_owner: true
+          }
+          const id = await db.users.add(newAdmin)
+          user = { ...newAdmin, id }
+        } else {
+          user = existingAdmin
+        }
       }
 
       // Cloudflare D1 cross-device lookup
@@ -328,27 +349,6 @@ export function VaultAuthModal({
           }
         } catch (e) {
           console.warn('Cloud login lookup error:', e)
-        }
-      }
-
-      // Seed default admin if table is fresh
-      if (!user && lower === 'admin') {
-        const existingAdmin = await db.users.where('role').equals('ADMIN').first()
-        if (!existingAdmin) {
-          const newAdmin: UserAccount = {
-            username: 'admin',
-            name: 'Master Admin',
-            role: 'ADMIN',
-            pin: '1234',
-            status: 'ACTIVE',
-            created_at: new Date().toISOString(),
-            store_name: 'PLATFORM_HQ',
-            is_owner: true
-          }
-          await db.users.add(newAdmin)
-          user = newAdmin
-        } else {
-          user = existingAdmin
         }
       }
 
@@ -384,7 +384,8 @@ export function VaultAuthModal({
       setStep('FLOAT')
     } catch (err) {
       console.error('Login error:', err)
-      setErrorMessage('A database error occurred. Please try again.')
+      const errDetail = (err as Error)?.message || 'Database error'
+      setErrorMessage(`Login error: ${errDetail}. Please try again.`)
       setIsVerifying(false)
     }
   }

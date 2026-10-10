@@ -139,127 +139,39 @@ export function useProAccess() {
     return fresh
   }, [])
 
-  // Real-time calculations
-  const remainingSeconds = useMemo(() => {
-    if (state.owner_bypass) return 999999
-    return Math.max(0, Math.floor((state.pro_expires_at - now) / 1000))
-  }, [state.pro_expires_at, state.owner_bypass, now])
-
-  // isPro = active countdown time is running, or master owner bypass
-  const isPro = useMemo(() => {
-    if (state.owner_bypass) return true
-    return remainingSeconds > 0
-  }, [state.owner_bypass, remainingSeconds])
-
-  // Backward-compatibility flag
-  const isFullyUnlocked = isPro
-
-  // 30-second cooldown calculation
-  const cooldownRemaining = useMemo(() => {
-    if (!state.last_ad_watched_at) return 0
-    const elapsed = Math.floor((now - state.last_ad_watched_at) / 1000)
-    return Math.max(0, DEFAULT_COOLDOWN_SECONDS - elapsed)
-  }, [state.last_ad_watched_at, now])
-
-  const canWatchAd = cooldownRemaining <= 0
-
-  // Format countdown with days, hours, minutes, seconds
-  const formattedTime = useMemo(() => {
-    if (state.owner_bypass) return 'UNLIMITED (OWNER)'
-    if (remainingSeconds <= 0) return '00:00:00'
-
-    const days = Math.floor(remainingSeconds / 86400)
-    const hrs = Math.floor((remainingSeconds % 86400) / 3600)
-    const mins = Math.floor((remainingSeconds % 3600) / 60)
-    const secs = remainingSeconds % 60
-    const pad = (n: number) => n.toString().padStart(2, '0')
-
-    if (days > 0) {
-      return `${days}d ${pad(hrs)}h ${pad(mins)}m ${pad(secs)}s`
-    }
-    if (hrs > 0) {
-      return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`
-    }
-    return `00:${pad(mins)}:${pad(secs)}`
-  }, [remainingSeconds, state.owner_bypass])
-
-  // Max accumulation: 60 days from now
-  const MAX_ACCUMULATION_MS = 60 * 24 * 60 * 60 * 1000 // 60 days cap
+  // isPro = permanently active for all accounts (ads and monetag removed)
+  const isPro = true
+  const isFullyUnlocked = true
+  const remainingSeconds = 999999999
+  const cooldownRemaining = 0
+  const canWatchAd = false
+  const formattedTime = 'PRO ACTIVE'
 
   // Watching an ad: Earns +1 Token to user's wallet
-  const grantRewardForAd = useCallback(async () => {
-    const updated: ProAccessState = {
-      ...state,
-      tokens: state.tokens + 1,
-      last_ad_watched_at: Date.now(),
-      total_ads_watched: state.total_ads_watched + 1
-    }
-    await persistState(updated)
-  }, [state, persistState])
+  const grantRewardForAd = useCallback(async () => {}, [])
 
   // Redeem / Convert banked tokens to Shift Time
-  const redeemPackage = useCallback(async (tokensCost: number, hoursToGrant: number) => {
-    if (state.tokens < tokensCost && !state.owner_bypass) {
-      return false
-    }
-    const addMs = hoursToGrant * 60 * 60 * 1000
-    const currentBase = Math.max(Date.now(), state.pro_expires_at)
-    const newExpiry = Math.min(currentBase + addMs, Date.now() + MAX_ACCUMULATION_MS)
-    const updated: ProAccessState = {
-      ...state,
-      tokens: state.owner_bypass ? state.tokens : Math.max(0, state.tokens - tokensCost),
-      pro_expires_at: newExpiry
-    }
-    await persistState(updated)
-
-    // If there was a pending action blocked by the gate, trigger it
-    if (pendingAction) {
-      pendingAction()
-      setPendingAction(null)
-    }
+  const redeemPackage = useCallback(async (_tokensCost: number, _hoursToGrant: number) => {
     return true
-  }, [state, persistState, pendingAction])
+  }, [])
 
   // Keep grantRewardMinutes as alias for backwards compatibility
-  const grantRewardMinutes = useCallback(async (_minutes?: number) => {
-    await grantRewardForAd()
-  }, [grantRewardForAd])
+  const grantRewardMinutes = useCallback(async (_minutes?: number) => {}, [])
 
   // Admin Owner Bypass toggle
-  const toggleOwnerBypass = useCallback(async (enabled: boolean) => {
-    const updated: ProAccessState = {
-      ...state,
-      owner_bypass: enabled
-    }
-    await persistState(updated)
-  }, [state, persistState])
+  const toggleOwnerBypass = useCallback(async (_enabled: boolean) => {}, [])
 
   // Immediate expiration for testing
-  const expireNowForTesting = useCallback(async () => {
-    const updated: ProAccessState = {
-      ...state,
-      owner_bypass: false,
-      pro_expires_at: Date.now() - 1000
-    }
-    await persistState(updated)
-  }, [state, persistState])
+  const expireNowForTesting = useCallback(async () => {}, [])
 
-  // Gatekeeper: Check if pro is active, otherwise open the popup
-  const requireProFeature = useCallback((featureName: string, onAuthorized: () => void) => {
-    if (isPro) {
-      onAuthorized()
-      return true
-    } else {
-      setPendingFeatureName(featureName)
-      setPendingAction(() => onAuthorized)
-      setGateModalOpen(true)
-      return false
-    }
-  }, [isPro])
+  // Gatekeeper: Always authorized (no ad gating)
+  const requireProFeature = useCallback((_featureName: string, onAuthorized: () => void) => {
+    onAuthorized()
+    return true
+  }, [])
 
-  const openRewardModal = useCallback((featureName = 'Unlock Pro Features') => {
-    setPendingFeatureName(featureName)
-    setGateModalOpen(true)
+  const openRewardModal = useCallback((_featureName = 'Unlock Pro Features') => {
+    // No-op: ads removed
   }, [])
 
   const closeRewardModal = useCallback(() => {

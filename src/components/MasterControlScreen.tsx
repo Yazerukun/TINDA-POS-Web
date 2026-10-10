@@ -832,7 +832,7 @@ export function MasterControlScreen({
             <span className="font-serif text-2xl sm:text-3xl font-bold text-gold-light">
               {totalPlatformAds}
             </span>
-            <span className="text-[0.75rem] font-mono text-emerald-600 font-bold">● Monetag Live</span>
+            <span className="text-[0.75rem] font-mono text-emerald-400 font-bold">● Cloud Live</span>
           </div>
           <p className="text-[0.75rem] font-mono text-stone-400 mt-1 truncate">
             Across all merchant accounts

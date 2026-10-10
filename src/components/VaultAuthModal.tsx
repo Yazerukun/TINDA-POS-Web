@@ -45,6 +45,8 @@ interface VaultAuthModalProps {
   isOpen: boolean
   onAuthenticated: (session: VaultSession, isNewAccount?: boolean) => void
   currentCashier?: string
+  initialStep?: 'LOGIN' | 'SIGNUP'
+  onClose?: () => void
 }
 
 const TERMINAL_ID = 'TRM-8891'
@@ -217,8 +219,20 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
   )
 }
 
-export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps): React.JSX.Element | null {
-  const [step, setStep] = useState<'LOGIN' | 'SIGNUP' | 'ROTATE' | 'FLOAT'>('LOGIN')
+export function VaultAuthModal({
+  isOpen,
+  onAuthenticated,
+  initialStep = 'LOGIN',
+  onClose
+}: VaultAuthModalProps): React.JSX.Element | null {
+  const [step, setStep] = useState<'LOGIN' | 'SIGNUP' | 'ROTATE' | 'FLOAT'>(initialStep)
+
+  useEffect(() => {
+    if (isOpen && initialStep) {
+      setStep(initialStep)
+      setErrorMessage('')
+    }
+  }, [isOpen, initialStep])
   const [authMode, setAuthMode] = useState<'PIN' | 'PASSWORD'>('PIN')
   const [showPassword, setShowPassword] = useState(false)
   const [username, setUsername] = useState('')
@@ -318,6 +332,32 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
       let user = await db.users.where('username').equalsIgnoreCase(trimmedUser).first()
       if (!user) {
         user = await db.users.where('email').equalsIgnoreCase(trimmedUser).first()
+      }
+
+      // If user is not found locally, query Cloudflare D1 via loginWithCloud
+      if (!user) {
+        try {
+          const cloudRes = await loginWithCloud(trimmedUser, pin)
+          if (cloudRes.ok && cloudRes.user) {
+            const syncedUser: UserAccount = {
+              id: cloudRes.user.id,
+              username: cloudRes.user.username,
+              name: cloudRes.user.name,
+              role: (cloudRes.user.role as UserRole) || 'ADMIN',
+              pin: pin,
+              status: 'ACTIVE',
+              created_at: new Date().toISOString(),
+              store_name: cloudRes.user.store_name || undefined,
+              email: cloudRes.user.email || undefined,
+              avatar_url: cloudRes.user.avatar_url || undefined,
+              is_owner: cloudRes.user.is_owner
+            }
+            await db.users.put(syncedUser)
+            user = syncedUser
+          }
+        } catch (e) {
+          console.warn('Cloud login lookup error:', e)
+        }
       }
 
       // Seeded local account for a fresh terminal only. On a synced terminal the
@@ -631,6 +671,19 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
 
           {/* Modern Dark Glassmorphism Card with Soft Gold Border Highlight */}
           <div className="w-full max-w-[390px] sm:max-w-[430px] md:max-w-[450px] glass-vault rounded-3xl border border-gold/35 shadow-vault text-stone-100 animate-fade-in relative overflow-hidden backdrop-blur-3xl bg-obsidian-900/[0.04] my-auto p-4 sm:p-6">
+
+            {/* Back to Overview button when opened from Landing Page */}
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="absolute top-4 left-4 z-30 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-sans text-stone-300 hover:text-white bg-obsidian-850/80 hover:bg-gold/15 border border-gold/25 hover:border-gold/50 transition-all cursor-pointer backdrop-blur-md shadow-sm"
+                title="Return to Overview"
+              >
+                <ChevronLeft className="w-3.5 h-3.5 text-gold-light" />
+                <span className="font-semibold tracking-wide">Overview</span>
+              </button>
+            )}
 
             {/* Elegant Luxury Verification Loading Overlay */}
             {isVerifying && (

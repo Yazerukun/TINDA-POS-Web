@@ -290,43 +290,20 @@ export function Navigation({
             </div>
           ) : (
             <div
-              onClick={onOpenProModal}
-              role="button"
-              tabIndex={0}
-              className={`cursor-pointer group p-2.5 rounded-2xl border transition-all duration-300 ${
-                isPro
-                  ? 'bg-amber-500/[0.05] border-gold/30 hover:border-gold hover:bg-amber-500/[0.09]'
-                  : 'bg-rose-50/25 border-rose-700/50 hover:border-rose-500 animate-pulse'
-              }`}
+              className="p-2.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] shadow-glow-emerald"
             >
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="flex items-center gap-1.5 text-[0.75rem] font-sans font-semibold tracking-widest uppercase font-semibold text-stone-400">
-                  <Clock className={`w-3 h-3 ${isPro ? 'text-gold-light' : 'text-rose-600'}`} />
-                  <span>{isPro ? 'PRO ACCESS' : 'FREE MODE'}</span>
+              <div className="flex items-center justify-between mb-1">
+                <span className="flex items-center gap-1.5 text-[0.75rem] font-sans font-semibold tracking-widest uppercase font-bold text-emerald-400">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>PRO EDITION</span>
                 </span>
-                <span
-                  className={`text-[0.75rem] font-mono px-1.5 py-0.5 rounded font-bold uppercase ${
-                    isPro
-                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                      : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                  }`}
-                >
-                  {isPro ? 'ACTIVE' : 'EXPIRED'}
+                <span className="text-[0.75rem] font-sans font-semibold px-1.5 py-0.5 rounded font-extrabold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                  UNLIMITED
                 </span>
               </div>
-
-              <div className="flex items-center justify-between">
-                <span
-                  className={`font-mono text-xs font-bold tracking-wider ${
-                    isPro ? 'text-gold-light' : 'text-rose-400'
-                  }`}
-                >
-                  {proFormattedTime}
-                </span>
-
-                <span className="text-[0.75rem] font-mono text-gold-muted group-hover:text-gold-light transition-colors underline decoration-gold/40">
-                  {isPro ? '+ Extend' : '⚡ Unlock'}
-                </span>
+              <div className="flex items-center justify-between font-mono text-[0.8125rem] text-stone-300">
+                <span className="text-stone-300 text-xs">All Modules Unlocked</span>
+                <span className="text-[0.75rem] text-emerald-400 font-bold">Ad-Free</span>
               </div>
             </div>
           )}
@@ -571,30 +548,21 @@ export function Navigation({
               </div>
             ) : (
               <div
-                onClick={() => {
-                  setMobileDrawerOpen(false)
-                  onOpenProModal?.()
-                }}
-                role="button"
-                className={`p-3 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
-                  isPro
-                    ? 'bg-amber-500/[0.08] border-gold/30'
-                    : 'bg-rose-50/30 border-rose-700/60 animate-pulse'
-                }`}
+                className="p-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] flex items-center justify-between shadow-glow-emerald"
               >
                 <div className="flex items-center gap-2.5">
-                  <Clock className={`w-4 h-4 ${isPro ? 'text-gold-light' : 'text-rose-600'}`} />
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
                   <div>
-                    <span className="text-[0.75rem] font-sans font-semibold tracking-widest uppercase text-stone-400 block leading-tight">
-                      {isPro ? 'PRO ACCESS ACTIVE' : 'PRO EXPIRED (FREE MODE)'}
+                    <span className="text-[0.75rem] font-sans font-semibold tracking-widest uppercase text-emerald-400 block leading-tight font-bold">
+                      PRO EDITION ACTIVE
                     </span>
-                    <span className={`font-mono text-xs font-bold ${isPro ? 'text-gold-light' : 'text-rose-600'}`}>
-                      {proFormattedTime}
+                    <span className="font-mono text-xs text-stone-300">
+                      All Modules Unlocked • Ad-Free
                     </span>
                   </div>
                 </div>
-                <span className="text-[0.8125rem] font-mono font-bold text-gold underline">
-                  {isPro ? '+ Extend' : '⚡ Unlock'}
+                <span className="text-[0.75rem] font-mono font-bold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/30">
+                  ACTIVE
                 </span>
               </div>
             )}

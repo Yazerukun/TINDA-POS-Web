@@ -16,11 +16,11 @@ import { PriceGuideModal } from './components/PriceGuideModal'
 import { ExpirationTrackerModal } from './components/ExpirationTrackerModal'
 import { CheckoutModal } from './components/CheckoutModal'
 import { VaultAuthModal, type VaultSession } from './components/VaultAuthModal'
-import { RewardedAdModal } from './components/RewardedAdModal'
 import { MasterControlScreen } from './components/MasterControlScreen'
 import { UserProfileModal } from './components/UserProfileModal'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { AppLogo } from './components/AppLogo'
+import { LandingPage } from './components/LandingPage'
 import { useProAccess } from './services/proAccess'
 import { sendHeartbeat } from './services/cloudSync'
 
@@ -50,7 +50,8 @@ export default function App(): React.JSX.Element {
       return null
     }
   })
-  const [isVaultLocked, setIsVaultLocked] = useState<boolean>(!vaultSession)
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const [authModalInitialStep, setAuthModalInitialStep] = useState<'LOGIN' | 'SIGNUP'>('LOGIN')
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
 
   // Sync avatar with IndexedDB
@@ -295,7 +296,7 @@ export default function App(): React.JSX.Element {
   // Handle Vault Session Onboarding
   const handleAuthenticated = async (session: VaultSession, isNewAccount = false) => {
     setVaultSession(session)
-    setIsVaultLocked(false)
+    setIsAuthModalOpen(false)
     try {
       localStorage.setItem('tinda_vault_session', JSON.stringify(session))
     } catch {
@@ -303,28 +304,12 @@ export default function App(): React.JSX.Element {
     }
 
     if (session.isMasterAdmin) {
-      // Platform Master Admin: lifetime bypass, no ads ever
+      // Platform Master Admin: lifetime bypass
       await proAccess.toggleOwnerBypass(true)
     } else {
-      // Load THIS user's own pro access state (per userId)
+      // Load user session
       const userId = session.userId ?? session.username ?? 'guest'
-      const userState = await proAccess.loadStateForUser(userId)
-
-      // Reset bypass in case previous session was master admin
-      // (loadStateForUser already sets state, but bypass could be stale)
-      const needsAds = isNewAccount ||
-        userState.tokens < 3 ||
-        userState.pro_expires_at <= Date.now()
-
-      if (needsAds) {
-        setTimeout(() => {
-          proAccess.openRewardModal(
-            isNewAccount
-              ? 'Welcome! Watch 3 ads to unlock all features 🎯'
-              : 'Watch ads to extend your access time ⏰'
-          )
-        }, 350)
-      }
+      await proAccess.loadStateForUser(userId)
     }
   }
 
@@ -338,7 +323,175 @@ export default function App(): React.JSX.Element {
     setCart([])
     setMasqueradeSession(null)
     setVaultSession(null)
-    setIsVaultLocked(true)
+    setAuthModalInitialStep('LOGIN')
+    setIsAuthModalOpen(true)
+  }
+
+  // Quick 1-click sandbox demo test drive
+  const handleQuickDemo = async () => {
+    const demoStoreName = 'Sari-Sari Store Demo'
+    try {
+      const existingDemoProducts = await db.products.where('store_name').equals(demoStoreName).count()
+      if (existingDemoProducts === 0) {
+        const demoItems: Omit<Product, 'id'>[] = [
+          {
+            name: 'Lucky Me! Instant Pancit Canton Kalamansi 60g',
+            sku: 'LM-PC-KAL-60G',
+            barcode: '4800016644818',
+            category_id: 4,
+            subcategory_id: null,
+            base_unit: 'piece',
+            cost_c: 1200,
+            default_price_c: 1500,
+            stock: 48,
+            low_stock_threshold: 10,
+            image_path: null,
+            status: 'ACTIVE',
+            store_name: demoStoreName,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            name: 'Coca-Cola Mismo 290ml',
+            sku: 'KO-MISMO-290ML',
+            barcode: '4801981110008',
+            category_id: 1,
+            subcategory_id: 6,
+            base_unit: 'bottle',
+            cost_c: 1400,
+            default_price_c: 1800,
+            stock: 36,
+            low_stock_threshold: 8,
+            image_path: null,
+            status: 'ACTIVE',
+            store_name: demoStoreName,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            name: 'San Miguel Pale Pilsen 330ml Can',
+            sku: 'SMB-PALE-330ML',
+            barcode: '4801041000011',
+            category_id: 1,
+            subcategory_id: null,
+            base_unit: 'can',
+            cost_c: 5200,
+            default_price_c: 6500,
+            stock: 24,
+            low_stock_threshold: 6,
+            image_path: null,
+            status: 'ACTIVE',
+            store_name: demoStoreName,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            name: 'Great Taste White Coffee Twin Pack 50g',
+            sku: 'GT-WHITE-TWIN',
+            barcode: '4800016053306',
+            category_id: 1,
+            subcategory_id: 7,
+            base_unit: 'sachet',
+            cost_c: 1000,
+            default_price_c: 1400,
+            stock: 60,
+            low_stock_threshold: 12,
+            image_path: null,
+            status: 'ACTIVE',
+            store_name: demoStoreName,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            name: 'Silver Swan Special Soy Sauce 385ml',
+            sku: 'SS-SOY-385ML',
+            barcode: '4800088120012',
+            category_id: 3,
+            subcategory_id: null,
+            base_unit: 'bottle',
+            cost_c: 1750,
+            default_price_c: 2200,
+            stock: 18,
+            low_stock_threshold: 4,
+            image_path: null,
+            status: 'ACTIVE',
+            store_name: demoStoreName,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            name: 'Bear Brand Fortified Powdered Milk Drink 33g',
+            sku: 'BB-FORT-33G',
+            barcode: '4800361257121',
+            category_id: 1,
+            subcategory_id: null,
+            base_unit: 'sachet',
+            cost_c: 1250,
+            default_price_c: 1600,
+            stock: 50,
+            low_stock_threshold: 10,
+            image_path: null,
+            status: 'ACTIVE',
+            store_name: demoStoreName,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            name: 'Century Tuna Flakes in Oil 155g',
+            sku: 'CT-TUNA-OIL-155',
+            barcode: '4800168100128',
+            category_id: 3,
+            subcategory_id: null,
+            base_unit: 'can',
+            cost_c: 3100,
+            default_price_c: 3800,
+            stock: 22,
+            low_stock_threshold: 5,
+            image_path: null,
+            status: 'ACTIVE',
+            store_name: demoStoreName,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            name: 'Safeguard Pure White Bar Soap 60g',
+            sku: 'SG-WHITE-60G',
+            barcode: '4902430730018',
+            category_id: 5,
+            subcategory_id: null,
+            base_unit: 'bar',
+            cost_c: 1950,
+            default_price_c: 2500,
+            stock: 30,
+            low_stock_threshold: 6,
+            image_path: null,
+            status: 'ACTIVE',
+            store_name: demoStoreName,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }
+        ]
+        await db.products.bulkAdd(demoItems as Product[])
+      }
+    } catch (e) {
+      console.warn('Demo products seeding error:', e)
+    }
+
+    const demoSession: VaultSession = {
+      userId: 888888,
+      cashierName: 'Demo Cashier',
+      cashierRole: 'Store Owner / Admin',
+      userRole: 'ADMIN',
+      openingFloat_c: 200000,
+      sessionStartTime: new Date().toISOString(),
+      terminalId: 'DEMO-8891',
+      isAdmin: true,
+      isMasterAdmin: false,
+      username: 'demo_partner',
+      storeName: demoStoreName
+    }
+    await handleAuthenticated(demoSession, false)
+    await loadData()
   }
 
   // Quick restock from low-stock alert
@@ -368,6 +521,31 @@ export default function App(): React.JSX.Element {
         <p className="mt-5 font-serif text-xs font-bold tracking-[0.3em] text-gold-light uppercase">
           INITIALIZING TINDA PRIVATE TERMINAL...
         </p>
+      </div>
+    )
+  }
+
+  // Unauthenticated Visitor Gatekeeper: Public Tailark-Grade Landing Page + Auth Modal
+  if (!vaultSession) {
+    return (
+      <div className="min-h-screen bg-obsidian-950 text-stone-100 font-sans selection:bg-emerald-500 selection:text-obsidian-950">
+        <LandingPage
+          onOpenLogin={() => {
+            setAuthModalInitialStep('LOGIN')
+            setIsAuthModalOpen(true)
+          }}
+          onOpenSignup={() => {
+            setAuthModalInitialStep('SIGNUP')
+            setIsAuthModalOpen(true)
+          }}
+          onQuickDemo={handleQuickDemo}
+        />
+        <VaultAuthModal
+          isOpen={isAuthModalOpen}
+          onAuthenticated={handleAuthenticated}
+          initialStep={authModalInitialStep}
+          onClose={() => setIsAuthModalOpen(false)}
+        />
       </div>
     )
   }
@@ -486,21 +664,14 @@ export default function App(): React.JSX.Element {
               <span className="text-[0.75rem] text-gold underline ml-1">Control →</span>
             </button>
           ) : (
-            <button
-              onClick={() => proAccess.openRewardModal('Account Pro Access')}
-              className={`flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-mono font-bold transition-all shrink-0 ${
-                proAccess.isPro
-                  ? 'bg-amber-500/10 border-gold/40 text-gold-light hover:border-gold shadow-glow-gold'
-                  : 'bg-rose-50/60 border-rose-700/60 text-rose-600 hover:border-rose-500 animate-pulse'
-              }`}
+            <div
+              className="flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-xs font-mono font-bold shadow-glow-emerald shrink-0"
             >
-              <Clock className="w-3.5 h-3.5 text-gold-muted shrink-0" />
-              <span className="hidden lg:inline">Shift Time Limit:</span>
-              <span className="font-mono font-extrabold tracking-wider">{proAccess.formattedTime}</span>
-              <span className="text-[0.75rem] text-gold underline ml-1">
-                {proAccess.isPro ? '+ Extend' : '⚡ Unlock'}
-              </span>
-            </button>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="hidden lg:inline">PRO CLOUD EDITION</span>
+              <span className="lg:hidden">PRO ACTIVE</span>
+              <span className="text-[0.75rem] text-emerald-400/80 font-normal">· UNLIMITED</span>
+            </div>
           )}
         </div>
 
@@ -609,13 +780,6 @@ export default function App(): React.JSX.Element {
         )}
       </main>
 
-      {/* Screen 1: Cashier Login & Shift Float Onboarding Modal */}
-      <VaultAuthModal
-        isOpen={isVaultLocked}
-        onAuthenticated={handleAuthenticated}
-        currentCashier={vaultSession?.cashierName}
-      />
-
       {/* Checkout Modal (Private Settlement Authorization) */}
       {checkoutData && (
         <CheckoutModal
@@ -667,63 +831,6 @@ export default function App(): React.JSX.Element {
         onUpdateAvatar={handleUpdateAvatar}
       />
 
-      {/* Rewarded Ad & Pro Time-Bank Gatekeeper Modal */}
-      <RewardedAdModal
-        open={proAccess.gateModalOpen}
-        onClose={() => { if (vaultSession?.isMasterAdmin || proAccess.isPro) proAccess.closeRewardModal() }}
-        blockedFeatureName={proAccess.pendingFeatureName}
-        formattedTime={proAccess.formattedTime}
-        isPro={proAccess.isPro}
-        isFullyUnlocked={proAccess.isFullyUnlocked}
-        remainingSeconds={proAccess.remainingSeconds}
-        cooldownRemaining={proAccess.cooldownRemaining}
-        canWatchAd={proAccess.canWatchAd}
-        totalAdsWatched={proAccess.state.total_ads_watched}
-        tokens={proAccess.state.tokens}
-        onGrantReward={proAccess.grantRewardMinutes}
-        onRedeemPackage={proAccess.redeemPackage}
-        onExpireTest={proAccess.expireNowForTesting}
-        ownerBypass={proAccess.state.owner_bypass}
-        onToggleOwnerBypass={proAccess.toggleOwnerBypass}
-        isMasterAdmin={vaultSession?.isMasterAdmin ?? false}
-      />
-      {/* HARD GATE: Full app lockout when store shift pass expires — non-master-admin */}
-      {!isVaultLocked && vaultSession && !vaultSession.isMasterAdmin && !proAccess.isPro && !proAccess.gateModalOpen && (
-        <div className="fixed inset-0 z-[200] bg-obsidian-900/[0.03] backdrop-blur-2xl flex flex-col items-center justify-center p-6 text-center">
-          <div className="max-w-md w-full space-y-6">
-            <div className="h-20 w-20 mx-auto rounded-3xl bg-rose-50/60 border border-rose-700/40 flex items-center justify-center">
-              <span className="text-5xl select-none">🔒</span>
-            </div>
-            <div>
-              <h2 className="text-2xl font-serif font-bold text-slate-900 tracking-wide">Store Shift Locked</h2>
-              <p className="text-sm text-stone-400 mt-2 font-sans leading-relaxed max-w-sm mx-auto">
-                Your store shift pass has expired. Watch a sponsor ad to earn tokens,
-                then activate a shift pass to continue using TINDA POS.
-              </p>
-            </div>
-            <div className="p-4 rounded-2xl bg-rose-50/30 border border-rose-700/30">
-              <p className="text-[0.75rem] font-sans font-semibold text-stone-500 uppercase tracking-widest">Shift Pass Timer</p>
-              <p className="text-4xl font-mono font-bold text-rose-600 mt-1">00:00:00</p>
-              <p className="text-[0.75rem] font-mono text-stone-500 mt-1">Expired — watch ads to earn tokens</p>
-            </div>
-            <button
-              onClick={() => proAccess.openRewardModal('Store Shift Pass')}
-              className="w-full py-4 rounded-2xl bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold text-sm tracking-wider uppercase shadow-lg transition-all"
-            >
-              ⚡ Watch Sponsor Ad — Earn Tokens
-            </button>
-            <button
-              onClick={() => {
-                try { localStorage.removeItem('tinda_vault_session') } catch {}
-                window.location.reload()
-              }}
-              className="text-xs font-mono text-stone-500 hover:text-stone-300 underline transition-colors mt-2"
-            >
-              Switch Account / Sign Out
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

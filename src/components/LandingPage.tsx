@@ -40,7 +40,7 @@ export function LandingPage({
       {/* ── AMBIENT RADIAL LIGHTING (Tailark Aesthetics) ── */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.14),_transparent_70%)] pointer-events-none" />
       <div className="absolute top-1/4 -left-48 w-96 h-96 bg-emerald-600/[0.06] rounded-full blur-[120px] pointer-events-none animate-float-slow" />
-      <div className="absolute top-1/3 -right-48 w-96 h-96 bg-amber-500/[0.05] rounded-full blur-[120px] pointer-events-none animate-float-reverse" />
+      <div className="absolute top-1/3 -right-48 w-96 h-96 bg-teal-500/[0.05] rounded-full blur-[120px] pointer-events-none animate-float-reverse" />
       <div className="absolute bottom-10 left-1/3 w-[600px] h-96 bg-emerald-500/[0.04] rounded-full blur-[140px] pointer-events-none" />
 
       {/* ── TOP STICKY NAVIGATION BAR ── */}
@@ -48,7 +48,7 @@ export function LandingPage({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
           {/* Logo & Brand Title */}
           <div className="flex items-center gap-3">
-            <AppLogo size={38} animated={true} isPro={true} />
+            <AppLogo size={38} animated={true} />
             <div className="leading-tight">
               <div className="flex items-center gap-2">
                 <span className="font-serif text-base sm:text-lg font-bold tracking-[0.18em] uppercase text-stone-100">
@@ -255,7 +255,7 @@ export function LandingPage({
 
           {/* Card 6: Z-Reading & Cash Drawer Audit */}
           <div className="p-6 sm:p-7 rounded-3xl bg-obsidian-900/70 border border-white/10 hover:border-emerald-500/40 transition-all shadow-vault group">
-            <div className="h-12 w-12 rounded-2xl bg-amber-500/10 border border-gold/30 flex items-center justify-center text-gold-light mb-5 group-hover:scale-105 transition-transform">
+            <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-5 group-hover:scale-105 transition-transform">
               <BarChart3 className="w-6 h-6" />
             </div>
             <h3 className="text-lg font-serif font-bold text-stone-100 mb-2">

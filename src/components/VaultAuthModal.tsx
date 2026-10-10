@@ -102,7 +102,7 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
       {/* Top Header: Brand Crest Logo & Live Edge Pill */}
       <div className="relative z-10 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <AppLogo size={44} animated={true} isPro={true} />
+          <AppLogo size={44} animated={true} />
           <div>
             <div className="flex items-center gap-2">
               <span className="font-serif text-lg font-bold tracking-[0.16em] uppercase text-stone-100">
@@ -137,7 +137,7 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
 
         <h1 className="text-3xl xl:text-4xl font-semibold tracking-tight text-stone-100 leading-tight">
           Smarter point of sale. <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200">
             Zero network downtime.
           </span>
         </h1>
@@ -613,7 +613,7 @@ export function VaultAuthModal({
             {isVerifying && (
               <div className="absolute inset-0 z-40 bg-zinc-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-fade-in">
                 <div className="relative flex items-center justify-center mb-3">
-                  <AppLogo size={46} animated={true} isPro={true} />
+                  <AppLogo size={46} animated={true} />
                 </div>
                 <p className="text-sm font-semibold tracking-wider text-emerald-400 animate-pulse">
                   Authenticating Session
@@ -630,7 +630,7 @@ export function VaultAuthModal({
             {/* Header: Crest Logo & Title */}
             <div className="flex flex-col items-center justify-center text-center select-none mb-3">
               <div className="relative mb-2.5 flex items-center justify-center">
-                <AppLogo size={50} animated={true} isPro={true} />
+                <AppLogo size={50} animated={true} />
               </div>
 
               <div className="flex items-center justify-center gap-2 mb-1">

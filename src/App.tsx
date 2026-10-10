@@ -568,8 +568,8 @@ export default function App(): React.JSX.Element {
   if (loading) {
     return (
       <div className="min-h-screen bg-obsidian-950 flex flex-col items-center justify-center text-stone-300">
-        <AppLogo size={68} animated={true} isPro={true} />
-        <p className="mt-5 font-serif text-xs font-bold tracking-[0.3em] text-gold-light uppercase">
+        <AppLogo size={68} animated={true} />
+        <p className="mt-5 font-serif text-xs font-bold tracking-[0.3em] text-emerald-400 uppercase">
           INITIALIZING TINDA PRIVATE TERMINAL...
         </p>
       </div>

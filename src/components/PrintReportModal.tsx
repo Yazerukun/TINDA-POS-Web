@@ -141,7 +141,7 @@ export function PrintReportModal({
             <FileText className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-slate-900 tracking-wide">{reportTitle}</h2>
+            <h2 className="text-sm font-bold text-stone-100 tracking-wide">{reportTitle}</h2>
             <p className="text-[0.8125rem] font-mono text-stone-400">
               Audit Date: {dateStr} • Cashier: {cashierName}
             </p>
@@ -198,7 +198,7 @@ export function PrintReportModal({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.06] text-stone-400 hover:text-slate-900 transition-colors"
+            className="p-2 rounded-xl bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.06] text-stone-400 hover:text-stone-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>

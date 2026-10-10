@@ -32,11 +32,11 @@ export function BarcodeScannerModal({ open, onClose, onDetect }: BarcodeScannerM
   const [starting, setStarting] = useState(false)
   const [error, setError] = useState('')
 
-  // Emit a detected code with debounce (1.5s same-code cooldown)
+  // Emit a detected code with 350ms industrial switch-bounce filter
   const emit = useCallback((raw: string) => {
     const now = Date.now()
     if (!raw) return
-    if (raw === lastCode.current && now - lastTime.current < 1500) return
+    if (raw === lastCode.current && now - lastTime.current < 350) return
     lastCode.current = raw
     lastTime.current = now
     try { navigator.vibrate?.(80) } catch { /* ignore */ }

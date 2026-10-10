@@ -17,12 +17,13 @@ import {
   Eye,
   EyeOff,
   KeyRound,
-  Banknote
+  Banknote,
+  ShieldAlert
 } from 'lucide-react'
 import { money } from '../utils/format'
 import { db } from '../db'
 import type { UserAccount, UserRole } from '../types'
-import { syncUserToCloud } from '../services/cloudSync'
+import { loginWithCloud, rotatePinOnCloud, syncUserToCloud } from '../services/cloudSync'
 
 export interface VaultSession {
   userId?: number
@@ -223,7 +224,7 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
 }
 
 export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps): React.JSX.Element | null {
-  const [step, setStep] = useState<'LOGIN' | 'SIGNUP' | 'FLOAT'>('LOGIN')
+  const [step, setStep] = useState<'LOGIN' | 'SIGNUP' | 'ROTATE' | 'FLOAT'>('LOGIN')
   const [authMode, setAuthMode] = useState<'PIN' | 'PASSWORD'>('PIN')
   const [showPassword, setShowPassword] = useState(false)
   const [username, setUsername] = useState('')
@@ -244,6 +245,8 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
   const [signupUsername, setSignupUsername] = useState('')
   const [signupEmail, setSignupEmail] = useState('')
   const [signupPin, setSignupPin] = useState('')
+  const [rotatePin, setRotatePin] = useState('')
+  const [rotateConfirm, setRotateConfirm] = useState('')
   const [signupConfirmPin, setSignupConfirmPin] = useState('')
   const [showSignupPin, setShowSignupPin] = useState(false)
 
@@ -317,51 +320,14 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
     try {
       const lower = trimmedUser.toLowerCase()
 
-      // 1. Direct check for platform master admin
-      if (lower === 'skorts188@gmail.com') {
-        if (pin === 'muyco155' || pin === '1234') {
-          let masterAdmin = await db.users.where('username').equalsIgnoreCase('skorts188@gmail.com').first()
-          if (!masterAdmin) {
-            const masterId = await db.users.add({
-              username: 'skorts188@gmail.com',
-              name: 'Ian Muyco',
-              role: 'ADMIN',
-              pin: 'muyco155',
-              status: 'ACTIVE',
-              created_at: new Date().toISOString(),
-              store_name: 'PLATFORM_HQ',
-              email: 'skorts188@gmail.com',
-              is_owner: true
-            })
-            masterAdmin = {
-              id: Number(masterId),
-              username: 'skorts188@gmail.com',
-              name: 'Ian Muyco',
-              role: 'ADMIN',
-              pin: 'muyco155',
-              status: 'ACTIVE',
-              created_at: new Date().toISOString(),
-              store_name: 'PLATFORM_HQ',
-              email: 'skorts188@gmail.com',
-              is_owner: true
-            }
-          }
-          setFailedAttempts(0)
-          setLockoutUntil(0)
-          setAuthenticatedUser(masterAdmin)
-          setIsVerifying(false)
-          setStep('FLOAT')
-          return
-        }
-      }
-
-      // 2. Query db.users by username or email
+      // 1. Query db.users by username or email
       let user = await db.users.where('username').equalsIgnoreCase(trimmedUser).first()
       if (!user) {
         user = await db.users.where('email').equalsIgnoreCase(trimmedUser).first()
       }
 
-      // Fallback for default 'admin' / '1234'
+      // Seeded local account for a fresh terminal only. On a synced terminal the
+      // admin account already exists, and its stored PIN must still match.
       if (!user && lower === 'admin') {
         const existingAdmin = await db.users.where('role').equals('ADMIN').first()
         if (!existingAdmin) {
@@ -396,25 +362,29 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
         return
       }
 
-      // Successful authentication
       setFailedAttempts(0)
       setLockoutUntil(0)
+
+      // Exchange the credentials for a session token. The cloud refuses every
+      // other /api call without one, and it is also the only place a legacy
+      // plaintext PIN gets rehashed. A failed exchange just means this terminal
+      // is offline: the local check above already passed, so keep going.
+      const cloud = await loginWithCloud(user.username, pin)
+
+      // The PINs in D1 were readable through the old public API, so every
+      // account is flagged must_rotate_pin. Force a new one before the shift
+      // can open.
+      if (cloud.ok && cloud.must_rotate_pin) {
+        setPin('')
+        setAuthenticatedUser(user)
+        setIsVerifying(false)
+        setStep('ROTATE')
+        return
+      }
+
       setAuthenticatedUser(user)
       setIsVerifying(false)
       setStep('FLOAT')
-
-      // Fire-and-forget: sync this local account to D1 cloud on every login
-      // This captures accounts created BEFORE cloud sync was deployed
-      syncUserToCloud({
-        username: user.username,
-        name: user.name,
-        email: user.email,
-        pin: user.pin,
-        status: user.status ?? 'ACTIVE',
-        store_name: user.store_name,
-        avatar_url: user.avatar_url,
-        created_at: user.created_at
-      }).catch(() => {})
     } catch (err) {
       console.error('Login error:', err)
       setErrorMessage('A database error occurred. Please try again.')
@@ -489,7 +459,6 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
         pin: newUser.pin,
         status: (newUser as unknown as Record<string, unknown>).status as string ?? 'ACTIVE',
         store_name: newUser.store_name,
-        is_owner: (newUser as unknown as Record<string, unknown>).is_owner as boolean ?? false,
         avatar_url: (newUser as unknown as Record<string, unknown>).avatar_url as string | undefined,
         created_at: newUser.created_at
       }).catch(() => {})
@@ -515,6 +484,43 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
       setErrorMessage('Failed to create account. Please try again.')
       setIsVerifying(false)
     }
+  }
+
+  const handleRotateSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault()
+    const user = authenticatedUser
+    if (!user) return
+
+    const next = rotatePin.trim()
+    if (!/^\d{4,6}$/.test(next)) {
+      setErrorMessage('Ang bagong PIN ay dapat 4 hanggang 6 na numero.')
+      return
+    }
+    if (next !== rotateConfirm.trim()) {
+      setErrorMessage('Hindi tugma ang dalawang PIN.')
+      return
+    }
+    if (next === pin) {
+      setErrorMessage('Ang bagong PIN ay dapat iba sa lumang PIN.')
+      return
+    }
+
+    setIsVerifying(true)
+    setErrorMessage('')
+    const ok = await rotatePinOnCloud(user.username, pin, next)
+    if (!ok) {
+      setErrorMessage('Hindi na-update ang PIN. Subukan ulit kapag may koneksyon.')
+      setIsVerifying(false)
+      return
+    }
+
+    // Keep the local record in step with the cloud.
+    if (user.id) await db.users.update(user.id, { pin: next }).catch(() => {})
+    setRotatePin('')
+    setRotateConfirm('')
+    setPin('')
+    setIsVerifying(false)
+    setStep('FLOAT')
   }
 
   const handlePresetFloat = (pesos: number) => {
@@ -679,12 +685,18 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
               </div>
 
               <h2 className="font-serif text-xs sm:text-sm font-bold tracking-wider uppercase text-gold-muted">
-                {step === 'FLOAT' ? 'SHIFT OPENING FLOAT' : step === 'SIGNUP' ? 'REGISTER STORE ACCOUNT' : 'LOG IN TO TERMINAL'}
+                {step === 'FLOAT'
+                  ? 'SHIFT OPENING FLOAT'
+                  : step === 'SIGNUP'
+                  ? 'REGISTER STORE ACCOUNT'
+                  : step === 'ROTATE'
+                  ? 'PALITAN ANG PIN'
+                  : 'LOG IN TO TERMINAL'}
               </h2>
             </div>
 
             {/* Tabs switcher: "Sign In" (active) and "Sign Up" */}
-            {step !== 'FLOAT' && (
+            {step !== 'FLOAT' && step !== 'ROTATE' && (
               <div className="pt-2.5">
                 <div className="grid grid-cols-2 p-1 rounded-xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] shadow-inner">
                   <button
@@ -1082,6 +1094,70 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
               )}
 
               {/* ────────────────── STEP 2: SHIFT OPENING FLOAT ────────────────── */}
+              {step === 'ROTATE' && (
+                <form onSubmit={handleRotateSubmit} className="animate-fade-in space-y-2.5">
+                  <div className="rounded-2xl border border-amber-500/30 bg-amber-50 p-3.5 flex items-start gap-2.5">
+                    <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
+                    <p className="text-[0.8125rem] font-sans leading-relaxed text-amber-800">
+                      Kailangan palitan ang PIN bago magbukas ng shift. Ang dating PIN mo ay
+                      nakalantad dati sa cloud, kaya kailangan itong palitan ngayon.
+                    </p>
+                  </div>
+
+                  <label className="block">
+                    <span className="block text-[0.75rem] font-sans font-semibold tracking-widest uppercase text-stone-400 mb-1.5">
+                      Bagong PIN
+                    </span>
+                    <input
+                      type="password"
+                      inputMode="numeric"
+                      maxLength={6}
+                      value={rotatePin}
+                      onChange={(e) => setRotatePin(e.target.value.replace(/\D/g, ''))}
+                      placeholder="4 hanggang 6 na numero"
+                      className="w-full bg-white border border-slate-900/10 rounded-xl px-4 py-3 text-base font-mono tracking-[0.3em] text-stone-100 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20"
+                      autoFocus
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="block text-[0.75rem] font-sans font-semibold tracking-widest uppercase text-stone-400 mb-1.5">
+                      Ulitin ang Bagong PIN
+                    </span>
+                    <input
+                      type="password"
+                      inputMode="numeric"
+                      maxLength={6}
+                      value={rotateConfirm}
+                      onChange={(e) => setRotateConfirm(e.target.value.replace(/\D/g, ''))}
+                      placeholder="Ulitin ang PIN"
+                      className="w-full bg-white border border-slate-900/10 rounded-xl px-4 py-3 text-base font-mono tracking-[0.3em] text-stone-100 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20"
+                    />
+                  </label>
+
+                  {errorMessage && (
+                    <div className="rounded-xl bg-rose-50 border border-rose-300/50 px-3 py-2.5">
+                      <p className="text-[0.8125rem] font-sans text-rose-700">{errorMessage}</p>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isVerifying}
+                    className="btn-gold w-full h-12 rounded-xl flex items-center justify-center gap-2 text-xs font-bold tracking-[0.18em] uppercase shadow-glow-gold transition-all mt-1.5 disabled:opacity-75"
+                  >
+                    {isVerifying ? (
+                      <div className="w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                    ) : (
+                      <>
+                        <KeyRound className="w-3.5 h-3.5 text-white" />
+                        <span>I-save ang Bagong PIN</span>
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+
               {step === 'FLOAT' && (
                 <div className="animate-fade-in space-y-5">
                   <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-amber-500/[0.08] border border-gold/30">

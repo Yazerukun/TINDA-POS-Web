@@ -143,7 +143,7 @@ export function DashboardScreen({
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-sm font-bold text-slate-900 tracking-wide">
+                <h3 className="text-sm font-bold text-stone-100 tracking-wide">
                   Inventory Stock Warning
                 </h3>
                 {outOfStockProducts.length > 0 && (
@@ -280,7 +280,7 @@ export function DashboardScreen({
             <Package className="h-4 w-4 text-indigo-600" />
           </div>
           <div className="mt-3">
-            <p className="font-serif text-xl sm:text-2xl font-bold text-slate-900 tabular-nums">
+            <p className="font-serif text-xl sm:text-2xl font-bold text-stone-100 tabular-nums">
               {products.length}
             </p>
             <p className="text-[0.75rem] text-stone-500 font-mono mt-1">
@@ -304,7 +304,7 @@ export function DashboardScreen({
               <ShoppingCart className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-slate-900 truncate">Counter</p>
+              <p className="text-xs font-bold text-stone-100 truncate">Counter</p>
               <p className="text-[0.75rem] text-gold-muted font-mono truncate">Start Sale</p>
             </div>
           </button>
@@ -317,7 +317,7 @@ export function DashboardScreen({
               <PlusCircle className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-slate-900 truncate">Inventory</p>
+              <p className="text-xs font-bold text-stone-100 truncate">Inventory</p>
               <p className="text-[0.75rem] text-stone-400 font-mono truncate">Restock</p>
             </div>
           </button>
@@ -343,7 +343,7 @@ export function DashboardScreen({
               <Receipt className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-slate-900 truncate">Expenses</p>
+              <p className="text-xs font-bold text-stone-100 truncate">Expenses</p>
               <p className="text-[0.75rem] text-stone-400 font-mono truncate">Record Outflow</p>
             </div>
           </button>
@@ -356,7 +356,7 @@ export function DashboardScreen({
               <CalendarClock className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-slate-900 truncate">Shelf Life</p>
+              <p className="text-xs font-bold text-stone-100 truncate">Shelf Life</p>
               <p className="text-[0.75rem] text-stone-400 font-mono truncate">Expiry Watch</p>
             </div>
           </button>
@@ -369,7 +369,7 @@ export function DashboardScreen({
               <BarChart3 className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-slate-900 truncate">Reports</p>
+              <p className="text-xs font-bold text-stone-100 truncate">Reports</p>
               <p className="text-[0.75rem] text-stone-400 font-mono truncate">X/Z Readings</p>
             </div>
           </button>
@@ -383,7 +383,7 @@ export function DashboardScreen({
           <div className="flex items-center justify-between border-b border-slate-900/[0.08] pb-3">
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-amber-600" />
-              <h3 className="text-sm font-bold text-slate-900">Low Stock Watchlist</h3>
+              <h3 className="text-sm font-bold text-stone-100">Low Stock Watchlist</h3>
               {totalAlertCount > 0 && (
                 <span className="px-2 py-0.2 rounded-full bg-red-500/20 border border-red-500/30 text-red-600 font-mono text-[0.75rem] font-bold">
                   {totalAlertCount}
@@ -393,7 +393,7 @@ export function DashboardScreen({
 
             <button
               onClick={() => onNavigate('inventory')}
-              className="text-xs text-gold-light hover:text-slate-900 font-mono flex items-center gap-1 transition-colors"
+              className="text-xs text-gold-light hover:text-stone-100 font-mono flex items-center gap-1 transition-colors"
             >
               <span>All Products ({products.length})</span>
               <ChevronRight className="h-3.5 w-3.5" />
@@ -423,7 +423,7 @@ export function DashboardScreen({
                       !
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-slate-900 truncate">{p.name}</p>
+                      <p className="text-xs font-bold text-stone-100 truncate">{p.name}</p>
                       <p className="text-[0.75rem] text-red-600/80 font-mono">
                         0 {p.base_unit || 'pcs'} left · Threshold: {p.low_stock_threshold ?? lowThreshold}
                       </p>
@@ -455,7 +455,7 @@ export function DashboardScreen({
                       {p.stock}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-slate-900 truncate">{p.name}</p>
+                      <p className="text-xs font-bold text-stone-100 truncate">{p.name}</p>
                       <p className="text-[0.75rem] text-stone-400 font-mono">
                         {p.stock} {p.base_unit || 'pcs'} remaining · Threshold: {p.low_stock_threshold ?? lowThreshold}
                       </p>
@@ -484,12 +484,12 @@ export function DashboardScreen({
           <div className="flex items-center justify-between border-b border-slate-900/[0.08] pb-3">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-gold-muted" />
-              <h3 className="text-sm font-bold text-slate-900">Recent Transactions</h3>
+              <h3 className="text-sm font-bold text-stone-100">Recent Transactions</h3>
             </div>
 
             <button
               onClick={() => onNavigate('analytics')}
-              className="text-xs text-gold-light hover:text-slate-900 font-mono flex items-center gap-1 transition-colors"
+              className="text-xs text-gold-light hover:text-stone-100 font-mono flex items-center gap-1 transition-colors"
             >
               <span>History</span>
               <ChevronRight className="h-3.5 w-3.5" />
@@ -554,7 +554,7 @@ export function DashboardScreen({
             <div className="flex items-start justify-between border-b border-slate-900/[0.08] pb-4">
               <div>
                 <p className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted uppercase">Fast Restock Terminal</p>
-                <h3 className="text-base font-bold text-slate-900 mt-1">{restockModalProduct.name}</h3>
+                <h3 className="text-base font-bold text-stone-100 mt-1">{restockModalProduct.name}</h3>
               </div>
               <div className="px-2.5 py-1 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-600 text-xs font-mono font-bold">
                 Current: {restockModalProduct.stock} {restockModalProduct.base_unit || 'pcs'}

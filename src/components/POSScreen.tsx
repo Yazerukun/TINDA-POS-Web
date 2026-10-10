@@ -16,11 +16,20 @@ import {
   UserCheck,
   ArrowUpRight,
   ShieldCheck,
-  ChevronDown
+  ChevronDown,
+  Volume2,
+  VolumeX
 } from 'lucide-react'
 import type { Product, Category, CartItem, DiscountType, HeldCart, Customer } from '../types'
 import { money } from '../utils/format'
 import { BarcodeScannerModal } from './BarcodeScannerModal'
+import {
+  playScanSuccess,
+  playScanError,
+  playDuplicateScanChime,
+  isSoundMuted,
+  setSoundMuted
+} from '../lib/sound'
 
 interface POSScreenProps {
   products: Product[]
@@ -123,7 +132,14 @@ export function POSScreen({
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(null)
   const [activeInvoiceId, setActiveInvoiceId] = useState<string>('')
   const [scanOpen, setScanOpen] = useState(false)
+  const [soundMutedState, setSoundMutedState] = useState(() => isSoundMuted())
   const searchInputRef = useRef<HTMLInputElement>(null)
+
+  const toggleSound = () => {
+    const next = !soundMutedState
+    setSoundMuted(next)
+    setSoundMutedState(next)
+  }
 
   // Generate luxury invoice sequence on mount or when cart empties
   useEffect(() => {
@@ -134,17 +150,57 @@ export function POSScreen({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cart.length])
 
-  // Global [ ⌘K ] or [ Ctrl+K ] search shortcut listener
+  // Compute real-time totals early for hotkey access
+  const subtotal_c = useMemo(() => {
+    return cart.reduce((sum, item) => sum + item.total_c, 0)
+  }, [cart])
+
+  const discount_c = useMemo(() => {
+    if (discountType === 'SENIOR_PWD_20') {
+      return Math.round(subtotal_c * 0.20)
+    }
+    return 0
+  }, [subtotal_c, discountType])
+
+  const grandTotal_c = Math.max(0, subtotal_c - discount_c)
+
+  // Global POS Keyboard Shortcuts (F1 Search, F4 Senior/PWD, F8 Hold, F9 Checkout, Ctrl+M Sound)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      // Don't trigger hotkeys if user is editing inputs, except F-keys
+      const isInput =
+        document.activeElement instanceof HTMLInputElement ||
+        document.activeElement instanceof HTMLTextAreaElement
+
+      if (e.key === 'F1' || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k')) {
         e.preventDefault()
         searchInputRef.current?.focus()
+        searchInputRef.current?.select()
+      } else if (e.key === 'F4') {
+        e.preventDefault()
+        setDiscountType((prev) => (prev === 'SENIOR_PWD_20' ? 'NONE' : 'SENIOR_PWD_20'))
+      } else if (e.key === 'F8') {
+        e.preventDefault()
+        if (cart.length > 0) {
+          onHoldCart()
+        }
+      } else if (e.key === 'F9') {
+        e.preventDefault()
+        if (cart.length > 0) {
+          onCheckout(subtotal_c, discount_c, discountType, grandTotal_c, selectedCustomerId)
+        }
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'm') {
+        e.preventDefault()
+        toggleSound()
+      } else if (e.key === 'Escape') {
+        if (searchQuery) {
+          setSearchQuery('')
+        }
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
+  }, [cart, subtotal_c, discount_c, discountType, grandTotal_c, selectedCustomerId, onHoldCart, onCheckout, soundMutedState, searchQuery])
 
   // Filter products by search query, main category, and subcategory
   const filteredProducts = useMemo(() => {
@@ -186,11 +242,18 @@ export function POSScreen({
     }, 600)
   }
 
-  // Cart operations with real-time stock validation
+  // Cart operations with real-time stock validation and audio chimes
   const addToCart = (product: Product) => {
     const inCart = cartQtyMap.get(product.id) || 0
     if (inCart >= product.stock) {
+      playScanError()
       return // stock completely reserved in ticket
+    }
+
+    if (inCart > 0) {
+      playDuplicateScanChime()
+    } else {
+      playScanSuccess()
     }
 
     triggerRealtimeDeduct(product.id)
@@ -228,8 +291,10 @@ export function POSScreen({
       if (delta > 0) {
         const prod = products.find((p) => p.id === productId) || item.product
         if (item.quantity >= prod.stock) {
+          playScanError()
           return prev // already reached max available stock
         }
+        playScanSuccess()
         triggerRealtimeDeduct(productId)
       }
 
@@ -280,20 +345,6 @@ export function POSScreen({
     setCart((prev) => prev.filter((i) => i.product.id !== productId))
   }
 
-  // Calculate totals
-  const subtotal_c = useMemo(() => {
-    return cart.reduce((sum, item) => sum + item.total_c, 0)
-  }, [cart])
-
-  const discount_c = useMemo(() => {
-    if (discountType === 'SENIOR_PWD_20') {
-      return Math.round(subtotal_c * 0.20)
-    }
-    return 0
-  }, [subtotal_c, discountType])
-
-  const grandTotal_c = Math.max(0, subtotal_c - discount_c)
-
   // Quick Barcode enter key trigger
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchQuery.trim()) {
@@ -328,9 +379,9 @@ export function POSScreen({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
       {/* Left Catalog Area (7 cols on lg, 8 cols on xl) */}
-      <div className="lg:col-span-7 xl:col-span-8 space-y-5">
-        {/* Minimalist Search Bar with Brushed Bronze Shortcut Hint [ ⌘K ] */}
-        <div className="relative glass-card rounded-2xl p-2.5 border border-slate-900/[0.05] hover:border-gold/30 transition-all duration-300 flex items-center gap-3">
+      <div className="lg:col-span-7 xl:col-span-8 space-y-4">
+        {/* Minimalist Search Bar with Sound Mute & Camera Scanner */}
+        <div className="relative glass-card rounded-2xl p-2.5 border border-slate-900/[0.05] hover:border-gold/30 transition-all duration-300 flex items-center gap-2 sm:gap-3">
           <div className="relative flex-1 flex items-center">
             <Search className="absolute left-3.5 h-4 w-4 text-gold-muted pointer-events-none" />
             <input
@@ -339,14 +390,35 @@ export function POSScreen({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearchKeyDown}
-              placeholder="Search private reserve catalog, SKU, or scan barcode..."
+              placeholder="Search private reserve catalog, SKU, or scan barcode (F1)..."
               className="w-full pl-10 pr-20 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.05] text-xs font-sans text-stone-100 placeholder-stone-500 focus:outline-none focus:border-gold/50 transition-colors"
             />
             {/* Shortcut Bronze Chip */}
-            <div className="absolute right-3 flex items-center gap-1.5 px-2 py-1 rounded-lg bg-obsidian-900/[0.05] border border-gold/20 text-[0.75rem] font-mono text-gold-light pointer-events-none">
-              <span>⌘K</span>
+            <div className="absolute right-3 flex items-center gap-1.5 px-2 py-1 rounded-lg bg-obsidian-900/[0.05] border border-gold/20 text-[0.7rem] font-mono text-gold-light pointer-events-none">
+              <span>F1 / ⌘K</span>
             </div>
           </div>
+
+          {/* Audio Chime Mute Button */}
+          <button
+            onClick={toggleSound}
+            aria-label={soundMutedState ? 'Unmute scanner audio' : 'Mute scanner audio'}
+            title={soundMutedState ? 'Audio chimes muted (Ctrl+M to unmute)' : 'Audio chimes active (Ctrl+M to mute)'}
+            className={`btn-press flex items-center gap-1.5 px-2.5 sm:px-3 py-2 rounded-xl border text-[0.75rem] font-mono transition-all ${
+              soundMutedState
+                ? 'bg-rose-950/20 border-rose-800/40 text-rose-400 hover:border-rose-600'
+                : 'bg-obsidian-900/[0.07] border-gold/25 text-gold-light hover:border-gold/60'
+            }`}
+          >
+            {soundMutedState ? (
+              <VolumeX className="h-3.5 w-3.5 text-rose-400" />
+            ) : (
+              <Volume2 className="h-3.5 w-3.5 text-gold-light" />
+            )}
+            <span className="hidden sm:inline uppercase tracking-wider text-[0.7rem]">
+              {soundMutedState ? 'Muted' : 'Audio'}
+            </span>
+          </button>
 
           <button
             onClick={() => setScanOpen(true)}
@@ -354,8 +426,28 @@ export function POSScreen({
             className="btn-press flex items-center gap-1.5 px-3 py-2 rounded-xl bg-obsidian-900/[0.07] border border-gold/25 hover:border-gold/60 hover:bg-gold/[0.08] text-[0.75rem] font-mono text-gold-light transition-all shadow-glow-gold"
           >
             <ScanLine className="h-3.5 w-3.5 text-gold-muted" />
-            <span className="tracking-wider uppercase">Scan</span>
+            <span className="tracking-wider uppercase text-[0.7rem]">Scan</span>
           </button>
+        </div>
+
+        {/* Industrial POS Hotkey Quick Reference Ribbon */}
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-1 text-[0.7rem] font-mono text-stone-400">
+          <span className="text-gold-light font-bold text-[0.65rem] uppercase tracking-widest shrink-0">Hotkeys:</span>
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-obsidian-900/[0.08] border border-slate-900/[0.06] shrink-0">
+            <kbd className="text-gold-light font-bold">F1</kbd> Search
+          </span>
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-obsidian-900/[0.08] border border-slate-900/[0.06] shrink-0">
+            <kbd className="text-gold-light font-bold">F4</kbd> Senior/PWD 20%
+          </span>
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-obsidian-900/[0.08] border border-slate-900/[0.06] shrink-0">
+            <kbd className="text-gold-light font-bold">F8</kbd> Hold Ticket
+          </span>
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-obsidian-900/[0.08] border border-slate-900/[0.06] shrink-0">
+            <kbd className="text-gold-light font-bold">F9</kbd> Checkout
+          </span>
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-obsidian-900/[0.08] border border-slate-900/[0.06] shrink-0">
+            <kbd className="text-gold-light font-bold">Ctrl+M</kbd> Mute
+          </span>
         </div>
 
         {/* Camera Barcode Scanner Overlay */}

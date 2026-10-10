@@ -213,13 +213,13 @@ export function UserProfileModal({
               <User className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900 tracking-wide">Account Profile</h3>
+              <h3 className="text-base font-bold text-stone-100 tracking-wide">Account Profile</h3>
               <p className="text-[0.8125rem] text-stone-400 font-mono">Terminal Staff Identity</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-stone-400 hover:text-slate-900 hover:bg-white/[0.08] transition-colors"
+            className="p-1.5 rounded-xl text-stone-400 hover:text-stone-100 hover:bg-white/[0.08] transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -290,7 +290,7 @@ export function UserProfileModal({
             </div>
 
             <div>
-              <h4 className="text-lg font-bold text-slate-900 flex items-center justify-center gap-1.5">
+              <h4 className="text-lg font-bold text-stone-100 flex items-center justify-center gap-1.5">
                 {isMasterAdmin && <Crown className="w-4 h-4 text-gold" />}
                 <span>{currentCashierName}</span>
               </h4>
@@ -344,7 +344,7 @@ export function UserProfileModal({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <KeyRound className="w-4 h-4 text-gold-light" />
-                <span className="text-xs font-semibold text-slate-900">Security PIN</span>
+                <span className="text-xs font-semibold text-stone-100">Security PIN</span>
               </div>
               <button
                 type="button"
@@ -368,7 +368,7 @@ export function UserProfileModal({
                       value={currentPin}
                       onChange={(e) => setCurrentPin(e.target.value.replace(/[^0-9]/g, ''))}
                       placeholder="Enter current PIN"
-                      className="w-full px-3 py-2 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/15 text-slate-900 font-mono text-xs focus:outline-none focus:border-gold"
+                      className="w-full px-3 py-2 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/15 text-stone-100 font-mono text-xs focus:outline-none focus:border-gold"
                     />
                   </div>
                 )}
@@ -382,7 +382,7 @@ export function UserProfileModal({
                     value={newPin}
                     onChange={(e) => setNewPin(e.target.value.replace(/[^0-9]/g, ''))}
                     placeholder="Enter new PIN"
-                    className="w-full px-3 py-2 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/15 text-slate-900 font-mono text-xs focus:outline-none focus:border-gold"
+                    className="w-full px-3 py-2 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/15 text-stone-100 font-mono text-xs focus:outline-none focus:border-gold"
                   />
                 </div>
                 <div>
@@ -395,7 +395,7 @@ export function UserProfileModal({
                     value={confirmPin}
                     onChange={(e) => setConfirmPin(e.target.value.replace(/[^0-9]/g, ''))}
                     placeholder="Re-enter new PIN"
-                    className="w-full px-3 py-2 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/15 text-slate-900 font-mono text-xs focus:outline-none focus:border-gold"
+                    className="w-full px-3 py-2 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/15 text-stone-100 font-mono text-xs focus:outline-none focus:border-gold"
                   />
                 </div>
                 <button

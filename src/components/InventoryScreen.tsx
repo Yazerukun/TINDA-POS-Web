@@ -265,12 +265,12 @@ export function InventoryScreen({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-              <Package className="h-6 w-6 text-emerald-600" />
+            <h2 className="text-xl font-black text-stone-100 tracking-tight flex items-center gap-2">
+              <Package className="h-6 w-6 text-emerald-400" />
               <span>Inventory Management</span>
             </h2>
           </div>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-xs text-stone-400 mt-0.5">
             Monitor stock levels, retail pricing, official DTI Suggested Retail Prices (SRP), and product photos.
           </p>
         </div>
@@ -280,10 +280,10 @@ export function InventoryScreen({
           <button
             onClick={handleAutoMatchAllSrp}
             disabled={autoMatching}
-            className="btn-press flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 font-bold text-xs shadow-sm transition-all"
+            className="btn-press flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-gold-light font-bold text-xs shadow-sm transition-all"
             title="Auto-match products to DTI SRP using barcodes and names"
           >
-            <Sparkles className={`h-4 w-4 text-amber-600 ${autoMatching ? 'animate-spin' : ''}`} />
+            <Sparkles className={`h-4 w-4 text-gold-light ${autoMatching ? 'animate-spin' : ''}`} />
             <span>{autoMatching ? 'Matching SRP...' : 'Auto-Match DTI SRP'}</span>
           </button>
 
@@ -316,13 +316,13 @@ export function InventoryScreen({
       <div className="glass-panel rounded-2xl p-3.5 flex flex-col gap-3">
         <div className="flex flex-col md:flex-row items-center gap-3">
           <div className="relative flex-1 w-full">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by product name, SKU, or barcode..."
-              className="w-full pl-10 pr-4 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-slate-900 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+              className="w-full pl-10 pr-4 py-2 rounded-xl bg-obsidian-950 border border-slate-900/[0.08] text-xs font-medium text-stone-100 placeholder-stone-500 focus:outline-none focus:border-emerald-500"
             />
           </div>
 
@@ -332,7 +332,7 @@ export function InventoryScreen({
               className={`btn-press whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-semibold ${
                 selectedCat === 'ALL'
                   ? 'bg-emerald-500 text-stone-100 font-bold'
-                  : 'glass-pill text-slate-300 hover:text-slate-900'
+                  : 'glass-pill text-stone-300 hover:text-stone-100'
               }`}
             >
               All ({products.length})
@@ -344,7 +344,7 @@ export function InventoryScreen({
                 className={`btn-press whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-semibold ${
                   selectedCat === c.id
                     ? 'bg-emerald-500 text-stone-100 font-bold'
-                    : 'glass-pill text-slate-300 hover:text-slate-900'
+                    : 'glass-pill text-stone-300 hover:text-stone-100'
                 }`}
               >
                 {c.name}
@@ -364,7 +364,7 @@ export function InventoryScreen({
               className={`btn-press whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-semibold ${
                 selectedSubCat === 'ALL'
                   ? 'bg-emerald-500 text-stone-100 font-bold'
-                  : 'glass-pill text-slate-300 hover:text-slate-900'
+                  : 'glass-pill text-stone-300 hover:text-stone-100'
               }`}
             >
               All {categories.find((c) => c.id === selectedCat)?.name ?? ''}
@@ -376,7 +376,7 @@ export function InventoryScreen({
                 className={`btn-press whitespace-nowrap px-3 py-1.5 rounded-xl text-xs font-semibold ${
                   selectedSubCat === s.id
                     ? 'bg-emerald-500 text-stone-100 font-bold'
-                    : 'glass-pill text-slate-300 hover:text-slate-900'
+                    : 'glass-pill text-stone-300 hover:text-stone-100'
                 }`}
               >
                 {s.name}
@@ -390,7 +390,7 @@ export function InventoryScreen({
       <div className="glass-panel rounded-3xl border border-slate-900/[0.1] overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="border-b border-slate-900/[0.08] bg-obsidian-900/80 text-slate-400 font-semibold uppercase tracking-wider text-[0.75rem]">
+            <thead className="border-b border-slate-900/[0.08] bg-obsidian-900/80 text-stone-400 font-semibold uppercase tracking-wider text-[0.75rem]">
               <tr>
                 <th className="py-3.5 px-4">Photo & Product</th>
                 <th className="py-3.5 px-4">Category</th>
@@ -404,7 +404,7 @@ export function InventoryScreen({
             <tbody className="divide-y divide-white/[0.04]">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-slate-500">
+                  <td colSpan={7} className="py-12 text-center text-stone-500">
                     No products found matching your search or filters.
                   </td>
                 </tr>
@@ -432,12 +432,12 @@ export function InventoryScreen({
                           {p.image_path ? (
                             <img src={p.image_path} alt={p.name} className="h-full w-full object-cover" />
                           ) : (
-                            <Package className="h-5 w-5 text-slate-600" />
+                            <Package className="h-5 w-5 text-stone-500" />
                           )}
                         </div>
                         <div>
-                          <p className="font-bold text-slate-900 leading-tight">{p.name}</p>
-                          <div className="flex items-center gap-2 mt-0.5 text-[0.75rem] text-slate-500 font-mono">
+                          <p className="font-bold text-stone-100 leading-tight">{p.name}</p>
+                          <div className="flex items-center gap-2 mt-0.5 text-[0.75rem] text-stone-400 font-mono">
                             {p.sku && <span>SKU: {p.sku}</span>}
                             {p.barcode && <span>• Barcode: {p.barcode}</span>}
                           </div>
@@ -445,12 +445,12 @@ export function InventoryScreen({
                       </td>
 
                       {/* Category */}
-                      <td className="py-3 px-4 text-slate-300">
+                      <td className="py-3 px-4 text-stone-300">
                         {cat ? cat.name : 'Uncategorized'}
                       </td>
 
                       {/* Cost */}
-                      <td className="py-3 px-4 font-mono text-slate-400">
+                      <td className="py-3 px-4 font-mono text-stone-400">
                         {money(p.cost_c)}
                       </td>
 
@@ -458,7 +458,7 @@ export function InventoryScreen({
                       <td className="py-3 px-4">
                         {effectiveSrpC && effectiveSrpC > 0 ? (
                           <div className="flex flex-col gap-1 items-start">
-                            <span className="font-mono font-bold text-amber-600">
+                            <span className="font-mono font-bold text-gold-light">
                               {money(effectiveSrpC)}
                             </span>
                             <span
@@ -470,7 +470,7 @@ export function InventoryScreen({
                         ) : (
                           <button
                             onClick={() => handleLinkSrp(p)}
-                            className="btn-press text-[0.75rem] font-mono text-amber-600/80 hover:text-amber-700 bg-amber-500/10 hover:bg-amber-500/20 px-2 py-1 rounded-lg border border-amber-500/25 transition-all"
+                            className="btn-press text-[0.75rem] font-mono text-gold-muted hover:text-gold-light bg-amber-500/10 hover:bg-amber-500/20 px-2 py-1 rounded-lg border border-gold/30 transition-all"
                             title="Find and link official DTI Suggested Retail Price"
                           >
                             + Link SRP
@@ -479,7 +479,7 @@ export function InventoryScreen({
                       </td>
 
                       {/* Selling Price */}
-                      <td className="py-3 px-4 font-mono font-bold text-emerald-600">
+                      <td className="py-3 px-4 font-mono font-bold text-emerald-400">
                         {money(p.default_price_c)}
                       </td>
 
@@ -488,22 +488,22 @@ export function InventoryScreen({
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleAdjustStock(p, -1)}
-                            className="btn-press h-5 w-5 rounded-md bg-obsidian-900 border border-slate-900/[0.08] text-slate-400 hover:text-slate-900 flex items-center justify-center"
+                            className="btn-press h-5 w-5 rounded-md bg-obsidian-900 border border-slate-900/[0.08] text-stone-400 hover:text-stone-100 flex items-center justify-center"
                           >
                             -
                           </button>
                           <span className={`px-2 py-0.5 rounded-full font-mono font-bold text-[0.8125rem] ${
                             isOut
-                              ? 'bg-rose-500/20 text-rose-600 border border-rose-500/30'
+                              ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
                               : isLow
-                              ? 'bg-amber-500/20 text-amber-600 border border-amber-500/30'
-                              : 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
+                              ? 'bg-amber-500/20 text-gold-light border border-gold/30'
+                              : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                           }`}>
                             {p.stock} {p.base_unit}
                           </span>
                           <button
                             onClick={() => handleAdjustStock(p, 1)}
-                            className="btn-press h-5 w-5 rounded-md bg-obsidian-900 border border-slate-900/[0.08] text-slate-400 hover:text-slate-900 flex items-center justify-center"
+                            className="btn-press h-5 w-5 rounded-md bg-obsidian-900 border border-slate-900/[0.08] text-stone-400 hover:text-stone-100 flex items-center justify-center"
                           >
                             +
                           </button>
@@ -523,13 +523,13 @@ export function InventoryScreen({
                               })
                               setModalOpen(true)
                             }}
-                            className="btn-press p-1.5 rounded-xl border border-slate-900/[0.08] text-slate-400 hover:text-slate-900 hover:bg-obsidian-900/[0.05]"
+                            className="btn-press p-1.5 rounded-xl border border-slate-900/[0.08] text-stone-400 hover:text-stone-100 hover:bg-obsidian-900/[0.05]"
                           >
                             <Edit2 className="h-3.5 w-3.5" />
                           </button>
                           <button
                             onClick={() => handleDeleteProduct(p.id)}
-                            className="btn-press p-1.5 rounded-xl border border-slate-900/[0.08] text-rose-600/70 hover:text-rose-600 hover:bg-rose-500/10"
+                            className="btn-press p-1.5 rounded-xl border border-slate-900/[0.08] text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -547,15 +547,15 @@ export function InventoryScreen({
       {/* Restocking History */}
       <div className="glass-panel rounded-3xl border border-slate-900/[0.1] p-5 shadow-2xl space-y-4">
         <div className="flex items-center justify-between border-b border-slate-900/[0.08] pb-3">
-          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <History className="h-4 w-4 text-emerald-600" />
+          <h3 className="text-sm font-bold text-stone-100 flex items-center gap-2">
+            <History className="h-4 w-4 text-emerald-400" />
             <span>Restocking History</span>
           </h3>
-          <span className="text-[0.8125rem] text-slate-400">{restockLogs.length} records</span>
+          <span className="text-[0.8125rem] text-stone-400">{restockLogs.length} records</span>
         </div>
 
         {restockLogs.length === 0 ? (
-          <div className="py-8 text-center text-slate-500 text-xs">
+          <div className="py-8 text-center text-stone-500 text-xs">
             No restocking records yet. Adjust stock on any item to view its history here.
           </div>
         ) : (
@@ -566,12 +566,12 @@ export function InventoryScreen({
                 className="flex items-center justify-between p-3 rounded-2xl bg-obsidian-900/60 border border-slate-900/[0.06]"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="h-9 w-9 rounded-xl bg-white/[0.04] text-slate-300 flex items-center justify-center shrink-0">
+                  <div className="h-9 w-9 rounded-xl bg-white/[0.04] text-stone-300 flex items-center justify-center shrink-0">
                     <Layers className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-slate-900 truncate">{log.product_name}</p>
-                    <p className="text-[0.75rem] text-slate-500 font-mono mt-0.5">{formatDateTime(log.timestamp)} · {log.cashier_name}</p>
+                    <p className="text-xs font-bold text-stone-100 truncate">{log.product_name}</p>
+                    <p className="text-[0.75rem] text-stone-400 font-mono mt-0.5">{formatDateTime(log.timestamp)} · {log.cashier_name}</p>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
@@ -605,16 +605,16 @@ export function InventoryScreen({
       {/* Modal: Add or Edit Product */}
       {modalOpen && editingProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="glass-panel w-full max-w-lg rounded-3xl border border-slate-900/[0.12] p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+          <div className="glass-panel w-full max-w-lg rounded-3xl border border-slate-900/[0.12] p-6 shadow-vault space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div className="flex items-center justify-between border-b border-slate-900/[0.08] pb-3">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Package className="h-4 w-4 text-emerald-600" />
+              <h3 className="text-sm font-bold text-stone-100 flex items-center gap-2">
+                <Package className="h-4 w-4 text-emerald-400" />
                 <span>{editingProduct.id ? 'Edit Product' : 'Add New Product'}</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="p-1 rounded-xl text-slate-400 hover:text-slate-900 hover:bg-obsidian-900/[0.07]"
+                className="p-1 rounded-xl text-stone-400 hover:text-stone-100 hover:bg-obsidian-900/[0.07]"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -623,26 +623,26 @@ export function InventoryScreen({
             <form onSubmit={handleSaveProduct} className="space-y-4">
               {/* Dual Photo Picker */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Product Photo</label>
+                <label className="block text-xs font-semibold text-stone-300 mb-1.5">Product Photo</label>
                 <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" onChange={handlePhotoPick} className="hidden" />
                 <input ref={galleryInputRef} type="file" accept="image/*" onChange={handlePhotoPick} className="hidden" />
 
                 {imageBusy ? (
                   <div className="flex items-center justify-center p-6 rounded-2xl border border-slate-900/[0.08] bg-obsidian-900/60">
-                    <RefreshCw className="h-5 w-5 text-emerald-600 animate-spin" />
-                    <span className="ml-2 text-xs text-slate-400">Optimizing photo...</span>
+                    <RefreshCw className="h-5 w-5 text-emerald-400 animate-spin" />
+                    <span className="ml-2 text-xs text-stone-400">Optimizing photo...</span>
                   </div>
                 ) : editingProduct.image_path ? (
                   <div className="flex items-center gap-3 p-3 rounded-2xl border border-slate-900/[0.08] bg-obsidian-900/60">
                     <img src={editingProduct.image_path} alt="Preview" className="h-16 w-16 rounded-xl object-cover border border-slate-900/[0.08]" />
                     <div className="flex-1">
-                      <p className="text-xs font-bold text-slate-900">Attached Image</p>
-                      <p className="text-[0.8125rem] text-slate-400">Client-side WebP (~15KB) ready</p>
+                      <p className="text-xs font-bold text-stone-100">Attached Image</p>
+                      <p className="text-[0.8125rem] text-stone-400">Client-side WebP (~15KB) ready</p>
                       <div className="mt-2 flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => cameraInputRef.current?.click()}
-                          className="btn-press px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-xs font-semibold flex items-center gap-1"
+                          className="btn-press px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold flex items-center gap-1"
                         >
                           <Camera className="h-3.5 w-3.5" />
                           <span>Camera</span>
@@ -650,7 +650,7 @@ export function InventoryScreen({
                         <button
                           type="button"
                           onClick={() => galleryInputRef.current?.click()}
-                          className="btn-press px-2.5 py-1 rounded-lg bg-obsidian-850 border border-slate-900/[0.08] text-slate-300 text-xs font-semibold flex items-center gap-1"
+                          className="btn-press px-2.5 py-1 rounded-lg bg-obsidian-850 border border-slate-900/[0.08] text-stone-300 text-xs font-semibold flex items-center gap-1"
                         >
                           <ImageIcon className="h-3.5 w-3.5" />
                           <span>Gallery</span>
@@ -658,7 +658,7 @@ export function InventoryScreen({
                         <button
                           type="button"
                           onClick={removePhoto}
-                          className="btn-press px-2 py-1 text-xs font-semibold text-rose-600 hover:bg-rose-500/10 rounded-lg flex items-center gap-1"
+                          className="btn-press px-2 py-1 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 rounded-lg flex items-center gap-1"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                           <span>Remove</span>
@@ -673,12 +673,12 @@ export function InventoryScreen({
                       onClick={() => cameraInputRef.current?.click()}
                       className="btn-press flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl border border-dashed border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 text-center transition-all"
                     >
-                      <div className="h-8 w-8 rounded-xl bg-emerald-500/15 text-emerald-600 flex items-center justify-center">
+                      <div className="h-8 w-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
                         <Camera className="h-4 w-4" />
                       </div>
                       <div>
-                        <span className="block text-xs font-bold text-slate-900">Take Photo</span>
-                        <span className="block text-[0.75rem] text-slate-400">Open camera</span>
+                        <span className="block text-xs font-bold text-stone-100">Take Photo</span>
+                        <span className="block text-[0.75rem] text-stone-400">Open camera</span>
                       </div>
                     </button>
 
@@ -687,12 +687,12 @@ export function InventoryScreen({
                       onClick={() => galleryInputRef.current?.click()}
                       className="btn-press flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl border border-dashed border-slate-900/[0.12] bg-obsidian-900/60 hover:bg-obsidian-850 text-center transition-all"
                     >
-                      <div className="h-8 w-8 rounded-xl bg-obsidian-850 text-slate-300 flex items-center justify-center">
+                      <div className="h-8 w-8 rounded-xl bg-obsidian-850 text-stone-300 flex items-center justify-center">
                         <ImageIcon className="h-4 w-4" />
                       </div>
                       <div>
-                        <span className="block text-xs font-bold text-slate-900">Upload Image</span>
-                        <span className="block text-[0.75rem] text-slate-400">Choose from gallery</span>
+                        <span className="block text-xs font-bold text-stone-100">Upload Image</span>
+                        <span className="block text-[0.75rem] text-stone-400">Choose from gallery</span>
                       </div>
                     </button>
                   </div>
@@ -701,37 +701,37 @@ export function InventoryScreen({
 
               {/* Product Name */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Product Name *</label>
+                <label className="block text-xs font-semibold text-stone-300 mb-1">Product Name *</label>
                 <input
                   type="text"
                   required
                   value={editingProduct.name || ''}
                   onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
                   placeholder="e.g. Lucky Me Pancit Canton Kalamansi 60g"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950 border border-slate-900/[0.08] text-xs font-medium text-stone-100 placeholder-stone-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
               {/* SKU & Barcode */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">SKU</label>
+                  <label className="block text-xs font-semibold text-stone-300 mb-1">SKU</label>
                   <input
                     type="text"
                     value={editingProduct.sku || ''}
                     onChange={(e) => setEditingProduct({ ...editingProduct, sku: e.target.value })}
                     placeholder="BEV-001"
-                    className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950 border border-slate-900/[0.08] text-xs font-medium text-stone-100 placeholder-stone-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Barcode</label>
+                  <label className="block text-xs font-semibold text-stone-300 mb-1">Barcode</label>
                   <input
                     type="text"
                     value={editingProduct.barcode || ''}
                     onChange={(e) => setEditingProduct({ ...editingProduct, barcode: e.target.value })}
                     placeholder="4800016644810"
-                    className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950 border border-slate-900/[0.08] text-xs font-medium text-stone-100 placeholder-stone-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
@@ -740,9 +740,9 @@ export function InventoryScreen({
               {detectedSrp && (
                 <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-between gap-3 animate-fade-in">
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <Sparkles className="h-4 w-4 text-amber-600 shrink-0" />
+                    <Sparkles className="h-4 w-4 text-gold-light shrink-0" />
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-amber-700 truncate">
+                      <p className="text-xs font-bold text-gold-light truncate">
                         Official DTI SRP: ₱{(detectedSrp.market_price_c / 100).toFixed(2)}
                       </p>
                       <p className="text-[0.75rem] text-stone-400 truncate">
@@ -765,7 +765,7 @@ export function InventoryScreen({
                             : null
                         )
                       }}
-                      className="btn-press px-2.5 py-1 rounded-lg bg-amber-500/25 hover:bg-amber-500/35 text-amber-700 border border-amber-500/40 text-[0.8125rem] font-bold"
+                      className="btn-press px-2.5 py-1 rounded-lg bg-amber-500/25 hover:bg-amber-500/35 text-gold-light border border-amber-500/40 text-[0.8125rem] font-bold"
                     >
                       Apply SRP
                     </button>
@@ -776,11 +776,11 @@ export function InventoryScreen({
               {/* Category & Unit */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Category</label>
+                  <label className="block text-xs font-semibold text-stone-300 mb-1">Category</label>
                   <select
                     value={editingProduct.category_id || ''}
                     onChange={(e) => setEditingProduct({ ...editingProduct, category_id: Number(e.target.value) || null })}
-                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950 border border-slate-900/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-emerald-500 cursor-pointer"
                   >
                     <option value="">No Category</option>
                     {categories.map((c) => (
@@ -789,13 +789,13 @@ export function InventoryScreen({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Base Unit</label>
+                  <label className="block text-xs font-semibold text-stone-300 mb-1">Base Unit</label>
                   <input
                     type="text"
                     value={editingProduct.base_unit || 'piece'}
                     onChange={(e) => setEditingProduct({ ...editingProduct, base_unit: e.target.value })}
                     placeholder="piece, bottle, pack"
-                    className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-slate-900 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3.5 py-2 rounded-xl bg-obsidian-950 border border-slate-900/[0.08] text-xs font-medium text-stone-100 placeholder-stone-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
@@ -803,21 +803,21 @@ export function InventoryScreen({
               {/* Financial Inputs: Cost, SRP, Selling Price, Stock */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Cost (₱)</label>
+                  <label className="block text-xs font-semibold text-stone-300 mb-1">Cost (₱)</label>
                   <input
                     type="number"
                     step="0.01"
                     value={editingProduct.cost_c ?? ''}
                     onChange={(e) => setEditingProduct({ ...editingProduct, cost_c: parseFloat(e.target.value) || 0 })}
                     placeholder="0.00"
-                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-mono text-slate-900 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950 border border-slate-900/[0.08] text-xs font-mono text-stone-100 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-amber-600 mb-1 flex items-center justify-between">
+                  <label className="block text-xs font-semibold text-gold-light mb-1 flex items-center justify-between">
                     <span>SRP (₱)</span>
-                    <span className="text-[0.75rem] text-amber-600/80 font-mono">DTI</span>
+                    <span className="text-[0.75rem] text-gold-muted font-mono">DTI</span>
                   </label>
                   <input
                     type="number"
@@ -830,12 +830,12 @@ export function InventoryScreen({
                       })
                     }
                     placeholder="e.g. 10.50"
-                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-amber-500/35 text-xs font-mono font-bold text-amber-600 focus:outline-none focus:border-amber-400"
+                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950 border border-amber-500/35 text-xs font-mono font-bold text-gold-light focus:outline-none focus:border-amber-400"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-emerald-600 mb-1">Price (₱) *</label>
+                  <label className="block text-xs font-semibold text-emerald-400 mb-1">Price (₱) *</label>
                   <input
                     type="number"
                     step="0.01"
@@ -843,17 +843,17 @@ export function InventoryScreen({
                     value={editingProduct.default_price_c ?? ''}
                     onChange={(e) => setEditingProduct({ ...editingProduct, default_price_c: parseFloat(e.target.value) || 0 })}
                     placeholder="0.00"
-                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-mono font-bold text-emerald-600 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950 border border-slate-900/[0.08] text-xs font-mono font-bold text-emerald-400 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Stock Qty</label>
+                  <label className="block text-xs font-semibold text-stone-300 mb-1">Stock Qty</label>
                   <input
                     type="number"
                     value={editingProduct.stock ?? 0}
                     onChange={(e) => setEditingProduct({ ...editingProduct, stock: parseInt(e.target.value) || 0 })}
-                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-mono text-slate-900 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3 py-2 rounded-xl bg-obsidian-950 border border-slate-900/[0.08] text-xs font-mono text-stone-100 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
@@ -863,7 +863,7 @@ export function InventoryScreen({
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="btn-press flex-1 py-2.5 rounded-xl border border-slate-900/[0.12] bg-obsidian-900 text-xs font-bold text-slate-300"
+                  className="btn-press flex-1 py-2.5 rounded-xl border border-slate-900/[0.12] bg-obsidian-900 text-xs font-bold text-stone-300 hover:text-stone-100"
                 >
                   Cancel
                 </button>

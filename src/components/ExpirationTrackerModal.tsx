@@ -160,7 +160,7 @@ export function ExpirationTrackerModal({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-serif font-bold text-slate-900 tracking-wide">
+                <h2 className="text-lg font-serif font-bold text-stone-100 tracking-wide">
                   Product Expiration Tracker
                 </h2>
                 <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted border border-gold/30 px-2 py-0.5 rounded-full uppercase">
@@ -175,7 +175,7 @@ export function ExpirationTrackerModal({
 
           <button
             onClick={onClose}
-            className="btn-press h-9 w-9 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-slate-900/15 flex items-center justify-center text-stone-400 hover:text-slate-900 transition-colors"
+            className="btn-press h-9 w-9 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-slate-900/15 flex items-center justify-center text-stone-400 hover:text-stone-100 transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -213,7 +213,7 @@ export function ExpirationTrackerModal({
               onClick={() => setActiveFilter('SOON')}
               className={`btn-press px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
                 activeFilter === 'SOON'
-                  ? 'bg-orange-500 text-slate-900 shadow-lg'
+                  ? 'bg-orange-500 text-stone-100 shadow-lg'
                   : 'bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 border border-orange-500/20'
               }`}
             >
@@ -241,7 +241,7 @@ export function ExpirationTrackerModal({
               onClick={() => setActiveFilter('UNDATED')}
               className={`btn-press px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
                 activeFilter === 'UNDATED'
-                  ? 'bg-stone-600 text-slate-900 shadow-lg'
+                  ? 'bg-stone-600 text-stone-100 shadow-lg'
                   : 'bg-obsidian-900/[0.07] text-stone-400 hover:text-stone-200 border border-slate-900/10'
               }`}
             >
@@ -285,7 +285,7 @@ export function ExpirationTrackerModal({
                     <Package className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs sm:text-sm font-bold text-slate-900 truncate">
+                    <p className="text-xs sm:text-sm font-bold text-stone-100 truncate">
                       {product.name}
                     </p>
                     <p className="text-[0.75rem] font-mono text-stone-400 mt-0.5">
@@ -328,11 +328,11 @@ export function ExpirationTrackerModal({
               <div className="flex items-start justify-between border-b border-slate-900/15 pb-3">
                 <div>
                   <p className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted uppercase">Set Shelf Expiration</p>
-                  <h4 className="text-sm font-bold text-slate-900 mt-0.5">{editingProduct.name}</h4>
+                  <h4 className="text-sm font-bold text-stone-100 mt-0.5">{editingProduct.name}</h4>
                 </div>
                 <button
                   onClick={() => setEditingProduct(null)}
-                  className="btn-press p-1 text-stone-400 hover:text-slate-900"
+                  className="btn-press p-1 text-stone-400 hover:text-stone-100"
                 >
                   <X className="w-4 h-4" />
                 </button>

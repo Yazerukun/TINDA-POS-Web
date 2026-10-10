@@ -6,6 +6,28 @@ export default {
   theme: {
     extend: {
       colors: {
+        ink: {
+          950: '#0a0d0f',
+          900: '#111418',
+          850: '#15191f',
+          800: '#1a1f26',
+          750: '#1f252d',
+          700: '#252c36',
+          line: '#2a313c'
+        },
+        brand: {
+          50: '#ecfdf5',
+          100: '#d1fae5',
+          400: '#34d399',
+          500: '#10b981',
+          600: '#059669',
+          700: '#047857'
+        },
+        danger: {
+          400: '#f87171',
+          500: '#ef4444',
+          600: '#dc2626'
+        },
         // Light surfaces. `obsidian-950` is the page background, so the numeric
         // scale reads light-to-dark instead of dark-to-light.
         obsidian: {

@@ -5,6 +5,7 @@ import type { CartItem, Customer, DiscountType, StoreSettings, Transaction } fro
 import { money } from '../utils/format'
 import { db } from '../db'
 import { Receipt } from './Receipt'
+import { playCheckoutChime } from '../lib/sound'
 
 interface CheckoutModalProps {
   items: CartItem[]
@@ -131,6 +132,7 @@ export function CheckoutModal({
       }
 
       setCompletedTx(fullTx)
+      playCheckoutChime()
       if (settings?.printer_auto_print) {
         setTimeout(() => {
           window.print()
@@ -246,7 +248,7 @@ export function CheckoutModal({
                     className={`px-2.5 py-1 rounded-lg text-[0.75rem] font-bold transition-all ${
                       paperWidth === w
                         ? 'bg-amber-500/20 text-gold-light border border-gold/40 font-bold'
-                        : 'text-stone-400 hover:text-slate-900 bg-obsidian-900/[0.07]'
+                        : 'text-stone-400 hover:text-stone-100 bg-obsidian-900/[0.07]'
                     }`}
                   >
                     {w === '58mm' ? '58mm Roll' : w === '80mm' ? '80mm Roll' : 'A4 Invoice'}
@@ -364,14 +366,14 @@ export function CheckoutModal({
                   <button
                     type="button"
                     onClick={() => setTenderedInput((total_c / 100).toString())}
-                    className="text-[0.75rem] font-sans font-semibold text-gold-light hover:underline uppercase"
+                    className="text-[0.75rem] font-sans font-bold text-emerald-400 hover:underline uppercase flex items-center gap-1"
                   >
-                    Exact Amount (₱{(total_c / 100).toFixed(2)})
+                    Exact (₱{(total_c / 100).toFixed(2)})
                   </button>
                 </div>
 
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-serif text-xl text-gold-muted font-bold">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-serif text-xl text-emerald-400 font-bold">
                     ₱
                   </span>
                   <input
@@ -379,37 +381,125 @@ export function CheckoutModal({
                     step="any"
                     value={tenderedInput}
                     onChange={(e) => setTenderedInput(e.target.value)}
-                    className="w-full pl-9 pr-4 py-3 rounded-2xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] focus:border-gold text-stone-100 text-lg font-mono font-bold focus:outline-none"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !isInsufficient && !processing) {
+                        e.preventDefault()
+                        void handleCharge()
+                      }
+                    }}
+                    className="w-full pl-9 pr-4 py-3 rounded-2xl bg-ink-950 border border-ink-line focus:border-emerald-500 text-slate-100 text-lg font-mono font-bold focus:outline-none"
                     placeholder="0.00"
+                    autoFocus
                   />
                 </div>
 
-                {/* Quick Presets */}
-                <div className="grid grid-cols-6 gap-1.5">
-                  {quickCashPresets.map((amount) => (
+                {/* Fast Tender Banknote Denominations (Philippine Banknotes) */}
+                <div>
+                  <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                    Fast Tender Banknotes
+                  </p>
+                  <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5" role="group" aria-label="Fast cash tender buttons">
                     <button
-                      key={amount}
                       type="button"
-                      onClick={() => setTenderedInput(amount.toString())}
-                      className="btn-press py-2 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/[0.06] hover:border-gold/30 hover:bg-gold/10 text-[0.8125rem] font-mono text-stone-300 transition-all text-center"
+                      onClick={() => setTenderedInput((total_c / 100).toString())}
+                      className="col-span-2 sm:col-span-1 rounded-lg border border-brand-500/40 bg-brand-500/10 py-1.5 px-2 text-xs font-black text-brand-300 hover:bg-brand-500/20 active:scale-95 active:translate-y-0.5 transition-all shadow-sm"
+                      title="Exact amount"
                     >
-                      ₱{amount >= 1000 ? `${amount / 1000}k` : amount}
+                      Exact
                     </button>
-                  ))}
+                    {[20, 50, 100, 200, 500, 1000].map((bill) => (
+                      <button
+                        key={`bill-${bill}`}
+                        type="button"
+                        onClick={() => setTenderedInput(String(bill))}
+                        className={`rounded-lg border py-1.5 px-1 text-xs font-bold transition-all active:scale-95 active:translate-y-0.5 shadow-sm ${
+                          parseFloat(tenderedInput) === bill
+                            ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 font-black'
+                            : 'border-ink-line bg-ink-900 text-slate-200 hover:border-slate-600 hover:bg-ink-800'
+                        }`}
+                      >
+                        ₱{bill}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Increments & Smart Rounding */}
+                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                    <span className="text-[10px] text-slate-500 font-medium mr-0.5">Quick Add:</span>
+                    {[20, 50, 100, 500].map((addAmount) => (
+                      <button
+                        key={`add-${addAmount}`}
+                        type="button"
+                        onClick={() => {
+                          const currentVal = parseFloat(tenderedInput) || (total_c / 100)
+                          setTenderedInput(String(Math.round((currentVal + addAmount) * 100) / 100))
+                        }}
+                        className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/20 active:scale-95 active:translate-y-0.5 transition-all"
+                        title={`Add ₱${addAmount} to cash tendered`}
+                      >
+                        +₱{addAmount}
+                      </button>
+                    ))}
+
+                    {/* Smart Next-Round Suggestion */}
+                    {total_c > 0 && (() => {
+                      const totalPesos = total_c / 100
+                      const next50 = Math.ceil(totalPesos / 50) * 50
+                      const next100 = Math.ceil(totalPesos / 100) * 100
+                      const targets = Array.from(new Set([next50, next100])).filter(t => t > totalPesos && t !== 1000 && t !== 500)
+                      return targets.map(t => (
+                        <button
+                          key={`next-round-${t}`}
+                          type="button"
+                          onClick={() => setTenderedInput(String(t))}
+                          className="rounded-md border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 text-xs font-semibold text-sky-300 hover:bg-sky-500/20 active:scale-95 active:translate-y-0.5 transition-all"
+                          title={`Round up to ₱${t}`}
+                        >
+                          Round ₱{t}
+                        </button>
+                      ))
+                    })()}
+                  </div>
                 </div>
 
-                {/* Live Change Calculation */}
-                <div className="flex items-center justify-between p-3 rounded-2xl bg-obsidian-900/[0.05] border border-slate-900/[0.05]">
-                  <span className="text-xs font-sans font-semibold uppercase tracking-wider text-stone-400">
-                    Change Due:
-                  </span>
-                  <span
-                    className={`text-base font-serif font-bold ${
-                      isInsufficient ? 'text-red-600 font-mono text-xs' : 'text-gold-light'
-                    }`}
-                  >
-                    {isInsufficient ? 'INSUFFICIENT TENDER' : money(change_c)}
-                  </span>
+                {/* Grand Change Due Showcase Display */}
+                <div
+                  className={`rounded-xl border p-3.5 transition-all duration-150 ${
+                    change_c >= 0 && !isInsufficient
+                      ? 'border-emerald-500/40 bg-gradient-to-br from-emerald-950/40 to-ink-950 shadow-inner'
+                      : 'border-danger-500/40 bg-danger-950/20'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={`text-[11px] font-black uppercase tracking-wider ${
+                        !isInsufficient ? 'text-emerald-400' : 'text-danger-400'
+                      }`}
+                    >
+                      {!isInsufficient ? 'Change Due' : 'Insufficient Cash'}
+                    </span>
+                    {!isInsufficient && (
+                      <span className="text-[11px] font-medium text-emerald-300/80">
+                        Press Enter to Complete Sale
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-1 flex items-baseline justify-between">
+                    <span
+                      className={`text-3xl font-black tracking-tight tabular-nums transition-all ${
+                        !isInsufficient
+                          ? 'text-emerald-300 drop-shadow-[0_0_12px_rgba(16,185,129,0.3)]'
+                          : 'text-danger-400'
+                      }`}
+                    >
+                      {!isInsufficient ? money(change_c) : `Short of ${money(Math.abs(total_c - tendered_c))}`}
+                    </span>
+                    {tendered_c > 0 && !isInsufficient && (
+                      <span className="text-xs text-slate-400 font-medium font-mono">
+                        Tendered: {money(tendered_c)}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             )}

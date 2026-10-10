@@ -139,7 +139,7 @@ export function SuppliersScreen(): React.JSX.Element {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-900/15 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-serif font-bold text-slate-900 tracking-wide">
+            <h1 className="text-2xl font-serif font-bold text-stone-100 tracking-wide">
               Suppliers Directory
             </h1>
             <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted border border-gold/30 px-2 py-0.5 rounded-full uppercase">
@@ -200,7 +200,7 @@ export function SuppliersScreen(): React.JSX.Element {
                       <Truck className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold text-slate-900 group-hover:text-gold-light transition-colors line-clamp-1">
+                      <h3 className="text-sm font-bold text-stone-100 group-hover:text-gold-light transition-colors line-clamp-1">
                         {s.name}
                       </h3>
                       <p className="text-[0.75rem] font-mono text-stone-400">
@@ -212,7 +212,7 @@ export function SuppliersScreen(): React.JSX.Element {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleOpenEdit(s)}
-                      className="btn-press p-1.5 rounded-lg bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.06] text-stone-400 hover:text-slate-900 transition-colors"
+                      className="btn-press p-1.5 rounded-lg bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.06] text-stone-400 hover:text-stone-100 transition-colors"
                       title="Edit supplier"
                     >
                       <Pencil className="w-3.5 h-3.5" />
@@ -281,13 +281,13 @@ export function SuppliersScreen(): React.JSX.Element {
             <div className="flex items-center justify-between border-b border-slate-900/15 pb-4">
               <div>
                 <p className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted uppercase">Vendor Directory</p>
-                <h3 className="text-base font-bold text-slate-900 mt-0.5">
+                <h3 className="text-base font-bold text-stone-100 mt-0.5">
                   {editingSupplier ? 'Edit Supplier Details' : 'Register New Supplier'}
                 </h3>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="btn-press h-8 w-8 rounded-lg bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.06] text-stone-400 hover:text-slate-900 flex items-center justify-center"
+                className="btn-press h-8 w-8 rounded-lg bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.06] text-stone-400 hover:text-stone-100 flex items-center justify-center"
               >
                 <X className="w-4 h-4" />
               </button>

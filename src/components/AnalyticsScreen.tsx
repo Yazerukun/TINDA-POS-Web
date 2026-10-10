@@ -215,7 +215,7 @@ export function AnalyticsScreen({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-900/15 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-serif font-bold text-slate-900 tracking-wide">
+            <h1 className="text-2xl font-serif font-bold text-stone-100 tracking-wide">
               Store Analytics & Audit Reports
             </h1>
             <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted border border-gold/30 px-2 py-0.5 rounded-full uppercase">
@@ -274,7 +274,7 @@ export function AnalyticsScreen({
                 <Sparkles className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-slate-900 font-mono tracking-wide">Executive Financial Performance</h4>
+                <h4 className="text-xs font-bold text-stone-100 font-mono tracking-wide">Executive Financial Performance</h4>
                 <p className="text-[0.75rem] text-stone-400 font-mono">Export or print official audited sales reports in 58mm, 80mm, or A4 PDF format.</p>
               </div>
             </div>
@@ -296,7 +296,7 @@ export function AnalyticsScreen({
                   <DollarSign className="h-4 w-4" />
                 </div>
               </div>
-              <h3 className="mt-3 text-2xl font-serif font-black text-slate-900">
+              <h3 className="mt-3 text-2xl font-serif font-black text-stone-100">
                 {money(metrics.totalSales_c)}
               </h3>
               <p className="text-[0.8125rem] text-stone-400 mt-1 font-mono">
@@ -390,7 +390,7 @@ export function AnalyticsScreen({
                         <span className="h-6 w-6 rounded-lg bg-gold/15 text-gold-light font-mono font-bold flex items-center justify-center shrink-0 text-[0.8125rem]">
                           #{i + 1}
                         </span>
-                        <span className="font-semibold text-slate-900 truncate">{p.name}</span>
+                        <span className="font-semibold text-stone-100 truncate">{p.name}</span>
                       </div>
                       <div className="text-right shrink-0 font-mono">
                         <span className="text-stone-400">{p.quantity} units · </span>
@@ -413,7 +413,7 @@ export function AnalyticsScreen({
             <div className="lg:col-span-2 glass-panel p-5 rounded-3xl border border-slate-900/[0.08] space-y-4">
               <div className="flex items-center justify-between border-b border-slate-900/15 pb-3">
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">Philippine Peso Denomination Counter</h3>
+                  <h3 className="text-sm font-bold text-stone-100">Philippine Peso Denomination Counter</h3>
                   <p className="text-[0.75rem] font-mono text-stone-400 mt-0.5">
                     Count physical bills and coins inside the cash register drawer
                   </p>
@@ -450,7 +450,7 @@ export function AnalyticsScreen({
                       className="p-3 rounded-2xl bg-obsidian-900 border border-slate-900/10 flex items-center justify-between gap-3"
                     >
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-slate-900 font-mono">{d.label}</p>
+                        <p className="text-xs font-bold text-stone-100 font-mono">{d.label}</p>
                         <p className="text-[0.75rem] font-mono text-gold-muted mt-0.5">
                           = {money(subtotal)}
                         </p>
@@ -503,7 +503,7 @@ export function AnalyticsScreen({
             <div className="glass-panel p-5 rounded-3xl border border-slate-900/[0.08] space-y-5 flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="border-b border-slate-900/15 pb-3">
-                  <h3 className="text-sm font-bold text-slate-900">Drawer Audit Summary</h3>
+                  <h3 className="text-sm font-bold text-stone-100">Drawer Audit Summary</h3>
                   <p className="text-[0.75rem] font-mono text-stone-400 mt-0.5">Shift Cash Reconciliation</p>
                 </div>
 

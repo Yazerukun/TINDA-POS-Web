@@ -180,7 +180,7 @@ export function PriceGuideModal({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-serif font-bold text-slate-900 tracking-wide">
+                <h2 className="text-lg font-serif font-bold text-stone-100 tracking-wide">
                   TINDA BANTAY · Price Guide
                 </h2>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 font-mono text-[0.75rem] font-bold">
@@ -207,7 +207,7 @@ export function PriceGuideModal({
 
             <button
               onClick={onClose}
-              className="btn-press h-9 w-9 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-slate-900/15 flex items-center justify-center text-stone-400 hover:text-slate-900 transition-colors"
+              className="btn-press h-9 w-9 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-slate-900/15 flex items-center justify-center text-stone-400 hover:text-stone-100 transition-colors"
             >
               <X className="h-5 w-5" />
             </button>

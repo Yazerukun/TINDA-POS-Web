@@ -37,6 +37,8 @@ import { VipUpgradeModal } from './components/VipUpgradeModal'
 import { initTheme } from './utils/theme'
 import { useProAccess } from './services/proAccess'
 import { sendHeartbeat } from './services/cloudSync'
+import { importTindaBackup } from './utils/backup'
+import { Upload, HardDriveDownload } from 'lucide-react'
 
 export default function App(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard')
@@ -646,8 +648,135 @@ export default function App(): React.JSX.Element {
     })
   }
 
+  // Standalone Customer Facing Display (#monitor) mode
+  const [isHashMonitor, setIsHashMonitor] = useState(
+    () => window.location.hash === '#monitor' || window.location.hash === '#sales-monitor'
+  )
+
+  useEffect(() => {
+    const handleHash = () => {
+      setIsHashMonitor(window.location.hash === '#monitor' || window.location.hash === '#sales-monitor')
+    }
+    window.addEventListener('hashchange', handleHash)
+    return () => window.removeEventListener('hashchange', handleHash)
+  }, [])
+
+  // Broadcast cart updates to Customer Facing Display / Sales Monitor
+  useEffect(() => {
+    try {
+      const channel = new BroadcastChannel('tinda_sales_monitor')
+      channel.postMessage({
+        type: 'CART_UPDATE',
+        cart,
+        storeName: activeStoreName
+      })
+    } catch {}
+  }, [cart, activeStoreName])
+
+  // Global Drag & Drop Auto-Detection for Desktop Backup Files (.tinda-backup)
+  const [isDraggingFile, setIsDraggingFile] = useState(false)
+  const [autoImporting, setAutoImporting] = useState(false)
+
+  useEffect(() => {
+    const handleDragOver = (e: DragEvent) => {
+      e.preventDefault()
+      if (e.dataTransfer?.types?.includes('Files')) {
+        setIsDraggingFile(true)
+      }
+    }
+
+    const handleDragLeave = (e: DragEvent) => {
+      if (e.clientX <= 0 || e.clientY <= 0) {
+        setIsDraggingFile(false)
+      }
+    }
+
+    const handleDrop = async (e: DragEvent) => {
+      e.preventDefault()
+      setIsDraggingFile(false)
+      const file = e.dataTransfer?.files?.[0]
+      if (!file) return
+
+      if (!file.name.endsWith('.tinda-backup') && !file.name.endsWith('.json')) {
+        alert('Palihug pag-drag og balidong .tinda-backup o .json backup file.')
+        return
+      }
+
+      setAutoImporting(true)
+      try {
+        const text = await file.text()
+        const result = await importTindaBackup(text)
+        if (result.success) {
+          alert(`⚡ AUTO-DETECT SUCCESS: ${result.message}`)
+          await loadData()
+        } else {
+          alert(`Auto-detect failed: ${result.message}`)
+        }
+      } catch (err) {
+        alert('Sayop sa pagbasa sa backup file: ' + (err as Error)?.message)
+      } finally {
+        setAutoImporting(false)
+      }
+    }
+
+    window.addEventListener('dragover', handleDragOver)
+    window.addEventListener('dragleave', handleDragLeave)
+    window.addEventListener('drop', handleDrop)
+
+    return () => {
+      window.removeEventListener('dragover', handleDragOver)
+      window.removeEventListener('dragleave', handleDragLeave)
+      window.removeEventListener('drop', handleDrop)
+    }
+  }, [loadData])
+
+  // Render standalone customer display if opened via #monitor route
+  if (isHashMonitor) {
+    return (
+      <SalesMonitorModal
+        open={true}
+        onClose={() => {
+          window.location.hash = ''
+        }}
+        cart={cart}
+        storeName={activeStoreName}
+        isStandalone={true}
+      />
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-obsidian-950 text-stone-100 flex flex-col md:flex-row selection:bg-amber-400 selection:text-stone-100 font-sans">
+    <div className="min-h-screen bg-obsidian-950 text-stone-100 flex flex-col md:flex-row selection:bg-amber-400 selection:text-stone-100 font-sans relative">
+      {/* Global Drag-and-Drop Auto-Detection Overlay */}
+      {isDraggingFile && (
+        <div className="fixed inset-0 z-50 bg-obsidian-950/90 backdrop-blur-xl border-4 border-dashed border-emerald-400 flex flex-col items-center justify-center p-6 text-center animate-in fade-in select-none">
+          <div className="w-24 h-24 rounded-3xl bg-emerald-500/20 border border-emerald-400/50 flex items-center justify-center text-emerald-400 mb-4 shadow-glow-emerald animate-bounce">
+            <Upload className="w-12 h-12" />
+          </div>
+          <h2 className="text-2xl font-black text-stone-100 uppercase tracking-wider">
+            I-Drop Ang Backup File Dinhi
+          </h2>
+          <p className="text-sm text-emerald-400 mt-2 font-mono">
+            Awtomatikong basahon ug i-import ang `.tinda-backup` gikan sa Desktop TINDA POS!
+          </p>
+        </div>
+      )}
+
+      {/* Auto-Importing Spinner Overlay */}
+      {autoImporting && (
+        <div className="fixed inset-0 z-50 bg-obsidian-950/90 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center animate-in fade-in select-none">
+          <div className="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-400/50 flex items-center justify-center text-amber-400 mb-4 animate-spin">
+            <HardDriveDownload className="w-8 h-8" />
+          </div>
+          <h3 className="text-lg font-bold text-stone-100">
+            Gi-Auto Detect ug Gi-Import ang Database...
+          </h3>
+          <p className="text-xs text-stone-400 mt-1 font-mono">
+            Giproseso ang mga produkto, presyo, suki, ug halin. Palihug paghulat og kadiyot.
+          </p>
+        </div>
+      )}
+
       {/* Executive Vertical Navigation Sidebar & Mobile Bottom Nav */}
       <Navigation
         activeTab={activeTab}

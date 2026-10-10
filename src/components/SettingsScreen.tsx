@@ -27,7 +27,8 @@ import {
   Palette,
   Sparkles,
   Smartphone,
-  RotateCcw
+  RotateCcw,
+  Zap
 } from 'lucide-react'
 import type { StoreSettings, UserAccount, UserRole, Transaction } from '../types'
 import { downloadBackupFile, importTindaBackup, rollbackRestoreCheckpoint } from '../utils/backup'
@@ -173,6 +174,45 @@ export function SettingsScreen({
     onSaveSettings(form)
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
+  }
+
+  const handleAutoDetectAndImport = async () => {
+    if (typeof (window as any).showOpenFilePicker === 'function') {
+      try {
+        setImporting(true)
+        const [handle] = await (window as any).showOpenFilePicker({
+          types: [
+            {
+              description: 'TINDA POS Backup Archives (*.tinda-backup, *.json)',
+              accept: {
+                'application/json': ['.json', '.tinda-backup'],
+                'application/octet-stream': ['.tinda-backup']
+              }
+            }
+          ],
+          multiple: false
+        })
+        const file = await handle.getFile()
+        const text = await file.text()
+        const result = await importTindaBackup(text)
+        if (result.success) {
+          alert(result.message)
+          const nowIso = new Date().toISOString()
+          setCheckpointTime(nowIso)
+          onRefreshAll()
+          loadUsers()
+        } else {
+          alert('Restore failed: ' + result.message)
+        }
+        return
+      } catch (err: any) {
+        setImporting(false)
+        if (err.name === 'AbortError') return
+      } finally {
+        setImporting(false)
+      }
+    }
+    fileInputRef.current?.click()
   }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1296,13 +1336,26 @@ export function SettingsScreen({
               className="hidden"
               onChange={handleFileChange}
             />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={importing}
-              className="btn-press w-full py-2.5 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-300 font-bold text-xs"
-            >
-              {importing ? 'Importing & Converting Database...' : 'Select & Import .tinda-backup File'}
-            </button>
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={handleAutoDetectAndImport}
+                disabled={importing}
+                className="btn-press w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-obsidian-950 font-black text-xs flex items-center justify-center gap-2 shadow-glow-amber transition-all"
+              >
+                <Zap className="h-3.5 w-3.5 fill-obsidian-950" />
+                <span>⚡ Auto-Detect &amp; 1-Click Import</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={importing}
+                className="btn-press w-full py-2.5 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-300 font-bold text-xs flex items-center justify-center gap-2"
+              >
+                <Upload className="h-3.5 w-3.5" />
+                <span>{importing ? 'Importing & Converting...' : 'Manual Select .tinda-backup File'}</span>
+              </button>
+            </div>
           </div>
         </div>
 

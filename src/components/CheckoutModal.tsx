@@ -363,6 +363,16 @@ export function CheckoutModal({
       setCompletedTx(fullTx)
       playCheckoutChime()
 
+      // Broadcast to live Customer Facing Display / Sales Monitor
+      try {
+        const monitorChannel = new BroadcastChannel('tinda_sales_monitor')
+        monitorChannel.postMessage({
+          type: 'SALE_COMPLETED',
+          transaction: fullTx,
+          change_c: finalChangeC
+        })
+      } catch {}
+
       if (settings?.printer_auto_print) {
         setTimeout(() => {
           window.print()

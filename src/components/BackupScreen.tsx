@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   HardDriveDownload,
   Upload,
@@ -10,10 +10,19 @@ import {
   RefreshCw,
   ShieldCheck,
   Clock,
-  Sparkles
+  Sparkles,
+  Zap,
+  RotateCcw,
+  FileText
 } from 'lucide-react'
 import { db } from '../db'
 import { playSuccessSound } from '../lib/sound'
+import {
+  importTindaBackup,
+  downloadBackupFile,
+  rollbackRestoreCheckpoint,
+  type BackupStats
+} from '../utils/backup'
 
 interface BackupScreenProps {
   onRefreshAll?: () => void
@@ -28,6 +37,12 @@ export function BackupScreen({
   const [isImporting, setIsImporting] = useState(false)
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
   const [statusType, setStatusType] = useState<'success' | 'error' | null>(null)
+  const [importStats, setImportStats] = useState<BackupStats | null>(null)
+  const [checkpointTime, setCheckpointTime] = useState<string | null>(() =>
+    localStorage.getItem('tinda_checkpoint_time')
+  )
+  const [isDraggingOver, setIsDraggingOver] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // DB Table Counts
   const [counts, setCounts] = useState<{
@@ -55,53 +70,15 @@ export function BackupScreen({
     loadCounts()
   }, [])
 
-  // Full JSON export
-  const handleExportJson = async () => {
+  // Full backup export (Universal format)
+  const handleExportBackup = async () => {
     setIsExporting(true)
     setStatusMessage(null)
     try {
-      const [products, categories, transactions, customers, expenses, suppliers, settings] =
-        await Promise.all([
-          db.products.toArray(),
-          db.categories.toArray(),
-          db.transactions.toArray(),
-          db.customers.toArray(),
-          db.expenses.toArray(),
-          db.suppliers.toArray(),
-          db.settings.toArray()
-        ])
-
-      const backupData = {
-        version: 1,
-        system: 'TINDA-POS-WEB',
-        exported_at: new Date().toISOString(),
-        store_name: storeName,
-        data: {
-          products,
-          categories,
-          transactions,
-          customers,
-          expenses,
-          suppliers,
-          settings
-        }
-      }
-
-      const jsonStr = JSON.stringify(backupData, null, 2)
-      const blob = new Blob([jsonStr], { type: 'application/json' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      const dateStr = new Date().toISOString().split('T')[0]
-      a.href = url
-      a.download = `tinda-pos-backup-${dateStr}.json`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-
+      await downloadBackupFile()
       playSuccessSound()
       setStatusType('success')
-      setStatusMessage('Matagumpay na na-download ang kumpletong JSON backup file!')
+      setStatusMessage('Matagumpay na na-download ang kumpletong .tinda-backup archive!')
     } catch (err) {
       console.error('Backup export error:', err)
       setStatusType('error')
@@ -111,65 +88,125 @@ export function BackupScreen({
     }
   }
 
-  // Restore JSON import
-  const handleImportJson = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Core import helper
+  const processBackupText = async (text: string) => {
+    setIsImporting(true)
+    setStatusMessage(null)
+    setImportStats(null)
+
+    try {
+      const result = await importTindaBackup(text)
+      if (result.success) {
+        playSuccessSound()
+        setStatusType('success')
+        setStatusMessage(result.message)
+        if (result.stats) {
+          setImportStats(result.stats)
+        }
+        setCheckpointTime(new Date().toISOString())
+        loadCounts()
+        if (onRefreshAll) onRefreshAll()
+      } else {
+        setStatusType('error')
+        setStatusMessage(result.message)
+      }
+    } catch (err: any) {
+      setStatusType('error')
+      setStatusMessage('Error parsing backup: ' + (err?.message || 'Invalid format'))
+    } finally {
+      setIsImporting(false)
+    }
+  }
+
+  // 1-Click Auto-Detect & Import
+  const handleAutoDetectAndImport = async () => {
+    // If browser supports File System Access API
+    if (typeof (window as any).showOpenFilePicker === 'function') {
+      try {
+        setIsImporting(true)
+        const [handle] = await (window as any).showOpenFilePicker({
+          types: [
+            {
+              description: 'TINDA POS Backup Archives (*.tinda-backup, *.json)',
+              accept: {
+                'application/json': ['.json', '.tinda-backup'],
+                'application/octet-stream': ['.tinda-backup']
+              }
+            }
+          ],
+          multiple: false
+        })
+        const file = await handle.getFile()
+        const text = await file.text()
+        await processBackupText(text)
+        return
+      } catch (err: any) {
+        setIsImporting(false)
+        if (err.name === 'AbortError') return
+        console.warn('showOpenFilePicker failed, falling back to input:', err)
+      }
+    }
+
+    // Fallback: trigger file input directly
+    fileInputRef.current?.click()
+  }
+
+  // Manual File Selector Change
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
     const confirmRestore = window.confirm(
       'BABALA: Ang pag-restore ay magsasama at mag-a-update ng mga records sa iyong database. Nais mo bang magpatuloy?'
     )
-    if (!confirmRestore) return
+    if (!confirmRestore) {
+      e.target.value = ''
+      return
+    }
 
+    try {
+      const text = await file.text()
+      await processBackupText(text)
+    } finally {
+      e.target.value = ''
+    }
+  }
+
+  // Drag and drop handler
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDraggingOver(false)
+    const file = e.dataTransfer.files?.[0]
+    if (!file) return
+
+    if (!file.name.endsWith('.tinda-backup') && !file.name.endsWith('.json')) {
+      alert('Paki-drop lamang ang .tinda-backup o .json file.')
+      return
+    }
+
+    const text = await file.text()
+    await processBackupText(text)
+  }
+
+  // Emergency Rollback handler
+  const handleRollback = async () => {
+    if (!confirm('I-rollback ang database sa estado bago ang huling import?')) return
     setIsImporting(true)
-    setStatusMessage(null)
-
-    const reader = new FileReader()
-    reader.onload = async (event) => {
-      try {
-        const content = event.target?.result as string
-        const parsed = JSON.parse(content)
-
-        if (!parsed.data) {
-          throw new Error('Hindi wastong format ng TINDA POS backup.')
-        }
-
-        const { products, categories, transactions, customers, expenses, suppliers } = parsed.data
-
-        if (Array.isArray(products) && products.length > 0) {
-          await db.products.bulkPut(products)
-        }
-        if (Array.isArray(categories) && categories.length > 0) {
-          await db.categories.bulkPut(categories)
-        }
-        if (Array.isArray(transactions) && transactions.length > 0) {
-          await db.transactions.bulkPut(transactions)
-        }
-        if (Array.isArray(customers) && customers.length > 0) {
-          await db.customers.bulkPut(customers)
-        }
-        if (Array.isArray(expenses) && expenses.length > 0) {
-          await db.expenses.bulkPut(expenses)
-        }
-        if (Array.isArray(suppliers) && suppliers.length > 0) {
-          await db.suppliers.bulkPut(suppliers)
-        }
-
+    try {
+      const result = await rollbackRestoreCheckpoint()
+      if (result.success) {
         playSuccessSound()
         setStatusType('success')
-        setStatusMessage('Matagumpay na na-restore ang database mula sa backup file!')
+        setStatusMessage(result.message)
         loadCounts()
         if (onRefreshAll) onRefreshAll()
-      } catch (err) {
-        console.error('Restore error:', err)
+      } else {
         setStatusType('error')
-        setStatusMessage('Maling format o sira ang napiling backup file.')
-      } finally {
-        setIsImporting(false)
-        e.target.value = ''
+        setStatusMessage(result.message)
       }
+    } finally {
+      setIsImporting(false)
     }
-    reader.readAsText(file)
   }
 
   // CSV Export for Excel
@@ -265,41 +302,131 @@ export function BackupScreen({
         </div>
       </div>
 
+      {/* Last Import Stats Summary */}
+      {importStats && (
+        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Sparkles className="w-5 h-5 text-emerald-400 shrink-0" />
+            <div>
+              <p className="text-xs font-bold text-stone-100">
+                Import Statistics ({importStats.sourcePlatform || 'Desktop SQLite Archive'}):
+              </p>
+              <p className="text-[11px] text-emerald-300/90 font-mono mt-0.5">
+                {importStats.products} Products · {importStats.transactions} Transactions · {importStats.customers} Customers · {importStats.suppliers} Suppliers · {importStats.expenses} Expenses
+              </p>
+            </div>
+          </div>
+          <span className="text-[10px] font-mono bg-emerald-500/20 px-2.5 py-1 rounded-full border border-emerald-500/30 text-emerald-300 self-start sm:self-auto">
+            STATUS: 100% CONVERTED &amp; SAVED
+          </span>
+        </div>
+      )}
+
+      {/* Pre-Restore Rollback Snapshot Alert */}
+      {checkpointTime && (
+        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <RotateCcw className="w-5 h-5 text-amber-400 shrink-0" />
+            <div>
+              <p className="text-xs font-bold text-stone-100">
+                Emergency Pre-Restore Snapshot Available
+              </p>
+              <p className="text-[11px] text-stone-400 font-mono mt-0.5">
+                Saved: {new Date(checkpointTime).toLocaleString()}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleRollback}
+            disabled={isImporting}
+            className="btn-press px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs flex items-center gap-2 self-start sm:self-auto shrink-0 transition-all"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Rollback to Pre-Restore State</span>
+          </button>
+        </div>
+      )}
+
       {/* Operations Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Full Database Export & Import */}
+        {/* Full Database Export & Universal Importer */}
         <div className="p-6 rounded-3xl bg-obsidian-900 border border-slate-800 space-y-4 shadow-xl">
           <div className="flex items-center gap-2.5 border-b border-white/[0.08] pb-3">
             <Database className="w-4 h-4 text-emerald-400" />
             <h3 className="text-sm font-bold text-stone-100 uppercase tracking-wider font-sans">
-              Full System Backup &amp; Restore
+              Universal Desktop &amp; Web Backup Archive
             </h3>
           </div>
           <p className="text-xs text-stone-400 leading-relaxed font-sans">
-            I-download ang buong kopya ng inyong imbentaryo, benta, resibo, at suki profiles bilang isang protektadong JSON file. Ligtas itong itago sa inyong USB flash drive o Google Drive.
+            100% compatible sa Offline Desktop TINDA POS (Windows/Linux SQLite) ug Web database. Pwede nimo i-auto detect ang data o i-manual og select ang <code className="text-amber-300 font-mono text-[11px]">.tinda-backup</code> o <code className="text-amber-300 font-mono text-[11px]">.json</code> file.
           </p>
 
+          {/* Drag & Drop Zone */}
+          <div
+            onDragOver={(e) => {
+              e.preventDefault()
+              setIsDraggingOver(true)
+            }}
+            onDragLeave={() => setIsDraggingOver(false)}
+            onDrop={handleDrop}
+            className={`border-2 border-dashed rounded-2xl p-4 text-center transition-all cursor-pointer ${
+              isDraggingOver
+                ? 'border-emerald-500 bg-emerald-500/10 shadow-glow-emerald scale-[1.01]'
+                : 'border-white/[0.1] hover:border-emerald-500/40 bg-obsidian-950/40'
+            }`}
+            onClick={handleAutoDetectAndImport}
+          >
+            <Upload className="w-6 h-6 mx-auto mb-2 text-stone-400" />
+            <p className="text-xs font-bold text-stone-200">
+              I-drag &amp; drop ang imong backup file diri
+            </p>
+            <p className="text-[11px] text-stone-500 mt-0.5">
+              Suportado ang parehong <span className="text-amber-400 font-mono">.tinda-backup</span> ug <span className="text-emerald-400 font-mono">.json</span>
+            </p>
+          </div>
+
           <div className="pt-2 space-y-3">
+            {/* 1-Click Auto-Detect Button */}
             <button
-              onClick={handleExportJson}
-              disabled={isExporting}
-              className="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-glow-emerald active:scale-[0.98]"
+              onClick={handleAutoDetectAndImport}
+              disabled={isImporting}
+              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-obsidian-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-glow-amber active:scale-[0.98]"
             >
-              {isExporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-              <span>Download Full JSON Backup</span>
+              {isImporting ? (
+                <RefreshCw className="w-4 h-4 animate-spin text-obsidian-950" />
+              ) : (
+                <Zap className="w-4 h-4 text-obsidian-950 fill-obsidian-950" />
+              )}
+              <span>⚡ Auto-Detect &amp; 1-Click Import Backup</span>
             </button>
 
-            <label className="w-full py-3.5 rounded-2xl bg-obsidian-850 hover:bg-obsidian-800 border border-slate-700 text-stone-200 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer">
+            {/* Manual File Selector */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".tinda-backup,.json"
+              onChange={handleFileChange}
+              disabled={isImporting}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isImporting}
+              className="w-full py-3 rounded-2xl bg-obsidian-850 hover:bg-obsidian-800 border border-slate-700 text-stone-200 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+            >
               <Upload className="w-4 h-4 text-stone-400" />
-              <span>Restore Database from File</span>
-              <input
-                type="file"
-                accept=".json"
-                onChange={handleImportJson}
-                disabled={isImporting}
-                className="hidden"
-              />
-            </label>
+              <span>Manual File Picker (.tinda-backup / .json)</span>
+            </button>
+
+            {/* Export Backup File */}
+            <button
+              onClick={handleExportBackup}
+              disabled={isExporting}
+              className="w-full py-3 rounded-2xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+            >
+              {isExporting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              <span>Download Universal .tinda-backup File</span>
+            </button>
           </div>
         </div>
 

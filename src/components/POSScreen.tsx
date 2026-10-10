@@ -35,7 +35,10 @@ import {
   Clock,
   RotateCcw,
   LayoutGrid,
-  List
+  List,
+  Zap,
+  Upload,
+  Database
 } from 'lucide-react'
 import type {
   Product,
@@ -58,6 +61,7 @@ import {
   setSoundMuted,
   playCheckoutChime
 } from '../lib/sound'
+import { importTindaBackup } from '../utils/backup'
 
 interface POSScreenProps {
   products: Product[]
@@ -198,11 +202,70 @@ export function POSScreen({
   const [isHeldModalOpen, setIsHeldModalOpen] = useState(false)
   const [isCalcModalOpen, setIsCalcModalOpen] = useState(false)
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false)
+  const [isAutoImporting, setIsAutoImporting] = useState(false)
 
   // Refs for hotkey focusing
   const searchInputRef = useRef<HTMLInputElement>(null)
   const lastQtyInputRef = useRef<HTMLInputElement>(null)
   const discountQuickInputRef = useRef<HTMLInputElement>(null)
+  const posFileInputRef = useRef<HTMLInputElement>(null)
+
+  const handlePOSAutoImport = async () => {
+    if (typeof (window as any).showOpenFilePicker === 'function') {
+      try {
+        setIsAutoImporting(true)
+        const [handle] = await (window as any).showOpenFilePicker({
+          types: [
+            {
+              description: 'TINDA POS Backup Archives (*.tinda-backup, *.json)',
+              accept: {
+                'application/json': ['.json', '.tinda-backup'],
+                'application/octet-stream': ['.tinda-backup']
+              }
+            }
+          ],
+          multiple: false
+        })
+        const file = await handle.getFile()
+        const text = await file.text()
+        const res = await importTindaBackup(text)
+        if (res.success) {
+          alert(res.message)
+          if (onRefreshData) await onRefreshData()
+        } else {
+          alert('Import failed: ' + res.message)
+        }
+        return
+      } catch (err: any) {
+        setIsAutoImporting(false)
+        if (err.name === 'AbortError') return
+      } finally {
+        setIsAutoImporting(false)
+      }
+    }
+    posFileInputRef.current?.click()
+  }
+
+  const handlePOSFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setIsAutoImporting(true)
+    try {
+      const text = await file.text()
+      const res = await importTindaBackup(text)
+      if (res.success) {
+        alert(res.message)
+        if (onRefreshData) await onRefreshData()
+      } else {
+        alert('Import failed: ' + res.message)
+      }
+    } catch (err: any) {
+      alert('Error reading backup: ' + err.message)
+    } finally {
+      setIsAutoImporting(false)
+      e.target.value = ''
+    }
+  }
 
   const toggleSound = () => {
     const next = !soundMutedState
@@ -775,7 +838,48 @@ export function POSScreen({
         </div>
 
         {/* Product Cards Display: Grid or List */}
-        {filteredProducts.length === 0 ? (
+        {products.length === 0 ? (
+          <div className="glass-card rounded-3xl p-10 text-center flex flex-col items-center justify-center border border-dashed border-amber-500/30 bg-amber-500/[0.03] space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <Database className="w-7 h-7" />
+            </div>
+            <div>
+              <p className="font-serif text-lg font-bold tracking-wide text-stone-100">
+                Walay Sulod Nga Imbentaryo (No Products Yet)
+              </p>
+              <p className="text-xs text-stone-400 mt-1 max-w-md mx-auto">
+                Gusto ba nimo i-auto detect o i-import ang imong mga produkto gikan sa Offline Desktop TINDA POS (<code className="text-amber-300 font-mono">.tinda-backup</code>) o JSON backup?
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={handlePOSAutoImport}
+                disabled={isAutoImporting}
+                className="btn-press px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-obsidian-950 font-black text-xs uppercase tracking-wider flex items-center gap-2 shadow-glow-amber transition-all active:scale-[0.98]"
+              >
+                <Zap className="w-4 h-4 text-obsidian-950 fill-obsidian-950" />
+                <span>{isAutoImporting ? 'Importing...' : '⚡ Auto-Detect & Import Backup'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => posFileInputRef.current?.click()}
+                disabled={isAutoImporting}
+                className="btn-press px-5 py-3 rounded-2xl bg-obsidian-900 border border-slate-700 text-stone-200 hover:text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-all"
+              >
+                <Upload className="w-4 h-4 text-stone-400" />
+                <span>Manual File Picker (.tinda-backup)</span>
+              </button>
+              <input
+                ref={posFileInputRef}
+                type="file"
+                accept=".tinda-backup,.json"
+                onChange={handlePOSFileChange}
+                className="hidden"
+              />
+            </div>
+          </div>
+        ) : filteredProducts.length === 0 ? (
           <div className="glass-card rounded-3xl p-14 text-center flex flex-col items-center justify-center border border-white/[0.04]">
             <Package className="h-10 w-10 text-stone-500 mb-3" />
             <p className="font-serif text-base font-bold tracking-widest text-stone-300 uppercase">

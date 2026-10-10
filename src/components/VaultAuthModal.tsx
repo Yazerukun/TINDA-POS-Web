@@ -100,31 +100,31 @@ function NodeNetworkIllustration(): React.JSX.Element {
     >
       <defs>
         <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#2563EB" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#2563EB" stopOpacity="0" />
+          <stop offset="0%" stopColor="#10b981" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
         </radialGradient>
       </defs>
-      <line x1="20" y1="280" x2="80" y2="230" stroke="#2563EB" strokeWidth="1" strokeDasharray="3 3" />
-      <line x1="80" y1="230" x2="160" y2="250" stroke="#2563EB" strokeWidth="1" />
-      <line x1="80" y1="230" x2="110" y2="170" stroke="#2563EB" strokeWidth="1" />
-      <line x1="110" y1="170" x2="200" y2="190" stroke="#2563EB" strokeWidth="1" strokeDasharray="4 2" />
-      <line x1="110" y1="170" x2="70" y2="120" stroke="#2563EB" strokeWidth="1" />
-      <line x1="70" y1="120" x2="150" y2="100" stroke="#2563EB" strokeWidth="1" />
-      <line x1="150" y1="100" x2="230" y2="130" stroke="#2563EB" strokeWidth="1" />
-      <line x1="160" y1="250" x2="250" y2="240" stroke="#2563EB" strokeWidth="1" />
-      <line x1="200" y1="190" x2="250" y2="240" stroke="#2563EB" strokeWidth="1" />
+      <line x1="20" y1="280" x2="80" y2="230" stroke="#10b981" strokeWidth="1" strokeDasharray="3 3" />
+      <line x1="80" y1="230" x2="160" y2="250" stroke="#10b981" strokeWidth="1" />
+      <line x1="80" y1="230" x2="110" y2="170" stroke="#10b981" strokeWidth="1" />
+      <line x1="110" y1="170" x2="200" y2="190" stroke="#10b981" strokeWidth="1" strokeDasharray="4 2" />
+      <line x1="110" y1="170" x2="70" y2="120" stroke="#10b981" strokeWidth="1" />
+      <line x1="70" y1="120" x2="150" y2="100" stroke="#10b981" strokeWidth="1" />
+      <line x1="150" y1="100" x2="230" y2="130" stroke="#10b981" strokeWidth="1" />
+      <line x1="160" y1="250" x2="250" y2="240" stroke="#10b981" strokeWidth="1" />
+      <line x1="200" y1="190" x2="250" y2="240" stroke="#10b981" strokeWidth="1" />
 
       {/* Nodes */}
-      <circle cx="20" cy="280" r="3" fill="#2563EB" />
+      <circle cx="20" cy="280" r="3" fill="#10b981" />
       <circle cx="80" cy="230" r="5" fill="#f59e0b" />
       <circle cx="80" cy="230" r="12" fill="url(#nodeGlow)" />
-      <circle cx="160" cy="250" r="4" fill="#2563EB" />
+      <circle cx="160" cy="250" r="4" fill="#10b981" />
       <circle cx="110" cy="170" r="6" fill="#f59e0b" />
       <circle cx="110" cy="170" r="16" fill="url(#nodeGlow)" />
-      <circle cx="70" cy="120" r="4" fill="#2563EB" />
+      <circle cx="70" cy="120" r="4" fill="#10b981" />
       <circle cx="150" cy="100" r="5" fill="#f59e0b" />
-      <circle cx="200" cy="190" r="4" fill="#2563EB" />
-      <circle cx="230" cy="130" r="3" fill="#2563EB" />
+      <circle cx="200" cy="190" r="4" fill="#10b981" />
+      <circle cx="230" cy="130" r="3" fill="#10b981" />
       <circle cx="250" cy="240" r="4" fill="#f59e0b" />
     </svg>
   )

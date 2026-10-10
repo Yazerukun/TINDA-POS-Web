@@ -230,7 +230,7 @@ export function PriceGuideModal({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search brand or item (e.g. Coke Sakto, Coke Kasalo, Coke Litro, Royal, Sprite, Bear Brand...)"
-              className="w-full h-11 pl-10 pr-4 rounded-xl bg-obsidian-900 border border-slate-900/20 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#2563EB]"
+              className="w-full h-11 pl-10 pr-4 rounded-xl bg-obsidian-900 border border-slate-900/20 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-500"
             />
           </div>
 
@@ -241,7 +241,7 @@ export function PriceGuideModal({
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`btn-press px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                   selectedCategory === cat.id
-                    ? 'bg-[#2563EB] text-white shadow-glow-gold'
+                    ? 'bg-emerald-600 text-white shadow-glow-emerald'
                     : 'bg-white/[0.04] text-stone-400 hover:text-stone-200 border border-slate-900/10'
                 }`}
               >
@@ -261,7 +261,7 @@ export function PriceGuideModal({
         <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           {loading ? (
             <div className="h-64 flex flex-col items-center justify-center space-y-3 text-stone-400">
-              <div className="h-8 w-8 rounded-full border-2 border-[#2563EB] border-t-transparent animate-spin" />
+              <div className="h-8 w-8 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
               <p className="text-xs font-sans font-semibold uppercase tracking-wider text-gold-muted">
                 Loading DTI SRP Reference Catalog...
               </p>
@@ -324,7 +324,7 @@ export function PriceGuideModal({
                       ) : (
                         <button
                           onClick={() => handleAddToInventory(ref)}
-                          className="btn-press px-3.5 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-[#2563EB] hover:from-blue-400 hover:to-[#1D4ED8] text-white text-xs font-bold flex items-center gap-1.5 shadow-glow-gold transition-all shrink-0"
+                          className="btn-press px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-glow-emerald transition-all shrink-0"
                         >
                           <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
                           <span>Add to Inventory</span>

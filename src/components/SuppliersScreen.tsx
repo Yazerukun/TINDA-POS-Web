@@ -153,7 +153,7 @@ export function SuppliersScreen(): React.JSX.Element {
 
         <button
           onClick={handleOpenAdd}
-          className="btn-press px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-[#2563EB] hover:from-blue-400 hover:to-[#1D4ED8] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-gold transition-all self-start sm:self-auto"
+          className="btn-press px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-emerald transition-all self-start sm:self-auto"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>New Supplier</span>
@@ -168,14 +168,14 @@ export function SuppliersScreen(): React.JSX.Element {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by vendor name, contact person, or phone..."
-          className="w-full h-11 pl-10 pr-4 rounded-xl bg-obsidian-900 border border-slate-900/20 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#2563EB]"
+          className="w-full h-11 pl-10 pr-4 rounded-xl bg-obsidian-900 border border-slate-900/20 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-500"
         />
       </div>
 
       {/* Suppliers Grid */}
       {loading ? (
         <div className="py-20 flex flex-col items-center justify-center space-y-2 text-stone-400">
-          <div className="h-7 w-7 rounded-full border-2 border-[#2563EB] border-t-transparent animate-spin" />
+          <div className="h-7 w-7 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
           <p className="text-xs font-mono">Loading suppliers directory...</p>
         </div>
       ) : filteredSuppliers.length === 0 ? (
@@ -305,7 +305,7 @@ export function SuppliersScreen(): React.JSX.Element {
                   placeholder="e.g. San Miguel Brewery, Puregold Wholesale, Local Bagsakan..."
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
-                  className="w-full h-11 px-3.5 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs sm:text-sm focus:outline-none focus:border-[#2563EB]"
+                  className="w-full h-11 px-3.5 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs sm:text-sm focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -319,7 +319,7 @@ export function SuppliersScreen(): React.JSX.Element {
                     placeholder="e.g. Kuya Mark, Sales Agent..."
                     value={formContactPerson}
                     onChange={(e) => setFormContactPerson(e.target.value)}
-                    className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-[#2563EB]"
+                    className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
@@ -332,7 +332,7 @@ export function SuppliersScreen(): React.JSX.Element {
                     placeholder="e.g. 0917-123-4567"
                     value={formPhone}
                     onChange={(e) => setFormPhone(e.target.value)}
-                    className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs font-mono focus:outline-none focus:border-[#2563EB]"
+                    className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs font-mono focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
@@ -346,7 +346,7 @@ export function SuppliersScreen(): React.JSX.Element {
                   placeholder="e.g. National Highway, Public Market, Plant Depot..."
                   value={formAddress}
                   onChange={(e) => setFormAddress(e.target.value)}
-                  className="w-full h-11 px-3.5 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-[#2563EB]"
+                  className="w-full h-11 px-3.5 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -359,7 +359,7 @@ export function SuppliersScreen(): React.JSX.Element {
                   placeholder="e.g. Delivers every Tuesday and Friday morning. Minimum order ₱5,000 for free delivery."
                   value={formNotes}
                   onChange={(e) => setFormNotes(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-[#2563EB] resize-none"
+                  className="w-full p-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-emerald-500 resize-none"
                 />
               </div>
 
@@ -373,7 +373,7 @@ export function SuppliersScreen(): React.JSX.Element {
                 </button>
                 <button
                   type="submit"
-                  className="btn-press flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-[#2563EB] text-white text-xs font-bold uppercase tracking-wider shadow-glow-gold transition-all"
+                  className="btn-press flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-bold uppercase tracking-wider shadow-glow-emerald transition-all"
                 >
                   {editingSupplier ? 'Update Supplier' : 'Save Supplier'}
                 </button>

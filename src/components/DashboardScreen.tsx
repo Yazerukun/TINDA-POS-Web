@@ -573,7 +573,7 @@ export function DashboardScreen({
                     onClick={() => setRestockQty(preset)}
                     className={`btn-press flex-1 py-2 rounded-xl text-xs font-bold font-mono transition-all ${
                       restockQty === preset
-                        ? 'bg-[#2563EB] text-white shadow-glow-gold'
+                        ? 'bg-emerald-600 text-white shadow-glow-emerald'
                         : 'bg-white/[0.06] text-stone-300 hover:bg-white/[0.1] border border-slate-900/15'
                     }`}
                   >
@@ -588,13 +588,13 @@ export function DashboardScreen({
                   min="1"
                   value={restockQty}
                   onChange={(e) => setRestockQty(Math.max(1, parseInt(e.target.value, 10) || 1))}
-                  className="w-full h-12 bg-black/60 border border-slate-900/20 rounded-xl px-4 text-center font-mono text-xl font-bold text-gold-light focus:outline-none focus:border-[#2563EB]"
+                  className="w-full h-12 bg-black/60 border border-slate-900/20 rounded-xl px-4 text-center font-mono text-xl font-bold text-gold-light focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
               <p className="text-[0.8125rem] text-stone-400 text-center font-mono">
                 New inventory level will be:{' '}
-                <strong className="text-emerald-600 font-bold">
+                <strong className="text-emerald-500 font-bold">
                   {restockModalProduct.stock + (restockQty || 0)} {restockModalProduct.base_unit || 'pcs'}
                 </strong>
               </p>
@@ -611,7 +611,7 @@ export function DashboardScreen({
               <button
                 type="button"
                 onClick={handleConfirmRestock}
-                className="btn-press flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-[#2563EB] text-white text-xs font-bold uppercase tracking-wider shadow-glow-gold transition-all"
+                className="btn-press flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-bold uppercase tracking-wider shadow-glow-emerald transition-all"
               >
                 Confirm Restock
               </button>

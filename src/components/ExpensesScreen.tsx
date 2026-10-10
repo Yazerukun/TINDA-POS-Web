@@ -182,7 +182,7 @@ export function ExpensesScreen({
 
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="btn-press px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-[#2563EB] hover:from-blue-400 hover:to-[#1D4ED8] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-gold transition-all self-start sm:self-auto"
+          className="btn-press px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-emerald transition-all self-start sm:self-auto"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           <span>New Expense</span>
@@ -255,7 +255,7 @@ export function ExpensesScreen({
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="bg-black/60 border border-slate-900/20 rounded-lg px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-[#2563EB]"
+              className="bg-black/60 border border-slate-900/20 rounded-lg px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-emerald-500"
             />
           </div>
 
@@ -265,7 +265,7 @@ export function ExpensesScreen({
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="bg-black/60 border border-slate-900/20 rounded-lg px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-[#2563EB]"
+              className="bg-black/60 border border-slate-900/20 rounded-lg px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-emerald-500"
             />
           </div>
 
@@ -274,7 +274,7 @@ export function ExpensesScreen({
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-black/60 border border-slate-900/20 rounded-lg px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-[#2563EB]"
+              className="bg-black/60 border border-slate-900/20 rounded-lg px-2.5 py-1.5 text-xs text-stone-200 focus:outline-none focus:border-emerald-500"
             >
               <option value="ALL">All Categories</option>
               {categories.map((c) => (
@@ -302,7 +302,7 @@ export function ExpensesScreen({
       <div className="rounded-3xl border border-slate-900/[0.08] bg-obsidian-900/[0.05] overflow-hidden">
         {loading ? (
           <div className="py-20 flex flex-col items-center justify-center space-y-2 text-stone-400">
-            <div className="h-7 w-7 rounded-full border-2 border-[#2563EB] border-t-transparent animate-spin" />
+            <div className="h-7 w-7 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
             <p className="text-xs font-mono">Loading expense records...</p>
           </div>
         ) : filteredExpenses.length === 0 ? (
@@ -398,7 +398,7 @@ export function ExpensesScreen({
                     placeholder="0.00"
                     value={newAmount}
                     onChange={(e) => setNewAmount(e.target.value)}
-                    className="w-full h-12 pl-9 pr-4 rounded-xl bg-black border border-slate-900/20 text-gold-light font-mono text-xl font-bold focus:outline-none focus:border-[#2563EB]"
+                    className="w-full h-12 pl-9 pr-4 rounded-xl bg-black border border-slate-900/20 text-gold-light font-mono text-xl font-bold focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
@@ -411,7 +411,7 @@ export function ExpensesScreen({
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
-                    className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-[#2563EB]"
+                    className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-emerald-500"
                   >
                     {categories.map((c) => (
                       <option key={c.id || c.name} value={c.name}>
@@ -430,7 +430,7 @@ export function ExpensesScreen({
                     required
                     value={newDate}
                     onChange={(e) => setNewDate(e.target.value)}
-                    className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-[#2563EB]"
+                    className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
@@ -444,7 +444,7 @@ export function ExpensesScreen({
                   placeholder="e.g. 5 bags of ice, kuryente payment, sando bags..."
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
-                  className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-[#2563EB]"
+                  className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -456,7 +456,7 @@ export function ExpensesScreen({
                     placeholder="New category name..."
                     value={newCustomCategory}
                     onChange={(e) => setNewCustomCategory(e.target.value)}
-                    className="flex-1 h-9 px-3 rounded-xl bg-obsidian-900 border border-slate-900/15 text-xs text-stone-300 focus:outline-none focus:border-[#2563EB]"
+                    className="flex-1 h-9 px-3 rounded-xl bg-obsidian-900 border border-slate-900/15 text-xs text-stone-300 focus:outline-none focus:border-emerald-500"
                   />
                   <button
                     type="button"
@@ -478,7 +478,7 @@ export function ExpensesScreen({
                 </button>
                 <button
                   type="submit"
-                  className="btn-press flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-[#2563EB] text-white text-xs font-bold uppercase tracking-wider shadow-glow-gold transition-all"
+                  className="btn-press flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-bold uppercase tracking-wider shadow-glow-emerald transition-all"
                 >
                   Save Expense
                 </button>

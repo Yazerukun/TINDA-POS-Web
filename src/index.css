@@ -3,74 +3,75 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
-  --gold-primary: #2563EB;
-  --gold-light: #93C5FD;
-  --gold-muted: #3B82F6;
-  --gold-dark: #1E40AF;
-  --obsidian-bg: #FFFFFF;
+  color-scheme: dark;
+  --gold-primary: #10b981;
+  --gold-light: #34d399;
+  --gold-muted: #059669;
+  --gold-dark: #047857;
+  --obsidian-bg: #0a0d0f;
 }
 
 body {
-  background-color: #FFFFFF;
+  background-color: #0a0d0f;
+  color: #f1f5f9;
   background-image:
-    radial-gradient(ellipse at 50% -10%, rgba(37, 99, 235, 0.06) 0%, transparent 65%),
-    radial-gradient(at 10% 85%, rgba(59, 130, 246, 0.03) 0px, transparent 40%),
-    radial-gradient(at 90% 90%, rgba(30, 64, 175, 0.02) 0px, transparent 45%);
+    radial-gradient(ellipse at 50% -10%, rgba(16, 185, 129, 0.14) 0%, transparent 65%),
+    radial-gradient(at 10% 85%, rgba(16, 185, 129, 0.05) 0px, transparent 40%),
+    radial-gradient(at 90% 90%, rgba(245, 158, 11, 0.04) 0px, transparent 45%);
   background-attachment: fixed;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Surface tokens — light glass over white */
+/* Surface tokens — Tailark-grade dark glassmorphic panels */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(17, 20, 24, 0.85);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(15, 23, 42, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .glass-vault {
-  background: radial-gradient(120% 120% at 50% 0%, rgba(255, 255, 255, 0.97) 0%, rgba(248, 250, 252, 0.99) 100%);
+  background: radial-gradient(120% 120% at 50% 0%, rgba(21, 25, 31, 0.95) 0%, rgba(10, 13, 15, 0.98) 100%);
   backdrop-filter: blur(36px);
   -webkit-backdrop-filter: blur(36px);
-  border: 1px solid rgba(37, 99, 235, 0.22);
-  box-shadow: 0 30px 80px -15px rgba(15, 23, 42, 0.18), 0 0 50px -10px rgba(37, 99, 235, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.7), 0 0 50px -10px rgba(16, 185, 129, 0.18);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(17, 20, 24, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card:hover {
-  background: #FFFFFF;
-  border-color: rgba(37, 99, 235, 0.35);
+  background: rgba(21, 25, 31, 0.95);
+  border-color: rgba(16, 185, 129, 0.4);
   transform: translateY(-2px);
-  box-shadow: 0 16px 40px -10px rgba(15, 23, 42, 0.12), 0 0 20px -6px rgba(37, 99, 235, 0.18);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5), 0 0 20px -6px rgba(16, 185, 129, 0.25);
 }
 
 .glass-pill {
-  background: rgba(248, 250, 252, 0.9);
+  background: rgba(21, 25, 31, 0.85);
   backdrop-filter: blur(14px);
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Primary action */
+/* Primary Brand Action Button (Desktop-matched Emerald Green) */
 .btn-gold {
-  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 50%, #1D4ED8 100%);
-  color: #FFFFFF;
+  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+  color: #ffffff;
   font-weight: 700;
-  box-shadow: 0 4px 20px -2px rgba(37, 99, 235, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-gold:hover {
-  background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 50%, #2563EB 100%);
-  box-shadow: 0 6px 25px 0px rgba(37, 99, 235, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%);
+  box-shadow: 0 6px 25px 0px rgba(16, 185, 129, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25);
   transform: translateY(-1px);
 }
 
@@ -79,13 +80,13 @@ body {
 }
 
 .text-gold-gradient {
-  background: linear-gradient(135deg, #1E40AF 0%, #2563EB 40%, #3B82F6 70%, #60A5FA 100%);
+  background: linear-gradient(135deg, #34d399 0%, #10b981 40%, #fbbf24 80%, #f59e0b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .border-gold-subtle {
-  border-color: rgba(37, 99, 235, 0.2);
+  border-color: rgba(16, 185, 129, 0.25);
 }
 
 /* Ambient Fluid Background Animations */
@@ -166,11 +167,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(15, 23, 42, 0.18);
+  background: rgba(255, 255, 255, 0.16);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(15, 23, 42, 0.30);
+  background: rgba(16, 185, 129, 0.4);
 }
 
 /* 80mm Thermal Receipt */

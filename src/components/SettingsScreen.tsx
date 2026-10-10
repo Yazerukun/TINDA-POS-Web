@@ -419,7 +419,7 @@ export function SettingsScreen({
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-amber-300 to-[#2563EB] flex items-center justify-center text-stone-100 font-serif font-black text-2xl">
+                  <div className="w-full h-full bg-gradient-to-br from-amber-400 via-gold to-emerald-600 flex items-center justify-center text-obsidian-950 font-serif font-black text-2xl">
                     {(currentCashierName || 'User').substring(0, 2).toUpperCase()}
                   </div>
                 )}

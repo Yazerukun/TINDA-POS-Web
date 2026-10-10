@@ -212,13 +212,13 @@ export function AnalyticsScreen({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-900/15 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-serif font-bold text-stone-100 tracking-wide">
               Store Analytics & Audit Reports
             </h1>
-            <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted border border-gold/30 px-2 py-0.5 rounded-full uppercase">
+            <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-emerald-400/90 border border-emerald-500/30 px-2 py-0.5 rounded-full uppercase">
               Financial Intelligence
             </span>
           </div>
@@ -228,12 +228,12 @@ export function AnalyticsScreen({
         </div>
 
         {/* Tab switchers */}
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-obsidian-900 border border-slate-900/15">
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-obsidian-900 border border-white/10">
           <button
             onClick={() => setActiveTab('SALES')}
             className={`btn-press px-3.5 py-1.5 rounded-xl text-xs font-bold font-mono transition-all ${
               activeTab === 'SALES'
-                ? 'bg-[#2563EB] text-white shadow-glow-gold'
+                ? 'bg-gradient-to-r from-emerald-500 to-brand-600 text-obsidian-950 shadow-glow-emerald'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -244,7 +244,7 @@ export function AnalyticsScreen({
             onClick={() => setActiveTab('CASHCOUNT')}
             className={`btn-press px-3.5 py-1.5 rounded-xl text-xs font-bold font-mono transition-all ${
               activeTab === 'CASHCOUNT'
-                ? 'bg-[#2563EB] text-white shadow-glow-gold'
+                ? 'bg-gradient-to-r from-emerald-500 to-brand-600 text-obsidian-950 shadow-glow-emerald'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -255,7 +255,7 @@ export function AnalyticsScreen({
             onClick={() => setActiveTab('READINGS')}
             className={`btn-press px-3.5 py-1.5 rounded-xl text-xs font-bold font-mono transition-all ${
               activeTab === 'READINGS'
-                ? 'bg-[#2563EB] text-white shadow-glow-gold'
+                ? 'bg-gradient-to-r from-emerald-500 to-brand-600 text-obsidian-950 shadow-glow-emerald'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
@@ -478,7 +478,7 @@ export function AnalyticsScreen({
                             const val = parseInt(e.target.value, 10) || 0
                             setCounts((prev) => ({ ...prev, [d.key]: Math.max(0, val) }))
                           }}
-                          className="w-14 h-8 bg-black border border-slate-900/20 rounded-lg text-center font-mono text-xs text-stone-100 focus:outline-none focus:border-[#2563EB]"
+                          className="w-14 h-8 bg-obsidian-950 border border-white/10 rounded-lg text-center font-mono text-xs text-stone-100 focus:outline-none focus:border-emerald-500"
                         />
                         <button
                           type="button"
@@ -488,7 +488,7 @@ export function AnalyticsScreen({
                               [d.key]: (prev[d.key] || 0) + 1
                             }))
                           }
-                          className="h-8 w-8 rounded-lg bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.06] text-stone-300 font-bold flex items-center justify-center text-sm"
+                          className="h-8 w-8 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-stone-300 font-bold flex items-center justify-center text-sm"
                         >
                           +
                         </button>
@@ -500,15 +500,15 @@ export function AnalyticsScreen({
             </div>
 
             {/* Right Col: Drawer Audit Reconciliation */}
-            <div className="glass-panel p-5 rounded-3xl border border-slate-900/[0.08] space-y-5 flex flex-col justify-between">
+            <div className="glass-panel p-5 rounded-3xl border border-white/10 space-y-5 flex flex-col justify-between">
               <div className="space-y-4">
-                <div className="border-b border-slate-900/15 pb-3">
+                <div className="border-b border-white/10 pb-3">
                   <h3 className="text-sm font-bold text-stone-100">Drawer Audit Summary</h3>
                   <p className="text-[0.75rem] font-mono text-stone-400 mt-0.5">Shift Cash Reconciliation</p>
                 </div>
 
                 <div className="space-y-3 font-mono text-xs">
-                  <div className="p-3.5 rounded-2xl bg-obsidian-900 border border-slate-900/15">
+                  <div className="p-3.5 rounded-2xl bg-obsidian-900 border border-white/10">
                     <p className="text-[0.75rem] text-stone-400 uppercase">Actual Physical Cash Counted</p>
                     <p className="text-2xl font-serif font-black text-gold-light mt-1">
                       {money(countedPhysicalCash_c)}
@@ -520,12 +520,12 @@ export function AnalyticsScreen({
                     <span className="text-stone-200">{money(todayCashSales_c)}</span>
                   </div>
 
-                  <div className="flex justify-between text-red-600">
+                  <div className="flex justify-between text-red-400">
                     <span>Today's Cash Expenses:</span>
                     <span>-{money(todayCashExpenses_c)}</span>
                   </div>
 
-                  <div className="flex justify-between text-stone-300 font-semibold border-t border-slate-900/15 pt-2">
+                  <div className="flex justify-between text-stone-300 font-semibold border-t border-white/10 pt-2">
                     <span>Expected Cash in Drawer:</span>
                     <span>{money(expectedCashInDrawer_c)}</span>
                   </div>
@@ -535,26 +535,26 @@ export function AnalyticsScreen({
                 <div
                   className={`p-3.5 rounded-2xl border text-xs font-mono space-y-1 ${
                     cashDiscrepancy_c === 0
-                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600'
+                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
                       : cashDiscrepancy_c > 0
-                      ? 'bg-blue-500/10 border-blue-500/30 text-blue-600'
-                      : 'bg-red-500/10 border-red-500/30 text-red-600'
+                      ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+                      : 'bg-red-500/10 border-red-500/30 text-red-400'
                   }`}
                 >
                   <p className="font-bold flex items-center gap-1.5 uppercase text-[0.8125rem]">
                     {cashDiscrepancy_c === 0 ? (
                       <>
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                         <span>Drawer is 100% Balanced</span>
                       </>
                     ) : cashDiscrepancy_c > 0 ? (
                       <>
-                        <Coins className="w-4 h-4 text-blue-600" />
+                        <Coins className="w-4 h-4 text-blue-400" />
                         <span>Cash Over: +{money(cashDiscrepancy_c)}</span>
                       </>
                     ) : (
                       <>
-                        <AlertTriangle className="w-4 h-4 text-red-600" />
+                        <AlertTriangle className="w-4 h-4 text-red-400" />
                         <span>Cash Short: {money(cashDiscrepancy_c)}</span>
                       </>
                     )}
@@ -569,15 +569,15 @@ export function AnalyticsScreen({
                 </div>
               </div>
 
-              <div className="space-y-2 pt-4 border-t border-slate-900/15">
+              <div className="space-y-2 pt-4 border-t border-white/10">
                 {cashCountSavedMessage && (
-                  <p className="text-xs text-emerald-600 font-mono text-center font-bold animate-pulse">
+                  <p className="text-xs text-emerald-400 font-mono text-center font-bold animate-pulse">
                     ✓ Cash count record saved successfully!
                   </p>
                 )}
                 <button
                   onClick={handleSaveCashCount}
-                  className="btn-press w-full py-3 rounded-xl bg-gradient-to-r from-blue-500 to-[#2563EB] hover:from-blue-400 hover:to-[#1D4ED8] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-glow-gold"
+                  className="btn-press w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-brand-600 hover:from-emerald-400 hover:to-brand-500 text-obsidian-950 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-glow-emerald"
                 >
                   <Save className="w-4 h-4" />
                   <span>Save Cash Count Record</span>
@@ -586,7 +586,7 @@ export function AnalyticsScreen({
                 <button
                   type="button"
                   onClick={() => handleOpenPrintReport('CASHCOUNT')}
-                  className="btn-press w-full py-2.5 rounded-xl bg-obsidian-900 border border-slate-900/20 hover:border-gold/40 text-stone-200 text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all"
+                  className="btn-press w-full py-2.5 rounded-xl bg-obsidian-900 border border-white/10 hover:border-emerald-500/40 text-stone-200 text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all"
                 >
                   <Printer className="w-4 h-4 text-gold-light" />
                   <span>Print Drawer Reconciliation Audit</span>

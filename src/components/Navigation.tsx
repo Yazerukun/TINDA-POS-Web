@@ -125,13 +125,13 @@ export function Navigation({
       <aside className="hidden md:flex flex-col w-60 xl:w-64 h-screen sticky top-0 shrink-0 bg-obsidian-950 border-r border-slate-800/60 p-4 justify-between z-30 transition-all select-none overflow-y-auto custom-scrollbar">
         {/* Brand & Logo Header */}
         <div className="space-y-5">
-          <div className="flex items-center gap-3 px-2 py-2 border-b border-slate-900/[0.08]">
+          <div className="flex items-center gap-3 px-2 py-2 border-b border-white/[0.08]">
             <AppLogo size={44} animated={true} isPro={isPro || isMasterAdmin} />
             <div className="leading-tight min-w-0">
               <p className="font-serif text-base font-bold tracking-[0.2em] text-stone-100 uppercase truncate">
                 TINDA
               </p>
-              <p className="font-sans font-semibold text-[0.75rem] tracking-[0.22em] uppercase text-gold-muted font-medium truncate">
+              <p className="font-sans font-semibold text-[0.75rem] tracking-[0.22em] uppercase text-emerald-400/80 font-medium truncate">
                 BUSINESS POS
               </p>
             </div>
@@ -152,8 +152,8 @@ export function Navigation({
                     onClick={() => setActiveTab(item.id)}
                     className={`btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium transition-all duration-200 text-left ${
                       isActive
-                        ? 'bg-gradient-to-r from-amber-500/15 via-gold/10 to-amber-500/10 text-gold-light border border-gold/40 shadow-glow-gold font-bold'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-obsidian-900/[0.05] border border-transparent'
+                        ? 'bg-gradient-to-r from-brand-600/20 via-brand-600/10 to-transparent text-emerald-400 font-bold border-l-2 border-emerald-500 shadow-sm'
+                        : 'text-stone-400 hover:text-stone-200 hover:bg-white/[0.04] border-l-2 border-transparent'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
@@ -163,7 +163,7 @@ export function Navigation({
                     {item.badge !== undefined && item.badge > 0 && (
                       <span
                         className={`px-2 py-0.5 rounded-full text-[0.75rem] font-mono font-bold shrink-0 ${
-                          item.badgeClass || 'bg-amber-500 text-obsidian-950'
+                          item.badgeClass || 'bg-emerald-500 text-obsidian-950'
                         }`}
                       >
                         {item.badge}
@@ -190,8 +190,8 @@ export function Navigation({
                     onClick={() => setActiveTab(item.id)}
                     className={`btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium transition-all duration-200 text-left ${
                       isActive
-                        ? 'bg-gradient-to-r from-amber-500/15 via-gold/10 to-amber-500/10 text-gold-light border border-gold/40 shadow-glow-gold font-bold'
-                        : 'text-stone-400 hover:text-stone-200 hover:bg-obsidian-900/[0.05] border border-transparent'
+                        ? 'bg-gradient-to-r from-brand-600/20 via-brand-600/10 to-transparent text-emerald-400 font-bold border-l-2 border-emerald-500 shadow-sm'
+                        : 'text-stone-400 hover:text-stone-200 hover:bg-white/[0.04] border-l-2 border-transparent'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
@@ -214,13 +214,13 @@ export function Navigation({
                 {onOpenPriceGuide && (
                   <button
                     onClick={onOpenPriceGuide}
-                    className="btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium text-amber-600/80 hover:text-amber-700 bg-amber-500/[0.04] hover:bg-amber-500/[0.08] border border-amber-500/20 text-left transition-all"
+                    className="btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium text-amber-400 hover:text-amber-300 bg-amber-500/[0.06] hover:bg-amber-500/[0.12] border border-amber-500/30 text-left transition-all"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <Sparkles className="w-4 h-4 shrink-0 text-amber-600" />
+                      <Sparkles className="w-4 h-4 shrink-0 text-amber-400" />
                       <span className="truncate">DTI Price Guide</span>
                     </div>
-                    <span className="text-[0.75rem] font-mono bg-amber-500/20 text-amber-600 px-1.5 py-0.5 rounded">SRP</span>
+                    <span className="text-[0.75rem] font-mono bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded">SRP</span>
                   </button>
                 )}
                 {onOpenExpiration && (
@@ -265,7 +265,7 @@ export function Navigation({
         </div>
 
         {/* Footer: Pro Access HUD & User Profile & Log Out */}
-        <div className="space-y-3 pt-4 border-t border-slate-900/[0.08] mt-4">
+        <div className="space-y-3 pt-4 border-t border-white/[0.08] mt-4">
           {/* Real-Time Pro Access Time Limit Status Card / Master License Card */}
           {isMasterAdmin ? (
             <div
@@ -307,8 +307,8 @@ export function Navigation({
                 <span
                   className={`text-[0.75rem] font-mono px-1.5 py-0.5 rounded font-bold uppercase ${
                     isPro
-                      ? 'bg-emerald-500/20 text-emerald-600 border border-emerald-500/30'
-                      : 'bg-rose-500/20 text-rose-600 border border-rose-500/30'
+                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                      : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
                   }`}
                 >
                   {isPro ? 'ACTIVE' : 'EXPIRED'}
@@ -318,7 +318,7 @@ export function Navigation({
               <div className="flex items-center justify-between">
                 <span
                   className={`font-mono text-xs font-bold tracking-wider ${
-                    isPro ? 'text-gold-light' : 'text-rose-600'
+                    isPro ? 'text-gold-light' : 'text-rose-400'
                   }`}
                 >
                   {proFormattedTime}
@@ -334,7 +334,7 @@ export function Navigation({
           <button
             type="button"
             onClick={onOpenProfile}
-            className="flex items-center gap-3 p-2.5 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/10 hover:border-gold/40 hover:bg-slate-850/80 transition-all text-left group w-full cursor-pointer"
+            className="flex items-center gap-3 p-2.5 rounded-xl bg-obsidian-900/80 border border-white/10 hover:border-emerald-500/40 hover:bg-obsidian-850 transition-all text-left group w-full cursor-pointer"
             title="View & Edit Profile"
           >
             {avatarUrl ? (
@@ -349,7 +349,7 @@ export function Navigation({
               </div>
             )}
             <div className="flex flex-col min-w-0 text-left flex-1">
-              <span className="text-xs font-semibold text-stone-200 truncate leading-tight group-hover:text-gold-light transition-colors">
+              <span className="text-xs font-semibold text-stone-200 truncate leading-tight group-hover:text-emerald-400 transition-colors">
                 {cashierName}
               </span>
               <span className="text-[0.75rem] text-stone-500 font-mono truncate leading-tight mt-0.5">
@@ -413,7 +413,7 @@ export function Navigation({
           <button
             type="button"
             onClick={onOpenProfile}
-            className="flex items-center gap-1.5 p-1 sm:px-2 sm:py-1 rounded-lg bg-slate-850/60 border border-slate-900/10 hover:border-gold/40 transition-all shrink-0 cursor-pointer"
+            className="flex items-center gap-1.5 p-1 sm:px-2 sm:py-1 rounded-lg bg-obsidian-900/80 border border-white/10 hover:border-emerald-500/40 transition-all shrink-0 cursor-pointer"
             title={`View profile (${cashierName})`}
           >
             {avatarUrl ? (
@@ -448,7 +448,7 @@ export function Navigation({
         <button
           onClick={() => setActiveTab('dashboard')}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
-            activeTab === 'dashboard' ? 'text-gold-light font-bold' : 'text-stone-400 hover:text-stone-300'
+            activeTab === 'dashboard' ? 'text-emerald-400 font-bold' : 'text-stone-400 hover:text-stone-300'
           }`}
         >
           <div className="relative">
@@ -467,7 +467,7 @@ export function Navigation({
         <button
           onClick={() => setActiveTab('pos')}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
-            activeTab === 'pos' ? 'text-gold-light font-bold' : 'text-stone-400 hover:text-stone-300'
+            activeTab === 'pos' ? 'text-emerald-400 font-bold' : 'text-stone-400 hover:text-stone-300'
           }`}
         >
           <div className="relative">
@@ -486,7 +486,7 @@ export function Navigation({
         <button
           onClick={() => setActiveTab('transactions')}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
-            activeTab === 'transactions' ? 'text-gold-light font-bold' : 'text-stone-400 hover:text-stone-300'
+            activeTab === 'transactions' ? 'text-emerald-400 font-bold' : 'text-stone-400 hover:text-stone-300'
           }`}
         >
           <Receipt className="w-4 h-4 shrink-0" />
@@ -498,7 +498,7 @@ export function Navigation({
         <button
           onClick={() => setActiveTab('inventory')}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
-            activeTab === 'inventory' ? 'text-gold-light font-bold' : 'text-stone-400 hover:text-stone-300'
+            activeTab === 'inventory' ? 'text-emerald-400 font-bold' : 'text-stone-400 hover:text-stone-300'
           }`}
         >
           <Package className="w-4 h-4 shrink-0" />
@@ -511,7 +511,7 @@ export function Navigation({
           onClick={() => setMobileDrawerOpen(true)}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
             mobileDrawerOpen || ['customers', 'expenses', 'suppliers', 'analytics', 'settings', 'master-control'].includes(activeTab)
-              ? 'text-gold-light font-bold'
+              ? 'text-emerald-400 font-bold'
               : 'text-stone-400 hover:text-stone-300'
           }`}
         >
@@ -610,12 +610,12 @@ export function Navigation({
                         setMobileDrawerOpen(false)
                         onOpenPriceGuide()
                       }}
-                      className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 text-left flex flex-col justify-between"
+                      className="p-3 rounded-xl bg-amber-500/[0.08] border border-amber-500/30 text-amber-400 text-left flex flex-col justify-between"
                     >
-                      <Sparkles className="w-5 h-5 text-amber-600 mb-1" />
+                      <Sparkles className="w-5 h-5 text-amber-400 mb-1" />
                       <div>
                         <div className="text-xs font-bold uppercase tracking-wider">DTI Price Guide</div>
-                        <div className="text-[0.75rem] text-amber-600/70 font-mono">172+ DTI SRP Items</div>
+                        <div className="text-[0.75rem] text-amber-400/80 font-mono">172+ DTI SRP Items</div>
                       </div>
                     </button>
                   )}
@@ -625,12 +625,12 @@ export function Navigation({
                         setMobileDrawerOpen(false)
                         onOpenExpiration()
                       }}
-                      className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-700 text-left flex flex-col justify-between"
+                      className="p-3 rounded-xl bg-rose-500/[0.08] border border-rose-500/30 text-rose-400 text-left flex flex-col justify-between"
                     >
-                      <CalendarClock className="w-5 h-5 text-rose-600 mb-1" />
+                      <CalendarClock className="w-5 h-5 text-rose-400 mb-1" />
                       <div>
                         <div className="text-xs font-bold uppercase tracking-wider">Expiry Watch</div>
-                        <div className="text-[0.75rem] text-rose-600/70 font-mono">Perishable Alerts</div>
+                        <div className="text-[0.75rem] text-rose-400/80 font-mono">Perishable Alerts</div>
                       </div>
                     </button>
                   )}
@@ -646,12 +646,12 @@ export function Navigation({
                   onClick={() => handleMobileSelectTab('customers')}
                   className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
                     activeTab === 'customers'
-                      ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
-                      : 'bg-obsidian-900/[0.06] border-slate-900/10 text-stone-300 hover:bg-obsidian-900/[0.07]'
+                      ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400 font-bold'
+                      : 'bg-obsidian-900/80 border-white/10 text-stone-300 hover:bg-obsidian-850'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Users className="w-4 h-4 text-emerald-600" />
+                    <Users className="w-4 h-4 text-emerald-500" />
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-wider">Customer Credit Ledger</div>
                       <div className="text-[0.75rem] text-stone-500">Track customer credit & balances</div>
@@ -664,12 +664,12 @@ export function Navigation({
                   onClick={() => handleMobileSelectTab('expenses')}
                   className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
                     activeTab === 'expenses'
-                      ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
-                      : 'bg-obsidian-900/[0.06] border-slate-900/10 text-stone-300 hover:bg-obsidian-900/[0.07]'
+                      ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400 font-bold'
+                      : 'bg-obsidian-900/80 border-white/10 text-stone-300 hover:bg-obsidian-850'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <TrendingDown className="w-4 h-4 text-rose-600" />
+                    <TrendingDown className="w-4 h-4 text-rose-500" />
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-wider">Expenses Tracker</div>
                       <div className="text-[0.75rem] text-stone-500">Operating costs & net profit math</div>
@@ -682,12 +682,12 @@ export function Navigation({
                   onClick={() => handleMobileSelectTab('suppliers')}
                   className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
                     activeTab === 'suppliers'
-                      ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
-                      : 'bg-obsidian-900/[0.06] border-slate-900/10 text-stone-300 hover:bg-obsidian-900/[0.07]'
+                      ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400 font-bold'
+                      : 'bg-obsidian-900/80 border-white/10 text-stone-300 hover:bg-obsidian-850'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Truck className="w-4 h-4 text-sky-600" />
+                    <Truck className="w-4 h-4 text-sky-400" />
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-wider">Suppliers Directory</div>
                       <div className="text-[0.75rem] text-stone-500">Vendor contacts & delivery notes</div>
@@ -700,12 +700,12 @@ export function Navigation({
                   onClick={() => handleMobileSelectTab('analytics')}
                   className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
                     activeTab === 'analytics'
-                      ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
-                      : 'bg-obsidian-900/[0.06] border-slate-900/10 text-stone-300 hover:bg-obsidian-900/[0.07]'
+                      ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400 font-bold'
+                      : 'bg-obsidian-900/80 border-white/10 text-stone-300 hover:bg-obsidian-850'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <BarChart3 className="w-4 h-4 text-indigo-600" />
+                    <BarChart3 className="w-4 h-4 text-indigo-400" />
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-wider">Analytics & Z-Read</div>
                       <div className="text-[0.75rem] text-stone-500">Cash drawer audit & closure readings</div>
@@ -718,12 +718,12 @@ export function Navigation({
                   onClick={() => handleMobileSelectTab('settings')}
                   className={`w-full flex items-center justify-between p-3 rounded-xl text-left border ${
                     activeTab === 'settings'
-                      ? 'bg-amber-500/15 border-amber-500/40 text-gold font-bold'
-                      : 'bg-obsidian-900/[0.06] border-slate-900/10 text-stone-300 hover:bg-obsidian-900/[0.07]'
+                      ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400 font-bold'
+                      : 'bg-obsidian-900/80 border-white/10 text-stone-300 hover:bg-obsidian-850'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Settings className="w-4 h-4 text-amber-600" />
+                    <Settings className="w-4 h-4 text-amber-400" />
                     <div>
                       <div className="text-xs font-semibold uppercase tracking-wider">Settings & Backup</div>
                       <div className="text-[0.75rem] text-stone-500">Store config, JSON export & user accounts</div>
@@ -735,7 +735,7 @@ export function Navigation({
             </div>
 
             {/* User Profile & Log Out */}
-            <div className="pt-3 border-t border-slate-900/15 flex items-center justify-between">
+            <div className="pt-3 border-t border-white/10 flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => {

@@ -119,12 +119,12 @@ export function CheckoutModal({
         }
       }
 
-      // Trigger refined champagne celebration confetti
+      // Trigger refined celebration confetti
       try {
         confetti({
           particleCount: 50,
           spread: 60,
-          colors: ['#2563EB', '#93C5FD', '#DBEAFE', '#1E40AF'],
+          colors: ['#10b981', '#34d399', '#f59e0b', '#fbbf24'],
           origin: { y: 0.6 }
         })
       } catch {

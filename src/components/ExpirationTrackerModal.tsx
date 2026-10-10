@@ -188,7 +188,7 @@ export function ExpirationTrackerModal({
               onClick={() => setActiveFilter('ALL')}
               className={`btn-press px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 activeFilter === 'ALL'
-                  ? 'bg-[#2563EB] text-white shadow-glow-gold'
+                  ? 'bg-emerald-600 text-white shadow-glow-emerald'
                   : 'bg-white/[0.04] text-stone-400 hover:text-stone-200'
               }`}
             >
@@ -259,7 +259,7 @@ export function ExpirationTrackerModal({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search product name or barcode..."
-              className="w-full h-10 pl-10 pr-4 rounded-xl bg-obsidian-900 border border-slate-900/20 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#2563EB]"
+              className="w-full h-10 pl-10 pr-4 rounded-xl bg-obsidian-900 border border-slate-900/20 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-500"
             />
           </div>
         </div>
@@ -346,7 +346,7 @@ export function ExpirationTrackerModal({
                   type="date"
                   value={editDate}
                   onChange={(e) => setEditDate(e.target.value)}
-                  className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-[#2563EB]"
+                  className="w-full h-11 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-100 text-xs focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -359,7 +359,7 @@ export function ExpirationTrackerModal({
                 </button>
                 <button
                   onClick={handleSaveDate}
-                  className="btn-press flex-1 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-[#2563EB] text-white text-xs font-bold uppercase tracking-wider shadow-glow-gold"
+                  className="btn-press flex-1 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-bold uppercase tracking-wider shadow-glow-emerald"
                 >
                   Save Date
                 </button>

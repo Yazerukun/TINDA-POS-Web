@@ -133,13 +133,13 @@ export function TransactionsScreen({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-900/15 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-serif font-bold text-stone-100 tracking-wide">
               Transactions & Receipts
             </h1>
-            <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted border border-gold/30 px-2 py-0.5 rounded-full uppercase">
+            <span className="text-[0.75rem] font-sans font-semibold tracking-widest text-emerald-400/90 border border-emerald-500/30 px-2 py-0.5 rounded-full uppercase">
               Sales Ledger
             </span>
           </div>
@@ -160,7 +160,7 @@ export function TransactionsScreen({
       </div>
 
       {/* Filter Bar */}
-      <div className="p-4 rounded-2xl bg-obsidian-900/[0.04] border border-slate-900/[0.08] space-y-3">
+      <div className="p-4 rounded-2xl bg-obsidian-900/60 border border-white/10 space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="relative flex-1 min-w-[240px]">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
@@ -169,7 +169,7 @@ export function TransactionsScreen({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by invoice #, item name, cashier..."
-              className="w-full h-10 pl-10 pr-4 rounded-xl bg-black border border-slate-900/20 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-[#2563EB]"
+              className="w-full h-10 pl-10 pr-4 rounded-xl bg-obsidian-950 border border-white/10 text-stone-100 placeholder-stone-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-500 transition-colors"
             />
           </div>
 
@@ -177,7 +177,7 @@ export function TransactionsScreen({
             <select
               value={paymentFilter}
               onChange={(e) => setPaymentFilter(e.target.value)}
-              className="h-10 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-200 text-xs font-mono focus:outline-none focus:border-[#2563EB]"
+              className="h-10 px-3 rounded-xl bg-obsidian-950 border border-white/10 text-stone-200 text-xs font-mono focus:outline-none focus:border-emerald-500 transition-colors"
             >
               <option value="ALL">All Payments</option>
               <option value="CASH">CASH</option>
@@ -188,7 +188,7 @@ export function TransactionsScreen({
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="h-10 px-3 rounded-xl bg-black border border-slate-900/20 text-stone-200 text-xs font-mono focus:outline-none focus:border-[#2563EB]"
+              className="h-10 px-3 rounded-xl bg-obsidian-950 border border-white/10 text-stone-200 text-xs font-mono focus:outline-none focus:border-emerald-500 transition-colors"
             >
               <option value="ALL">All Status</option>
               <option value="COMPLETED">Completed</option>
@@ -210,7 +210,7 @@ export function TransactionsScreen({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-900/10 text-xs font-mono text-stone-400">
+        <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-white/10 text-xs font-mono text-stone-400">
           <span>Date Filter:</span>
           <div className="flex items-center gap-1.5">
             <span>From:</span>
@@ -218,7 +218,7 @@ export function TransactionsScreen({
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="bg-black/60 border border-slate-900/20 rounded-lg px-2 py-1 text-xs text-stone-200 focus:outline-none focus:border-[#2563EB]"
+              className="bg-obsidian-950 border border-white/10 rounded-lg px-2 py-1 text-xs text-stone-200 focus:outline-none focus:border-emerald-500 transition-colors"
             />
           </div>
 
@@ -228,7 +228,7 @@ export function TransactionsScreen({
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="bg-black/60 border border-slate-900/20 rounded-lg px-2 py-1 text-xs text-stone-200 focus:outline-none focus:border-[#2563EB]"
+              className="bg-obsidian-950 border border-white/10 rounded-lg px-2 py-1 text-xs text-stone-200 focus:outline-none focus:border-emerald-500 transition-colors"
             />
           </div>
 
@@ -237,7 +237,7 @@ export function TransactionsScreen({
               setFromDate(todayStr)
               setToDate(todayStr)
             }}
-            className="btn-press text-[0.8125rem] text-[#2563EB] hover:underline ml-auto"
+            className="btn-press text-[0.8125rem] text-emerald-400 hover:text-emerald-300 hover:underline ml-auto"
           >
             Today Only
           </button>
@@ -245,7 +245,7 @@ export function TransactionsScreen({
       </div>
 
       {/* Transactions Table */}
-      <div className="rounded-3xl border border-slate-900/[0.08] bg-obsidian-900/[0.05] overflow-hidden">
+      <div className="rounded-3xl border border-white/10 bg-obsidian-900/50 overflow-hidden">
         {filteredTransactions.length === 0 ? (
           <div className="py-20 text-center space-y-2">
             <Receipt className="h-10 w-10 text-stone-500 mx-auto" />
@@ -257,7 +257,7 @@ export function TransactionsScreen({
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-black/50 border-b border-slate-900/[0.08] text-[0.75rem] font-sans font-semibold uppercase tracking-wider text-stone-400">
+              <thead className="bg-black/50 border-b border-white/10 text-[0.75rem] font-sans font-semibold uppercase tracking-wider text-stone-400">
                 <tr>
                   <th className="py-3.5 px-4 font-semibold">Invoice #</th>
                   <th className="py-3.5 px-4 font-semibold">Date & Time</th>
@@ -295,10 +295,10 @@ export function TransactionsScreen({
                         <span
                           className={`px-2 py-0.5 rounded text-[0.75rem] font-mono font-bold uppercase ${
                             tx.payment_method === 'CASH'
-                              ? 'bg-emerald-500/20 text-emerald-600'
+                              ? 'bg-emerald-500/20 text-emerald-400'
                               : tx.payment_method === 'GCASH'
-                              ? 'bg-blue-500/20 text-blue-600'
-                              : 'bg-amber-500/20 text-amber-600'
+                              ? 'bg-blue-500/20 text-blue-400'
+                              : 'bg-amber-500/20 text-amber-400'
                           }`}
                         >
                           {tx.payment_method}
@@ -306,11 +306,11 @@ export function TransactionsScreen({
                       </td>
                       <td className="py-3 px-4">
                         {isVoided ? (
-                          <span className="px-2 py-0.5 rounded-full bg-red-500/20 text-red-600 text-[0.75rem] font-sans font-semibold font-bold uppercase border border-red-500/30">
+                          <span className="px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 text-[0.75rem] font-sans font-semibold font-bold uppercase border border-red-500/30">
                             Voided
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[0.75rem] font-sans font-semibold font-bold uppercase">
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-[0.75rem] font-sans font-semibold font-bold uppercase">
                             Paid
                           </span>
                         )}
@@ -340,21 +340,21 @@ export function TransactionsScreen({
       {selectedTx && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
           <div className="w-full max-w-md glass-panel bg-obsidian-950 border border-gold/30 rounded-3xl p-6 shadow-vault space-y-5 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-900/[0.08] pb-4">
+            <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div>
                 <p className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted uppercase">Receipt Audit</p>
                 <h3 className="text-base font-bold text-stone-100 mt-0.5">{selectedTx.invoice_number}</h3>
               </div>
               <button
                 onClick={() => setSelectedTx(null)}
-                className="btn-press h-8 w-8 rounded-lg bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.12] text-stone-400 hover:text-stone-100 flex items-center justify-center"
+                className="btn-press h-8 w-8 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] text-stone-400 hover:text-stone-100 flex items-center justify-center"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Receipt Summary Card */}
-            <div className="p-4 rounded-2xl bg-obsidian-900 border border-slate-900/[0.08] space-y-3 font-mono text-xs">
+            <div className="p-4 rounded-2xl bg-obsidian-900 border border-white/10 space-y-3 font-mono text-xs">
               <div className="flex justify-between text-stone-400">
                 <span>Date & Time:</span>
                 <span className="text-stone-200">{formatDateTime(selectedTx.created_at)}</span>
@@ -385,7 +385,7 @@ export function TransactionsScreen({
               <p className="text-xs font-bold text-stone-300 uppercase tracking-wider font-sans font-semibold">
                 Items Purchased ({selectedTx.items.length})
               </p>
-              <div className="divide-y divide-white/5 bg-obsidian-900 rounded-2xl p-3 border border-slate-900/[0.08] max-h-48 overflow-y-auto">
+              <div className="divide-y divide-white/5 bg-obsidian-900 rounded-2xl p-3 border border-white/10 max-h-48 overflow-y-auto">
                 {selectedTx.items.map((item, idx) => (
                   <div key={idx} className="py-2 flex items-center justify-between text-xs">
                     <div>
@@ -403,7 +403,7 @@ export function TransactionsScreen({
             </div>
 
             {/* Totals */}
-            <div className="pt-2 border-t border-slate-900/[0.08] space-y-1.5 font-mono text-xs">
+            <div className="pt-2 border-t border-white/10 space-y-1.5 font-mono text-xs">
               <div className="flex justify-between text-stone-400">
                 <span>Subtotal:</span>
                 <span>{money(selectedTx.subtotal_c)}</span>
@@ -414,7 +414,7 @@ export function TransactionsScreen({
                   <span>-{money(selectedTx.discount_c)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-stone-100 font-bold text-sm pt-1 border-t border-slate-900/[0.08]">
+              <div className="flex justify-between text-stone-100 font-bold text-sm pt-1 border-t border-white/10">
                 <span>Total Amount:</span>
                 <span className="font-serif text-gold-light text-base">{money(selectedTx.total_c)}</span>
               </div>
@@ -428,7 +428,7 @@ export function TransactionsScreen({
             <div className="flex items-center gap-2 pt-2">
               <button
                 onClick={() => setIsReprintOpen(true)}
-                className="btn-press flex-1 py-3 rounded-xl bg-obsidian-900 hover:bg-slate-850 text-stone-200 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 border border-slate-900/[0.08]"
+                className="btn-press flex-1 py-3 rounded-xl bg-obsidian-900 hover:bg-obsidian-850 text-stone-200 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 border border-white/10"
               >
                 <Printer className="w-4 h-4 text-gold-muted" />
                 <span>Reprint</span>
@@ -468,7 +468,7 @@ export function TransactionsScreen({
 
             {/* Paper Width Pills & Actions */}
             <div className="flex items-center gap-2">
-              <div className="flex items-center bg-obsidian-900 p-1 rounded-xl border border-slate-900/15 text-xs font-mono">
+              <div className="flex items-center bg-obsidian-900 p-1 rounded-xl border border-white/10 text-xs font-mono">
                 {(['58mm', '80mm', 'A4'] as const).map((w) => (
                   <button
                     key={w}
@@ -497,7 +497,7 @@ export function TransactionsScreen({
               <button
                 type="button"
                 onClick={() => setIsReprintOpen(false)}
-                className="p-2 rounded-xl bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.12] text-stone-400 hover:text-stone-100 transition-colors"
+                className="p-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-stone-400 hover:text-stone-100 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -558,14 +558,14 @@ export function TransactionsScreen({
                 value={voidReason}
                 onChange={(e) => setVoidReason(e.target.value)}
                 placeholder="Reason why this transaction is voided..."
-                className="w-full h-10 px-3 rounded-xl bg-obsidian-900 border border-slate-900/[0.1] text-xs text-stone-100 focus:outline-none focus:border-red-400"
+                className="w-full h-10 px-3 rounded-xl bg-obsidian-900 border border-white/10 text-xs text-stone-100 focus:outline-none focus:border-red-400 transition-colors"
               />
             </div>
 
             <div className="flex items-center gap-2 pt-2">
               <button
                 onClick={() => setVoidTargetTx(null)}
-                className="btn-press flex-1 py-2.5 rounded-xl bg-obsidian-900 border border-slate-900/[0.08] text-stone-400 hover:text-stone-200 text-xs font-bold uppercase"
+                className="btn-press flex-1 py-2.5 rounded-xl bg-obsidian-900 border border-white/10 text-stone-400 hover:text-stone-200 text-xs font-bold uppercase transition-colors"
               >
                 Cancel
               </button>

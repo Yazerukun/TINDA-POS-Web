@@ -106,7 +106,7 @@ export function RewardedAdModal({
           confetti({
             particleCount: 50,
             spread: 60,
-            colors: ['#2563EB', '#10B981', '#F59E0B'],
+            colors: ['#34D399', '#10B981', '#F59E0B'],
             origin: { y: 0.5 }
           })
         } catch {}
@@ -197,7 +197,7 @@ export function RewardedAdModal({
       confetti({
         particleCount: 60,
         spread: 70,
-        colors: ['#2563EB', '#10B981', '#F59E0B'],
+        colors: ['#34D399', '#10B981', '#F59E0B'],
         origin: { y: 0.5 }
       })
     } catch {}

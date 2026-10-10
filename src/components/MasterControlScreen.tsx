@@ -1120,7 +1120,7 @@ export function MasterControlScreen({
                                       className="w-8 h-8 rounded-xl object-cover border border-gold/40 shadow-glow-gold shrink-0"
                                     />
                                   ) : (
-                                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-300 to-[#2563EB] text-stone-100 font-serif font-bold text-xs flex items-center justify-center shrink-0">
+                                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-400 via-gold to-emerald-600 text-obsidian-950 font-serif font-bold text-xs flex items-center justify-center shrink-0">
                                       {(owner.name || owner.username || 'OW').substring(0, 2).toUpperCase()}
                                     </div>
                                   )}

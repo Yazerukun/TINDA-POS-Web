@@ -20,6 +20,7 @@ import {
   Banknote,
   ShieldAlert
 } from 'lucide-react'
+import { AppLogo } from './AppLogo'
 import { money } from '../utils/format'
 import { db } from '../db'
 import type { UserAccount, UserRole } from '../types'
@@ -135,7 +136,7 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
   const date = now.toLocaleDateString('en-PH', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
 
   return (
-    <aside className="hidden lg:flex flex-col justify-between p-6 sm:p-8 lg:p-8 xl:p-10 border-b lg:border-b-0 lg:border-r border-gold/20 bg-[#F8FAFC]/85 relative overflow-hidden backdrop-blur-2xl h-full lg:max-h-screen">
+    <aside className="hidden lg:flex flex-col justify-between p-6 sm:p-8 lg:p-8 xl:p-10 border-b lg:border-b-0 lg:border-r border-gold/20 bg-obsidian-950/95 relative overflow-hidden backdrop-blur-2xl h-full lg:max-h-screen">
       {/* Background ambient lighting */}
       <div className="absolute top-0 right-0 h-[380px] w-[380px] rounded-full bg-amber-500/[0.07] blur-[120px] pointer-events-none animate-float-slow" />
       <div className="absolute bottom-0 left-0 h-[320px] w-[320px] rounded-full bg-gold/[0.06] blur-[110px] pointer-events-none animate-float-reverse" />
@@ -146,14 +147,7 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
       {/* Top Header: Refined Gold Luxury Crest Logo next to "TINDA POS" (Business Point of Sale · Terminal Session) */}
       <div className="relative z-10">
         <div className="flex items-center gap-3">
-          <div className="relative flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-obsidian-900/[0.04] border border-gold/50 shadow-glow-gold p-1 shrink-0 overflow-hidden">
-            <img
-              src="/tinda-pos-crest.png"
-              alt="TINDA POS Crest"
-              className="w-full h-full object-contain"
-            />
-            <div className="absolute -inset-0.5 rounded-xl bg-gold/15 blur-sm -z-10 animate-pulse-glow" />
-          </div>
+          <AppLogo size={46} animated={true} isPro={true} />
           <div>
             <p className="font-serif text-lg sm:text-xl font-bold tracking-[0.2em] text-stone-100 uppercase">TINDA POS</p>
             <p className="font-sans font-semibold text-[0.75rem] sm:text-[0.75rem] tracking-[0.25em] uppercase text-gold-muted font-medium">
@@ -602,7 +596,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
   }
 
   return (
-    <div className="fixed inset-0 z-[250] flex flex-col bg-[#F8FAFC] overflow-y-auto">
+    <div className="fixed inset-0 z-[250] flex flex-col bg-obsidian-950 overflow-y-auto">
       {/* ── Background: Official Luxury Damask & Gold Crest Artwork (Gemini_Generated_Image_xuximrxuximrxuxi.jpeg) ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
         <picture>
@@ -615,7 +609,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
         </picture>
 
         {/* Dark luxury gradient overlays for crisp readability and glassmorphic depth */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#F8FAFC] via-[#F8FAFC]/70 to-[#F8FAFC]/80" />
+        <div className="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-obsidian-950/85 to-obsidian-900/90" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(212,175,55,0.18),_transparent_70%)]" />
 
         {/* Ambient Warm Brushed Gold Light Orbs */}
@@ -642,10 +636,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
             {isVerifying && (
               <div className="absolute inset-0 z-40 bg-obsidian-900/[0.04] backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-fade-in">
                 <div className="relative flex items-center justify-center mb-3">
-                  <div className="w-14 h-14 rounded-2xl border border-gold/40 bg-slate-850/90 flex items-center justify-center shadow-glow-gold relative overflow-hidden">
-                    <img src="/tinda-pos-crest.png" alt="Loading" className="w-9 h-9 object-contain animate-pulse" />
-                    <div className="absolute inset-0 border-2 border-gold/70 border-t-transparent rounded-2xl animate-spin" />
-                  </div>
+                  <AppLogo size={48} animated={true} isPro={true} />
                 </div>
                 <p className="font-serif text-sm font-bold tracking-widest uppercase text-gold-light animate-pulse">
                   Authenticating Session
@@ -665,14 +656,7 @@ export function VaultAuthModal({ isOpen, onAuthenticated }: VaultAuthModalProps)
             {/* Top of Card: Luxury Crest Logo + Brand & Step Title (One Single Clean Header) */}
             <div className="flex flex-col items-center justify-center text-center select-none mb-1">
               <div className="relative mb-2.5 flex items-center justify-center">
-                <div className="relative flex h-11 w-11 sm:h-13 sm:w-13 items-center justify-center rounded-2xl bg-obsidian-900/[0.04] border border-gold/50 shadow-glow-gold p-1 overflow-hidden">
-                  <img
-                    src="/tinda-pos-crest.png"
-                    alt="TINDA POS Crest"
-                    className="w-full h-full object-contain"
-                  />
-                  <div className="absolute -inset-1 rounded-2xl bg-gold/15 blur-sm -z-10 animate-pulse-glow" />
-                </div>
+                <AppLogo size={52} animated={true} isPro={true} />
               </div>
 
               <div className="flex items-center justify-center gap-2 mb-0.5">

@@ -151,7 +151,7 @@ export function ExpirationTrackerModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 animate-fade-in">
-      <div className="w-full max-w-4xl h-[88vh] bg-[#F8FAFC] border border-amber-500/30 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+      <div className="w-full max-w-4xl h-[88vh] bg-obsidian-950 border border-amber-500/30 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="p-5 border-b border-slate-900/15 bg-obsidian-900/[0.04] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3.5">
@@ -324,7 +324,7 @@ export function ExpirationTrackerModal({
         {/* Date Edit Modal Overlay */}
         {editingProduct && (
           <div className="fixed inset-0 z-60 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-            <div className="w-full max-w-sm bg-[#F1F5F9] border border-amber-500/30 rounded-3xl p-5 shadow-2xl space-y-4">
+            <div className="w-full max-w-sm bg-obsidian-950 border border-amber-500/30 rounded-3xl p-5 shadow-2xl space-y-4">
               <div className="flex items-start justify-between border-b border-slate-900/15 pb-3">
                 <div>
                   <p className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted uppercase">Set Shelf Expiration</p>

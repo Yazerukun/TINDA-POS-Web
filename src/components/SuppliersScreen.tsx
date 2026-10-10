@@ -277,7 +277,7 @@ export function SuppliersScreen(): React.JSX.Element {
       {/* Supplier Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="w-full max-w-lg bg-[#F1F5F9] border border-amber-500/30 rounded-3xl p-6 shadow-2xl space-y-5">
+          <div className="w-full max-w-lg bg-obsidian-950 border border-amber-500/30 rounded-3xl p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between border-b border-slate-900/15 pb-4">
               <div>
                 <p className="text-[0.75rem] font-sans font-semibold tracking-widest text-gold-muted uppercase">Vendor Directory</p>

@@ -20,6 +20,7 @@ import {
   Crown,
   ShieldCheck
 } from 'lucide-react'
+import { AppLogo } from './AppLogo'
 
 export type ActiveTab =
   | 'dashboard'
@@ -121,18 +122,11 @@ export function Navigation({
   return (
     <>
       {/* ── DESKTOP & TABLET VERTICAL SIDEBAR (md:flex) ── */}
-      <aside className="hidden md:flex flex-col w-60 xl:w-64 h-screen sticky top-0 shrink-0 bg-[#F8FAFC] border-r border-slate-900/15 p-4 justify-between z-30 transition-all select-none overflow-y-auto custom-scrollbar">
+      <aside className="hidden md:flex flex-col w-60 xl:w-64 h-screen sticky top-0 shrink-0 bg-obsidian-950 border-r border-slate-800/60 p-4 justify-between z-30 transition-all select-none overflow-y-auto custom-scrollbar">
         {/* Brand & Logo Header */}
         <div className="space-y-5">
           <div className="flex items-center gap-3 px-2 py-2 border-b border-slate-900/[0.08]">
-            <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-obsidian-900/[0.04] border border-gold/40 shadow-glow-gold shrink-0 p-1 overflow-hidden">
-              <img
-                src="/tinda-pos-crest.png"
-                alt="TINDA POS"
-                className="w-full h-full object-contain"
-              />
-              <div className="absolute -inset-0.5 rounded-xl bg-gold/10 blur-[4px] -z-10" />
-            </div>
+            <AppLogo size={44} animated={true} isPro={isPro || isMasterAdmin} />
             <div className="leading-tight min-w-0">
               <p className="font-serif text-base font-bold tracking-[0.2em] text-stone-100 uppercase truncate">
                 TINDA
@@ -158,7 +152,7 @@ export function Navigation({
                     onClick={() => setActiveTab(item.id)}
                     className={`btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium transition-all duration-200 text-left ${
                       isActive
-                        ? 'bg-amber-500/10 text-[#2563EB] border border-[#2563EB]/35 shadow-glow-gold font-bold'
+                        ? 'bg-gradient-to-r from-amber-500/15 via-gold/10 to-amber-500/10 text-gold-light border border-gold/40 shadow-glow-gold font-bold'
                         : 'text-stone-400 hover:text-stone-200 hover:bg-obsidian-900/[0.05] border border-transparent'
                     }`}
                   >
@@ -169,7 +163,7 @@ export function Navigation({
                     {item.badge !== undefined && item.badge > 0 && (
                       <span
                         className={`px-2 py-0.5 rounded-full text-[0.75rem] font-mono font-bold shrink-0 ${
-                          item.badgeClass || 'bg-[#2563EB] text-white'
+                          item.badgeClass || 'bg-amber-500 text-obsidian-950'
                         }`}
                       >
                         {item.badge}
@@ -196,7 +190,7 @@ export function Navigation({
                     onClick={() => setActiveTab(item.id)}
                     className={`btn-press w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs tracking-wider uppercase font-medium transition-all duration-200 text-left ${
                       isActive
-                        ? 'bg-amber-500/10 text-[#2563EB] border border-[#2563EB]/35 shadow-glow-gold font-bold'
+                        ? 'bg-gradient-to-r from-amber-500/15 via-gold/10 to-amber-500/10 text-gold-light border border-gold/40 shadow-glow-gold font-bold'
                         : 'text-stone-400 hover:text-stone-200 hover:bg-obsidian-900/[0.05] border border-transparent'
                     }`}
                   >
@@ -350,7 +344,7 @@ export function Navigation({
                 className="h-9 w-9 shrink-0 rounded-xl object-cover border border-gold/40 shadow-glow-gold"
               />
             ) : (
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-[#2563EB] text-stone-100 text-xs font-serif font-bold shadow-sm">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 via-gold to-emerald-600 text-obsidian-950 text-xs font-serif font-bold shadow-sm">
                 {cashierInitials}
               </div>
             )}
@@ -376,22 +370,15 @@ export function Navigation({
       </aside>
 
       {/* ── MOBILE TOP BAR (md:hidden) — Auto-responsive for all Android, iPhone & Foldables ── */}
-      <header className="md:hidden sticky top-0 z-40 h-13 w-full flex items-center justify-between px-3 sm:px-4 bg-[#F8FAFC]/95 backdrop-blur-xl border-b border-slate-900/15 gap-2 select-none">
+      <header className="md:hidden sticky top-0 z-40 h-13 w-full flex items-center justify-between px-3 sm:px-4 bg-obsidian-950/95 backdrop-blur-xl border-b border-slate-800/60 gap-2 select-none">
         {/* Left: Brand logo & name */}
         <div className="flex items-center gap-2 shrink-0 min-w-0">
-          <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-obsidian-900/[0.04] border border-gold/40 shadow-glow-gold p-0.5 shrink-0 overflow-hidden">
-            <img
-              src="/tinda-pos-crest.png"
-              alt="TINDA POS"
-              className="w-full h-full object-contain"
-            />
-            <div className="absolute -inset-0.5 rounded-xl bg-gold/10 blur-[3px] -z-10" />
-          </div>
+          <AppLogo size={32} animated={true} showBadge={false} isPro={isPro || isMasterAdmin} />
           <div className="flex items-center gap-1.5 min-w-0">
             <span className="font-serif font-bold text-sm sm:text-base tracking-[0.18em] uppercase text-stone-100 truncate">
               TINDA
             </span>
-            <span className="text-[0.75rem] sm:text-[0.75rem] tracking-widest text-[#2563EB] border border-[#2563EB]/30 px-1 py-0.2 rounded-full uppercase font-sans font-semibold shrink-0">
+            <span className="text-[0.75rem] sm:text-[0.75rem] tracking-widest text-gold-light border border-gold/40 bg-gold/10 px-1.5 py-0.2 rounded-full uppercase font-sans font-semibold shrink-0">
               POS
             </span>
           </div>
@@ -436,7 +423,7 @@ export function Navigation({
                 className="h-6 w-6 shrink-0 rounded-full object-cover border border-gold/40"
               />
             ) : (
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-[#2563EB] text-white text-[0.75rem] font-serif font-bold">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 via-gold to-emerald-600 text-obsidian-950 text-[0.75rem] font-serif font-bold">
                 {cashierInitials}
               </div>
             )}
@@ -457,11 +444,11 @@ export function Navigation({
       </header>
 
       {/* ── MOBILE BOTTOM BAR (md:hidden) ── */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 grid grid-cols-5 items-center border-t border-slate-900/15 px-1 py-1.5 bg-[#F8FAFC]/95 backdrop-blur-xl">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 grid grid-cols-5 items-center border-t border-slate-800/60 px-1 py-1.5 bg-obsidian-950/95 backdrop-blur-xl">
         <button
           onClick={() => setActiveTab('dashboard')}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
-            activeTab === 'dashboard' ? 'text-[#2563EB] font-semibold' : 'text-stone-400 hover:text-stone-300'
+            activeTab === 'dashboard' ? 'text-gold-light font-bold' : 'text-stone-400 hover:text-stone-300'
           }`}
         >
           <div className="relative">
@@ -480,13 +467,13 @@ export function Navigation({
         <button
           onClick={() => setActiveTab('pos')}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
-            activeTab === 'pos' ? 'text-[#2563EB] font-semibold' : 'text-stone-400 hover:text-stone-300'
+            activeTab === 'pos' ? 'text-gold-light font-bold' : 'text-stone-400 hover:text-stone-300'
           }`}
         >
           <div className="relative">
             <ShoppingBag className="w-4 h-4 shrink-0" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[0.75rem] font-mono font-bold leading-none bg-[#2563EB] text-white">
+              <span className="absolute -top-1 -right-2 px-1 py-0.2 rounded-full text-[0.75rem] font-mono font-bold leading-none bg-emerald-500 text-obsidian-950">
                 {cartCount}
               </span>
             )}
@@ -499,7 +486,7 @@ export function Navigation({
         <button
           onClick={() => setActiveTab('transactions')}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
-            activeTab === 'transactions' ? 'text-[#2563EB] font-semibold' : 'text-stone-400 hover:text-stone-300'
+            activeTab === 'transactions' ? 'text-gold-light font-bold' : 'text-stone-400 hover:text-stone-300'
           }`}
         >
           <Receipt className="w-4 h-4 shrink-0" />
@@ -511,7 +498,7 @@ export function Navigation({
         <button
           onClick={() => setActiveTab('inventory')}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
-            activeTab === 'inventory' ? 'text-[#2563EB] font-semibold' : 'text-stone-400 hover:text-stone-300'
+            activeTab === 'inventory' ? 'text-gold-light font-bold' : 'text-stone-400 hover:text-stone-300'
           }`}
         >
           <Package className="w-4 h-4 shrink-0" />
@@ -524,7 +511,7 @@ export function Navigation({
           onClick={() => setMobileDrawerOpen(true)}
           className={`flex flex-col items-center justify-center gap-1 py-1 px-0.5 rounded-lg text-center transition-all ${
             mobileDrawerOpen || ['customers', 'expenses', 'suppliers', 'analytics', 'settings', 'master-control'].includes(activeTab)
-              ? 'text-[#2563EB] font-semibold'
+              ? 'text-gold-light font-bold'
               : 'text-stone-400 hover:text-stone-300'
           }`}
         >
@@ -542,20 +529,16 @@ export function Navigation({
             className="flex-1"
             onClick={() => setMobileDrawerOpen(false)}
           />
-          <div className="bg-[#F1F5F9] border-t border-slate-900/15 rounded-t-2xl p-5 max-h-[85vh] overflow-y-auto space-y-5 animate-slide-up shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-900/15 pb-3">
+          <div className="bg-obsidian-950 border-t border-gold/30 rounded-t-2xl p-5 max-h-[85vh] overflow-y-auto space-y-5 animate-slide-up shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-800/60 pb-3">
               <div className="flex items-center gap-2.5">
-                <img
-                  src="/tinda-pos-crest.png"
-                  alt="TINDA POS"
-                  className="w-7 h-7 rounded-lg object-contain border border-gold/40 p-0.5 bg-obsidian-900 shadow-glow-gold"
-                />
+                <AppLogo size={30} animated={true} showBadge={false} isPro={isPro || isMasterAdmin} />
                 <span className="font-serif font-bold text-sm tracking-wider uppercase text-gold">TINDA APPS</span>
                 <span className="text-[0.75rem] font-sans font-semibold text-stone-500 uppercase tracking-widest">Directory</span>
               </div>
               <button
                 onClick={() => setMobileDrawerOpen(false)}
-                className="p-1 rounded-lg hover:bg-obsidian-900/[0.06] text-stone-400"
+                className="p-1 rounded-lg hover:bg-obsidian-900 text-stone-400"
               >
                 <X className="w-5 h-5" />
               </button>

@@ -171,7 +171,7 @@ export function PriceGuideModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 animate-fade-in">
-      <div className="w-full max-w-5xl h-[90vh] bg-[#F8FAFC] border border-amber-500/30 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+      <div className="w-full max-w-5xl h-[90vh] bg-obsidian-950 border border-amber-500/30 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="p-5 border-b border-slate-900/15 bg-obsidian-900/[0.04] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3.5">

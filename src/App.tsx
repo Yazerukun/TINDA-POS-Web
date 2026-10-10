@@ -20,6 +20,7 @@ import { RewardedAdModal } from './components/RewardedAdModal'
 import { MasterControlScreen } from './components/MasterControlScreen'
 import { UserProfileModal } from './components/UserProfileModal'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import { AppLogo } from './components/AppLogo'
 import { useProAccess } from './services/proAccess'
 import { sendHeartbeat } from './services/cloudSync'
 
@@ -363,10 +364,7 @@ export default function App(): React.JSX.Element {
   if (loading) {
     return (
       <div className="min-h-screen bg-obsidian-950 flex flex-col items-center justify-center text-stone-300">
-        <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-b from-amber-200/15 via-gold/15 to-transparent border border-gold/40 shadow-glow-gold animate-pulse">
-          <span className="font-serif text-3xl font-bold tracking-widest text-gold-light">T</span>
-          <div className="absolute -inset-1 rounded-2xl bg-gold/10 blur-[6px] -z-10" />
-        </div>
+        <AppLogo size={68} animated={true} isPro={true} />
         <p className="mt-5 font-serif text-xs font-bold tracking-[0.3em] text-gold-light uppercase">
           INITIALIZING TINDA PRIVATE TERMINAL...
         </p>

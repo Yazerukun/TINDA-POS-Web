@@ -33,6 +33,8 @@ import { UserProfileModal } from './components/UserProfileModal'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { AppLogo } from './components/AppLogo'
 import { LandingPage } from './components/LandingPage'
+import { VipUpgradeModal } from './components/VipUpgradeModal'
+import { initTheme } from './utils/theme'
 import { useProAccess } from './services/proAccess'
 import { sendHeartbeat } from './services/cloudSync'
 
@@ -58,6 +60,12 @@ export default function App(): React.JSX.Element {
   const [isHelpGuideOpen, setIsHelpGuideOpen] = useState(false)
   const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false)
   const [isBarcodeScannerOpen, setIsBarcodeScannerOpen] = useState(false)
+  const [isVipUpgradeOpen, setIsVipUpgradeOpen] = useState(false)
+
+  // Initialize theme on mount
+  useEffect(() => {
+    initTheme()
+  }, [])
 
   // Vault Session / Cashier Authentication State (Screen 1 vs Screen 2)
   const [vaultSession, setVaultSession] = useState<VaultSession | null>(() => {
@@ -657,6 +665,7 @@ export default function App(): React.JSX.Element {
         onOpenHelpGuide={() => setIsHelpGuideOpen(true)}
         onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
         onOpenPrinterStudio={() => setIsPrinterStudioOpen(true)}
+        onOpenVipUpgrade={() => setIsVipUpgradeOpen(true)}
         isMasterAdmin={vaultSession?.isMasterAdmin || false}
       />
 
@@ -868,6 +877,7 @@ export default function App(): React.JSX.Element {
             currentUsername={vaultSession?.username}
             currentUserAvatar={vaultSession?.avatarUrl}
             onUpdateAvatar={handleUpdateAvatar}
+            onOpenVipUpgrade={() => setIsVipUpgradeOpen(true)}
           />
         )}
 
@@ -1007,6 +1017,13 @@ export default function App(): React.JSX.Element {
         currentAvatarUrl={vaultSession?.avatarUrl}
         isMasterAdmin={vaultSession?.isMasterAdmin || false}
         onUpdateAvatar={handleUpdateAvatar}
+      />
+
+      {/* VIP Pro Lifetime Licensing Modal */}
+      <VipUpgradeModal
+        open={isVipUpgradeOpen}
+        onClose={() => setIsVipUpgradeOpen(false)}
+        onActivated={loadData}
       />
 
     </div>

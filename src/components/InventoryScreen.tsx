@@ -14,7 +14,9 @@ import {
   Layers,
   History,
   Sparkles,
-  Check
+  Check,
+  Printer,
+  Tag
 } from 'lucide-react'
 import type { Product, Category, RestockLog, RestockType, PriceReference } from '../types'
 import { money, formatDateTime } from '../utils/format'
@@ -22,6 +24,7 @@ import { compressImageFile } from '../utils/image'
 import { findSuggestedPrice, getSrpComparison } from '../utils/srp'
 import { syncOnlinePriceCatalog } from '../services/onlinePriceSync'
 import { db } from '../db'
+import { PriceTagPrintModal } from './PriceTagPrintModal'
 
 interface InventoryScreenProps {
   products: Product[]
@@ -45,6 +48,8 @@ export function InventoryScreen({
   const [modalOpen, setModalOpen] = useState(false)
   const [imageBusy, setImageBusy] = useState(false)
   const [restockLogs, setRestockLogs] = useState<RestockLog[]>([])
+  const [priceTagModalOpen, setPriceTagModalOpen] = useState(false)
+  const [productToPrint, setProductToPrint] = useState<Product | null>(null)
 
   // Suggested Price / DTI SRP states
   const [priceReferences, setPriceReferences] = useState<PriceReference[]>([])
@@ -287,6 +292,19 @@ export function InventoryScreen({
             <span>{autoMatching ? 'Matching SRP...' : 'Auto-Match DTI SRP'}</span>
           </button>
 
+          {/* Print CT-221B Price Tags */}
+          <button
+            onClick={() => {
+              setProductToPrint(null)
+              setPriceTagModalOpen(true)
+            }}
+            className="btn-press flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-obsidian-900 hover:bg-obsidian-850 border border-emerald-500/30 text-emerald-400 font-bold text-xs shadow-sm transition-all"
+            title="Print price tags & barcodes for Chiteng CT-221B (Clabel)"
+          >
+            <Printer className="h-4 w-4 text-emerald-400" />
+            <span>CT-221B Label Studio</span>
+          </button>
+
           {/* Add New Product Button */}
           <button
             onClick={() => {
@@ -513,6 +531,16 @@ export function InventoryScreen({
                       {/* Actions */}
                       <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => {
+                              setProductToPrint(p)
+                              setPriceTagModalOpen(true)
+                            }}
+                            title={`Print Chiteng CT-221B Barcode Sticker for ${p.name}`}
+                            className="btn-press p-1.5 rounded-xl border border-slate-900/[0.08] text-stone-400 hover:text-emerald-400 hover:border-emerald-500/30 hover:bg-emerald-500/10 transition-all"
+                          >
+                            <Printer className="h-3.5 w-3.5" />
+                          </button>
                           <button
                             onClick={() => {
                               setEditingProduct({
@@ -878,6 +906,18 @@ export function InventoryScreen({
           </div>
         </div>
       )}
+
+      {/* Chiteng CT-221B Thermal Label Print Modal */}
+      <PriceTagPrintModal
+        open={priceTagModalOpen}
+        onClose={() => {
+          setPriceTagModalOpen(false)
+          setProductToPrint(null)
+        }}
+        product={productToPrint}
+        allProducts={products}
+        storeName={storeName}
+      />
     </div>
   )
 }

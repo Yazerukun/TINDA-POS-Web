@@ -1,73 +1,156 @@
 import React from 'react'
 
 /**
- * Pure TypeScript Code 128 (Subset B) Barcode Generator.
- * Generates crisp 1-bit vector SVG barcodes perfect for high-speed thermal printers (203/300 DPI)
+ * Pure TypeScript Code 128 (Subset B & C Auto-Switching) Barcode Engine.
+ * Generates high-definition, 100% scannable 1D barcodes for thermal label printers (Chiteng CT-221B, POS-58, POS-80)
  * and laser/inkjet printers with zero blur, zero external dependencies, and 100% offline support.
+ *
+ * Specially calibrated for Chiteng CT221B (Clabel) direct thermal print heads (203 DPI)
+ * so barcode stickers can be scanned cleanly by cellphone camera scanners (ZXing) without optical distortion.
  */
 
-// Code 128 pattern table (107 patterns, index 0 to 106)
-// Each pattern string represents bar (1) and space (0) modules.
+// Code 128 patterns: 6-digit strings of widths (bar, space, bar, space, bar, space)
 const CODE128_PATTERNS: string[] = [
-  '11011001100', '11001101100', '11001100110', '10010011000', '10010001100', // 0-4
-  '10001001100', '10011001000', '10011000100', '10001100100', '11001001000', // 5-9
-  '11001000100', '11000100100', '10110011100', '10011011100', '10011001110', // 10-14
-  '10111001100', '10011101100', '10011100110', '11001110010', '11001011100', // 15-19
-  '11001001110', '11011100100', '11001110100', '11101101110', '11101001100', // 20-24
-  '11100101100', '11100100110', '11101100100', '11100110100', '11100110010', // 25-29
-  '11011011000', '11011000110', '11000110110', '10100011000', '10001011000', // 30-34
-  '10001000110', '10110001000', '10001101000', '10001100010', '11010001000', // 35-39
-  '11000101000', '11000100010', '10110111000', '10110001110', '10001101110', // 40-44
-  '10111011000', '10111000110', '10001110110', '11101110110', '11010001110', // 45-49
-  '11000101110', '11011101000', '11011100010', '11011101110', '11101011000', // 50-54
-  '11101000110', '11100010110', '11101101000', '11101100010', '11100011010', // 55-59
-  '11101111010', '11001000010', '11110001010', '10100110000', '10100001100', // 60-64
-  '10010110000', '10010000110', '10000101100', '10000100110', '10110010000', // 65-69
-  '10110000100', '10011010000', '10011000010', '10000110100', '10000110010', // 70-74
-  '11000010010', '11001010000', '11110111010', '11000010100', '10001111010', // 75-79
-  '10100111100', '10010111100', '10010011110', '10111100100', '10011110100', // 80-84
-  '10011110010', '11110100100', '11110010100', '11110010010', '11011011110', // 85-89
-  '11011110110', '11110110110', '10101111000', '10100011110', '10001011110', // 90-94
-  '10111101000', '10111100010', '11110101000', '11110100010', '10111011110', // 95-99
-  '10111101110', '11101011110', '11110101110', '11010000100', '11010010000', // 100-104
-  '11010011100', '11000111010'                                                  // 105-106 (Start B, Stop)
+  '212222', '222122', '222221', '121223', '121322', '131222', '122213', '122312', '132212', '221213', // 0-9
+  '221312', '231212', '112232', '122132', '122231', '113222', '123122', '123221', '223211', '221132', // 10-19
+  '221231', '213212', '223112', '312131', '311222', '321122', '321221', '312212', '322112', '322211', // 20-29
+  '212123', '212321', '232121', '111323', '131123', '131321', '112313', '132113', '132311', '211313', // 30-39
+  '231113', '231311', '112133', '112331', '132131', '113123', '113321', '133121', '313121', '211331', // 40-49
+  '231131', '213113', '213311', '213131', '311123', '311321', '331121', '312113', '312311', '332111', // 50-59
+  '314111', '221411', '431111', '111224', '111422', '121124', '121421', '141122', '141221', '112214', // 60-69
+  '112412', '122114', '122411', '142112', '142211', '241211', '221114', '413111', '241112', '134111', // 70-79
+  '111242', '121142', '121241', '114212', '124112', '124211', '411212', '421112', '421211', '212141', // 80-89
+  '214121', '412121', '111143', '111341', '131141', '114113', '114311', '411113', '411311', '113141', // 90-99
+  '114131', '311141', '411131', '211412', '211214', '211232', '233111'                                   // 100-106
 ]
 
-const START_B_INDEX = 104
-const STOP_INDEX = 106
-const STOP_PATTERN = '1100011101011' // Stop pattern has 13 modules
+const START_CODE_B = 104
+const START_CODE_C = 105
+const CODE_B = 100
+const CODE_C = 99
+const STOP_PATTERN = '2331112'
+
+function countConsecutiveDigits(str: string, startIdx: number): number {
+  let count = 0
+  while (startIdx + count < str.length && str.charCodeAt(startIdx + count) >= 48 && str.charCodeAt(startIdx + count) <= 57) {
+    count++
+  }
+  return count
+}
+
+function escapeXml(unsafe: string): string {
+  return unsafe.replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case '<': return '&lt;'
+      case '>': return '&gt;'
+      case '&': return '&amp;'
+      case '\'': return '&apos;'
+      case '"': return '&quot;'
+      default: return c
+    }
+  })
+}
+
+export interface BarcodeSvgOptions {
+  width?: number
+  height?: number
+  barHeight?: number
+  includeText?: boolean
+  barWidth?: number
+  fontSize?: number
+  quietZone?: number
+}
 
 /**
- * Encodes an ASCII string into a Code 128 (Subset B) binary string of bars ('1') and spaces ('0').
+ * Pure string SVG Generator for direct printing and stickers.
  */
-export function encodeCode128(text: string): { modules: string; checkValue: number } {
-  // Clean string to ASCII range 32-126
-  const sanitized = text.replace(/[^\x20-\x7E]/g, '')
-  if (!sanitized) {
-    return { modules: '', checkValue: 0 }
+export function generateBarcodeSvg(
+  rawText: string,
+  options: BarcodeSvgOptions = {}
+): string {
+  const text = (rawText || '').trim().replace(/[^\x20-\x7E]/g, '') || '000000'
+  const height = options.height ?? 50
+  const includeText = options.includeText ?? true
+  const barWidth = options.barWidth ?? 1.85
+  const fontSize = options.fontSize ?? 10
+  const quietZoneModules = options.quietZone ?? 12
+
+  const codes: number[] = []
+  let i = 0
+  let currentMode: 'B' | 'C' = 'B'
+
+  const initialDigits = countConsecutiveDigits(text, 0)
+  if (initialDigits >= 4 || (initialDigits === text.length && initialDigits >= 2)) {
+    codes.push(START_CODE_C)
+    currentMode = 'C'
+  } else {
+    codes.push(START_CODE_B)
+    currentMode = 'B'
   }
 
-  const indices: number[] = [START_B_INDEX]
-  let checkSum = START_B_INDEX
-
-  for (let i = 0; i < sanitized.length; i++) {
-    const code = sanitized.charCodeAt(i) - 32
-    indices.push(code)
-    checkSum += code * (i + 1)
+  while (i < text.length) {
+    if (currentMode === 'C') {
+      const remainingDigits = countConsecutiveDigits(text, i)
+      if (remainingDigits >= 2) {
+        codes.push(parseInt(text.slice(i, i + 2), 10))
+        i += 2
+      } else {
+        codes.push(CODE_B)
+        currentMode = 'B'
+      }
+    } else {
+      const remainingDigits = countConsecutiveDigits(text, i)
+      if (remainingDigits >= 4) {
+        codes.push(CODE_C)
+        currentMode = 'C'
+      } else {
+        codes.push(text.charCodeAt(i) - 32)
+        i++
+      }
+    }
   }
 
-  const checkValue = checkSum % 103
-  indices.push(checkValue)
-
-  // Build binary string
-  let modules = CODE128_PATTERNS[START_B_INDEX]
-  for (let i = 1; i < indices.length - 1; i++) {
-    modules += CODE128_PATTERNS[indices[i]]
+  // Checksum calculation
+  let checksum = codes[0]!
+  for (let idx = 1; idx < codes.length; idx++) {
+    checksum += codes[idx]! * idx
   }
-  modules += CODE128_PATTERNS[checkValue]
-  modules += STOP_PATTERN
+  codes.push(checksum % 103)
 
-  return { modules, checkValue }
+  let pattern = ''
+  for (const c of codes) {
+    pattern += CODE128_PATTERNS[c] || '111111'
+  }
+  pattern += STOP_PATTERN
+
+  let currentX = quietZoneModules * barWidth
+  let isBar = true
+  const rects: string[] = []
+
+  const barHeight = options.barHeight ?? (includeText ? Math.max(20, height - fontSize - 6) : height)
+  const totalHeight = options.height ?? (includeText ? barHeight + fontSize + 6 : barHeight)
+
+  for (let idx = 0; idx < pattern.length; idx++) {
+    const moduleCount = parseInt(pattern[idx]!, 10)
+    const w = moduleCount * barWidth
+    if (isBar) {
+      rects.push(`<rect x="${currentX.toFixed(2)}" y="0" width="${w.toFixed(2)}" height="${barHeight}" fill="#000000" shape-rendering="crispEdges" />`)
+    }
+    currentX += w
+    isBar = !isBar
+  }
+
+  const totalWidth = currentX + quietZoneModules * barWidth
+
+  const textElement = includeText
+    ? `<text x="${(totalWidth / 2).toFixed(2)}" y="${totalHeight - 2}" font-family="Courier, monospace, sans-serif" font-size="${fontSize}" font-weight="bold" letter-spacing="1px" text-anchor="middle" fill="#000000">${escapeXml(text)}</text>`
+    : ''
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalWidth.toFixed(2)} ${totalHeight}" width="100%" height="${totalHeight}" preserveAspectRatio="xMidYMid meet" shape-rendering="crispEdges" style="display:block;margin:0 auto;background:#ffffff;shape-rendering:crispEdges;image-rendering:pixelated;">
+  <rect width="100%" height="100%" fill="#ffffff" shape-rendering="crispEdges" />
+  ${rects.join('\n  ')}
+  ${textElement}
+</svg>`
 }
 
 interface BarcodeProps {
@@ -79,78 +162,29 @@ interface BarcodeProps {
 }
 
 /**
- * High-definition vector SVG Barcode Component.
- * Guaranteed 100% sharp rendering across all thermal receipt printers and regular printers.
+ * High-definition vector SVG Barcode Component for React with Zero Anti-Aliasing Blur.
  */
 export function Barcode({
   value,
-  height = 42,
-  scale = 1.35,
+  height = 44,
+  scale = 1.4,
   showText = true,
   className = ''
 }: BarcodeProps): React.JSX.Element | null {
   if (!value) return null
 
-  const { modules } = encodeCode128(value)
-  if (!modules) return null
-
-  // Quiet zones (10 modules on each side)
-  const quietZone = 10
-  const totalModules = modules.length + quietZone * 2
-  const barWidth = scale
-  const totalSvgWidth = totalModules * barWidth
-
-  // Group consecutive '1's into rects for efficient SVG rendering
-  const rects: { x: number; width: number }[] = []
-  let runStart = -1
-
-  for (let i = 0; i < modules.length; i++) {
-    const isBar = modules[i] === '1'
-    if (isBar && runStart === -1) {
-      runStart = i
-    } else if (!isBar && runStart !== -1) {
-      rects.push({
-        x: (runStart + quietZone) * barWidth,
-        width: (i - runStart) * barWidth
-      })
-      runStart = -1
-    }
-  }
-
-  if (runStart !== -1) {
-    rects.push({
-      x: (runStart + quietZone) * barWidth,
-      width: (modules.length - runStart) * barWidth
-    })
-  }
+  const svgHtml = generateBarcodeSvg(value, {
+    height,
+    barWidth: scale,
+    includeText: showText,
+    quietZone: 10,
+    fontSize: 10
+  })
 
   return (
-    <div className={`flex flex-col items-center justify-center text-center ${className}`}>
-      <svg
-        width={totalSvgWidth}
-        height={height}
-        viewBox={`0 0 ${totalSvgWidth} ${height}`}
-        xmlns="http://www.w3.org/2000/svg"
-        className="block mx-auto"
-        shapeRendering="crispEdges"
-      >
-        <rect x="0" y="0" width={totalSvgWidth} height={height} fill="#FFFFFF" />
-        {rects.map((r, idx) => (
-          <rect
-            key={idx}
-            x={r.x}
-            y="0"
-            width={r.width}
-            height={height}
-            fill="#000000"
-          />
-        ))}
-      </svg>
-      {showText && (
-        <span className="font-sans font-semibold text-[0.75rem] tracking-[0.2em] font-bold text-black mt-1 uppercase select-all">
-          {value}
-        </span>
-      )}
-    </div>
+    <div
+      className={`inline-block text-center bg-white p-1 rounded ${className}`}
+      dangerouslySetInnerHTML={{ __html: svgHtml }}
+    />
   )
 }

@@ -1,5 +1,5 @@
-import React from 'react'
-import { Tv, X, ShoppingBag, CheckCircle2, Heart } from 'lucide-react'
+import React, { useState } from 'react'
+import { Tv, X, ShoppingBag, CheckCircle2, Heart, Maximize2, Minimize2 } from 'lucide-react'
 import type { CartItem } from '../types'
 import { formatCurrency } from '../utils/format'
 import { AppLogo } from './AppLogo'
@@ -17,16 +17,18 @@ export function SalesMonitorModal({
   cart,
   storeName = 'TINDA SARI-SARI & MINIMART'
 }: SalesMonitorModalProps): React.JSX.Element | null {
+  const [isFullscreen, setIsFullscreen] = useState(false)
+
   if (!open) return null
 
   const totalCents = cart.reduce((sum, item) => sum + item.total_c, 0)
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/85 backdrop-blur-md animate-fade-in select-none">
-      <div className="relative w-full max-w-3xl bg-obsidian-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+    <div className={`fixed inset-0 z-50 flex items-center justify-center ${isFullscreen ? 'p-0' : 'p-4'} bg-obsidian-950/85 backdrop-blur-md animate-fade-in select-none`}>
+      <div className={`relative w-full ${isFullscreen ? 'h-screen max-w-none rounded-none' : 'max-w-3xl rounded-3xl'} bg-obsidian-900 border border-slate-800 shadow-2xl overflow-hidden flex flex-col`}>
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] bg-obsidian-950">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] bg-obsidian-950 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400">
               <Tv className="w-5 h-5" />
@@ -45,12 +47,21 @@ export function SalesMonitorModal({
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-xl bg-white/[0.04] hover:bg-white/[0.1] text-stone-400 hover:text-stone-100 flex items-center justify-center transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsFullscreen(!isFullscreen)}
+              title={isFullscreen ? 'Exit Fullscreen' : 'Enter Kiosk Fullscreen'}
+              className="w-8 h-8 rounded-xl bg-white/[0.04] hover:bg-white/[0.1] text-sky-400 flex items-center justify-center transition-colors"
+            >
+              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            </button>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-xl bg-white/[0.04] hover:bg-white/[0.1] text-stone-400 hover:text-stone-100 flex items-center justify-center transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Display Screen */}

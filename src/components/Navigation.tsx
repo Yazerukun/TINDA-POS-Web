@@ -83,6 +83,7 @@ interface NavigationProps {
   onOpenHelpGuide?: () => void
   onOpenAiAssistant?: () => void
   onOpenPrinterStudio?: () => void
+  onOpenVipUpgrade?: () => void
   isMasterAdmin?: boolean
 }
 
@@ -102,6 +103,7 @@ export function Navigation({
   onOpenHelpGuide,
   onOpenAiAssistant,
   onOpenPrinterStudio,
+  onOpenVipUpgrade,
   isMasterAdmin = false
 }: NavigationProps): React.JSX.Element {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
@@ -397,18 +399,28 @@ export function Navigation({
             </button>
           </div>
 
-          {/* Clean Enterprise Edition Badge (Sanitized: NO "Ad-Free", NO "Cloud") */}
-          <div className="p-2 rounded-xl border border-emerald-500/25 bg-emerald-500/[0.04] flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              <span className="text-[0.6875rem] font-sans font-bold text-stone-200 uppercase tracking-wider">
-                ENTERPRISE
-              </span>
+          {/* Interactive VIP Pro Lifetime Upgrade Button & Status */}
+          <button
+            type="button"
+            onClick={onOpenVipUpgrade}
+            className="w-full p-2.5 rounded-2xl border border-amber-500/35 bg-gradient-to-r from-amber-950/30 via-obsidian-900 to-obsidian-950 flex items-center justify-between hover:border-amber-400 hover:bg-amber-500/10 transition-all shadow-sm active:scale-[0.98] group text-left"
+            title="Open VIP Pro Lifetime Licensing & Maya Activation"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <Crown className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform shrink-0" />
+              <div className="min-w-0">
+                <span className="text-[0.6875rem] font-sans font-bold text-stone-100 uppercase tracking-wider block">
+                  VIP PRO LIFETIME
+                </span>
+                <span className="text-[0.625rem] text-amber-400/80 block font-mono">
+                  ₱500 Lifetime · Unlocked
+                </span>
+              </div>
             </div>
-            <span className="text-[0.625rem] font-mono text-emerald-400 font-bold uppercase">
-              ACTIVE
+            <span className="px-2 py-0.5 rounded-lg bg-amber-500/20 text-[0.625rem] font-mono text-amber-300 font-black border border-amber-500/30 uppercase shrink-0">
+              VIP
             </span>
-          </div>
+          </button>
 
           {/* Staff Identity Card */}
           <div className="flex items-center justify-between gap-2 rounded-2xl bg-obsidian-900 border border-slate-800 p-2 shadow-sm">
@@ -597,6 +609,33 @@ export function Navigation({
                 </div>
               </div>
             ))}
+
+            {/* Mobile VIP Pro Upgrade Action */}
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileDrawerOpen(false)
+                  onOpenVipUpgrade?.()
+                }}
+                className="w-full p-3 rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-950/40 via-obsidian-900 to-obsidian-950 flex items-center justify-between text-left"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Crown className="w-5 h-5 text-amber-400" />
+                  <div>
+                    <span className="text-xs font-bold text-stone-100 uppercase tracking-wider block">
+                      VIP Pro Lifetime Licensing
+                    </span>
+                    <span className="text-[0.625rem] text-amber-400 font-mono">
+                      ₱500 Lifetime · Dev Francis Maya 09912255156
+                    </span>
+                  </div>
+                </div>
+                <span className="px-2 py-0.5 rounded-lg bg-amber-500/20 text-xs font-mono text-amber-300 font-bold border border-amber-500/30">
+                  VIP
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       )}

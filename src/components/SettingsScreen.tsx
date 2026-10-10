@@ -23,13 +23,19 @@ import {
   User,
   Printer,
   QrCode,
-  FileText
+  FileText,
+  Palette,
+  Sparkles,
+  Smartphone,
+  RotateCcw
 } from 'lucide-react'
 import type { StoreSettings, UserAccount, UserRole, Transaction } from '../types'
-import { downloadBackupFile, importTindaBackup } from '../utils/backup'
+import { downloadBackupFile, importTindaBackup, rollbackRestoreCheckpoint } from '../utils/backup'
 import { compressImageFile } from '../utils/image'
 import { db, initDatabase } from '../db'
 import { Receipt } from './Receipt'
+import { THEMES, getActiveTheme, applyTheme, type ThemeId } from '../utils/theme'
+import { getDeviceMachineId } from '../utils/security'
 
 interface SettingsScreenProps {
   settings: StoreSettings
@@ -44,6 +50,7 @@ interface SettingsScreenProps {
   currentUsername?: string
   currentUserAvatar?: string
   onUpdateAvatar?: (avatarUrl?: string) => void
+  onOpenVipUpgrade?: () => void
 }
 
 export function SettingsScreen({
@@ -58,7 +65,8 @@ export function SettingsScreen({
   currentUserId,
   currentUsername,
   currentUserAvatar,
-  onUpdateAvatar
+  onUpdateAvatar,
+  onOpenVipUpgrade
 }: SettingsScreenProps): React.JSX.Element {
   const [form, setForm] = useState<StoreSettings>(settings)
   const [saved, setSaved] = useState(false)
@@ -118,9 +126,47 @@ export function SettingsScreen({
     }
   }, [isMasterAdmin, currentSessionStoreName, currentUserId, currentUsername, currentCashierName, settings.store_name])
 
+  // Theme Engine state
+  const [activeThemeId, setActiveThemeId] = useState<ThemeId>(getActiveTheme)
+
+  // Machine ID & VIP licensing state
+  const [machineId, setMachineId] = useState('')
+  const [vipInfo, setVipInfo] = useState<{ active: boolean; registeredTo?: string } | null>(null)
+  const [checkpointTime, setCheckpointTime] = useState<string | null>(null)
+
   useEffect(() => {
-    loadUsers()
-  }, [loadUsers])
+    getDeviceMachineId().then(setMachineId)
+    const savedVip = localStorage.getItem('tinda_vip_license')
+    if (savedVip) {
+      try {
+        setVipInfo(JSON.parse(savedVip))
+      } catch {}
+    }
+    const cpTime = localStorage.getItem('tinda_checkpoint_time')
+    if (cpTime) setCheckpointTime(cpTime)
+  }, [])
+
+  const handleSelectTheme = (tId: ThemeId) => {
+    setActiveThemeId(tId)
+    applyTheme(tId)
+  }
+
+  const handleRollbackCheckpoint = async () => {
+    if (!confirm('I-restore ang database sa kahimtang sa wala pa ang pinaka-ulahing import?')) return
+    setImporting(true)
+    try {
+      const result = await rollbackRestoreCheckpoint()
+      if (result.success) {
+        alert('Database rollback snapshot successfully restored!')
+        onRefreshAll()
+        loadUsers()
+      } else {
+        alert('Rollback failed: ' + result.message)
+      }
+    } finally {
+      setImporting(false)
+    }
+  }
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault()
@@ -137,7 +183,9 @@ export function SettingsScreen({
       const text = await file.text()
       const result = await importTindaBackup(text)
       if (result.success) {
-        alert('Database successfully restored from backup!')
+        alert(result.message)
+        const nowIso = new Date().toISOString()
+        setCheckpointTime(nowIso)
         onRefreshAll()
         loadUsers()
       } else {
@@ -508,6 +556,111 @@ export function SettingsScreen({
               Client-side IndexedDB with universal cross-device backup parity.
             </p>
           </div>
+        </div>
+      </div>
+
+      {/* ── VIP PRO LIFETIME LICENSING & DEVICE STATUS ── */}
+      <div className="glass-panel rounded-3xl border border-amber-500/30 p-6 shadow-2xl space-y-4 bg-gradient-to-r from-amber-950/20 via-obsidian-900 to-obsidian-950">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/[0.08] pb-4 gap-3">
+          <div className="flex items-center gap-3">
+            <div className="h-11 w-11 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shadow-glow-amber">
+              <Crown className="h-6 w-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-stone-100">TINDA POS VIP Pro Lifetime Licensing</h3>
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[0.6875rem] font-mono font-bold border border-amber-500/30">
+                  {vipInfo?.active ? 'LIFETIME UNLOCKED' : '₱500 ONE-TIME'}
+                </span>
+              </div>
+              <p className="text-xs text-stone-400 mt-0.5">
+                Machine-locked permanent VIP key · Zero monthly subscriptions · Maya 09912255156 (Dev Francis)
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onOpenVipUpgrade}
+            className="btn-press px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-obsidian-950 font-bold text-xs shadow-glow-amber flex items-center gap-2 self-start sm:self-auto shrink-0"
+          >
+            <Crown className="h-4 w-4" />
+            <span>{vipInfo?.active ? 'View License Details' : 'Upgrade to VIP Pro'}</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div className="p-3 rounded-2xl bg-obsidian-950/80 border border-white/[0.08]">
+            <span className="text-[10px] text-stone-400 uppercase tracking-wider block font-bold">This Device Machine ID</span>
+            <span className="font-mono font-bold text-amber-300 text-xs truncate block mt-1">
+              {machineId || 'Generating...'}
+            </span>
+          </div>
+          <div className="p-3 rounded-2xl bg-obsidian-950/80 border border-white/[0.08]">
+            <span className="text-[10px] text-stone-400 uppercase tracking-wider block font-bold">Official Maya Support</span>
+            <span className="font-mono font-bold text-emerald-400 text-xs block mt-1">
+              0991 225 5156 (Dev Francis)
+            </span>
+          </div>
+          <div className="p-3 rounded-2xl bg-obsidian-950/80 border border-white/[0.08]">
+            <span className="text-[10px] text-stone-400 uppercase tracking-wider block font-bold">Licensed Store Owner</span>
+            <span className="text-xs font-bold text-stone-200 truncate block mt-1">
+              {vipInfo?.registeredTo || 'Store Admin'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── POS VISUAL THEMES STUDIO ── */}
+      <div className="glass-panel rounded-3xl border border-white/[0.08] p-6 shadow-2xl space-y-4">
+        <div className="border-b border-white/[0.08] pb-3">
+          <h3 className="text-sm font-bold text-stone-100 flex items-center gap-2">
+            <Palette className="h-4 w-4 text-emerald-400" />
+            <span>Retail Display Themes &amp; Color Palettes</span>
+          </h3>
+          <p className="text-xs text-stone-400 mt-0.5">
+            Pilia ang pinaka-nindot ug haom nga tema alang sa imong counter, tindahan, o boutique.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {THEMES.map((theme) => {
+            const isSelected = activeThemeId === theme.id
+            return (
+              <button
+                key={theme.id}
+                type="button"
+                onClick={() => handleSelectTheme(theme.id)}
+                className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-3 relative overflow-hidden group ${
+                  isSelected
+                    ? 'border-emerald-500 bg-obsidian-900/90 shadow-glow-emerald ring-1 ring-emerald-500/50'
+                    : 'border-white/[0.08] bg-obsidian-900/40 hover:border-white/20 hover:bg-obsidian-900/70'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className="h-4 w-4 rounded-full border border-white/20 shadow-sm shrink-0"
+                      style={{ backgroundColor: theme.accentColor }}
+                    />
+                    <h4 className="text-xs font-bold text-stone-100">{theme.name}</h4>
+                  </div>
+                  {isSelected && (
+                    <span className="flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                      <Check className="h-3 w-3" /> ACTIVE
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-stone-400">{theme.subtitle}</p>
+                <div className="flex items-center justify-between pt-1 border-t border-white/[0.06] text-[10px] font-mono text-stone-500">
+                  <span>{theme.isDark ? 'Dark Mode' : 'Light Retail Mode'}</span>
+                  <span className="group-hover:text-stone-300 transition-colors">
+                    {isSelected ? 'Currently Applied' : 'Click to Apply'}
+                  </span>
+                </div>
+              </button>
+            )
+          })}
         </div>
       </div>
 
@@ -1094,46 +1247,46 @@ export function SettingsScreen({
       </div>
 
       {/* Universal Backup Archive */}
-      <div className="glass-panel rounded-3xl border border-slate-900/[0.1] p-6 shadow-2xl space-y-4">
-        <div className="border-b border-slate-900/[0.08] pb-3">
+      <div className="glass-panel rounded-3xl border border-white/[0.08] p-6 shadow-2xl space-y-4">
+        <div className="border-b border-white/[0.08] pb-3">
           <h3 className="text-sm font-bold text-stone-100 flex items-center gap-2">
-            <Database className="h-4 w-4 text-indigo-600" />
-            <span>Universal .tinda-backup Archive</span>
+            <Database className="h-4 w-4 text-indigo-400" />
+            <span>Universal .tinda-backup Archive &amp; Offline Desktop Importer</span>
           </h3>
-          <p className="text-xs text-slate-400 mt-0.5">
-            100% interoperable between Android APK and this Web version.
+          <p className="text-xs text-stone-400 mt-0.5">
+            100% interoperable tali sa Offline Desktop TINDA POS (Windows/Linux), Android APK, ug kining Web version. Awtomatikong i-convert ang SQLite tables ug i-map ang mga presyo, stocks, ug suki.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Export Box */}
-          <div className="p-4 rounded-2xl bg-obsidian-900/60 border border-slate-900/[0.06] flex flex-col justify-between space-y-3">
+          <div className="p-4 rounded-2xl bg-obsidian-900/60 border border-white/[0.08] flex flex-col justify-between space-y-3">
             <div>
               <h4 className="text-xs font-bold text-stone-100 flex items-center gap-1.5">
-                <Download className="h-4 w-4 text-emerald-600" />
+                <Download className="h-4 w-4 text-emerald-400" />
                 <span>Export .tinda-backup</span>
               </h4>
-              <p className="text-[0.8125rem] text-slate-400 mt-1">
-                Download the complete store database (products, sales, customers, photos) as a single offline backup file.
+              <p className="text-[0.8125rem] text-stone-400 mt-1">
+                I-download ang tibuok database sa imong tindahan (mga produkto, presyo, halin, suki ledger, expenses) isip usa ka offline backup file.
               </p>
             </div>
             <button
               onClick={() => void downloadBackupFile()}
-              className="btn-press w-full py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-600 font-bold text-xs"
+              className="btn-press w-full py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 font-bold text-xs"
             >
-              Download Backup File
+              Download Backup File (.tinda-backup)
             </button>
           </div>
 
           {/* Import Box */}
-          <div className="p-4 rounded-2xl bg-obsidian-900/60 border border-slate-900/[0.06] flex flex-col justify-between space-y-3">
+          <div className="p-4 rounded-2xl bg-obsidian-900/60 border border-white/[0.08] flex flex-col justify-between space-y-3">
             <div>
               <h4 className="text-xs font-bold text-stone-100 flex items-center gap-1.5">
-                <Upload className="h-4 w-4 text-indigo-600" />
-                <span>Restore .tinda-backup</span>
+                <Upload className="h-4 w-4 text-indigo-400" />
+                <span>Restore / Import Offline Database</span>
               </h4>
-              <p className="text-[0.8125rem] text-slate-400 mt-1">
-                Load an existing backup file from your Android phone or another browser.
+              <p className="text-[0.8125rem] text-stone-400 mt-1">
+                I-load ang `.tinda-backup` file gikan sa imong Windows Desktop POS o Android phone. Awtomatikong basahon ang tanang SQLite tables!
               </p>
             </div>
             <input
@@ -1146,19 +1299,44 @@ export function SettingsScreen({
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={importing}
-              className="btn-press w-full py-2.5 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-600 font-bold text-xs"
+              className="btn-press w-full py-2.5 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-300 font-bold text-xs"
             >
-              {importing ? 'Restoring Database...' : 'Select & Restore File'}
+              {importing ? 'Importing & Converting Database...' : 'Select & Import .tinda-backup File'}
             </button>
           </div>
         </div>
 
+        {/* Pre-Restore Rollback Snapshot */}
+        {checkpointTime && (
+          <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <RotateCcw className="h-4 w-4 text-amber-400 shrink-0" />
+              <div>
+                <span className="text-xs font-bold text-stone-100 block">
+                  Emergency Pre-Restore Rollback Snapshot Available
+                </span>
+                <span className="text-[11px] text-amber-300/80 block font-mono">
+                  Saved: {new Date(checkpointTime).toLocaleString()}
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleRollbackCheckpoint}
+              disabled={importing}
+              className="btn-press px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs shrink-0"
+            >
+              Rollback Snapshot
+            </button>
+          </div>
+        )}
+
         {/* Reset Database */}
-        <div className="pt-3 border-t border-slate-900/[0.06] flex justify-between items-center">
-          <span className="text-xs text-slate-500">Clear entire store database (products, sales, customers, held tickets, restocking history).</span>
+        <div className="pt-3 border-t border-white/[0.06] flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+          <span className="text-xs text-stone-500">I-reset ang tibuok database (tanang produkto, halin, suki utang, ug restock logs mapapas).</span>
           <button
             onClick={handleResetData}
-            className="btn-press px-3 py-1.5 rounded-xl border border-slate-900/[0.08] text-slate-400 hover:text-stone-100 text-xs font-semibold flex items-center gap-1.5"
+            className="btn-press px-3 py-1.5 rounded-xl border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs font-semibold flex items-center gap-1.5 self-start sm:self-auto"
           >
             <RefreshCw className="h-3.5 w-3.5" />
             <span>Clear All Data</span>

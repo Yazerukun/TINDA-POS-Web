@@ -686,6 +686,9 @@ export default function App(): React.JSX.Element {
             onQuickRestock={handleQuickRestock}
             onOpenPriceGuide={handleOpenPriceGuide}
             onOpenExpiration={handleOpenExpiration}
+            cashierName={vaultSession?.cashierName}
+            storeName={activeStoreName}
+            openingFloat_c={vaultSession?.openingFloat_c}
           />
         )}
 

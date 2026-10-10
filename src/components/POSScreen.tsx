@@ -33,7 +33,9 @@ import {
   DollarSign,
   User,
   Clock,
-  RotateCcw
+  RotateCcw,
+  LayoutGrid,
+  List
 } from 'lucide-react'
 import type {
   Product,
@@ -172,6 +174,22 @@ export function POSScreen({
   const [activeInvoiceId, setActiveInvoiceId] = useState<string>('')
   const [scanOpen, setScanOpen] = useState(false)
   const [soundMutedState, setSoundMutedState] = useState(() => isSoundMuted())
+  const [catalogViewMode, setCatalogViewMode] = useState<'GRID' | 'LIST'>(() => {
+    try {
+      return (localStorage.getItem('tinda_pos_catalog_view') as 'GRID' | 'LIST') || 'GRID'
+    } catch {
+      return 'GRID'
+    }
+  })
+
+  const handleToggleViewMode = (mode: 'GRID' | 'LIST') => {
+    setCatalogViewMode(mode)
+    try {
+      localStorage.setItem('tinda_pos_catalog_view', mode)
+    } catch {
+      // ignore
+    }
+  }
 
   // Modals state
   const [priceEditItem, setPriceEditItem] = useState<CartItem | null>(null)
@@ -719,7 +737,44 @@ export function POSScreen({
           </div>
         )}
 
-        {/* Product Cards Grid */}
+        {/* Catalog Toolbar: Results Counter & View Mode Switcher (Grid vs List) */}
+        <div className="flex items-center justify-between px-1">
+          <div className="text-[0.7rem] font-mono text-stone-400">
+            SHOWING <span className="text-emerald-400 font-bold">{filteredProducts.length}</span> PRODUCTS
+          </div>
+          <div className="flex items-center gap-1 bg-obsidian-950/80 p-1 rounded-xl border border-white/[0.06]">
+            <button
+              type="button"
+              onClick={() => handleToggleViewMode('GRID')}
+              aria-label="Grid view"
+              title="Grid View"
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono transition-all ${
+                catalogViewMode === 'GRID'
+                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-glow-emerald font-bold'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              <LayoutGrid className="h-3.5 w-3.5" />
+              <span className="text-[0.7rem] uppercase tracking-wider hidden sm:inline">Grid</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleToggleViewMode('LIST')}
+              aria-label="List view"
+              title="List View"
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono transition-all ${
+                catalogViewMode === 'LIST'
+                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-glow-emerald font-bold'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              <List className="h-3.5 w-3.5" />
+              <span className="text-[0.7rem] uppercase tracking-wider hidden sm:inline">List</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Product Cards Display: Grid or List */}
         {filteredProducts.length === 0 ? (
           <div className="glass-card rounded-3xl p-14 text-center flex flex-col items-center justify-center border border-white/[0.04]">
             <Package className="h-10 w-10 text-stone-500 mb-3" />
@@ -730,7 +785,7 @@ export function POSScreen({
               No products found matching your search or category filter. Try clearing keywords.
             </p>
           </div>
-        ) : (
+        ) : catalogViewMode === 'GRID' ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
             {filteredProducts.map((p) => {
               const inCartQty = cartQtyMap.get(p.id) || 0
@@ -830,6 +885,105 @@ export function POSScreen({
                       >
                         <Plus className="h-3.5 w-3.5" />
                       </div>
+                    </div>
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+        ) : (
+          /* List View: Cashier-Speed High Density Row Layout */
+          <div className="space-y-2">
+            {filteredProducts.map((p) => {
+              const inCartQty = cartQtyMap.get(p.id) || 0
+              const remainingStock = Math.max(0, p.stock - inCartQty)
+              const isOutOfStock = remainingStock <= 0
+              const isLowStock = remainingStock <= 5 && remainingStock > 0
+              const isJustDeducted = deductedProductId === p.id
+
+              return (
+                <button
+                  key={p.id}
+                  disabled={isOutOfStock}
+                  onClick={() => addToCart(p)}
+                  className={`w-full btn-press group flex items-center justify-between gap-3 text-left rounded-xl glass-card px-3.5 py-2.5 border transition-all duration-200 ${
+                    isOutOfStock
+                      ? 'opacity-40 cursor-not-allowed border-rose-950/40 bg-obsidian-900/[0.08]'
+                      : isJustDeducted
+                      ? 'border-emerald-500/80 bg-emerald-500/[0.08] shadow-[0_0_15px_rgba(16,185,129,0.2)]'
+                      : 'border-white/[0.06] hover:border-emerald-500/35 hover:bg-emerald-500/[0.02]'
+                  }`}
+                >
+                  {/* Left: Thumbnail & Name & Identifiers */}
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="relative h-11 w-11 shrink-0 rounded-lg overflow-hidden bg-obsidian-950 border border-white/[0.04] flex items-center justify-center">
+                      {p.image_path ? (
+                        <img
+                          src={p.image_path}
+                          alt={p.name}
+                          className="h-full w-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      ) : (
+                        <Package className="h-5 w-5 text-stone-500 group-hover:text-emerald-400 transition-colors" />
+                      )}
+                      {inCartQty > 0 && (
+                        <span className="absolute bottom-0 right-0 bg-emerald-600 text-[9px] font-mono font-bold text-white px-1 rounded-tl">
+                          {inCartQty}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-xs font-semibold text-stone-100 truncate group-hover:text-emerald-400 transition-colors">
+                          {p.name}
+                        </h4>
+                        {inCartQty > 0 && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0">
+                            {inCartQty} IN CART
+                          </span>
+                        )}
+                        {isJustDeducted && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-extrabold bg-emerald-500 text-white shrink-0 animate-pulse">
+                            -1
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5 text-[11px] font-mono text-stone-400">
+                        {p.sku && <span>SKU: {p.sku}</span>}
+                        {p.barcode && <span>• Barcode: {p.barcode}</span>}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Stock, Price & Quick Add Button */}
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[11px] font-mono font-semibold uppercase tracking-wider ${
+                        isOutOfStock
+                          ? 'bg-rose-900/60 text-rose-300 border border-rose-800'
+                          : isLowStock
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                          : 'bg-obsidian-900 text-stone-400 border border-white/[0.06]'
+                      }`}
+                    >
+                      {isOutOfStock ? 'Out of Stock' : isLowStock ? `Low: ${remainingStock}` : `Stock: ${remainingStock}`}
+                    </span>
+
+                    <span className="font-serif text-sm font-bold text-emerald-400 min-w-[70px] text-right">
+                      {money(p.default_price_c)}
+                    </span>
+
+                    <div
+                      className={`h-7 w-7 rounded-lg border flex items-center justify-center transition-all ${
+                        isOutOfStock
+                          ? 'border-white/[0.04] text-stone-600'
+                          : isJustDeducted
+                          ? 'bg-emerald-500 text-white border-emerald-400'
+                          : 'bg-obsidian-900 border-white/[0.08] text-stone-300 group-hover:bg-emerald-500 group-hover:text-white group-hover:border-emerald-500'
+                      }`}
+                    >
+                      <Plus className="h-4 w-4" />
                     </div>
                   </div>
                 </button>

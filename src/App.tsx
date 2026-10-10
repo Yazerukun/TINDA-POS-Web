@@ -12,6 +12,18 @@ import { SettingsScreen } from './components/SettingsScreen'
 import { TransactionsScreen } from './components/TransactionsScreen'
 import { ExpensesScreen } from './components/ExpensesScreen'
 import { SuppliersScreen } from './components/SuppliersScreen'
+import { EwalletScreen } from './components/EwalletScreen'
+import { PrintingServicesScreen } from './components/PrintingServicesScreen'
+import { UtangScreen } from './components/UtangScreen'
+import { ReportsScreen } from './components/ReportsScreen'
+import { BackupScreen } from './components/BackupScreen'
+import { HandbookScreen } from './components/HandbookScreen'
+import { TerminalToolsModal } from './components/TerminalToolsModal'
+import { PrinterStudioModal } from './components/PrinterStudioModal'
+import { SalesMonitorModal } from './components/SalesMonitorModal'
+import { HelpGuideModal } from './components/HelpGuideModal'
+import { AiAssistantModal } from './components/AiAssistantModal'
+import { BarcodeScannerModal } from './components/BarcodeScannerModal'
 import { PriceGuideModal } from './components/PriceGuideModal'
 import { ExpirationTrackerModal } from './components/ExpirationTrackerModal'
 import { CheckoutModal } from './components/CheckoutModal'
@@ -37,9 +49,15 @@ export default function App(): React.JSX.Element {
   const [heldCarts, setHeldCarts] = useState<HeldCart[]>([])
   const [loading, setLoading] = useState(true)
 
-  // Fast Tools Modal States
+  // Fast Tools & Utility Modal States
   const [isPriceGuideOpen, setIsPriceGuideOpen] = useState(false)
   const [isExpirationOpen, setIsExpirationOpen] = useState(false)
+  const [isTerminalToolsOpen, setIsTerminalToolsOpen] = useState(false)
+  const [isPrinterStudioOpen, setIsPrinterStudioOpen] = useState(false)
+  const [isSalesMonitorOpen, setIsSalesMonitorOpen] = useState(false)
+  const [isHelpGuideOpen, setIsHelpGuideOpen] = useState(false)
+  const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false)
+  const [isBarcodeScannerOpen, setIsBarcodeScannerOpen] = useState(false)
 
   // Vault Session / Cashier Authentication State (Screen 1 vs Screen 2)
   const [vaultSession, setVaultSession] = useState<VaultSession | null>(() => {
@@ -278,6 +296,36 @@ export default function App(): React.JSX.Element {
       customerId,
       quickTender_c
     })
+  }
+
+  const handleAddToCartFromServices = (serviceItem: { name: string; price_c: number; quantity: number }) => {
+    const pseudoProduct: Product = {
+      id: Date.now(),
+      name: serviceItem.name,
+      sku: 'SRV-PRINT',
+      barcode: null,
+      category_id: null,
+      subcategory_id: null,
+      base_unit: 'pc',
+      cost_c: 0,
+      default_price_c: serviceItem.price_c,
+      stock: 9999,
+      image_path: null,
+      status: 'ACTIVE',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+
+    setCart((prev) => [
+      ...prev,
+      {
+        product: pseudoProduct,
+        quantity: serviceItem.quantity,
+        unit_price_c: serviceItem.price_c,
+        total_c: serviceItem.price_c * serviceItem.quantity
+      }
+    ])
+    setActiveTab('pos')
   }
 
   const handleTransactionComplete = async (tx: Transaction) => {
@@ -598,14 +646,15 @@ export default function App(): React.JSX.Element {
         cashierName={vaultSession?.cashierName || 'Master Admin'}
         cashierRole={vaultSession?.cashierRole || 'Administrator'}
         avatarUrl={vaultSession?.avatarUrl}
+        storeName={activeStoreName}
         onOpenProfile={() => setIsProfileModalOpen(true)}
         onLockTerminal={handleLockTerminal}
-        onOpenPriceGuide={handleOpenPriceGuide}
-        onOpenExpiration={handleOpenExpiration}
-        proFormattedTime={proAccess.formattedTime}
-        isPro={proAccess.isPro}
+        onOpenTerminalTools={() => setIsTerminalToolsOpen(true)}
+        onOpenSalesMonitor={() => setIsSalesMonitorOpen(true)}
+        onOpenHelpGuide={() => setIsHelpGuideOpen(true)}
+        onOpenAiAssistant={() => setIsAiAssistantOpen(true)}
+        onOpenPrinterStudio={() => setIsPrinterStudioOpen(true)}
         isMasterAdmin={vaultSession?.isMasterAdmin || false}
-        onOpenProModal={() => proAccess.openRewardModal('Account Pro Access')}
       />
 
       {/* Main Screen Router */}
@@ -626,7 +675,7 @@ export default function App(): React.JSX.Element {
           </div>
         )}
 
-        {/* Desktop & Tablet Top Status Bar with real-time shift time limit */}
+        {/* Desktop & Tablet Top Status Bar with real-time station diagnostics */}
         <div className="hidden md:flex items-center justify-between px-4 lg:px-6 py-2.5 bg-obsidian-950/80 backdrop-blur-md border-b border-slate-900/[0.06] sticky top-0 z-30 min-w-0 gap-3">
           <div className="flex items-center gap-2 lg:gap-3 min-w-0 truncate">
             <span className="font-sans font-semibold text-[0.8125rem] tracking-widest uppercase text-stone-400 shrink-0">
@@ -659,7 +708,7 @@ export default function App(): React.JSX.Element {
               className="flex items-center gap-2 px-3 py-1 rounded-full border border-gold/60 bg-gradient-to-r from-amber-500/20 via-gold/15 to-amber-500/20 text-gold-light text-xs font-mono font-bold shadow-glow-gold hover:border-gold transition-all shrink-0"
             >
               <Crown className="w-3.5 h-3.5 text-gold shrink-0" />
-              <span className="hidden lg:inline">SUPER ADMIN · ZERO ADS</span>
+              <span className="hidden lg:inline">SUPER ADMIN · ROOT ACCESS</span>
               <span className="lg:hidden">SUPER ADMIN</span>
               <span className="text-[0.75rem] text-gold underline ml-1">Control →</span>
             </button>
@@ -668,7 +717,7 @@ export default function App(): React.JSX.Element {
               className="flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-xs font-mono font-bold shadow-glow-emerald shrink-0"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="hidden lg:inline">PRO CLOUD EDITION</span>
+              <span className="hidden lg:inline">PRO ENTERPRISE EDITION</span>
               <span className="lg:hidden">PRO ACTIVE</span>
               <span className="text-[0.75rem] text-emerald-400/80 font-normal">· UNLIMITED</span>
             </div>
@@ -746,6 +795,51 @@ export default function App(): React.JSX.Element {
           <SuppliersScreen />
         )}
 
+        {activeTab === 'ewallet' && (
+          <EwalletScreen
+            currentCashierName={vaultSession?.cashierName}
+            storeName={activeStoreName}
+          />
+        )}
+
+        {activeTab === 'printing' && (
+          <PrintingServicesScreen
+            currentCashierName={vaultSession?.cashierName}
+            storeName={activeStoreName}
+            onAddToCart={handleAddToCartFromServices}
+          />
+        )}
+
+        {activeTab === 'utang' && (
+          <UtangScreen
+            customers={customers}
+            onRefresh={loadData}
+            currentCashierName={vaultSession?.cashierName}
+            storeName={activeStoreName}
+          />
+        )}
+
+        {activeTab === 'reports' && (
+          <ReportsScreen
+            transactions={transactions}
+            expenses={expenses}
+            settings={settings}
+            currentCashierName={vaultSession?.cashierName}
+            storeName={activeStoreName}
+          />
+        )}
+
+        {activeTab === 'backup' && (
+          <BackupScreen
+            onRefreshAll={loadData}
+            storeName={activeStoreName}
+          />
+        )}
+
+        {activeTab === 'handbook' && (
+          <HandbookScreen />
+        )}
+
         {activeTab === 'analytics' && (
           <AnalyticsScreen
             transactions={transactions}
@@ -802,6 +896,80 @@ export default function App(): React.JSX.Element {
           onComplete={handleTransactionComplete}
         />
       )}
+
+      {/* Terminal & Fast Tools Dock Modal (Dedicated organized location) */}
+      <TerminalToolsModal
+        isOpen={isTerminalToolsOpen}
+        onClose={() => setIsTerminalToolsOpen(false)}
+        onOpenPriceGuide={() => setIsPriceGuideOpen(true)}
+        onOpenExpiration={() => setIsExpirationOpen(true)}
+        onOpenBarcodeScanner={() => setIsBarcodeScannerOpen(true)}
+        onOpenPrinterStudio={() => setIsPrinterStudioOpen(true)}
+        currentCashierName={vaultSession?.cashierName}
+        storeName={activeStoreName}
+      />
+
+      {/* Thermal & Label Studio Modal */}
+      <PrinterStudioModal
+        open={isPrinterStudioOpen}
+        onClose={() => setIsPrinterStudioOpen(false)}
+        storeName={activeStoreName}
+      />
+
+      {/* Customer Facing Display / Sales Monitor Modal */}
+      <SalesMonitorModal
+        open={isSalesMonitorOpen}
+        onClose={() => setIsSalesMonitorOpen(false)}
+        cart={cart}
+        storeName={activeStoreName}
+      />
+
+      {/* Store SOP & Cashier Tour Modal */}
+      <HelpGuideModal
+        open={isHelpGuideOpen}
+        onClose={() => setIsHelpGuideOpen(false)}
+      />
+
+      {/* TindaBot Retail AI Assistant Modal */}
+      <AiAssistantModal
+        open={isAiAssistantOpen}
+        onClose={() => setIsAiAssistantOpen(false)}
+        storeName={activeStoreName}
+      />
+
+      {/* Barcode Camera Scanner Modal */}
+      <BarcodeScannerModal
+        open={isBarcodeScannerOpen}
+        onClose={() => setIsBarcodeScannerOpen(false)}
+        onDetect={(code) => {
+          setIsBarcodeScannerOpen(false)
+          const matched = products.find((p) => p.barcode === code)
+          if (matched) {
+            setCart((prev) => {
+              const existing = prev.find((i) => i.product.id === matched.id)
+              if (existing) {
+                return prev.map((i) =>
+                  i.product.id === matched.id
+                    ? { ...i, quantity: i.quantity + 1, total_c: (i.quantity + 1) * i.unit_price_c }
+                    : i
+                )
+              }
+              return [
+                ...prev,
+                {
+                  product: matched,
+                  quantity: 1,
+                  unit_price_c: matched.default_price_c,
+                  total_c: matched.default_price_c
+                }
+              ]
+            })
+            setActiveTab('pos')
+          } else {
+            alert(`Detected barcode: ${code} (Walang katugmang produkto sa imbentaryo)`)
+          }
+        }}
+      />
 
       {/* DTI SRP Bantay Presyo Modal */}
       <PriceGuideModal

@@ -232,7 +232,7 @@ export function POSScreen({
 
   // Transient state for real-time visual pulse & floating "-1" badge
   const [deductedProductId, setDeductedProductId] = useState<number | null>(null)
-  const deductTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const deductTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const triggerRealtimeDeduct = (productId: number) => {
     if (deductTimerRef.current) clearTimeout(deductTimerRef.current)

@@ -55,7 +55,7 @@ export function LandingPage({
                   TINDA POS
                 </span>
                 <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[0.6875rem] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                  Cloud & Offline
+                  Online &amp; Offline
                 </span>
               </div>
               <span className="text-[0.6875rem] font-sans font-semibold tracking-[0.2em] uppercase text-emerald-400/80">
@@ -104,7 +104,7 @@ export function LandingPage({
 
         {/* Hero Title */}
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-black tracking-tight text-stone-100 max-w-4xl mx-auto leading-[1.15]">
-          The Complete <span className="bg-gradient-to-r from-emerald-400 via-brand-400 to-emerald-500 bg-clip-text text-transparent">Cloud & Offline POS</span> for Philippine Retail.
+          The Complete <span className="bg-gradient-to-r from-emerald-400 via-brand-400 to-emerald-500 bg-clip-text text-transparent">Enterprise &amp; Offline-Ready POS</span> for Philippine Retail.
         </h1>
 
         {/* Hero Subtitle */}
@@ -281,7 +281,7 @@ export function LandingPage({
             </h3>
             <p className="text-xs sm:text-sm text-stone-400 leading-relaxed">
               All transactions, inventory changes, and customer records persist safely on your device.
-              When internet connectivity is restored, TINDA POS silently syncs your data to Cloudflare Edge for backup.
+              When internet connectivity is restored, TINDA POS silently syncs your data securely for automatic backup.
             </p>
           </div>
 

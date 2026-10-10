@@ -386,7 +386,7 @@ export function PrintReportModal({
 
           <div className="text-center text-[0.75rem] text-gray-500 pt-2 border-t border-dashed border-gray-400">
             <p>*** END OF {reportType}-READING AUDIT ARCHIVE ***</p>
-            <p className="pt-0.5">TINDA POS Web · Universal Cloud Ledger</p>
+            <p className="pt-0.5">TINDA POS Web · Universal Retail Ledger</p>
           </div>
         </div>
       </div>

@@ -61,6 +61,8 @@ export function playScanSuccess(): void {
   }
 }
 
+export const playSuccessSound = playScanSuccess
+
 /**
  * Distinct dual-tone warning buzz for out of stock, errors, or barcode not found (280Hz - 220Hz, 160ms)
  */

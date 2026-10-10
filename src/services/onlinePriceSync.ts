@@ -107,8 +107,8 @@ export async function syncOnlinePriceCatalog(): Promise<SyncPriceResult> {
       totalCount,
       lastUpdated: syncTime,
       message: newCount > 0
-        ? `Successfully synced ${newCount} new items from DTI & Retail Cloud!`
-        : `Catalog verified with Cloud. All ${totalCount} items are up to date.`
+        ? `Successfully synced ${newCount} new items from DTI SRP Database!`
+        : `Catalog verified online. All ${totalCount} items are up to date.`
     }
   } catch (err: any) {
     console.error('Online price sync error:', err)

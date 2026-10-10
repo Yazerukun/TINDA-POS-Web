@@ -44,3 +44,5 @@ export function moneyShort(cents: number | null | undefined): string {
   return `₱${p.toLocaleString('en-PH', { maximumFractionDigits: 0 })}`
 }
 
+export const formatCurrency = money
+

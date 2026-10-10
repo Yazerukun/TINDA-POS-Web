@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import {
   Fingerprint,
-  Cloud,
+  Wifi,
   ShieldCheck,
   ServerCog,
   Lock,
@@ -61,9 +61,9 @@ const BENTO_FEATURES = [
     desc: 'Individual cashier credentials with full transaction audit trail'
   },
   {
-    icon: Cloud,
-    title: 'Cloudflare Edge Sync',
-    desc: 'Realtime bidirectional cloud sync with offline Dexie resilience'
+    icon: Wifi,
+    title: 'Realtime Edge Sync',
+    desc: 'Realtime bidirectional edge synchronization with offline Dexie resilience'
   },
   {
     icon: ShieldCheck,
@@ -143,7 +143,7 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
         </h1>
 
         <p className="mt-3 text-sm text-stone-400 leading-relaxed max-w-lg">
-          Fast, audited register sessions for Philippine retail and groceries. Operates seamlessly offline with automatic Cloudflare D1 synchronization.
+          Fast, audited register sessions for Philippine retail and groceries. Operates seamlessly offline with automatic realtime edge synchronization.
         </p>
 
         {/* 2x2 Tailark Bento Grid */}
@@ -485,10 +485,10 @@ export function VaultAuthModal({
     }
     setIsVerifying(true)
     setErrorMessage('')
-    const res = await rotatePinOnCloud(user.username, next)
-    if (!res.ok) {
+    const ok = await rotatePinOnCloud(user.username, pin, next)
+    if (!ok) {
       setIsVerifying(false)
-      setErrorMessage(res.error || 'Hindi napalitan ang PIN sa cloud. Pakisubukang muli.')
+      setErrorMessage('Hindi napalitan ang PIN sa cloud. Pakisubukang muli.')
       return
     }
     if (user.id) await db.users.update(user.id, { pin: next }).catch(() => {})
@@ -926,7 +926,7 @@ export function VaultAuthModal({
                   </button>
 
                   <p className="text-[0.6875rem] font-mono text-stone-500 text-center pt-1">
-                    Terminal TRM-8891 · Audited Local & Cloud Station
+                    Terminal TRM-8891 · Audited Local & Edge Station
                   </p>
                 </form>
               )}

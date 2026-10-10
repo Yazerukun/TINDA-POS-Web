@@ -74,7 +74,7 @@ export function RewardedAdModal({
   const [showDevTools, setShowDevTools] = useState(false)
   const [activeAdUrl, setActiveAdUrl] = useState<string>(MONETAG_DIRECT_LINKS[0])
   const [redeemingPackage, setRedeemingPackage] = useState<number | null>(null)
-  const adTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const adTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const adStartTimeRef = useRef<number>(0)
 
   // Real-time AdBlocker detection

@@ -9,7 +9,6 @@ import {
   ExternalLink,
   Tag,
   Store,
-  Cloud,
   RefreshCw,
   CheckCircle2
 } from 'lucide-react'
@@ -158,7 +157,7 @@ export function PriceGuideModal({
         store_name: storeName,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
-      })
+      } as unknown as Product)
 
       setAddedIds((prev) => new Set([...prev, ref.barcode]))
       if (onProductAdded) onProductAdded()
@@ -199,10 +198,10 @@ export function PriceGuideModal({
               onClick={handleSyncOnline}
               disabled={syncing}
               className="btn-press flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-600 font-mono text-xs font-bold transition-all shadow-sm"
-              title="Sync latest prices from DTI & Retail Cloud"
+              title="Sync latest prices from DTI SRP Online Database"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin text-amber-600' : 'text-amber-600'}`} />
-              <span>{syncing ? 'Syncing...' : 'Sync Cloud Prices'}</span>
+              <span>{syncing ? 'Syncing...' : 'Sync SRP Prices'}</span>
             </button>
 
             <button

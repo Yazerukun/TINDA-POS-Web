@@ -15,6 +15,7 @@ export interface ReceiptProps {
   paperWidth?: '58mm' | '80mm' | 'A4'
   showBarcode?: boolean
   showLogo?: boolean
+  showCustomerInfo?: boolean
   customerName?: string
   customerBalance_c?: number
   isReprint?: boolean
@@ -33,6 +34,7 @@ export function Receipt({
   paperWidth = '80mm',
   showBarcode = true,
   showLogo = true,
+  showCustomerInfo = true,
   customerName,
   customerBalance_c,
   isReprint = false,
@@ -157,7 +159,7 @@ export function Receipt({
         </div>
 
         {/* Customer Information (if present) */}
-        {(customerName || activeTx.customer_id) && (
+        {showCustomerInfo && (customerName || activeTx.customer_id) && (
           <div className="pt-1 border-t border-dotted border-gray-400 mt-1">
             <div className="flex justify-between font-bold">
               <span>CUSTOMER:</span>

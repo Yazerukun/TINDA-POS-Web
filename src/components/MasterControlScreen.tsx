@@ -578,7 +578,7 @@ export function MasterControlScreen({
 
       const masterBackup = {
         exported_at: new Date().toISOString(),
-        platform: 'TINDA POS Executive Retail Cloud',
+        platform: 'TINDA POS Executive Retail Platform',
         master_admin: 'skorts188@gmail.com',
         database_version: 1,
         stats: {
@@ -755,7 +755,7 @@ export function MasterControlScreen({
             </button>
 
             <button
-              onClick={loadData}
+              onClick={() => void loadData(true)}
               disabled={loading}
               className="btn-press p-2.5 rounded-xl bg-slate-850/80 border border-slate-900/[0.08] hover:border-gold/40 text-stone-400 hover:text-gold-light transition-all"
               title="Refresh"
@@ -832,7 +832,7 @@ export function MasterControlScreen({
             <span className="font-serif text-2xl sm:text-3xl font-bold text-gold-light">
               {totalPlatformAds}
             </span>
-            <span className="text-[0.75rem] font-mono text-emerald-400 font-bold">● Cloud Live</span>
+            <span className="text-[0.75rem] font-mono text-emerald-400 font-bold">● Realtime Active</span>
           </div>
           <p className="text-[0.75rem] font-mono text-stone-400 mt-1 truncate">
             Across all merchant accounts
@@ -865,7 +865,7 @@ export function MasterControlScreen({
         <div className="flex items-center gap-2 flex-wrap">
           <span className="flex items-center gap-1.5 text-emerald-600 font-bold tracking-wider uppercase text-[0.8125rem]">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
-            Cloudflare D1 Realtime Presence
+            Edge Realtime Presence
           </span>
           <span className="text-stone-500">|</span>
           <span className="text-stone-400 text-[0.8125rem]">
@@ -1179,9 +1179,9 @@ export function MasterControlScreen({
                                           </span>
                                         </div>
                                         <span className="text-[0.75rem] text-stone-400 font-mono">
-                                          {pro?.unlimited_until && !isNaN(new Date(pro.unlimited_until).getTime()) && new Date(pro.unlimited_until).getTime() > currentTime
-                                            ? `Pass: until ${new Date(pro.unlimited_until).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-                                            : 'Requires Ad Shift'}
+                                          {pro?.pro_expires_at && pro.pro_expires_at > currentTime
+                                            ? `Pass: until ${new Date(pro.pro_expires_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                                            : 'PRO Active · Unlimited'}
                                         </span>
                                       </div>
                                     )

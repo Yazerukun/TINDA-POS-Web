@@ -311,61 +311,8 @@ export function VaultAuthModal({
     await new Promise((resolve) => setTimeout(resolve, 500))
 
     try {
-      const lower = trimmedUser.toLowerCase()
-
-      let user = await db.users.where('username').equalsIgnoreCase(trimmedUser).first()
-      if (!user) {
-        user = await db.users.filter((u) => u.email?.toLowerCase() === lower).first()
-      }
-
-      // Seed default admin if user is logging in as admin and no admin exists yet
-      if (!user && lower === 'admin') {
-        const existingAdmin = await db.users.where('role').equals('ADMIN').first()
-        if (!existingAdmin) {
-          const newAdmin: UserAccount = {
-            username: 'admin',
-            name: 'Master Admin',
-            role: 'ADMIN',
-            pin: '1234',
-            status: 'ACTIVE',
-            created_at: new Date().toISOString(),
-            store_name: 'PLATFORM_HQ',
-            is_owner: true
-          }
-          const id = await db.users.add(newAdmin)
-          user = { ...newAdmin, id }
-        } else {
-          user = existingAdmin
-        }
-      }
-
-      // Cloudflare D1 cross-device lookup
-      if (!user) {
-        try {
-          const cloudRes = await loginWithCloud(trimmedUser, pin)
-          if (cloudRes.ok && cloudRes.user) {
-            const syncedUser: UserAccount = {
-              id: cloudRes.user.id,
-              username: cloudRes.user.username,
-              name: cloudRes.user.name,
-              role: (cloudRes.user.role as UserRole) || 'ADMIN',
-              pin: pin,
-              status: 'ACTIVE',
-              created_at: new Date().toISOString(),
-              store_name: cloudRes.user.store_name || undefined,
-              email: cloudRes.user.email || undefined,
-              avatar_url: cloudRes.user.avatar_url || undefined,
-              is_owner: cloudRes.user.is_owner
-            }
-            await db.users.put(syncedUser)
-            user = syncedUser
-          }
-        } catch (e) {
-          console.warn('Cloud login lookup error:', e)
-        }
-      }
-
-      if (!user || user.status !== 'ACTIVE' || user.pin !== pin) {
+      const cloud = await loginWithCloud(trimmedUser, pin)
+      if (!cloud.ok || !cloud.user) {
         const nextFails = failedAttempts + 1
         setFailedAttempts(nextFails)
         if (nextFails >= 5) {
@@ -382,23 +329,20 @@ export function VaultAuthModal({
       setFailedAttempts(0)
       setLockoutUntil(0)
 
-      const cloud = await loginWithCloud(user.username, pin)
-
       if (cloud.ok && cloud.must_rotate_pin) {
         setPin('')
-        setAuthenticatedUser(user)
+        setAuthenticatedUser({ ...cloud.user, role: cloud.user.role as UserRole, status: 'ACTIVE', created_at: new Date().toISOString() })
         setIsVerifying(false)
         setStep('ROTATE')
         return
       }
 
-      setAuthenticatedUser(user)
+      setAuthenticatedUser({ ...cloud.user, role: cloud.user.role as UserRole, status: 'ACTIVE', created_at: new Date().toISOString() })
       setIsVerifying(false)
       setStep('FLOAT')
     } catch (err) {
       console.error('Login error:', err)
-      const errDetail = (err as Error)?.message || 'Database error'
-      setErrorMessage(`Login error: ${errDetail}. Please try again.`)
+      setErrorMessage('Authentication service unavailable. Please try again.')
       setIsVerifying(false)
     }
   }
@@ -440,38 +384,10 @@ export function VaultAuthModal({
     setErrorMessage('')
 
     try {
-      const existingUser = await db.users.where('username').equalsIgnoreCase(trimmedUser).first()
-      if (existingUser) {
-        setErrorMessage('Username is already taken on this terminal.')
-        setIsVerifying(false)
-        return
-      }
-
-      const newAccount: UserAccount = {
-        username: trimmedUser,
-        name: trimmedName,
-        role: 'ADMIN',
-        pin: signupPin,
-        status: 'ACTIVE',
-        created_at: new Date().toISOString(),
-        store_name: trimmedStore,
-        email: trimmedEmail || undefined,
-        is_owner: true,
-        is_vip: false
-      }
-
-      const insertedId = await db.users.add(newAccount)
-      newAccount.id = insertedId as number
-
-      syncUserToCloud(newAccount).catch((err) => {
-        console.warn('Background cloud account sync notice:', err)
-      })
-
-      loginWithCloud(trimmedUser, signupPin).catch((err) => {
-        console.warn('Initial session token acquisition notice:', err)
-      })
-
-      setAuthenticatedUser(newAccount)
+      const created = await syncUserToCloud({ username: trimmedUser, name: trimmedName, email: trimmedEmail || undefined, pin: signupPin, status: 'ACTIVE', store_name: trimmedStore, created_at: new Date().toISOString() })
+      const cloud = created ? await loginWithCloud(trimmedUser, signupPin) : { ok: false, user: undefined }
+      if (!cloud.ok || !cloud.user) throw new Error('Account service unavailable')
+      setAuthenticatedUser({ ...cloud.user, role: cloud.user.role as UserRole, status: 'ACTIVE', created_at: new Date().toISOString() })
       setIsVerifying(false)
       setStep('FLOAT')
     } catch (err) {
@@ -506,7 +422,6 @@ export function VaultAuthModal({
       setErrorMessage('Failed to update PIN on cloud. Please try again.')
       return
     }
-    if (user.id) await db.users.update(user.id, { pin: next }).catch(() => {})
     setRotatePin('')
     setRotateConfirm('')
     setPin('')
@@ -594,100 +509,7 @@ export function VaultAuthModal({
 
   const handleForgotResetSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setErrorMessage('')
-    setForgotSuccessMessage('')
-
-    const targetUserClean = (forgotTargetUsername || username).trim()
-    if (!targetUserClean) {
-      setErrorMessage('Please enter or select your staff account / username.')
-      return
-    }
-
-    if (forgotNewPin.length !== 4 || !/^\d{4}$/.test(forgotNewPin)) {
-      setErrorMessage('New Security PIN must be exactly 4 digits.')
-      return
-    }
-
-    if (forgotNewPin !== forgotConfirmPin) {
-      setErrorMessage('New PIN and confirmation PIN do not match.')
-      return
-    }
-
-    setForgotIsResetting(true)
-    try {
-      let targetUser = await db.users.where('username').equalsIgnoreCase(targetUserClean).first()
-      if (!targetUser) {
-        targetUser = await db.users.filter((u) => u.email?.toLowerCase() === targetUserClean.toLowerCase()).first()
-      }
-
-      if (!targetUser) {
-        setErrorMessage(`User account "${targetUserClean}" not found.`)
-        setForgotIsResetting(false)
-        return
-      }
-
-      if (forgotRecoveryMethod === 'ADMIN_PIN') {
-        const cleanAdminPin = forgotAdminPin.trim()
-        if (!cleanAdminPin) {
-          setErrorMessage('Please enter the Store Admin or Master Admin PIN.')
-          setForgotIsResetting(false)
-          return
-        }
-
-        const matchingAdmin = await db.users
-          .filter((u) => u.status === 'ACTIVE' && (u.role === 'ADMIN' || u.is_owner === true) && u.pin === cleanAdminPin)
-          .first()
-
-        const isDefaultMaster = cleanAdminPin === '1234'
-
-        if (!matchingAdmin && !isDefaultMaster) {
-          setErrorMessage('Invalid Admin PIN. Enter the valid Store Admin PIN (default 1234) or use Master Emergency Key.')
-          setForgotIsResetting(false)
-          return
-        }
-      } else {
-        const cleanKey = forgotRecoveryCode.trim().toUpperCase()
-        const isMaster = cleanKey === 'MASTER-RECOVERY-2026' || cleanKey === 'MASTER-VIP-2026'
-
-        const userLicense = getVipLicenseInfo(targetUser.username)
-        let isVipKey = false
-        if (userLicense?.key && userLicense.key.toUpperCase() === cleanKey) isVipKey = true
-        if (targetUser.vip_key && targetUser.vip_key.toUpperCase() === cleanKey) isVipKey = true
-
-        if (!isMaster && !isVipKey) {
-          setErrorMessage('Invalid Master Emergency Key. (Default: MASTER-RECOVERY-2026)')
-          setForgotIsResetting(false)
-          return
-        }
-      }
-
-      // Update PIN
-      await db.users.update(targetUser.id!, { pin: forgotNewPin })
-      if (targetUser.pin) {
-        try {
-          await rotatePinOnCloud(targetUser.username, targetUser.pin, forgotNewPin)
-        } catch {}
-      }
-
-      setFailedAttempts(0)
-      setLockoutUntil(0)
-      setForgotSuccessMessage(`PIN successfully reset for ${targetUser.name || targetUser.username}! Redirecting to login...`)
-
-      setTimeout(() => {
-        setUsername(targetUser.username)
-        setPin('')
-        setStep('LOGIN')
-        setForgotSuccessMessage('')
-        setForgotAdminPin('')
-        setForgotRecoveryCode('')
-        setForgotNewPin('')
-        setForgotConfirmPin('')
-      }, 1500)
-    } catch (err) {
-      setErrorMessage('Reset failed: ' + ((err as Error)?.message || 'Database error'))
-    } finally {
-      setForgotIsResetting(false)
-    }
+    setErrorMessage('PIN recovery is server-managed. Please contact the store administrator.')
   }
 
   return (
@@ -1038,7 +860,7 @@ export function VaultAuthModal({
                       <span>Forgot PIN or Password?</span>
                     </button>
                     <span className="text-[0.6875rem] font-mono text-stone-500">
-                      Default: 1234
+                      Server-managed recovery
                     </span>
                   </div>
 
@@ -1373,12 +1195,12 @@ export function VaultAuthModal({
                             maxLength={6}
                             value={forgotAdminPin}
                             onChange={(e) => setForgotAdminPin(e.target.value.replace(/\D/g, ''))}
-                            placeholder="Enter Store Admin PIN (default: 1234)"
+                            placeholder="Enter the server-managed recovery PIN"
                             className="w-full h-11 bg-zinc-900 border border-white/[0.08] rounded-xl pl-10 pr-4 text-xs font-mono font-bold tracking-widest text-emerald-400 placeholder-stone-500 focus:outline-none focus:border-emerald-500/60"
                           />
                         </div>
                         <p className="text-[0.625rem] text-stone-500 mt-1 pl-1">
-                          Authorize cashier reset using Store Admin PIN (default: 1234).
+                            PIN recovery is verified by the cloud service.
                         </p>
                       </div>
                     ) : (
@@ -1389,12 +1211,12 @@ export function VaultAuthModal({
                             type="text"
                             value={forgotRecoveryCode}
                             onChange={(e) => setForgotRecoveryCode(e.target.value.toUpperCase())}
-                            placeholder="MASTER-RECOVERY-2026"
+                            placeholder="Server-managed recovery code"
                             className="w-full h-11 bg-zinc-900 border border-white/[0.08] rounded-xl pl-10 pr-4 text-xs font-mono font-bold tracking-wider uppercase text-amber-300 placeholder-stone-600 focus:outline-none focus:border-amber-500/60"
                           />
                         </div>
                         <p className="text-[0.625rem] text-stone-500 mt-1 pl-1">
-                          Enter Master Key (MASTER-RECOVERY-2026) or your VIP License Key.
+                          Enter a server-issued recovery code or your VIP License Key.
                         </p>
                       </div>
                     )}

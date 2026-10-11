@@ -9,7 +9,7 @@ export interface CloudUserPayload {
   username: string
   name: string
   email?: string
-  pin: string
+  pin?: string
   status: string
   store_name?: string
   avatar_url?: string
@@ -24,6 +24,22 @@ export interface CloudProPayload {
   tokens: number
   last_ad_watched_at: number
   total_ads_watched: number
+}
+
+export interface MeResult {
+  ok: boolean
+  user?: {
+    id: number
+    username: string
+    name: string
+    email: string | null
+    role: string
+    status: string
+    store_name: string | null
+    avatar_url: string | null
+    is_owner: boolean
+    is_master: boolean
+  }
 }
 
 export interface CloudLoginResult {
@@ -51,15 +67,15 @@ let sessionToken: string | null = null
 export function setSessionToken(token: string | null): void {
   sessionToken = token
   try {
-    if (token) localStorage.setItem(TOKEN_KEY, token)
-    else localStorage.removeItem(TOKEN_KEY)
+    if (token) sessionStorage.setItem(TOKEN_KEY, token)
+    else sessionStorage.removeItem(TOKEN_KEY)
   } catch {}
 }
 
 export function getSessionToken(): string | null {
   if (sessionToken) return sessionToken
   try {
-    sessionToken = localStorage.getItem(TOKEN_KEY)
+    sessionToken = sessionStorage.getItem(TOKEN_KEY)
   } catch {}
   return sessionToken
 }
@@ -94,6 +110,24 @@ export async function loginWithCloud(username: string, pin: string): Promise<Clo
 /** Drop the token, e.g. on sign-out. */
 export function clearSession(): void {
   setSessionToken(null)
+}
+
+/**
+ * Revalidate a restored session against the server.
+ * Returns null when the network is unreachable (caller keeps the cached
+ * session for offline use); otherwise the server's verdict.
+ */
+export async function validateSession(): Promise<MeResult | null> {
+  const token = getSessionToken()
+  if (!token) return { ok: false }
+  try {
+    const res = await fetch(`${API_BASE}/api/me`, { headers: authHeaders(false) })
+    if (!res.ok) return { ok: false }
+    const data = (await res.json()) as MeResult
+    return data.ok ? data : { ok: false }
+  } catch {
+    return null
+  }
 }
 
 /** Change the signed-in account's PIN. Requires the current PIN. */

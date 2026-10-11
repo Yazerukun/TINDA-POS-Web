@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { db } from '../db'
 import type { ProAccessState } from '../types'
 import { syncProStateToCloud } from './cloudSync'
@@ -41,6 +41,10 @@ function getInitialState(): ProAccessState {
 export function useProAccess() {
   const [state, setState] = useState<ProAccessState>(getInitialState)
   const [currentUserId, setCurrentUserId] = useState<number | string | undefined>(undefined)
+  // The server identifies the caller from the session token, but it derives the
+  // sync row from the username in the body — so the real username must travel
+  // with it, not the numeric local id.
+  const usernameRef = useRef<string>('')
   const [now, setNow] = useState<number>(Date.now())
   const [gateModalOpen, setGateModalOpen] = useState(false)
   const [pendingFeatureName, setPendingFeatureName] = useState<string>('')
@@ -86,28 +90,13 @@ export function useProAccess() {
     }
 
     // Fire-and-forget sync to Cloudflare D1
-    try {
-      const savedSession = localStorage.getItem('tinda_vault_session')
-      if (savedSession) {
-        const parsed = JSON.parse(savedSession)
-        if (parsed?.username) {
-          syncProStateToCloud({
-            user_id: Number(currentUserId) || 0,
-            username: parsed.username,
-            store_name: parsed.storeName || '',
-            pro_expires_at: updated.pro_expires_at,
-            tokens: updated.tokens,
-            last_ad_watched_at: updated.last_ad_watched_at,
-            total_ads_watched: updated.total_ads_watched
-          })
-        }
-      }
-    } catch {}
+    if (currentUserId && usernameRef.current) syncProStateToCloud({ user_id: Number(currentUserId) || 0, username: usernameRef.current, pro_expires_at: updated.pro_expires_at, tokens: updated.tokens, last_ad_watched_at: updated.last_ad_watched_at, total_ads_watched: updated.total_ads_watched }).catch(() => {})
   }, [currentUserId])
 
   // Called from App.tsx on login — load THIS user's state (or start fresh)
-  const loadStateForUser = useCallback(async (userId: number | string) => {
+  const loadStateForUser = useCallback(async (userId: number | string, username?: string) => {
     setCurrentUserId(userId)
+    usernameRef.current = (username || (typeof userId === 'string' ? userId : '')).toLowerCase()
     const dbKey = makeDbKey(userId)
     const storKey = makeStorageKey(userId)
 

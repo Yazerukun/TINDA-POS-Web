@@ -86,27 +86,23 @@ export async function makePinHash(pin: string): Promise<{ pin_hash: string; pin_
 }
 
 /**
- * Verify a PIN against a user row. A NULL pin_hash means the account predates
- * hashing and still has a plaintext pin: accept it once, then re-hash in place
+ * Verify a PIN against a server-side hash. Accounts without a hash fail closed.
  * so the plaintext is retired on first login.
  */
-export async function verifyPin(user: UserRow, pin: string, db: D1Database): Promise<boolean> {
+export async function verifyPin(user: UserRow, pin: string, _db: D1Database): Promise<boolean> {
   if (user.pin_hash && user.pin_salt) {
     return (await hashPin(pin, user.pin_salt)) === user.pin_hash
   }
+  // Plaintext PINs are no longer accepted or migrated. Accounts must be
+  // provisioned with a server-side hash before they can authenticate.
+  return false
+}
 
-  const legacy = await db
-    .prepare('SELECT pin FROM users WHERE id = ?')
-    .bind(user.id)
-    .first<{ pin: string }>()
-  if (!legacy?.pin || legacy.pin !== pin) return false
-
-  const { pin_hash, pin_salt } = await makePinHash(pin)
-  await db
-    .prepare('UPDATE users SET pin_hash = ?, pin_salt = ?, pin = NULL WHERE id = ?')
-    .bind(pin_hash, pin_salt, user.id)
-    .run()
-  return true
+function sessionSecret(env: Env): string {
+  if (!env.SESSION_SECRET || env.SESSION_SECRET.length < 32) {
+    throw new Error('SESSION_SECRET is not configured')
+  }
+  return env.SESSION_SECRET
 }
 
 async function hmacKey(secret: string): Promise<CryptoKey> {
@@ -131,7 +127,7 @@ export async function mintToken(env: Env, session: Omit<Session, 'isOwner' | 'ro
       })
     )
   )
-  const sig = await crypto.subtle.sign('HMAC', await hmacKey(env.SESSION_SECRET), enc.encode(payload))
+  const sig = await crypto.subtle.sign('HMAC', await hmacKey(sessionSecret(env)), enc.encode(payload))
   return `${payload}.${b64url(new Uint8Array(sig))}`
 }
 
@@ -147,7 +143,7 @@ export async function requireSession(request: Request, env: Env): Promise<Sessio
   const sig = token.slice(dot + 1)
   const valid = await crypto.subtle.verify(
     'HMAC',
-    await hmacKey(env.SESSION_SECRET),
+    await hmacKey(sessionSecret(env)),
     fromB64url(sig) as BufferSource,
     enc.encode(payload) as BufferSource
   )
@@ -188,6 +184,8 @@ export function forbidden(): Response {
   return Response.json({ ok: false, error: 'Forbidden' }, { status: 403, headers: CORS })
 }
 
+export const PRODUCTION_HOST = 'tindapos-web.pages.dev'
+
 export const CORS: Record<string, string> = {
   'Content-Type': 'application/json',
   // Same-origin only. The API is called from the app's own origin, so there is
@@ -202,7 +200,31 @@ export const CORS: Record<string, string> = {
 export function isAllowedOrigin(request: Request): boolean {
   const origin = request.headers.get('Origin')
   if (!origin) return true // same-origin fetches and native clients send no Origin
-  return origin === 'https://tindapos-web.pages.dev' || /^http:\/\/localhost:\d+$/.test(origin)
+
+  let originHost: string
+  try {
+    originHost = new URL(origin).host
+  } catch {
+    return false
+  }
+
+  // Same-origin requests (local dev via `wrangler pages dev`, any deployment)
+  // carry the app's own host in Origin, so compare it instead of hardcoding one.
+  let requestHost: string
+  try {
+    requestHost = new URL(request.url).host
+  } catch {
+    return false
+  }
+  if (originHost === requestHost) return true
+
+  // The production host plus its project preview deployments
+  // (`<hash>.tindapos-web.pages.dev`).
+  return originHost === PRODUCTION_HOST || originHost.endsWith(`.${PRODUCTION_HOST}`)
+}
+
+export function logServerError(context: string, error: unknown): void {
+  console.error(`[${context}]`, error instanceof Error ? error.message : 'unknown error')
 }
 
 // --- Rate limiting -------------------------------------------------------

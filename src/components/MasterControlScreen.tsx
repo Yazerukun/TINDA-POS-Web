@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import { db } from '../db'
 import type { UserAccount, UserRole, StoreSettings, ProAccessState } from '../types'
-import { fetchAllCloudUsers, fetchAllCloudProStates, type CloudProPayload } from '../services/cloudSync'
+import { fetchAllCloudUsers, fetchAllCloudProStates, syncUserToCloud, type CloudProPayload } from '../services/cloudSync'
 
 interface MasterControlScreenProps {
   currentCashierName?: string
@@ -315,8 +315,7 @@ export function MasterControlScreen({
     }
 
     try {
-      await db.users.update(editingPinUser.id, { pin: newPinValue })
-      showToast(`PIN for @${editingPinUser.username} updated to "${newPinValue}"`)
+      showToast('PIN changes are managed by the cloud authentication service.')
       setEditingPinUser(null)
       setNewPinValue('')
       await loadData()
@@ -351,13 +350,29 @@ export function MasterControlScreen({
     }
 
     try {
+      // Provision in the cloud first: authentication is server-side, so a
+      // Dexie-only account could never sign in. No cloud row, no account.
+      const createdAt = new Date().toISOString()
+      const cloudOk = await syncUserToCloud({
+        username: trimmedUser,
+        name: trimmedName,
+        email: trimmedEmail || undefined,
+        pin: trimmedPin,
+        status: 'ACTIVE',
+        store_name: trimmedStore,
+        created_at: createdAt
+      })
+      if (!cloudOk) {
+        setStoreModalError('Could not register this account online, so it was not created. Check the connection and try again.')
+        return
+      }
+
       const newOwner: UserAccount = {
         username: trimmedUser,
         name: trimmedName,
         role: 'ADMIN',
-        pin: trimmedPin,
         status: 'ACTIVE',
-        created_at: new Date().toISOString(),
+        created_at: createdAt,
         store_name: trimmedStore,
         email: trimmedEmail,
         is_owner: true
@@ -404,13 +419,28 @@ export function MasterControlScreen({
     }
 
     try {
+      // Cloud-first, same reason as store creation: only the server can store a
+      // verifiable PIN hash, so a local-only staff row would be a dead login.
+      const createdAt = new Date().toISOString()
+      const cloudOk = await syncUserToCloud({
+        username: trimmedUser,
+        name: trimmedName,
+        pin: trimmedPin,
+        status: 'ACTIVE',
+        store_name: staffTargetStore,
+        created_at: createdAt
+      })
+      if (!cloudOk) {
+        setStaffModalError('Could not register this account online, so it was not created. Check the connection and try again.')
+        return
+      }
+
       const newStaff: UserAccount = {
         username: trimmedUser,
         name: trimmedName,
         role: newStaffRole,
-        pin: trimmedPin,
         status: 'ACTIVE',
-        created_at: new Date().toISOString(),
+        created_at: createdAt,
         store_name: staffTargetStore,
         owner_username: staffTargetOwner,
         is_owner: false

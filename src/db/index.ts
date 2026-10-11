@@ -101,32 +101,7 @@ export async function initDatabase(): Promise<void> {
     }
   } catch {}
 
-  // Ensure default Master Admin exists uniquely
-  try {
-    const existingAdmin = await db.users.where('username').equalsIgnoreCase('admin').first()
-    if (!existingAdmin) {
-      await db.users.add({
-        username: 'admin',
-        name: 'Master Admin',
-        role: 'ADMIN',
-        pin: '1234',
-        status: 'ACTIVE',
-        created_at: new Date().toISOString()
-      })
-    } else {
-      // Clean up any duplicate admin entries
-      const allAdmins = await db.users.where('username').equalsIgnoreCase('admin').toArray()
-      if (allAdmins.length > 1) {
-        for (let i = 1; i < allAdmins.length; i++) {
-          if (allAdmins[i].id) {
-            await db.users.delete(allAdmins[i].id!)
-          }
-        }
-      }
-    }
-  } catch (err) {
-    console.error('Failed to initialize users table:', err)
-  }
+  // Accounts are provisioned by /api/users. Never seed browser credentials.
 
   // Seed standard categories if empty
   const catCount = await db.categories.count()

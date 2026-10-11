@@ -85,4 +85,4 @@ npx wrangler pages deploy dist --project-name tinda-pos-web
 ---
 
 ## 📄 License
-Proprietary. **Free to use for personal and small retail businesses in the Philippines.**
+Licensed under the MIT License. See [LICENSE](LICENSE).

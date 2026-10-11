@@ -5,15 +5,16 @@
 
 interface PayMongoRequest {
   action: 'test_connection' | 'create_qr' | 'check_status'
-  secretKey?: string
   amountCents?: number
   description?: string
   paymentIntentId?: string
   expectedAmountCents?: number
 }
 
+import { type Env, CORS, isAllowedOrigin, requireSession, unauthorized, logServerError } from '../_shared/auth'
+
 const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
+  ...CORS,
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Access-Control-Max-Age': '86400'
@@ -23,15 +24,17 @@ export async function onRequestOptions() {
   return new Response(null, { headers: CORS_HEADERS })
 }
 
-export async function onRequestPost({ request, env }: { request: Request; env?: Record<string, string> }) {
+export async function onRequestPost({ request, env }: { request: Request; env: Env & { PAYMONGO_SECRET_KEY?: string } }) {
   try {
+    if (!isAllowedOrigin(request)) return unauthorized()
+    if (!(await requireSession(request, env))) return unauthorized()
     const body: PayMongoRequest = await request.json()
     const { action } = body
-    const secretKey = body.secretKey || env?.PAYMONGO_SECRET_KEY || ''
+    const secretKey = env.PAYMONGO_SECRET_KEY || ''
 
     if (!secretKey || typeof secretKey !== 'string' || !secretKey.startsWith('sk_')) {
       return Response.json(
-        { ok: false, error: 'Invalid or missing PayMongo Secret Key. Must start with sk_test_ or sk_live_.' },
+        { ok: false, error: 'Payment service is not configured.' },
         { status: 400, headers: CORS_HEADERS }
       )
     }
@@ -243,10 +246,8 @@ export async function onRequestPost({ request, env }: { request: Request; env?: 
     }
 
     return Response.json({ ok: false, error: 'Unknown action requested.' }, { status: 400, headers: CORS_HEADERS })
-  } catch (err: any) {
-    return Response.json(
-      { ok: false, error: err?.message || 'Internal error in PayMongo proxy function.' },
-      { status: 500, headers: CORS_HEADERS }
-    )
+  } catch (err: unknown) {
+    logServerError('paymongo', err)
+    return Response.json({ ok: false, error: 'Payment service unavailable' }, { status: 500, headers: CORS_HEADERS })
   }
 }

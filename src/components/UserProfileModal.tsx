@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { compressImageFile } from '../utils/image'
 import { db } from '../db'
+import { rotatePinOnCloud } from '../services/cloudSync'
 import type { UserAccount, UserRole } from '../types'
 
 interface UserProfileModalProps {
@@ -111,7 +112,6 @@ export function UserProfileModal({
             username: currentUsername,
             name: currentCashierName,
             role: isMasterAdmin ? 'ADMIN' : 'CASHIER',
-            pin: '1234',
             status: 'ACTIVE',
             created_at: new Date().toISOString(),
             avatar_url: compressedDataUrl,
@@ -162,6 +162,10 @@ export function UserProfileModal({
 
   const handleUpdatePinSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!currentPin || currentPin.length < 4) {
+      showToast('Please enter your current PIN.', 'error')
+      return
+    }
     if (!newPin || newPin.length < 4) {
       showToast('New PIN must be at least 4 digits.', 'error')
       return
@@ -170,24 +174,23 @@ export function UserProfileModal({
       showToast('New PIN and confirmation do not match.', 'error')
       return
     }
+    if (newPin === currentPin) {
+      showToast('New PIN must be different from the current PIN.', 'error')
+      return
+    }
+    if (!currentUsername) {
+      showToast('No signed-in account to change the PIN for.', 'error')
+      return
+    }
 
     setPinLoading(true)
     try {
-      let user: UserAccount | undefined
-      if (currentUserId) {
-        user = await db.users.get(currentUserId)
-      } else if (currentUsername) {
-        user = await db.users.where('username').equalsIgnoreCase(currentUsername).first()
-      }
-
-      if (user && user.pin && user.pin !== currentPin && !isMasterAdmin) {
-        showToast('Current PIN is incorrect.', 'error')
-        setPinLoading(false)
+      // The PIN hash lives only on the server, so the change must go through
+      // the rotation endpoint; a local Dexie write would not affect login.
+      const ok = await rotatePinOnCloud(currentUsername, currentPin, newPin)
+      if (!ok) {
+        showToast('Current PIN is incorrect or the change failed.', 'error')
         return
-      }
-
-      if (user && user.id) {
-        await db.users.update(user.id, { pin: newPin })
       }
 
       showToast('Security PIN changed successfully!')

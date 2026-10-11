@@ -33,7 +33,7 @@ import { money } from '../utils/format'
 import { db } from '../db'
 import { Receipt } from './Receipt'
 import { playCheckoutChime, playScanSuccess } from '../lib/sound'
-import { createDynamicQrPayment, pollPaymentStatus, isValidPayMongoSecretKey } from '../utils/paymongo'
+import { createDynamicQrPayment, pollPaymentStatus } from '../utils/paymongo'
 
 interface CheckoutModalProps {
   items: CartItem[]
@@ -145,11 +145,7 @@ export function CheckoutModal({
   }
 
   // PayMongo Dynamic Real-Time QR Ph State
-  const isPayMongoConfigured = Boolean(
-    settings?.paymongo_enabled &&
-    settings?.paymongo_secret_key &&
-    isValidPayMongoSecretKey(settings.paymongo_secret_key)
-  )
+  const isPayMongoConfigured = Boolean(settings?.paymongo_enabled)
 
   const [payMongoMode, setPayMongoMode] = useState<'DYNAMIC_QR' | 'MANUAL_REF'>('DYNAMIC_QR')
   const [qrGenerating, setQrGenerating] = useState(false)
@@ -168,8 +164,7 @@ export function CheckoutModal({
   const autoChargeRef = useRef<(() => void) | null>(null)
 
   const generatePayMongoQr = useCallback(async (amountCents: number) => {
-    const secretKey = settings?.paymongo_secret_key?.trim()
-    if (!secretKey || !isValidPayMongoSecretKey(secretKey)) {
+    if (!settings?.paymongo_enabled) {
       setPayMongoMode('MANUAL_REF')
       return
     }
@@ -186,7 +181,6 @@ export function CheckoutModal({
 
     try {
       const res = await createDynamicQrPayment({
-        secretKey,
         amountCents,
         description: `${storeName} Order #${Date.now().toString().slice(-4)}`
       })
@@ -204,11 +198,11 @@ export function CheckoutModal({
         setQrError(res.error || 'Failed to generate Dynamic QR code.')
       }
     } catch (err: any) {
-      setQrError(err?.message || 'Error generating dynamic QR.')
+      setQrError('Unable to generate payment QR. Please try again.')
     } finally {
       setQrGenerating(false)
     }
-  }, [settings?.paymongo_secret_key, storeName])
+  }, [settings?.paymongo_enabled, storeName])
 
   // Trigger QR generation when switching to GCASH or MAYA
   useEffect(() => {
@@ -233,7 +227,6 @@ export function CheckoutModal({
     if (
       qrData &&
       pollStatus === 'listening' &&
-      settings?.paymongo_secret_key &&
       (method === 'GCASH' || method === 'MAYA')
     ) {
       const targetAmountCents = isSplit ? (method === 'GCASH' ? splitGcashC : splitMayaC) : total_c
@@ -241,7 +234,6 @@ export function CheckoutModal({
       interval = setInterval(async () => {
         try {
           const result = await pollPaymentStatus({
-            secretKey: settings.paymongo_secret_key!,
             paymentIntentId: qrData.paymentIntentId,
             expectedAmountCents: targetAmountCents
           })
@@ -296,7 +288,6 @@ export function CheckoutModal({
   }, [
     qrData,
     pollStatus,
-    settings?.paymongo_secret_key,
     method,
     isSplit,
     total_c,

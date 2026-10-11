@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 *.tsbuildinfo
 .wrangler
+graphify-out/
+.surgical_fix.js

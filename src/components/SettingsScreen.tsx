@@ -124,12 +124,10 @@ export function SettingsScreen({
   const qrImageInputRef = useRef<HTMLInputElement>(null)
 
   const handleTestPayMongo = async () => {
-    const keyToTest = ephemeralKey.trim() || form.paymongo_secret_key || ''
-    if (!keyToTest) return
     setIsTestingPayMongo(true)
     setPayMongoTestResult(null)
     try {
-      const res = await testPayMongoConnection(keyToTest)
+      const res = await testPayMongoConnection()
       setPayMongoTestResult({ ok: res.ok, message: res.message, livemode: res.livemode })
       // Auto-blank key for security: Never retain in persistent browser memory
       setEphemeralKey('')
@@ -139,7 +137,7 @@ export function SettingsScreen({
         return clean
       })
     } catch (err: any) {
-      setPayMongoTestResult({ ok: false, message: err?.message || 'Connection test failed' })
+      setPayMongoTestResult({ ok: false, message: 'Connection test failed' })
     } finally {
       setIsTestingPayMongo(false)
     }
@@ -202,12 +200,6 @@ export function SettingsScreen({
 
   useEffect(() => {
     getDeviceMachineId().then(setMachineId)
-    const savedVip = localStorage.getItem('tinda_vip_license')
-    if (savedVip) {
-      try {
-        setVipInfo(JSON.parse(savedVip))
-      } catch {}
-    }
     const cpTime = localStorage.getItem('tinda_checkpoint_time')
     if (cpTime) setCheckpointTime(cpTime)
   }, [])
@@ -381,7 +373,6 @@ export function SettingsScreen({
         name: trimmedName,
         username: trimmedUser,
         role: newUserRole,
-        pin: trimmedPin,
         status: 'ACTIVE',
         created_at: new Date().toISOString(),
         store_name: currentSessionStoreName || settings.store_name,
@@ -393,7 +384,7 @@ export function SettingsScreen({
       const insertedId = await db.users.add(newStaffAccount)
       newStaffAccount.id = insertedId as number
 
-      syncUserToCloud(newStaffAccount).catch(() => {})
+      syncUserToCloud({ ...newStaffAccount, pin: trimmedPin }).catch(() => {})
 
       setUserSuccessMessage(`User "${trimmedName}" successfully created!`)
       setTimeout(() => setUserSuccessMessage(''), 3000)
@@ -438,7 +429,6 @@ export function SettingsScreen({
             username: currentUsername,
             name: currentCashierName || 'Staff Member',
             role: isMasterAdmin ? 'ADMIN' : 'CASHIER',
-            pin: '1234',
             status: 'ACTIVE',
             created_at: new Date().toISOString(),
             avatar_url: dataUrl,
@@ -579,13 +569,8 @@ export function SettingsScreen({
       alert('PIN must be at least 4 digits.')
       return
     }
-    await db.users.update(userId, { pin: newPinValue })
-    const updatedUser = await db.users.get(userId)
-    if (updatedUser) {
-      syncUserToCloud(updatedUser).catch(() => {})
-      setUserSuccessMessage(`Security PIN updated for ${updatedUser.name}!`)
-      setTimeout(() => setUserSuccessMessage(''), 3000)
-    }
+    setUserSuccessMessage('PIN changes are managed by the cloud authentication service.')
+    setTimeout(() => setUserSuccessMessage(''), 3000)
     setEditingPinUserId(null)
     setNewPinValue('')
     await loadUsers()
@@ -1767,7 +1752,7 @@ export function SettingsScreen({
                     </span>
                   </div>
                   <p className="text-xs text-stone-400 mt-0.5">
-                    Terminal-locked permanent key · PayMongo QR Ph or Maya 09912255156 (Dev Francis)
+                    Terminal-locked permanent key · PayMongo QR Ph or verified manual payment
                   </p>
                 </div>
               </div>
@@ -1792,7 +1777,7 @@ export function SettingsScreen({
               <div className="p-3 rounded-2xl bg-zinc-900 border border-white/[0.08]">
                 <span className="text-[10px] text-stone-400 uppercase tracking-wider block font-bold">Official Maya Dev Support</span>
                 <span className="font-mono font-bold text-emerald-400 text-xs block mt-1">
-                  0991 225 5156 (Dev Francis)
+                  Official support payment channel
                 </span>
               </div>
               <div className="p-3 rounded-2xl bg-zinc-900 border border-white/[0.08]">
@@ -1915,7 +1900,7 @@ export function SettingsScreen({
                     type="password"
                     required
                     maxLength={6}
-                    placeholder="e.g. 1234"
+                    placeholder="Enter a server-managed PIN"
                     value={newUserPin}
                     onChange={(e) => setNewUserPin(e.target.value.replace(/[^0-9]/g, ''))}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-white/[0.08] text-xs font-mono text-amber-300 focus:outline-none focus:border-amber-400 tracking-widest"

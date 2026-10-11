@@ -200,8 +200,10 @@ export async function onRequestPost({ request, env }: { request: Request; env?: 
       })
 
       if (!checkResp.ok) {
+        const errJson = await checkResp.json().catch(() => ({}))
+        const errMsg = errJson?.errors?.[0]?.detail || 'Failed to retrieve payment intent from PayMongo.'
         return Response.json(
-          { ok: false, error: 'Failed to retrieve payment intent from PayMongo.' },
+          { ok: false, error: `PayMongo check error: ${errMsg}` },
           { status: 502, headers: CORS_HEADERS }
         )
       }

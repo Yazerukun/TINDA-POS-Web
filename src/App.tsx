@@ -39,7 +39,7 @@ import { useProAccess } from './services/proAccess'
 import { sendHeartbeat } from './services/cloudSync'
 import { importTindaBackup } from './utils/backup'
 import { Upload, HardDriveDownload } from 'lucide-react'
-import { isVipActive, subscribeVipStatus } from './utils/vip'
+import { isVipActive, subscribeVipStatus, syncCloudVipStatus } from './utils/vip'
 
 export default function App(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard')
@@ -263,6 +263,12 @@ export default function App(): React.JSX.Element {
         ...DEFAULT_SETTINGS,
         store_name: activeStoreName !== 'PLATFORM_HQ' ? activeStoreName : DEFAULT_SETTINGS.store_name
       }
+      // Security Hardlock: Actively purge secret keys from memory and IndexedDB
+      if (effectiveSettings && effectiveSettings.paymongo_secret_key) {
+        delete effectiveSettings.paymongo_secret_key
+        db.settings.put({ key: `store_settings_${activeStoreName}`, value: effectiveSettings }).catch(() => {})
+        db.settings.put({ key: 'store_settings', value: effectiveSettings }).catch(() => {})
+      }
       setSettings(effectiveSettings)
 
       setHeldCarts(filteredHeld)
@@ -285,6 +291,12 @@ export default function App(): React.JSX.Element {
       proAccess.loadStateForUser(userId)
     } else if (vaultSession?.isMasterAdmin) {
       proAccess.toggleOwnerBypass(true)
+    }
+
+    if (vaultSession?.username) {
+      syncCloudVipStatus(vaultSession.username).then((hasVip) => {
+        if (hasVip) setIsVip(true)
+      }).catch(() => {})
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // run once on mount only
@@ -452,9 +464,12 @@ export default function App(): React.JSX.Element {
 
   // Save Settings
   const handleSaveSettings = async (newSettings: StoreSettings) => {
-    await db.settings.put({ key: `store_settings_${activeStoreName}`, value: newSettings })
-    await db.settings.put({ key: 'store_settings', value: newSettings })
-    setSettings(newSettings)
+    // Security Hardlock: Never persist raw API secret keys to browser IndexedDB
+    const sanitizedSettings = { ...newSettings }
+    delete sanitizedSettings.paymongo_secret_key
+    await db.settings.put({ key: `store_settings_${activeStoreName}`, value: sanitizedSettings })
+    await db.settings.put({ key: 'store_settings', value: sanitizedSettings })
+    setSettings(sanitizedSettings)
   }
 
   // Handle Vault Session Onboarding
@@ -1193,6 +1208,7 @@ export default function App(): React.JSX.Element {
         }}
         currentUsername={vaultSession?.username}
         currentStoreName={vaultSession?.storeName || activeStoreName}
+        isMasterAdmin={vaultSession?.isMasterAdmin || false}
       />
 
     </div>

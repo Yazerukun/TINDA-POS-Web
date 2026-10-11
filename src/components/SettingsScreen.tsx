@@ -112,8 +112,9 @@ export function SettingsScreen({
   const [userSuccessMessage, setUserSuccessMessage] = useState('')
   const newUserAvatarInputRef = useRef<HTMLInputElement>(null)
 
-  // PayMongo Gateway & Real-Time E-Wallet state
+  // PayMongo Gateway & Real-Time E-Wallet state (Zero-Storage Hardlock)
   const [showSecretKey, setShowSecretKey] = useState(false)
+  const [ephemeralKey, setEphemeralKey] = useState('')
   const [isTestingPayMongo, setIsTestingPayMongo] = useState(false)
   const [payMongoTestResult, setPayMongoTestResult] = useState<{
     ok: boolean
@@ -123,12 +124,20 @@ export function SettingsScreen({
   const qrImageInputRef = useRef<HTMLInputElement>(null)
 
   const handleTestPayMongo = async () => {
-    if (!form.paymongo_secret_key) return
+    const keyToTest = ephemeralKey.trim() || form.paymongo_secret_key || ''
+    if (!keyToTest) return
     setIsTestingPayMongo(true)
     setPayMongoTestResult(null)
     try {
-      const res = await testPayMongoConnection(form.paymongo_secret_key)
+      const res = await testPayMongoConnection(keyToTest)
       setPayMongoTestResult({ ok: res.ok, message: res.message, livemode: res.livemode })
+      // Auto-blank key for security: Never retain in persistent browser memory
+      setEphemeralKey('')
+      setForm((prev) => {
+        const clean = { ...prev }
+        delete clean.paymongo_secret_key
+        return clean
+      })
     } catch (err: any) {
       setPayMongoTestResult({ ok: false, message: err?.message || 'Connection test failed' })
     } finally {
@@ -231,7 +240,10 @@ export function SettingsScreen({
 
   const handleSave = (e?: React.FormEvent) => {
     if (e) e.preventDefault()
-    onSaveSettings({ ...form, theme: activeThemeId })
+    // Zero-Storage Hardlock: Never persist secret keys in browser storage
+    const cleanForm = { ...form }
+    delete cleanForm.paymongo_secret_key
+    onSaveSettings({ ...cleanForm, theme: activeThemeId })
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
   }
@@ -1066,15 +1078,24 @@ export function SettingsScreen({
                     </button>
                   </div>
 
-                  {/* Secret Key Input with Masking & Testing */}
+                  {/* Zero-Storage Hardlock Badge */}
+                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 flex items-start gap-2.5">
+                    <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                    <div className="leading-relaxed">
+                      <span className="font-bold text-amber-300 block mb-0.5">Zero-Storage Hardlock Protection:</span>
+                      API keys are never saved or stored inside browser storage or database files. Any test key auto-blanks immediately upon verification to prevent account hijacking. VIP Pro upgrades run directly through Cloudflare Edge server secrets.
+                    </div>
+                  </div>
+
+                  {/* Secret Key Input with Auto-Blank & Testing */}
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="text-xs font-semibold text-stone-300 flex items-center gap-1.5">
                         <Lock className="h-3.5 w-3.5 text-amber-400" />
-                        <span>PayMongo Secret Key (sk_test_... or sk_live_...)</span>
+                        <span>Test Merchant PayMongo Secret Key (sk_test_... or sk_live_...)</span>
                       </label>
-                      <span className="text-[10px] text-stone-500 font-mono">
-                        Admin Only · Private &amp; Isolated
+                      <span className="text-[10px] text-emerald-400 font-mono font-bold">
+                        Auto-Blanks on Verification · Never Saved
                       </span>
                     </div>
 
@@ -1082,12 +1103,12 @@ export function SettingsScreen({
                       <div className="relative flex-1">
                         <input
                           type={showSecretKey ? 'text' : 'password'}
-                          value={form.paymongo_secret_key || ''}
+                          value={ephemeralKey}
                           onChange={(e) => {
-                            setForm({ ...form, paymongo_secret_key: e.target.value.trim() })
+                            setEphemeralKey(e.target.value.trim())
                             setPayMongoTestResult(null)
                           }}
-                          placeholder="sk_test_... or sk_live_..."
+                          placeholder="Paste sk_test_... or sk_live_... to test"
                           className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-zinc-950 border border-white/[0.08] text-xs font-mono text-stone-100 focus:outline-none focus:border-sky-500"
                         />
                         <button
@@ -1103,7 +1124,7 @@ export function SettingsScreen({
                       <button
                         type="button"
                         onClick={handleTestPayMongo}
-                        disabled={isTestingPayMongo || !form.paymongo_secret_key}
+                        disabled={isTestingPayMongo || !ephemeralKey}
                         className="btn-press px-3.5 py-2.5 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-300 hover:bg-sky-500/25 text-xs font-bold shrink-0 disabled:opacity-40 transition-all flex items-center gap-1.5 cursor-pointer"
                       >
                         {isTestingPayMongo ? (

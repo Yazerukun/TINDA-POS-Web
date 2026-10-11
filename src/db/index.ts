@@ -89,6 +89,18 @@ export const DEFAULT_SETTINGS: StoreSettings = {
 }
 
 export async function initDatabase(): Promise<void> {
+  // Zero-Storage Hardlock: Purge any legacy API secret keys from settings
+  try {
+    const allSettings = await db.settings.toArray()
+    for (const item of allSettings) {
+      if (item && item.value && typeof item.value === 'object' && item.value.paymongo_secret_key) {
+        const clean = { ...item.value }
+        delete clean.paymongo_secret_key
+        await db.settings.put({ key: item.key, value: clean })
+      }
+    }
+  } catch {}
+
   // Ensure default Master Admin exists uniquely
   try {
     const existingAdmin = await db.users.where('username').equalsIgnoreCase('admin').first()

@@ -70,7 +70,14 @@ export async function exportTindaBackup(): Promise<string> {
       categories,
       transactions,
       customers,
-      settings,
+      settings: settings.map((s) => {
+        if (s && s.value && typeof s.value === 'object') {
+          const cleanVal = { ...s.value }
+          delete cleanVal.paymongo_secret_key
+          return { ...s, value: cleanVal }
+        }
+        return s
+      }),
       expenses,
       expense_categories,
       suppliers,
@@ -407,7 +414,15 @@ export async function importTindaBackup(
           await db.customers.bulkAdd(customersToInsert)
         }
         if (settingsToInsert.length > 0) {
-          await db.settings.bulkPut(settingsToInsert)
+          const sanitizedSettings = settingsToInsert.map((s) => {
+            if (s && s.value && typeof s.value === 'object') {
+              const clean = { ...s.value }
+              delete clean.paymongo_secret_key
+              return { ...s, value: clean }
+            }
+            return s
+          })
+          await db.settings.bulkPut(sanitizedSettings)
         }
         if (expensesToInsert.length > 0) {
           await db.expenses.clear()

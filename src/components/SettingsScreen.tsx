@@ -26,24 +26,22 @@ import {
   FileText,
   Palette,
   Sparkles,
-  Smartphone,
   RotateCcw,
   Zap,
   CreditCard,
   Eye,
   EyeOff,
   ShieldCheck,
-  AlertCircle,
-  ExternalLink
+  AlertCircle
 } from 'lucide-react'
-import type { StoreSettings, UserAccount, UserRole, Transaction } from '../types'
+import type { StoreSettings, UserAccount, UserRole } from '../types'
 import { downloadBackupFile, importTindaBackup, rollbackRestoreCheckpoint } from '../utils/backup'
 import { compressImageFile } from '../utils/image'
 import { db, initDatabase } from '../db'
 import { Receipt } from './Receipt'
 import { THEMES, getActiveTheme, applyTheme, type ThemeId } from '../utils/theme'
 import { getDeviceMachineId } from '../utils/security'
-import { testPayMongoConnection, isValidPayMongoSecretKey } from '../utils/paymongo'
+import { testPayMongoConnection } from '../utils/paymongo'
 
 interface SettingsScreenProps {
   settings: StoreSettings
@@ -61,6 +59,8 @@ interface SettingsScreenProps {
   onOpenVipUpgrade?: () => void
 }
 
+export type SettingsTab = 'profile' | 'printer' | 'payments' | 'staff' | 'themes' | 'backup'
+
 export function SettingsScreen({
   settings,
   onSaveSettings,
@@ -76,6 +76,9 @@ export function SettingsScreen({
   onUpdateAvatar,
   onOpenVipUpgrade
 }: SettingsScreenProps): React.JSX.Element {
+  // Navigation Tab State
+  const [activeTab, setActiveTab] = useState<SettingsTab>('profile')
+
   const [form, setForm] = useState<StoreSettings>(settings)
   const [saved, setSaved] = useState(false)
   const [importing, setImporting] = useState(false)
@@ -211,8 +214,8 @@ export function SettingsScreen({
     }
   }
 
-  const handleSave = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSave = (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
     onSaveSettings(form)
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
@@ -284,21 +287,36 @@ export function SettingsScreen({
   }
 
   const handleResetData = async () => {
-    if (confirm('Are you sure you want to clear ALL data? Products, sales, customers, held tickets, and restock history will be permanently deleted.')) {
-      await db.products.clear()
-      await db.categories.clear()
-      await db.transactions.clear()
-      await db.customers.clear()
-      await db.held_carts.clear()
-      await db.restock_logs.clear()
-      await db.settings.clear()
-      await db.users.clear()
-      await initDatabase()
-      onRefreshAll()
-      loadUsers()
-      alert('Database cleared! You can now start adding your own products and staff accounts.')
+    if (
+      confirm(
+        'DANGER: Are you sure you want to clear all data? This deletes all products, sales history, customer debt records, and restock logs! This cannot be undone unless you have a backup.'
+      )
+    ) {
+      if (confirm('Final confirmation: Reset entire local database?')) {
+        await Promise.all([
+          db.products.clear(),
+          db.categories.clear(),
+          db.transactions.clear(),
+          db.customers.clear(),
+          db.held_carts.clear(),
+          db.restock_logs.clear(),
+          db.expenses.clear(),
+          db.expense_categories.clear(),
+          db.suppliers.clear(),
+          db.cash_counts.clear(),
+          db.z_reads.clear(),
+          db.settings.clear()
+        ])
+        await initDatabase()
+        onRefreshAll()
+        alert('Database has been completely reset.')
+      }
     }
   }
+
+  useEffect(() => {
+    loadUsers()
+  }, [loadUsers])
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -318,7 +336,6 @@ export function SettingsScreen({
       return
     }
 
-    // Check if username already exists
     const existing = await db.users.where('username').equalsIgnoreCase(trimmedUser).first()
     if (existing) {
       setUserFormError('This username is already taken. Please choose another.')
@@ -342,7 +359,6 @@ export function SettingsScreen({
       setUserSuccessMessage(`User "${trimmedName}" successfully created!`)
       setTimeout(() => setUserSuccessMessage(''), 3000)
 
-      // Reset form
       setNewFullName('')
       setNewUsername('')
       setNewUserRole('CASHIER')
@@ -439,7 +455,6 @@ export function SettingsScreen({
       const dataUrl = await compressImageFile(file, 320, 320, 0.85)
       await db.users.update(targetUser.id, { avatar_url: dataUrl })
 
-      // If updating self
       if (targetUser.id === currentUser?.id || (currentUsername && targetUser.username.toLowerCase() === currentUsername.toLowerCase())) {
         onUpdateAvatar?.(dataUrl)
       }
@@ -485,7 +500,6 @@ export function SettingsScreen({
     if (!user.id) return
     const newStatus = user.status === 'ACTIVE' ? 'DISABLED' : 'ACTIVE'
 
-    // Prevent disabling the current user or the only admin
     if (user.role === 'ADMIN' && newStatus === 'DISABLED') {
       const adminCount = users.filter((u) => u.role === 'ADMIN' && u.status === 'ACTIVE').length
       if (adminCount <= 1) {
@@ -526,579 +540,232 @@ export function SettingsScreen({
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-xl font-black text-stone-100 tracking-tight flex items-center gap-2">
-          <Settings className="h-6 w-6 text-emerald-600" />
-          <span>Store Settings &amp; Administration</span>
-        </h2>
-        <p className="text-xs text-slate-400">
-          Configure store profile, manage staff accounts, and download offline backup archives.
-        </p>
-      </div>
-
-      {/* ── YOUR PROFILE & AVATAR CARD ── */}
-      <div className="glass-panel rounded-3xl border border-gold/30 p-6 shadow-2xl bg-gradient-to-r from-amber-500/[0.08] via-zinc-950 to-zinc-950 relative overflow-hidden">
-        <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5">
-          <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
-            <div className="relative group">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-gold/60 shadow-glow-gold bg-slate-850 flex items-center justify-center">
-                {currentUser?.avatar_url || currentUserAvatar ? (
-                  <img
-                    src={currentUser?.avatar_url || currentUserAvatar}
-                    alt={currentCashierName || 'User'}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-amber-400 via-gold to-emerald-600 flex items-center justify-center text-obsidian-950 font-serif font-black text-2xl">
-                    {(currentCashierName || 'User').substring(0, 2).toUpperCase()}
-                  </div>
-                )}
-                {isUploadingCurrentAvatar && (
-                  <div className="absolute inset-0 bg-black/75 flex items-center justify-center">
-                    <RefreshCw className="w-5 h-5 text-gold animate-spin" />
-                  </div>
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={() => myFileInputRef.current?.click()}
-                disabled={isUploadingCurrentAvatar}
-                className="absolute -bottom-1 -right-1 p-1.5 rounded-lg bg-amber-500 text-stone-100 font-bold hover:bg-amber-400 transition-all shadow-md"
-                title="Upload Photo"
-              >
-                <Camera className="w-3.5 h-3.5" />
-              </button>
-              <input
-                ref={myFileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleUploadMyAvatar}
-                className="hidden"
-              />
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2 justify-center sm:justify-start flex-wrap">
-                <h3 className="text-base font-bold text-stone-100 flex items-center gap-1.5">
-                  {isMasterAdmin && <Crown className="w-4 h-4 text-gold" />}
-                  <span>{currentCashierName || 'Staff Member'}</span>
-                </h3>
-                <span className="px-2 py-0.5 rounded-full bg-amber-500/15 border border-gold/30 text-gold-light font-sans font-semibold text-[0.75rem] font-bold uppercase">
-                  {currentCashierRole || (isMasterAdmin ? 'Master Admin' : 'Staff')}
-                </span>
-              </div>
-              {currentUsername && (
-                <p className="text-xs font-mono text-stone-400 mt-0.5">@{currentUsername}</p>
-              )}
-              <p className="text-xs text-stone-400 mt-1">
-                Your profile picture is saved to your account and displayed across your terminal sessions.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={() => myFileInputRef.current?.click()}
-              disabled={isUploadingCurrentAvatar}
-              className="btn-press flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-gold/40 text-gold-light font-bold text-xs transition-all"
-            >
-              <Camera className="w-4 h-4" />
-              <span>{currentUser?.avatar_url || currentUserAvatar ? 'Change Photo' : 'Upload Photo'}</span>
-            </button>
-            {(currentUser?.avatar_url || currentUserAvatar) && (
-              <button
-                type="button"
-                onClick={handleRemoveMyAvatar}
-                disabled={isUploadingCurrentAvatar}
-                className="btn-press flex items-center gap-1 px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-600 text-xs font-semibold transition-all"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>Remove</span>
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Cloudflare Edge Status Card */}
-      <div className="glass-panel rounded-3xl p-5 border border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 via-obsidian-900 to-obsidian-850 flex items-center justify-between">
-        <div className="flex items-center gap-3.5">
-          <div className="h-12 w-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600">
-            <Globe className="h-6 w-6" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-stone-100">Cloudflare Pages Edge Architecture</h3>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 text-[0.75rem] font-black border border-emerald-500/30">
-                0ms Latency
-              </span>
-            </div>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Client-side IndexedDB with universal cross-device backup parity.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* ── VIP PRO LIFETIME LICENSING & DEVICE STATUS ── */}
-      <div className="glass-panel rounded-3xl border border-amber-500/30 p-6 shadow-2xl space-y-4 bg-gradient-to-r from-amber-950/20 via-obsidian-900 to-obsidian-950">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/[0.08] pb-4 gap-3">
-          <div className="flex items-center gap-3">
-            <div className="h-11 w-11 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shadow-glow-amber">
-              <Crown className="h-6 w-6" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-stone-100">TINDA POS VIP Pro Lifetime Licensing</h3>
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[0.6875rem] font-mono font-bold border border-amber-500/30">
-                  {vipInfo?.active ? 'LIFETIME UNLOCKED' : '₱500 ONE-TIME'}
-                </span>
-              </div>
-              <p className="text-xs text-stone-400 mt-0.5">
-                Machine-locked permanent VIP key · Zero monthly subscriptions · Maya 09912255156 (Dev Francis)
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={onOpenVipUpgrade}
-            className="btn-press px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-obsidian-950 font-bold text-xs shadow-glow-amber flex items-center gap-2 self-start sm:self-auto shrink-0"
-          >
-            <Crown className="h-4 w-4" />
-            <span>{vipInfo?.active ? 'View License Details' : 'Upgrade to VIP Pro'}</span>
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div className="p-3 rounded-2xl bg-obsidian-950/80 border border-white/[0.08]">
-            <span className="text-[10px] text-stone-400 uppercase tracking-wider block font-bold">This Device Machine ID</span>
-            <span className="font-mono font-bold text-amber-300 text-xs truncate block mt-1">
-              {machineId || 'Generating...'}
-            </span>
-          </div>
-          <div className="p-3 rounded-2xl bg-obsidian-950/80 border border-white/[0.08]">
-            <span className="text-[10px] text-stone-400 uppercase tracking-wider block font-bold">Official Maya Support</span>
-            <span className="font-mono font-bold text-emerald-400 text-xs block mt-1">
-              0991 225 5156 (Dev Francis)
-            </span>
-          </div>
-          <div className="p-3 rounded-2xl bg-obsidian-950/80 border border-white/[0.08]">
-            <span className="text-[10px] text-stone-400 uppercase tracking-wider block font-bold">Licensed Store Owner</span>
-            <span className="text-xs font-bold text-stone-200 truncate block mt-1">
-              {vipInfo?.registeredTo || 'Store Admin'}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* ── POS VISUAL THEMES STUDIO ── */}
-      <div className="glass-panel rounded-3xl border border-white/[0.08] p-6 shadow-2xl space-y-4">
-        <div className="border-b border-white/[0.08] pb-3">
-          <h3 className="text-sm font-bold text-stone-100 flex items-center gap-2">
-            <Palette className="h-4 w-4 text-emerald-400" />
-            <span>Retail Display Themes &amp; Color Palettes</span>
-          </h3>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-5 animate-fade-in">
+      
+      {/* ── TOP HEADER & STICKY SAVE ACTIONS ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-white/[0.08]">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-black text-stone-100 tracking-tight flex items-center gap-2.5">
+            <Settings className="h-6 w-6 text-emerald-400" />
+            <span>Store Settings &amp; Administration</span>
+          </h2>
           <p className="text-xs text-stone-400 mt-0.5">
-            Choose the most elegant and fitting color theme for your retail counter, store, or boutique.
+            Configure store profile, hardware printers, e-wallets, staff accounts, and offline database archives.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {THEMES.map((theme) => {
-            const isSelected = activeThemeId === theme.id
-            return (
-              <button
-                key={theme.id}
-                type="button"
-                onClick={() => handleSelectTheme(theme.id)}
-                className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-3 relative overflow-hidden group ${
-                  isSelected
-                    ? 'border-emerald-500 bg-obsidian-900/90 shadow-glow-emerald ring-1 ring-emerald-500/50'
-                    : 'border-white/[0.08] bg-obsidian-900/40 hover:border-white/20 hover:bg-obsidian-900/70'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <span
-                      className="h-4 w-4 rounded-full border border-white/20 shadow-sm shrink-0"
-                      style={{ backgroundColor: theme.accentColor }}
-                    />
-                    <h4 className="text-xs font-bold text-stone-100">{theme.name}</h4>
-                  </div>
-                  {isSelected && (
-                    <span className="flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                      <Check className="h-3 w-3" /> ACTIVE
-                    </span>
-                  )}
-                </div>
-                <p className="text-[11px] text-stone-400">{theme.subtitle}</p>
-                <div className="flex items-center justify-between pt-1 border-t border-white/[0.06] text-[10px] font-mono text-stone-500">
-                  <span>{theme.isDark ? 'Dark Mode' : 'Light Retail Mode'}</span>
-                  <span className="group-hover:text-stone-300 transition-colors">
-                    {isSelected ? 'Currently Applied' : 'Click to Apply'}
-                  </span>
-                </div>
-              </button>
-            )
-          })}
+        {/* Global Save Action */}
+        <div className="flex items-center gap-2.5 self-start sm:self-auto shrink-0">
+          {saved && (
+            <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-xl animate-fade-in shadow-sm">
+              <CheckCircle2 className="h-4 w-4" />
+              <span>Saved!</span>
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={() => handleSave()}
+            className="btn-press px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-zinc-950 font-black text-xs shadow-glow-emerald flex items-center gap-2 cursor-pointer transition-all"
+          >
+            <Check className="w-4 h-4" />
+            <span>Save Settings</span>
+          </button>
         </div>
       </div>
 
-      {/* ── STAFF & CASHIER ACCOUNTS (Master Admin Section) ── */}
-      <div className="glass-panel rounded-3xl border border-slate-900/[0.1] p-6 shadow-2xl space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-900/[0.08] pb-4 gap-3">
-          <div>
-            <h3 className="text-sm font-bold text-stone-100 flex items-center gap-2">
-              <Users className="h-4 w-4 text-amber-600" />
-              <span>Staff &amp; Cashier Accounts</span>
-            </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Only Master Admin can create and manage staff accounts. Account names are hidden on the login screen for security.
-            </p>
-          </div>
+      {/* ── MODULAR 6-TAB NAVIGATION BAR ── */}
+      <div className="p-1 rounded-2xl bg-zinc-900/90 border border-white/[0.08] shadow-inner overflow-x-auto custom-scrollbar">
+        <div className="flex items-center gap-1 min-w-max">
+          <button
+            type="button"
+            onClick={() => setActiveTab('profile')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === 'profile'
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                : 'text-stone-400 hover:text-stone-200 hover:bg-white/[0.04]'
+            }`}
+          >
+            <Store className="w-4 h-4 text-emerald-400" />
+            <span>Store Profile</span>
+          </button>
 
-          {isAdmin && (
-            <button
-              onClick={() => setShowAddUserModal(true)}
-              className="btn-press flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 font-bold text-xs hover:bg-amber-500/25 transition-all self-start sm:self-auto shrink-0"
-            >
-              <UserPlus className="h-4 w-4" />
-              <span>Add Staff / Cashier</span>
-            </button>
-          )}
-        </div>
+          <button
+            type="button"
+            onClick={() => setActiveTab('printer')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === 'printer'
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                : 'text-stone-400 hover:text-stone-200 hover:bg-white/[0.04]'
+            }`}
+          >
+            <Printer className="w-4 h-4 text-amber-400" />
+            <span>Printer &amp; Receipts</span>
+          </button>
 
-        {userSuccessMessage && (
-          <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 text-xs font-semibold flex items-center gap-2 animate-fade-in">
-            <CheckCircle2 className="h-4 w-4" />
-            <span>{userSuccessMessage}</span>
-          </div>
-        )}
-
-        {/* Users List */}
-        <div className="space-y-2.5">
-          {loadingUsers ? (
-            <p className="text-xs text-slate-400 font-mono py-4 text-center">Loading accounts...</p>
-          ) : users.length === 0 ? (
-            <div className="text-center py-6 text-slate-500 text-xs font-mono">
-              No users found. Using default Master Admin account.
-            </div>
-          ) : (
-            users.map((u) => {
-              const isMaster = u.role === 'ADMIN'
-              const isEditingThisPin = editingPinUserId === u.id
-
-              return (
-                <div
-                  key={u.id}
-                  className={`p-3.5 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                    u.status === 'ACTIVE'
-                      ? 'bg-obsidian-900/[0.05] border-slate-900/[0.08]'
-                      : 'bg-obsidian-900/[0.08] border-red-500/20 opacity-60'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    {u.avatar_url ? (
-                      <img
-                        src={u.avatar_url}
-                        alt={u.name}
-                        className="h-10 w-10 rounded-xl object-cover border border-gold/40 shadow-glow-gold shrink-0"
-                      />
-                    ) : (
-                      <div className={`h-10 w-10 rounded-xl flex items-center justify-center font-serif font-bold text-xs shrink-0 ${
-                        isMaster
-                          ? 'bg-gradient-to-br from-blue-400 to-blue-600 text-white shadow-glow-gold'
-                          : 'bg-slate-850 border border-slate-900/15 text-stone-200'
-                      }`}>
-                        {u.name.substring(0, 2).toUpperCase()}
-                      </div>
-                    )}
-
-                    <div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-xs sm:text-sm font-semibold text-stone-100">{u.name}</p>
-                        <span className="text-[0.75rem] font-mono px-2 py-0.5 rounded-full bg-obsidian-900/[0.07] text-stone-400">
-                          @{u.username}
-                        </span>
-                        <span className={`text-[0.75rem] font-mono font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                          isMaster
-                            ? 'bg-amber-500/20 text-amber-600 border border-amber-500/30'
-                            : u.role === 'INVENTORY_LEAD'
-                            ? 'bg-indigo-500/20 text-indigo-600 border border-indigo-500/30'
-                            : 'bg-emerald-500/20 text-emerald-600 border border-emerald-500/30'
-                        }`}>
-                          {u.role === 'ADMIN' ? 'Master Admin' : u.role === 'INVENTORY_LEAD' ? 'Inventory Lead' : 'Cashier'}
-                        </span>
-                        {u.store_name && (
-                          <span className="text-[0.75rem] font-mono px-2 py-0.5 rounded-full bg-gold/10 text-gold-light border border-gold/30">
-                            {u.store_name}
-                          </span>
-                        )}
-                        {u.status === 'DISABLED' && (
-                          <span className="text-[0.75rem] font-sans font-semibold font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-600 border border-red-500/30 uppercase">
-                            Disabled
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[0.75rem] text-slate-500 font-mono mt-0.5">
-                        Created: {new Date(u.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Actions (Admin Only) */}
-                  {isAdmin && (
-                    <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
-                      {/* Change PIN toggle */}
-                      {isEditingThisPin ? (
-                        <div className="flex items-center gap-1.5 animate-fade-in">
-                          <input
-                            type="password"
-                            maxLength={6}
-                            placeholder="New PIN"
-                            value={newPinValue}
-                            onChange={(e) => setNewPinValue(e.target.value.replace(/[^0-9]/g, ''))}
-                            className="w-20 px-2 py-1 rounded-lg bg-slate-850 border border-gold/50 text-xs font-mono text-gold-light focus:outline-none"
-                          />
-                          <button
-                            onClick={() => u.id && handleUpdatePin(u.id)}
-                            className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-600 hover:bg-emerald-500/30"
-                            title="Save PIN"
-                          >
-                            <Check className="h-3.5 w-3.5" />
-                          </button>
-                          <button
-                            onClick={() => {
-                              setEditingPinUserId(null)
-                              setNewPinValue('')
-                            }}
-                            className="p-1.5 rounded-lg bg-obsidian-900/[0.06] text-stone-400 hover:bg-obsidian-900/[0.05]"
-                            title="Cancel"
-                          >
-                            <X className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            setEditingPinUserId(u.id ?? null)
-                            setNewPinValue('')
-                          }}
-                          className="btn-press px-2.5 py-1 rounded-lg bg-obsidian-900/[0.07] border border-slate-900/15 text-stone-300 hover:text-stone-100 text-xs flex items-center gap-1"
-                          title="Change PIN"
-                        >
-                          <Key className="h-3 w-3 text-gold-muted" />
-                          <span className="text-[0.8125rem]">PIN</span>
-                        </button>
-                      )}
-
-                      {/* Photo management for staff */}
-                      <label
-                        className="btn-press px-2 py-1 rounded-lg bg-obsidian-900/[0.07] border border-slate-900/15 text-stone-300 hover:text-gold-light hover:border-gold/40 text-xs flex items-center gap-1 cursor-pointer"
-                        title={u.avatar_url ? 'Change Photo' : 'Upload Photo'}
-                      >
-                        <Camera className="h-3 w-3 text-gold-muted" />
-                        <span className="text-[0.8125rem] hidden sm:inline">{u.avatar_url ? 'Photo' : '+ Photo'}</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleStaffAvatarUpload(e, u)}
-                          className="hidden"
-                        />
-                      </label>
-
-                      {u.avatar_url && (
-                        <button
-                          onClick={() => handleRemoveStaffAvatar(u)}
-                          className="btn-press p-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-600 hover:bg-red-500/20 text-xs"
-                          title="Remove Photo"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      )}
-
-                      {/* Toggle status */}
-                      <button
-                        onClick={() => handleToggleUserStatus(u)}
-                        className={`btn-press p-1.5 rounded-lg border text-xs flex items-center gap-1 ${
-                          u.status === 'ACTIVE'
-                            ? 'bg-slate-850/60 border-slate-900/15 text-stone-400 hover:text-stone-200'
-                            : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600'
-                        }`}
-                        title={u.status === 'ACTIVE' ? 'Disable Account' : 'Activate Account'}
-                      >
-                        {u.status === 'ACTIVE' ? <UserX className="h-3.5 w-3.5" /> : <UserCheck className="h-3.5 w-3.5" />}
-                      </button>
-
-                      {/* Delete user */}
-                      {(!isMaster || users.filter((x) => x.role === 'ADMIN').length > 1) && (
-                        <button
-                          onClick={() => handleDeleteUser(u)}
-                          className="btn-press p-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-600 hover:bg-red-500/20 text-xs"
-                          title="Delete User"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )
-            })
-          )}
-        </div>
-      </div>
-
-      {/* ── ADD USER MODAL ── */}
-      {showAddUserModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/80 backdrop-blur-md animate-fade-in">
-          <div className="w-full max-w-md glass-panel rounded-3xl border border-gold/30 p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-900/[0.08] pb-3">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600">
-                  <UserPlus className="h-4 w-4" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-stone-100">Create Staff Account</h3>
-                  <p className="text-[0.75rem] text-slate-400 font-mono">Master Admin provisioning</p>
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  setShowAddUserModal(false)
-                  setUserFormError('')
-                }}
-                className="p-1.5 rounded-xl text-stone-400 hover:text-stone-100 hover:bg-obsidian-900/[0.07]"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            {userFormError && (
-              <p className="text-xs text-red-600 bg-red-500/10 border border-red-500/20 p-2.5 rounded-xl font-medium">
-                {userFormError}
-              </p>
+          <button
+            type="button"
+            onClick={() => setActiveTab('payments')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === 'payments'
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                : 'text-stone-400 hover:text-stone-200 hover:bg-white/[0.04]'
+            }`}
+          >
+            <CreditCard className="w-4 h-4 text-sky-400" />
+            <span>Payments &amp; QR Ph</span>
+            {form.paymongo_enabled && (
+              <span className="h-2 w-2 rounded-full bg-sky-400 animate-pulse" />
             )}
+          </button>
 
-            <form onSubmit={handleCreateUser} className="space-y-3.5">
+          <button
+            type="button"
+            onClick={() => setActiveTab('staff')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === 'staff'
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                : 'text-stone-400 hover:text-stone-200 hover:bg-white/[0.04]'
+            }`}
+          >
+            <Users className="w-4 h-4 text-amber-500" />
+            <span>Staff Accounts</span>
+            {users.length > 0 && (
+              <span className="px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/[0.1] text-stone-300">
+                {users.length}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('themes')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === 'themes'
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                : 'text-stone-400 hover:text-stone-200 hover:bg-white/[0.04]'
+            }`}
+          >
+            <Palette className="w-4 h-4 text-purple-400" />
+            <span>Themes Studio</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('backup')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === 'backup'
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                : 'text-stone-400 hover:text-stone-200 hover:bg-white/[0.04]'
+            }`}
+          >
+            <Database className="w-4 h-4 text-indigo-400" />
+            <span>Data &amp; Backup</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* ── TAB 1: STORE PROFILE & BRANDING ────────────────────────── */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {activeTab === 'profile' && (
+        <div className="space-y-4 animate-fade-in">
+          <div className="glass-panel rounded-3xl border border-white/[0.08] p-6 shadow-2xl bg-zinc-950/70 space-y-4">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Full Name <span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Maria Clara"
-                  value={newFullName}
-                  onChange={(e) => setNewFullName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-amber-400"
-                />
+                <h3 className="text-sm font-bold text-stone-100 flex items-center gap-2">
+                  <Store className="h-4 w-4 text-emerald-400" />
+                  <span>Store Profile &amp; Receipt Branding</span>
+                </h3>
+                <p className="text-xs text-stone-400 mt-0.5">
+                  General retail identity, address, and official details printed on sales receipts.
+                </p>
               </div>
+            </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <form onSubmit={handleSave} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Username / ID <span className="text-red-600">*</span>
-                  </label>
+                  <label className="block text-xs font-semibold text-stone-300 mb-1">Store / Business Name *</label>
                   <input
                     type="text"
                     required
-                    autoCapitalize="none"
-                    placeholder="e.g. maria"
-                    value={newUsername}
-                    onChange={(e) => setNewUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-mono text-stone-100 focus:outline-none focus:border-amber-400"
+                    value={form.store_name}
+                    onChange={(e) => setForm({ ...form, store_name: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-white/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Security PIN (4-6 digits) <span className="text-red-600">*</span>
-                  </label>
+                  <label className="block text-xs font-semibold text-stone-300 mb-1">Owner Full Name</label>
                   <input
-                    type="password"
-                    required
-                    maxLength={6}
-                    placeholder="e.g. 1234"
-                    value={newUserPin}
-                    onChange={(e) => setNewUserPin(e.target.value.replace(/[^0-9]/g, ''))}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-mono text-gold-light focus:outline-none focus:border-amber-400 tracking-widest"
+                    type="text"
+                    value={form.owner_name}
+                    onChange={(e) => setForm({ ...form, owner_name: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-white/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-stone-300 mb-1">Contact Phone Number</label>
+                  <input
+                    type="text"
+                    value={form.contact_number}
+                    onChange={(e) => setForm({ ...form, contact_number: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-white/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-stone-300 mb-1">Store Address / Location</label>
+                  <input
+                    type="text"
+                    value={form.address}
+                    onChange={(e) => setForm({ ...form, address: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-white/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Staff Role &amp; Access Level
-                </label>
-                <select
-                  value={newUserRole}
-                  onChange={(e) => setNewUserRole(e.target.value as UserRole)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-amber-400"
-                >
-                  <option value="CASHIER">Cashier (POS Counter &amp; Sales)</option>
-                  <option value="INVENTORY_LEAD">Inventory Lead (POS Counter + Inventory Management)</option>
-                  <option value="ADMIN">Master Admin (Full Access + Staff Management)</option>
-                </select>
+                <label className="block text-xs font-semibold text-stone-300 mb-1">Receipt Footer Message</label>
+                <input
+                  type="text"
+                  value={form.receipt_footer}
+                  onChange={(e) => setForm({ ...form, receipt_footer: e.target.value })}
+                  placeholder="e.g. Salamat sa pagpalit! Balik-balik kamo!"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-white/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-emerald-500"
+                />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                  Profile Photo (Optional)
-                </label>
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-xl border border-slate-900/15 bg-obsidian-900 flex items-center justify-center overflow-hidden shrink-0">
-                    {newUserAvatar ? (
-                      <img src={newUserAvatar} alt="Staff Preview" className="w-full h-full object-cover" />
-                    ) : (
-                      <Camera className="w-5 h-5 text-stone-500" />
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => newUserAvatarInputRef.current?.click()}
-                      className="px-3 py-1.5 rounded-xl bg-obsidian-900/[0.07] border border-slate-900/15 text-stone-300 hover:text-stone-100 text-xs font-semibold"
-                    >
-                      {newUserAvatar ? 'Change Photo' : 'Choose Photo'}
-                    </button>
-                    {newUserAvatar && (
-                      <button
-                        type="button"
-                        onClick={() => setNewUserAvatar(undefined)}
-                        className="px-2.5 py-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 text-xs font-semibold"
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                <div>
+                  <label className="block text-xs font-semibold text-stone-300 mb-1">Default Low Stock Alert Threshold</label>
                   <input
-                    ref={newUserAvatarInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleNewUserAvatarSelect}
-                    className="hidden"
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={form.default_low_stock || 5}
+                    onChange={(e) => setForm({ ...form, default_low_stock: Number(e.target.value) || 5 })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-white/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-stone-300 mb-1">Currency Symbol</label>
+                  <input
+                    type="text"
+                    value={form.currency_symbol || '₱'}
+                    onChange={(e) => setForm({ ...form, currency_symbol: e.target.value })}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-white/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
 
-              <div className="pt-2 flex justify-end gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => setShowAddUserModal(false)}
-                  className="px-4 py-2.5 rounded-xl border border-slate-900/15 text-stone-400 hover:text-stone-100 text-xs font-semibold"
-                >
-                  Cancel
-                </button>
+              <div className="pt-2">
                 <button
                   type="submit"
-                  className="btn-gold px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-glow-gold"
+                  className="btn-press px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-zinc-950 font-black text-xs shadow-glow-emerald cursor-pointer transition-all"
                 >
-                  Create Staff
+                  Save Store Profile
                 </button>
               </div>
             </form>
@@ -1106,84 +773,19 @@ export function SettingsScreen({
         </div>
       )}
 
-      {/* Store Profile Form */}
-      <div className="glass-panel rounded-3xl border border-slate-900/[0.1] p-6 shadow-2xl space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-900/[0.08] pb-3">
-          <h3 className="text-sm font-bold text-stone-100 flex items-center gap-2">
-            <Store className="h-4 w-4 text-emerald-600" />
-            <span>Store Profile &amp; Receipt Branding</span>
-          </h3>
-          {saved && (
-            <span className="flex items-center gap-1 text-xs font-bold text-emerald-600 animate-fade-in">
-              <CheckCircle2 className="h-4 w-4" />
-              <span>Saved!</span>
-            </span>
-          )}
-        </div>
-
-        <form onSubmit={handleSave} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Store Name</label>
-              <input
-                type="text"
-                required
-                value={form.store_name}
-                onChange={(e) => setForm({ ...form, store_name: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Owner Name</label>
-              <input
-                type="text"
-                value={form.owner_name}
-                onChange={(e) => setForm({ ...form, owner_name: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Contact Phone</label>
-              <input
-                type="text"
-                value={form.contact_number}
-                onChange={(e) => setForm({ ...form, contact_number: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Store Address / Location</label>
-              <input
-                type="text"
-                value={form.address}
-                onChange={(e) => setForm({ ...form, address: e.target.value })}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Receipt Footer Message</label>
-            <input
-              type="text"
-              value={form.receipt_footer}
-              onChange={(e) => setForm({ ...form, receipt_footer: e.target.value })}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-emerald-500"
-            />
-          </div>
-
-          {/* ── PRINTER & RECEIPT HARDWARE CONFIGURATION ── */}
-          <div className="pt-4 border-t border-slate-900/[0.08] space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* ── TAB 2: PRINTER & HARDWARE SETUP ────────────────────────── */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {activeTab === 'printer' && (
+        <div className="space-y-4 animate-fade-in">
+          <div className="glass-panel rounded-3xl border border-white/[0.08] p-6 shadow-2xl bg-zinc-950/70 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-3">
               <div>
                 <h4 className="text-sm font-bold text-stone-100 flex items-center gap-2">
-                  <Printer className="h-4 w-4 text-gold-light" />
+                  <Printer className="h-4 w-4 text-amber-400" />
                   <span>Receipt &amp; Universal Printer Setup</span>
                 </h4>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-stone-400 mt-0.5">
                   Select your physical receipt paper width. Compatible with all Bluetooth, USB, ESC/POS, and office printers.
                 </p>
               </div>
@@ -1191,7 +793,7 @@ export function SettingsScreen({
               <button
                 type="button"
                 onClick={() => setShowTestPrintModal(true)}
-                className="btn-press px-3.5 py-1.5 rounded-xl bg-amber-500/15 border border-gold/40 text-gold-light hover:bg-amber-500/25 text-xs font-mono font-bold flex items-center gap-1.5 self-start sm:self-auto shrink-0 transition-all"
+                className="btn-press px-3.5 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 hover:bg-amber-500/25 text-xs font-mono font-bold flex items-center gap-1.5 self-start sm:self-auto shrink-0 transition-all cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5" />
                 <span>Test Print Sample</span>
@@ -1200,7 +802,7 @@ export function SettingsScreen({
 
             {/* Paper Width Selection Cards */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-2">
+              <label className="block text-xs font-semibold text-stone-300 mb-2">
                 Primary Printer Paper Width
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1208,17 +810,17 @@ export function SettingsScreen({
                 <button
                   type="button"
                   onClick={() => setForm({ ...form, printer_paper_width: '58mm' })}
-                  className={`p-3.5 rounded-2xl border text-left transition-all ${
+                  className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                     form.printer_paper_width === '58mm'
-                      ? 'bg-amber-500/15 border-gold shadow-glow-gold'
-                      : 'bg-obsidian-900/[0.05] border-slate-900/[0.08] hover:border-slate-900/30'
+                      ? 'bg-amber-500/15 border-amber-500/50 shadow-glow-amber ring-1 ring-amber-500/30'
+                      : 'bg-zinc-900 border-white/[0.08] hover:border-white/20'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-bold text-xs text-stone-100">58mm Mini Thermal</span>
-                    <span className="text-[0.75rem] font-mono text-gold-light">2-Inch Roll</span>
+                    <span className="text-[0.75rem] font-mono text-amber-300">2-Inch Roll</span>
                   </div>
-                  <p className="text-[0.8125rem] text-slate-400">
+                  <p className="text-[0.8125rem] text-stone-400">
                     Portable Bluetooth &amp; mini USB printers (GOOJPRT, Xprinter 58, Sunmi, MPT-II).
                   </p>
                 </button>
@@ -1227,17 +829,17 @@ export function SettingsScreen({
                 <button
                   type="button"
                   onClick={() => setForm({ ...form, printer_paper_width: '80mm' })}
-                  className={`p-3.5 rounded-2xl border text-left transition-all ${
+                  className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                     (form.printer_paper_width || '80mm') === '80mm'
-                      ? 'bg-amber-500/15 border-gold shadow-glow-gold'
-                      : 'bg-obsidian-900/[0.05] border-slate-900/[0.08] hover:border-slate-900/30'
+                      ? 'bg-amber-500/15 border-amber-500/50 shadow-glow-amber ring-1 ring-amber-500/30'
+                      : 'bg-zinc-900 border-white/[0.08] hover:border-white/20'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-bold text-xs text-stone-100">80mm Standard Thermal</span>
-                    <span className="text-[0.75rem] font-mono text-gold-light">3-Inch Roll</span>
+                    <span className="text-[0.75rem] font-mono text-amber-300">3-Inch Roll</span>
                   </div>
-                  <p className="text-[0.8125rem] text-slate-400">
+                  <p className="text-[0.8125rem] text-stone-400">
                     Desktop commercial POS printers (Epson TM-T20, Star Micronics, Xprinter 80).
                   </p>
                 </button>
@@ -1246,17 +848,17 @@ export function SettingsScreen({
                 <button
                   type="button"
                   onClick={() => setForm({ ...form, printer_paper_width: 'A4' })}
-                  className={`p-3.5 rounded-2xl border text-left transition-all ${
+                  className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                     form.printer_paper_width === 'A4'
-                      ? 'bg-amber-500/15 border-gold shadow-glow-gold'
-                      : 'bg-obsidian-900/[0.05] border-slate-900/[0.08] hover:border-slate-900/30'
+                      ? 'bg-amber-500/15 border-amber-500/50 shadow-glow-amber ring-1 ring-amber-500/30'
+                      : 'bg-zinc-900 border-white/[0.08] hover:border-white/20'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-bold text-xs text-stone-100">A4 / Letter Full Page</span>
-                    <span className="text-[0.75rem] font-mono text-gold-light">Standard Sheet</span>
+                    <span className="text-[0.75rem] font-mono text-amber-300">Standard Sheet</span>
                   </div>
-                  <p className="text-[0.8125rem] text-slate-400">
+                  <p className="text-[0.8125rem] text-stone-400">
                     Standard office inkjet / laser printers and formal commercial PDF invoices.
                   </p>
                 </button>
@@ -1264,71 +866,87 @@ export function SettingsScreen({
             </div>
 
             {/* Customization Checkboxes */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/[0.06] cursor-pointer hover:border-slate-900/30 transition-all">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-900 border border-white/[0.06] cursor-pointer hover:border-white/20 transition-all">
                 <input
                   type="checkbox"
                   checked={form.printer_show_barcode ?? true}
                   onChange={(e) => setForm({ ...form, printer_show_barcode: e.target.checked })}
-                  className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-slate-850 cursor-pointer"
+                  className="rounded border-white/20 text-emerald-500 focus:ring-0 w-4 h-4 bg-zinc-800 cursor-pointer"
                 />
                 <div>
                   <span className="text-xs font-semibold text-stone-100 block">Print Code128 Barcode</span>
-                  <span className="text-[0.75rem] text-slate-400 block">Scannable invoice barcode for counter audits</span>
+                  <span className="text-[0.75rem] text-stone-400 block">Scannable invoice barcode for counter audits</span>
                 </div>
               </label>
 
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/[0.06] cursor-pointer hover:border-slate-900/30 transition-all">
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-900 border border-white/[0.06] cursor-pointer hover:border-white/20 transition-all">
                 <input
                   type="checkbox"
                   checked={form.printer_show_logo ?? true}
                   onChange={(e) => setForm({ ...form, printer_show_logo: e.target.checked })}
-                  className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-slate-850 cursor-pointer"
+                  className="rounded border-white/20 text-emerald-500 focus:ring-0 w-4 h-4 bg-zinc-800 cursor-pointer"
                 />
                 <div>
                   <span className="text-xs font-semibold text-stone-100 block">Print Store Crest Monogram</span>
-                  <span className="text-[0.75rem] text-slate-400 block">Luxury brand emblem at top of receipt</span>
+                  <span className="text-[0.75rem] text-stone-400 block">Luxury brand emblem at top of receipt</span>
                 </div>
               </label>
 
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/[0.06] cursor-pointer hover:border-slate-900/30 transition-all">
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-900 border border-white/[0.06] cursor-pointer hover:border-white/20 transition-all">
                 <input
                   type="checkbox"
                   checked={form.printer_show_customer_info ?? true}
                   onChange={(e) => setForm({ ...form, printer_show_customer_info: e.target.checked })}
-                  className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-slate-850 cursor-pointer"
+                  className="rounded border-white/20 text-emerald-500 focus:ring-0 w-4 h-4 bg-zinc-800 cursor-pointer"
                 />
                 <div>
                   <span className="text-xs font-semibold text-stone-100 block">Customer Store Credit Balance</span>
-                  <span className="text-[0.75rem] text-slate-400 block">Print remaining ledger balance for credit transactions</span>
+                  <span className="text-[0.75rem] text-stone-400 block">Print remaining ledger balance for utang transactions</span>
                 </div>
               </label>
 
-              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-obsidian-900/[0.05] border border-slate-900/[0.06] cursor-pointer hover:border-slate-900/30 transition-all">
+              <label className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-900 border border-white/[0.06] cursor-pointer hover:border-white/20 transition-all">
                 <input
                   type="checkbox"
                   checked={form.printer_auto_print ?? false}
                   onChange={(e) => setForm({ ...form, printer_auto_print: e.target.checked })}
-                  className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-slate-850 cursor-pointer"
+                  className="rounded border-white/20 text-emerald-500 focus:ring-0 w-4 h-4 bg-zinc-800 cursor-pointer"
                 />
                 <div>
                   <span className="text-xs font-semibold text-stone-100 block">Auto-Prompt Print on Checkout</span>
-                  <span className="text-[0.75rem] text-slate-400 block">Automatically open print dialog after sale settlement</span>
+                  <span className="text-[0.75rem] text-stone-400 block">Automatically open print dialog after sale settlement</span>
                 </div>
               </label>
             </div>
-          </div>
 
-          {/* ── DIGITAL PAYMENT GATEWAY & REAL-TIME QR PH (PAYMONGO) ── */}
-          <div className="pt-5 border-t border-slate-900/[0.08] space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => handleSave()}
+                className="btn-press px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-zinc-950 font-black text-xs shadow-glow-emerald cursor-pointer transition-all"
+              >
+                Save Printer Settings
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* ── TAB 3: PAYMENTS & PAYMONGO QR PH ───────────────────────── */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {activeTab === 'payments' && (
+        <div className="space-y-4 animate-fade-in">
+          <div className="glass-panel rounded-3xl border border-white/[0.08] p-6 shadow-2xl bg-zinc-950/70 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-3">
               <div>
                 <h4 className="text-sm font-bold text-stone-100 flex items-center gap-2">
                   <CreditCard className="h-4 w-4 text-sky-400" />
                   <span>Digital Payments &amp; Real-Time Dynamic QR Ph (GCash / Maya)</span>
                 </h4>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Accept automated real-time payments directly into your own PayMongo account. Zero cashier reference typing required.
+                <p className="text-xs text-stone-400 mt-0.5">
+                  Accept automated real-time payments directly into your PayMongo merchant account.
                 </p>
               </div>
 
@@ -1341,7 +959,7 @@ export function SettingsScreen({
             </div>
 
             {/* Enable PayMongo Gateway Switch */}
-            <div className="p-4 rounded-2xl bg-obsidian-900/[0.08] border border-slate-900/[0.08] space-y-3">
+            <div className="p-4 rounded-2xl bg-zinc-900 border border-white/[0.08] space-y-3">
               <label className="flex items-center justify-between cursor-pointer">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400">
@@ -1351,8 +969,8 @@ export function SettingsScreen({
                     <span className="text-xs font-bold text-stone-100 block">
                       Enable PayMongo Real-Time Dynamic QR Ph
                     </span>
-                    <span className="text-[11px] text-slate-400 block">
-                      When enabled, checkout generates live QR Ph codes for GCash &amp; Maya with instant webhook &amp; polling verification.
+                    <span className="text-[11px] text-stone-400 block">
+                      When enabled, checkout generates live QR Ph codes for GCash &amp; Maya with instant status radar.
                     </span>
                   </div>
                 </div>
@@ -1360,18 +978,18 @@ export function SettingsScreen({
                   type="checkbox"
                   checked={form.paymongo_enabled ?? false}
                   onChange={(e) => setForm({ ...form, paymongo_enabled: e.target.checked })}
-                  className="rounded border-slate-900/30 text-sky-500 focus:ring-0 w-5 h-5 bg-slate-850 cursor-pointer"
+                  className="rounded border-white/20 text-sky-500 focus:ring-0 w-5 h-5 bg-zinc-800 cursor-pointer"
                 />
               </label>
 
               {form.paymongo_enabled && (
-                <div className="pt-3 border-t border-slate-900/[0.06] space-y-3">
+                <div className="pt-3 border-t border-white/[0.06] space-y-3">
                   {/* Environment Switcher */}
-                  <div className="grid grid-cols-2 gap-2 p-1 bg-obsidian-950/80 rounded-xl border border-slate-900/[0.08] text-xs">
+                  <div className="grid grid-cols-2 gap-2 p-1 bg-zinc-950 rounded-xl border border-white/[0.08] text-xs">
                     <button
                       type="button"
                       onClick={() => setForm({ ...form, paymongo_environment: 'test' })}
-                      className={`py-1.5 font-bold rounded-lg transition-all ${
+                      className={`py-1.5 font-bold rounded-lg transition-all cursor-pointer ${
                         (form.paymongo_environment ?? 'test') === 'test'
                           ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-sm'
                           : 'text-stone-400 hover:text-stone-200'
@@ -1382,7 +1000,7 @@ export function SettingsScreen({
                     <button
                       type="button"
                       onClick={() => setForm({ ...form, paymongo_environment: 'live' })}
-                      className={`py-1.5 font-bold rounded-lg transition-all ${
+                      className={`py-1.5 font-bold rounded-lg transition-all cursor-pointer ${
                         form.paymongo_environment === 'live'
                           ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shadow-sm'
                           : 'text-stone-400 hover:text-stone-200'
@@ -1395,11 +1013,11 @@ export function SettingsScreen({
                   {/* Secret Key Input with Masking & Testing */}
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                      <label className="text-xs font-semibold text-stone-300 flex items-center gap-1.5">
                         <Lock className="h-3.5 w-3.5 text-amber-400" />
                         <span>PayMongo Secret Key (sk_test_... or sk_live_...)</span>
                       </label>
-                      <span className="text-[10px] text-slate-500 font-mono">
+                      <span className="text-[10px] text-stone-500 font-mono">
                         Admin Only · Private &amp; Isolated
                       </span>
                     </div>
@@ -1414,12 +1032,12 @@ export function SettingsScreen({
                             setPayMongoTestResult(null)
                           }}
                           placeholder="sk_test_... or sk_live_..."
-                          className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-mono text-stone-100 focus:outline-none focus:border-sky-500"
+                          className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-zinc-950 border border-white/[0.08] text-xs font-mono text-stone-100 focus:outline-none focus:border-sky-500"
                         />
                         <button
                           type="button"
                           onClick={() => setShowSecretKey(!showSecretKey)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-100 p-1"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-100 p-1 cursor-pointer"
                           title={showSecretKey ? 'Hide key' : 'Show key'}
                         >
                           {showSecretKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -1430,7 +1048,7 @@ export function SettingsScreen({
                         type="button"
                         onClick={handleTestPayMongo}
                         disabled={isTestingPayMongo || !form.paymongo_secret_key}
-                        className="btn-press px-3.5 py-2.5 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-300 hover:bg-sky-500/25 text-xs font-bold shrink-0 disabled:opacity-40 transition-all flex items-center gap-1.5"
+                        className="btn-press px-3.5 py-2.5 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-300 hover:bg-sky-500/25 text-xs font-bold shrink-0 disabled:opacity-40 transition-all flex items-center gap-1.5 cursor-pointer"
                       >
                         {isTestingPayMongo ? (
                           <RefreshCw className="h-3.5 w-3.5 animate-spin" />
@@ -1461,18 +1079,18 @@ export function SettingsScreen({
                   </div>
 
                   {/* Auto Finalize Sale Toggle */}
-                  <label className="flex items-center gap-2.5 p-2.5 rounded-xl bg-obsidian-950/40 border border-slate-900/[0.06] cursor-pointer hover:border-slate-900/20 transition-all">
+                  <label className="flex items-center gap-2.5 p-2.5 rounded-xl bg-zinc-950 border border-white/[0.06] cursor-pointer hover:border-white/20 transition-all">
                     <input
                       type="checkbox"
                       checked={form.paymongo_auto_complete ?? true}
                       onChange={(e) => setForm({ ...form, paymongo_auto_complete: e.target.checked })}
-                      className="rounded border-slate-900/30 text-sky-500 focus:ring-0 w-4 h-4 bg-slate-850 cursor-pointer"
+                      className="rounded border-white/20 text-sky-500 focus:ring-0 w-4 h-4 bg-zinc-800 cursor-pointer"
                     />
                     <div>
                       <span className="text-xs font-semibold text-stone-100 block">
                         Auto-Finalize Sale on Payment Confirmation
                       </span>
-                      <span className="text-[11px] text-slate-400 block">
+                      <span className="text-[11px] text-stone-400 block">
                         Automatically closes checkout and prints the receipt the moment payment hits PayMongo.
                       </span>
                     </div>
@@ -1482,13 +1100,13 @@ export function SettingsScreen({
             </div>
 
             {/* Fallback Personal Static QR Upload */}
-            <div className="p-4 rounded-2xl bg-obsidian-900/[0.08] border border-slate-900/[0.08] space-y-2">
+            <div className="p-4 rounded-2xl bg-zinc-900 border border-white/[0.08] space-y-2">
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-xs font-bold text-stone-100 block">
                     Personal Store GCash / Maya Static QR Image (Fallback)
                   </span>
-                  <span className="text-[11px] text-slate-400 block">
+                  <span className="text-[11px] text-stone-400 block">
                     Upload a photo of your printed store QR code. This displays at checkout when manual verification is selected.
                   </span>
                 </div>
@@ -1502,7 +1120,7 @@ export function SettingsScreen({
                 <button
                   type="button"
                   onClick={() => qrImageInputRef.current?.click()}
-                  className="btn-press px-3 py-1.5 rounded-xl bg-white/[0.06] border border-white/[0.1] text-stone-300 hover:text-white text-xs font-bold flex items-center gap-1.5 shrink-0 transition-all"
+                  className="btn-press px-3 py-1.5 rounded-xl bg-white/[0.06] border border-white/[0.1] text-stone-300 hover:text-white text-xs font-bold flex items-center gap-1.5 shrink-0 transition-all cursor-pointer"
                 >
                   <Upload className="h-3.5 w-3.5" />
                   <span>{form.store_qr_image_url ? 'Change QR Image' : 'Upload QR Photo'}</span>
@@ -1510,11 +1128,11 @@ export function SettingsScreen({
               </div>
 
               {form.store_qr_image_url && (
-                <div className="mt-2 flex items-center gap-3 p-2 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08]">
+                <div className="mt-2 flex items-center gap-3 p-2 rounded-xl bg-zinc-950 border border-white/[0.08]">
                   <img
                     src={form.store_qr_image_url}
                     alt="Store QR"
-                    className="h-16 w-16 object-contain rounded-lg border border-slate-800 bg-white"
+                    className="h-16 w-16 object-contain rounded-lg border border-zinc-800 bg-white"
                   />
                   <div className="flex-1 text-xs">
                     <span className="font-semibold text-stone-200 block">Personal QR active</span>
@@ -1523,7 +1141,7 @@ export function SettingsScreen({
                   <button
                     type="button"
                     onClick={() => setForm({ ...form, store_qr_image_url: undefined })}
-                    className="p-1 text-rose-400 hover:text-rose-300 transition-colors"
+                    className="p-1 text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
                     title="Remove QR"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -1531,136 +1149,730 @@ export function SettingsScreen({
                 </div>
               )}
             </div>
-          </div>
 
-          <div className="pt-2">
-            <button
-              type="submit"
-              className="btn-press px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-stone-100 font-black text-xs shadow-glow-emerald"
-            >
-              Save Settings
-            </button>
-          </div>
-        </form>
-      </div>
-
-      {/* Universal Backup Archive */}
-      <div className="glass-panel rounded-3xl border border-white/[0.08] p-6 shadow-2xl space-y-4">
-        <div className="border-b border-white/[0.08] pb-3">
-          <h3 className="text-sm font-bold text-stone-100 flex items-center gap-2">
-            <Database className="h-4 w-4 text-indigo-400" />
-            <span>Universal .tinda-backup Archive &amp; Offline Desktop Importer</span>
-          </h3>
-          <p className="text-xs text-stone-400 mt-0.5">
-            100% interoperable between Offline Desktop TINDA POS (Windows/Linux SQLite), Android APK, and this Web edition. Automatically converts SQLite tables and maps prices, stock inventory, and customers.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Export Box */}
-          <div className="p-4 rounded-2xl bg-obsidian-900/60 border border-white/[0.08] flex flex-col justify-between space-y-3">
-            <div>
-              <h4 className="text-xs font-bold text-stone-100 flex items-center gap-1.5">
-                <Download className="h-4 w-4 text-emerald-400" />
-                <span>Export .tinda-backup</span>
-              </h4>
-              <p className="text-[0.8125rem] text-stone-400 mt-1">
-                Download a full archive of your store database (products, prices, sales history, customer ledger, expenses) as a protected offline backup file.
-              </p>
-            </div>
-            <button
-              onClick={() => void downloadBackupFile()}
-              className="btn-press w-full py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 font-bold text-xs"
-            >
-              Download Backup File (.tinda-backup)
-            </button>
-          </div>
-
-          {/* Import Box */}
-          <div className="p-4 rounded-2xl bg-obsidian-900/60 border border-white/[0.08] flex flex-col justify-between space-y-3">
-            <div>
-              <h4 className="text-xs font-bold text-stone-100 flex items-center gap-1.5">
-                <Upload className="h-4 w-4 text-indigo-400" />
-                <span>Restore / Import Offline Database</span>
-              </h4>
-              <p className="text-[0.8125rem] text-stone-400 mt-1">
-                Load a .tinda-backup file from your Windows Desktop POS or Android device. Automatically converts and imports all tables!
-              </p>
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".tinda-backup,.json"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-            <div className="space-y-2">
+            <div className="pt-2">
               <button
                 type="button"
-                onClick={handleAutoDetectAndImport}
-                disabled={importing}
-                className="btn-press w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-obsidian-950 font-black text-xs flex items-center justify-center gap-2 shadow-glow-amber transition-all"
+                onClick={() => handleSave()}
+                className="btn-press px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-zinc-950 font-black text-xs shadow-glow-emerald cursor-pointer transition-all"
               >
-                <Zap className="h-3.5 w-3.5 fill-obsidian-950" />
-                <span>⚡ Auto-Detect &amp; 1-Click Import</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={importing}
-                className="btn-press w-full py-2.5 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-300 font-bold text-xs flex items-center justify-center gap-2"
-              >
-                <Upload className="h-3.5 w-3.5" />
-                <span>{importing ? 'Importing & Converting...' : 'Manual Select .tinda-backup File'}</span>
+                Save Payment Settings
               </button>
             </div>
           </div>
         </div>
+      )}
 
-        {/* Pre-Restore Rollback Snapshot */}
-        {checkpointTime && (
-          <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <RotateCcw className="h-4 w-4 text-amber-400 shrink-0" />
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* ── TAB 4: STAFF & CASHIER ACCOUNTS ────────────────────────── */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {activeTab === 'staff' && (
+        <div className="space-y-4 animate-fade-in">
+          
+          {/* Your Profile Card */}
+          <div className="glass-panel rounded-3xl border border-amber-500/30 p-5 shadow-2xl bg-gradient-to-r from-amber-500/[0.08] via-zinc-950 to-zinc-950 relative overflow-hidden">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4">
+              <div className="flex flex-col sm:flex-row items-center gap-3.5 text-center sm:text-left">
+                <div className="relative group">
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-amber-500/60 shadow-glow-amber bg-zinc-900 flex items-center justify-center">
+                    {currentUser?.avatar_url || currentUserAvatar ? (
+                      <img
+                        src={currentUser?.avatar_url || currentUserAvatar}
+                        alt={currentCashierName || 'User'}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-amber-400 to-emerald-600 flex items-center justify-center text-zinc-950 font-bold text-xl">
+                        {(currentCashierName || 'User').substring(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                    {isUploadingCurrentAvatar && (
+                      <div className="absolute inset-0 bg-black/75 flex items-center justify-center">
+                        <RefreshCw className="w-5 h-5 text-amber-400 animate-spin" />
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => myFileInputRef.current?.click()}
+                    disabled={isUploadingCurrentAvatar}
+                    className="absolute -bottom-1 -right-1 p-1 rounded-lg bg-amber-500 text-zinc-950 font-bold hover:bg-amber-400 transition-all shadow-md cursor-pointer"
+                    title="Upload Photo"
+                  >
+                    <Camera className="w-3.5 h-3.5" />
+                  </button>
+                  <input
+                    ref={myFileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleUploadMyAvatar}
+                    className="hidden"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2 justify-center sm:justify-start flex-wrap">
+                    <h3 className="text-sm font-bold text-stone-100 flex items-center gap-1.5">
+                      {isMasterAdmin && <Crown className="w-4 h-4 text-amber-400" />}
+                      <span>{currentCashierName || 'Staff Member'}</span>
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 font-mono text-[10px] font-bold uppercase">
+                      {currentCashierRole || (isMasterAdmin ? 'Master Admin' : 'Staff')}
+                    </span>
+                  </div>
+                  {currentUsername && (
+                    <p className="text-xs font-mono text-stone-400 mt-0.5">@{currentUsername}</p>
+                  )}
+                  <p className="text-xs text-stone-400 mt-0.5">
+                    Your personal profile picture across counter sessions.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => myFileInputRef.current?.click()}
+                  disabled={isUploadingCurrentAvatar}
+                  className="btn-press flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs transition-all cursor-pointer"
+                >
+                  <Camera className="w-3.5 h-3.5" />
+                  <span>{currentUser?.avatar_url || currentUserAvatar ? 'Change Photo' : 'Upload Photo'}</span>
+                </button>
+                {(currentUser?.avatar_url || currentUserAvatar) && (
+                  <button
+                    type="button"
+                    onClick={handleRemoveMyAvatar}
+                    disabled={isUploadingCurrentAvatar}
+                    className="btn-press flex items-center gap-1 px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-semibold transition-all cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Remove</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Staff Roster Card */}
+          <div className="glass-panel rounded-3xl border border-white/[0.08] p-6 shadow-2xl bg-zinc-950/70 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/[0.08] pb-4 gap-3">
               <div>
-                <span className="text-xs font-bold text-stone-100 block">
-                  Emergency Pre-Restore Rollback Snapshot Available
+                <h3 className="text-sm font-bold text-stone-100 flex items-center gap-2">
+                  <Users className="h-4 w-4 text-amber-500" />
+                  <span>Staff &amp; Cashier Accounts</span>
+                </h3>
+                <p className="text-xs text-stone-400 mt-0.5">
+                  Only Master Admin can provision and manage counter staff accounts and individual security PINs.
+                </p>
+              </div>
+
+              {isAdmin && (
+                <button
+                  onClick={() => setShowAddUserModal(true)}
+                  className="btn-press flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold text-xs hover:bg-amber-500/25 transition-all self-start sm:self-auto shrink-0 cursor-pointer"
+                >
+                  <UserPlus className="h-4 w-4" />
+                  <span>Add Staff / Cashier</span>
+                </button>
+              )}
+            </div>
+
+            {userSuccessMessage && (
+              <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center gap-2 animate-fade-in">
+                <CheckCircle2 className="h-4 w-4" />
+                <span>{userSuccessMessage}</span>
+              </div>
+            )}
+
+            {/* Users List */}
+            <div className="space-y-2.5">
+              {loadingUsers ? (
+                <p className="text-xs text-stone-400 font-mono py-4 text-center">Loading accounts...</p>
+              ) : users.length === 0 ? (
+                <div className="text-center py-6 text-stone-500 text-xs font-mono">
+                  No users found. Using default Master Admin account.
+                </div>
+              ) : (
+                users.map((u) => {
+                  const isMaster = u.role === 'ADMIN'
+                  const isEditingThisPin = editingPinUserId === u.id
+
+                  return (
+                    <div
+                      key={u.id}
+                      className={`p-3.5 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                        u.status === 'ACTIVE'
+                          ? 'bg-zinc-900 border-white/[0.08]'
+                          : 'bg-zinc-900/50 border-red-500/20 opacity-60'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        {u.avatar_url ? (
+                          <img
+                            src={u.avatar_url}
+                            alt={u.name}
+                            className="h-10 w-10 rounded-xl object-cover border border-amber-500/40 shadow-glow-amber shrink-0"
+                          />
+                        ) : (
+                          <div className={`h-10 w-10 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 ${
+                            isMaster
+                              ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-950 shadow-glow-amber'
+                              : 'bg-zinc-800 border border-white/10 text-stone-200'
+                          }`}>
+                            {u.name.substring(0, 2).toUpperCase()}
+                          </div>
+                        )}
+
+                        <div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="text-xs sm:text-sm font-semibold text-stone-100">{u.name}</p>
+                            <span className="text-[0.75rem] font-mono px-2 py-0.5 rounded-full bg-white/[0.05] text-stone-400">
+                              @{u.username}
+                            </span>
+                            <span className={`text-[0.75rem] font-mono font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                              isMaster
+                                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                : u.role === 'INVENTORY_LEAD'
+                                ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
+                                : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                            }`}>
+                              {u.role === 'ADMIN' ? 'Master Admin' : u.role === 'INVENTORY_LEAD' ? 'Inventory Lead' : 'Cashier'}
+                            </span>
+                            {u.store_name && (
+                              <span className="text-[0.75rem] font-mono px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
+                                {u.store_name}
+                              </span>
+                            )}
+                            {u.status === 'DISABLED' && (
+                              <span className="text-[0.75rem] font-mono font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30 uppercase">
+                                Disabled
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[0.75rem] text-stone-500 font-mono mt-0.5">
+                            Created: {new Date(u.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Actions (Admin Only) */}
+                      {isAdmin && (
+                        <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                          {isEditingThisPin ? (
+                            <div className="flex items-center gap-1.5 animate-fade-in">
+                              <input
+                                type="password"
+                                maxLength={6}
+                                placeholder="New PIN"
+                                value={newPinValue}
+                                onChange={(e) => setNewPinValue(e.target.value.replace(/[^0-9]/g, ''))}
+                                className="w-20 px-2 py-1 rounded-lg bg-zinc-950 border border-amber-500/50 text-xs font-mono text-amber-300 focus:outline-none"
+                              />
+                              <button
+                                onClick={() => u.id && handleUpdatePin(u.id)}
+                                className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 cursor-pointer"
+                                title="Save PIN"
+                              >
+                                <Check className="h-3.5 w-3.5" />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditingPinUserId(null)
+                                  setNewPinValue('')
+                                }}
+                                className="p-1.5 rounded-lg bg-white/[0.05] text-stone-400 hover:bg-white/[0.1] cursor-pointer"
+                                title="Cancel"
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setEditingPinUserId(u.id ?? null)
+                                setNewPinValue('')
+                              }}
+                              className="btn-press px-2.5 py-1 rounded-lg bg-white/[0.05] border border-white/[0.1] text-stone-300 hover:text-stone-100 text-xs flex items-center gap-1 cursor-pointer"
+                              title="Change PIN"
+                            >
+                              <Key className="h-3 w-3 text-amber-400" />
+                              <span className="text-[0.8125rem]">PIN</span>
+                            </button>
+                          )}
+
+                          <label
+                            className="btn-press px-2 py-1 rounded-lg bg-white/[0.05] border border-white/[0.1] text-stone-300 hover:text-stone-100 text-xs flex items-center gap-1 cursor-pointer"
+                            title={u.avatar_url ? 'Change Photo' : 'Upload Photo'}
+                          >
+                            <Camera className="h-3 w-3 text-amber-400" />
+                            <span className="text-[0.8125rem] hidden sm:inline">{u.avatar_url ? 'Photo' : '+ Photo'}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleStaffAvatarUpload(e, u)}
+                              className="hidden"
+                            />
+                          </label>
+
+                          {u.avatar_url && (
+                            <button
+                              onClick={() => handleRemoveStaffAvatar(u)}
+                              className="btn-press p-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs cursor-pointer"
+                              title="Remove Photo"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          )}
+
+                          <button
+                            onClick={() => handleToggleUserStatus(u)}
+                            className={`btn-press p-1.5 rounded-lg border text-xs flex items-center gap-1 cursor-pointer ${
+                              u.status === 'ACTIVE'
+                                ? 'bg-zinc-800 border-white/[0.1] text-stone-400 hover:text-stone-200'
+                                : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                            }`}
+                            title={u.status === 'ACTIVE' ? 'Disable Account' : 'Activate Account'}
+                          >
+                            {u.status === 'ACTIVE' ? <UserX className="h-3.5 w-3.5" /> : <UserCheck className="h-3.5 w-3.5" />}
+                          </button>
+
+                          {(!isMaster || users.filter((x) => x.role === 'ADMIN').length > 1) && (
+                            <button
+                              onClick={() => handleDeleteUser(u)}
+                              className="btn-press p-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs cursor-pointer"
+                              title="Delete User"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* ── TAB 5: RETAIL THEMES STUDIO ────────────────────────────── */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {activeTab === 'themes' && (
+        <div className="space-y-4 animate-fade-in">
+          <div className="glass-panel rounded-3xl border border-white/[0.08] p-6 shadow-2xl bg-zinc-950/70 space-y-4">
+            <div className="border-b border-white/[0.08] pb-3">
+              <h3 className="text-sm font-bold text-stone-100 flex items-center gap-2">
+                <Palette className="h-4 w-4 text-purple-400" />
+                <span>Retail Display Themes &amp; Color Palettes</span>
+              </h3>
+              <p className="text-xs text-stone-400 mt-0.5">
+                Choose the most elegant and fitting color theme for your retail counter, grocery, or boutique.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {THEMES.map((theme) => {
+                const isSelected = activeThemeId === theme.id
+                return (
+                  <button
+                    key={theme.id}
+                    type="button"
+                    onClick={() => handleSelectTheme(theme.id)}
+                    className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-3 relative overflow-hidden group cursor-pointer ${
+                      isSelected
+                        ? 'border-emerald-500 bg-zinc-900 shadow-glow-emerald ring-1 ring-emerald-500/50'
+                        : 'border-white/[0.08] bg-zinc-900/40 hover:border-white/20 hover:bg-zinc-900/80'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <span
+                          className="h-4 w-4 rounded-full border border-white/20 shadow-sm shrink-0"
+                          style={{ backgroundColor: theme.accentColor }}
+                        />
+                        <h4 className="text-xs font-bold text-stone-100">{theme.name}</h4>
+                      </div>
+                      {isSelected && (
+                        <span className="flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                          <Check className="h-3 w-3" /> ACTIVE
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-stone-400">{theme.subtitle}</p>
+                    <div className="flex items-center justify-between pt-1 border-t border-white/[0.06] text-[10px] font-mono text-stone-500">
+                      <span>{theme.isDark ? 'Dark Mode' : 'Light Retail Mode'}</span>
+                      <span className="group-hover:text-stone-300 transition-colors">
+                        {isSelected ? 'Currently Applied' : 'Click to Apply'}
+                      </span>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* ── TAB 6: DATA, BACKUP & VIP LICENSING ────────────────────── */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {activeTab === 'backup' && (
+        <div className="space-y-4 animate-fade-in">
+          
+          {/* Universal Backup Box */}
+          <div className="glass-panel rounded-3xl border border-white/[0.08] p-6 shadow-2xl bg-zinc-950/70 space-y-4">
+            <div className="border-b border-white/[0.08] pb-3">
+              <h3 className="text-sm font-bold text-stone-100 flex items-center gap-2">
+                <Database className="h-4 w-4 text-indigo-400" />
+                <span>Universal .tinda-backup Archive &amp; Offline Desktop Importer</span>
+              </h3>
+              <p className="text-xs text-stone-400 mt-0.5">
+                100% interoperable with Desktop TINDA POS (Windows/Linux SQLite), Android, and Web edition.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Export Box */}
+              <div className="p-4 rounded-2xl bg-zinc-900 border border-white/[0.08] flex flex-col justify-between space-y-3">
+                <div>
+                  <h4 className="text-xs font-bold text-stone-100 flex items-center gap-1.5">
+                    <Download className="h-4 w-4 text-emerald-400" />
+                    <span>Export .tinda-backup</span>
+                  </h4>
+                  <p className="text-[0.8125rem] text-stone-400 mt-1">
+                    Download a full archive of your store database (products, sales, customers, debt ledger) as a portable file.
+                  </p>
+                </div>
+                <button
+                  onClick={() => void downloadBackupFile()}
+                  className="btn-press w-full py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 font-bold text-xs cursor-pointer transition-all"
+                >
+                  Download Backup File (.tinda-backup)
+                </button>
+              </div>
+
+              {/* Import Box */}
+              <div className="p-4 rounded-2xl bg-zinc-900 border border-white/[0.08] flex flex-col justify-between space-y-3">
+                <div>
+                  <h4 className="text-xs font-bold text-stone-100 flex items-center gap-1.5">
+                    <Upload className="h-4 w-4 text-indigo-400" />
+                    <span>Restore / Import Offline Database</span>
+                  </h4>
+                  <p className="text-[0.8125rem] text-stone-400 mt-1">
+                    Load a .tinda-backup file. Automatically assigns all imported inventory and sales directly to your store!
+                  </p>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".tinda-backup,.json"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={handleAutoDetectAndImport}
+                    disabled={importing}
+                    className="btn-press w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-zinc-950 font-black text-xs flex items-center justify-center gap-2 shadow-glow-amber transition-all cursor-pointer"
+                  >
+                    <Zap className="h-3.5 w-3.5 fill-zinc-950" />
+                    <span>⚡ Auto-Detect &amp; 1-Click Import</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={importing}
+                    className="btn-press w-full py-2.5 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-300 font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-all"
+                  >
+                    <Upload className="h-3.5 w-3.5" />
+                    <span>{importing ? 'Importing & Converting...' : 'Manual Select .tinda-backup File'}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Pre-Restore Rollback Snapshot */}
+            {checkpointTime && (
+              <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <RotateCcw className="h-4 w-4 text-amber-400 shrink-0" />
+                  <div>
+                    <span className="text-xs font-bold text-stone-100 block">
+                      Emergency Pre-Restore Rollback Snapshot Available
+                    </span>
+                    <span className="text-[11px] text-amber-300/80 block font-mono">
+                      Saved: {new Date(checkpointTime).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRollbackCheckpoint}
+                  disabled={importing}
+                  className="btn-press px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs shrink-0 cursor-pointer"
+                >
+                  Rollback Snapshot
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* VIP Licensing & Device ID Card */}
+          <div className="glass-panel rounded-3xl border border-amber-500/30 p-6 shadow-2xl space-y-4 bg-gradient-to-r from-amber-950/20 via-zinc-950 to-zinc-950">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/[0.08] pb-4 gap-3">
+              <div className="flex items-center gap-3">
+                <div className="h-11 w-11 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shadow-glow-amber">
+                  <Crown className="h-6 w-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-stone-100">TINDA POS VIP Pro Lifetime Licensing</h3>
+                    <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[0.6875rem] font-mono font-bold border border-amber-500/30">
+                      {vipInfo?.active ? 'LIFETIME UNLOCKED' : '₱500 ONE-TIME'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-stone-400 mt-0.5">
+                    Terminal-locked permanent key · PayMongo QR Ph or Maya 09912255156 (Dev Francis)
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={onOpenVipUpgrade}
+                className="btn-press px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-zinc-950 font-bold text-xs shadow-glow-amber flex items-center gap-2 self-start sm:self-auto shrink-0 cursor-pointer"
+              >
+                <Crown className="h-4 w-4" />
+                <span>{vipInfo?.active ? 'View License Details' : 'Upgrade to VIP Pro'}</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div className="p-3 rounded-2xl bg-zinc-900 border border-white/[0.08]">
+                <span className="text-[10px] text-stone-400 uppercase tracking-wider block font-bold">This Terminal Machine ID</span>
+                <span className="font-mono font-bold text-amber-300 text-xs truncate block mt-1">
+                  {machineId || 'Generating...'}
                 </span>
-                <span className="text-[11px] text-amber-300/80 block font-mono">
-                  Saved: {new Date(checkpointTime).toLocaleString()}
+              </div>
+              <div className="p-3 rounded-2xl bg-zinc-900 border border-white/[0.08]">
+                <span className="text-[10px] text-stone-400 uppercase tracking-wider block font-bold">Official Maya Dev Support</span>
+                <span className="font-mono font-bold text-emerald-400 text-xs block mt-1">
+                  0991 225 5156 (Dev Francis)
+                </span>
+              </div>
+              <div className="p-3 rounded-2xl bg-zinc-900 border border-white/[0.08]">
+                <span className="text-[10px] text-stone-400 uppercase tracking-wider block font-bold">Licensed Store Owner</span>
+                <span className="text-xs font-bold text-stone-200 truncate block mt-1">
+                  {vipInfo?.registeredTo || 'Store Admin'}
                 </span>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={handleRollbackCheckpoint}
-              disabled={importing}
-              className="btn-press px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs shrink-0"
-            >
-              Rollback Snapshot
-            </button>
           </div>
-        )}
 
-        {/* Reset Database */}
-        <div className="pt-3 border-t border-white/[0.06] flex flex-col sm:flex-row justify-between sm:items-center gap-2">
-          <span className="text-xs text-stone-500">Reset entire local database (all products, sales history, customer debt records, and restock logs will be permanently deleted).</span>
-          <button
-            onClick={handleResetData}
-            className="btn-press px-3 py-1.5 rounded-xl border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs font-semibold flex items-center gap-1.5 self-start sm:self-auto"
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-            <span>Clear All Data</span>
-          </button>
+          {/* Cloudflare Edge Status */}
+          <div className="glass-panel rounded-3xl p-4 border border-emerald-500/20 bg-zinc-950 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                <Globe className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xs font-bold text-stone-100">Cloudflare Pages Edge Architecture</h3>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-mono font-bold border border-emerald-500/30">
+                    Active
+                  </span>
+                </div>
+                <p className="text-[11px] text-stone-400 mt-0.5">
+                  High-assurance client Dexie IndexedDB with universal cross-device restore parity.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Danger Zone: Reset Database */}
+          <div className="p-4 rounded-3xl border border-red-500/20 bg-red-950/10 space-y-2">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+              <div>
+                <span className="text-xs font-bold text-red-400 block">Factory Reset Local Database</span>
+                <span className="text-[11px] text-stone-400 block">
+                  Permanently deletes all products, sales history, and customer records from this browser.
+                </span>
+              </div>
+              <button
+                onClick={handleResetData}
+                className="btn-press px-3.5 py-1.5 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 text-xs font-semibold flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                <span>Clear All Data</span>
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* ── TEST PRINT RECEIPT MODAL ── */}
+      {/* ────────────────── ADD USER MODAL ────────────────── */}
+      {showAddUserModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className="w-full max-w-md glass-panel rounded-3xl border border-amber-500/30 bg-zinc-950 p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                  <UserPlus className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-stone-100">Create Staff Account</h3>
+                  <p className="text-[0.75rem] text-stone-400 font-mono">Master Admin provisioning</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setShowAddUserModal(false)
+                  setUserFormError('')
+                }}
+                className="p-1.5 rounded-xl text-stone-400 hover:text-stone-100 hover:bg-white/[0.05] cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {userFormError && (
+              <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 p-2.5 rounded-xl font-medium">
+                {userFormError}
+              </p>
+            )}
+
+            <form onSubmit={handleCreateUser} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-semibold text-stone-300 mb-1">
+                  Full Name <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Maria Clara"
+                  value={newFullName}
+                  onChange={(e) => setNewFullName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-white/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-amber-400"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-stone-300 mb-1">
+                    Username / ID <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    autoCapitalize="none"
+                    placeholder="e.g. maria"
+                    value={newUsername}
+                    onChange={(e) => setNewUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-white/[0.08] text-xs font-mono text-stone-100 focus:outline-none focus:border-amber-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-stone-300 mb-1">
+                    Security PIN (4-6 digits) <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    maxLength={6}
+                    placeholder="e.g. 1234"
+                    value={newUserPin}
+                    onChange={(e) => setNewUserPin(e.target.value.replace(/[^0-9]/g, ''))}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-white/[0.08] text-xs font-mono text-amber-300 focus:outline-none focus:border-amber-400 tracking-widest"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-stone-300 mb-1">
+                  Staff Role &amp; Access Level
+                </label>
+                <select
+                  value={newUserRole}
+                  onChange={(e) => setNewUserRole(e.target.value as UserRole)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-white/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-amber-400"
+                >
+                  <option value="CASHIER">Cashier (POS Counter &amp; Sales)</option>
+                  <option value="INVENTORY_LEAD">Inventory Lead (POS Counter + Inventory Management)</option>
+                  <option value="ADMIN">Master Admin (Full Access + Staff Management)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-stone-300 mb-1.5">
+                  Profile Photo (Optional)
+                </label>
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl border border-white/10 bg-zinc-900 flex items-center justify-center overflow-hidden shrink-0">
+                    {newUserAvatar ? (
+                      <img src={newUserAvatar} alt="Staff Preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <Camera className="w-5 h-5 text-stone-500" />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => newUserAvatarInputRef.current?.click()}
+                      className="px-3 py-1.5 rounded-xl bg-white/[0.05] border border-white/[0.1] text-stone-300 hover:text-stone-100 text-xs font-semibold cursor-pointer"
+                    >
+                      {newUserAvatar ? 'Change Photo' : 'Choose Photo'}
+                    </button>
+                    {newUserAvatar && (
+                      <button
+                        type="button"
+                        onClick={() => setNewUserAvatar(undefined)}
+                        className="px-2.5 py-1.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold cursor-pointer"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  <input
+                    ref={newUserAvatarInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleNewUserAvatarSelect}
+                    className="hidden"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-2 flex justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setShowAddUserModal(false)}
+                  className="px-4 py-2.5 rounded-xl border border-white/[0.1] text-stone-400 hover:text-stone-100 text-xs font-semibold cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn-press px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-zinc-950 shadow-glow-amber cursor-pointer"
+                >
+                  Create Staff
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ────────────────── TEST PRINT RECEIPT MODAL ────────────────── */}
       {showTestPrintModal && (
         <div className="fixed inset-0 z-60 bg-black/85 backdrop-blur-md flex flex-col items-center justify-start p-4 sm:p-6 overflow-y-auto animate-fade-in">
-          <div className="no-print w-full max-w-2xl bg-slate-850 border border-slate-900/15 rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
+          <div className="no-print w-full max-w-2xl bg-zinc-900 border border-white/[0.08] rounded-2xl p-4 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-gold/30 flex items-center justify-center text-gold-light">
+              <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
                 <Printer className="w-5 h-5" />
               </div>
               <div>
@@ -1672,13 +1884,13 @@ export function SettingsScreen({
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="flex items-center bg-obsidian-900 p-1 rounded-xl border border-slate-900/15 text-xs font-mono">
+              <div className="flex items-center bg-zinc-950 p-1 rounded-xl border border-white/[0.08] text-xs font-mono">
                 <button
                   type="button"
                   onClick={() => setTestPaperWidth('58mm')}
-                  className={`px-2.5 py-1 rounded-lg transition-all ${
+                  className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                     testPaperWidth === '58mm'
-                      ? 'bg-amber-500/20 text-gold-light font-bold border border-gold/40'
+                      ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40'
                       : 'text-stone-400 hover:text-stone-100'
                   }`}
                 >
@@ -1687,9 +1899,9 @@ export function SettingsScreen({
                 <button
                   type="button"
                   onClick={() => setTestPaperWidth('80mm')}
-                  className={`px-2.5 py-1 rounded-lg transition-all ${
+                  className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                     testPaperWidth === '80mm'
-                      ? 'bg-amber-500/20 text-gold-light font-bold border border-gold/40'
+                      ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40'
                       : 'text-stone-400 hover:text-stone-100'
                   }`}
                 >
@@ -1698,9 +1910,9 @@ export function SettingsScreen({
                 <button
                   type="button"
                   onClick={() => setTestPaperWidth('A4')}
-                  className={`px-2.5 py-1 rounded-lg transition-all ${
+                  className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                     testPaperWidth === 'A4'
-                      ? 'bg-amber-500/20 text-gold-light font-bold border border-gold/40'
+                      ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40'
                       : 'text-stone-400 hover:text-stone-100'
                   }`}
                 >
@@ -1711,7 +1923,7 @@ export function SettingsScreen({
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="btn-press px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 via-gold to-amber-500 text-stone-100 font-bold text-xs font-mono flex items-center gap-1.5 shadow-glow-gold hover:brightness-110"
+                className="btn-press px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-zinc-950 font-bold text-xs font-mono flex items-center gap-1.5 shadow-glow-amber hover:brightness-110 cursor-pointer"
               >
                 <Printer className="w-4 h-4" />
                 <span>Print Paper</span>
@@ -1720,7 +1932,7 @@ export function SettingsScreen({
               <button
                 type="button"
                 onClick={() => setShowTestPrintModal(false)}
-                className="p-2 rounded-xl bg-obsidian-900/[0.07] hover:bg-obsidian-900/[0.06] text-stone-400 hover:text-stone-100"
+                className="p-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-stone-400 hover:text-stone-100 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>

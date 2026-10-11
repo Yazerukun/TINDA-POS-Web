@@ -2,7 +2,7 @@
   "0": "App.tsx",
   "1": "POSScreen.tsx",
   "2": "types.ts",
-  "3": "react",
+  "3": "money",
   "4": "auth.ts",
   "5": "VaultAuthModal.tsx",
   "6": "SettingsScreen.tsx",
@@ -29,5 +29,6 @@
   "27": "02 — Implement Brief: Server-Enforced Rewarded-Ad Time (TINDA POS Web)",
   "28": "Architectural Decisions & Changelog",
   "29": "SYSTEM_MASTER.md — TINDA POS Web Architecture",
-  "30": "tailwindcss"
+  "30": "tailwindcss",
+  "31": "CheckoutModal.tsx"
 }

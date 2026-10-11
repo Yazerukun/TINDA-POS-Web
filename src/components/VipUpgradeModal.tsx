@@ -303,11 +303,10 @@ export function VipUpgradeModal({
           }, 2500)
         }
       } else {
-        // Fallback for demo or edge environments: generate local QR Ph simulation image
-        const svgFallback = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=00020101021226580016PH.PAYMONGO.0118099122551565204601653036085406500.005802PH5911DEV_FRANCIS6006MANILA6304`
-        setQrImageUrl(svgFallback)
-        setPaymentIntentId(`pi_sim_${Date.now()}`)
-        setPollStatus('listening')
+        setFeedback({
+          type: 'error',
+          message: res.error || 'Failed to generate official PayMongo QR Ph. Please check your connection or pay via Maya 09912255156.'
+        })
       }
     } catch (err) {
       setFeedback({
@@ -316,27 +315,6 @@ export function VipUpgradeModal({
       })
     } finally {
       setQrGenerating(false)
-    }
-  }
-
-  // Instant Test Simulation for zero-friction verification
-  const handleSimulatePayment = async () => {
-    setLoading(true)
-    try {
-      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current)
-      setPollStatus('paid')
-      const targetUser = (currentUsername || getActiveVaultUsername() || 'admin').trim().toLowerCase()
-      const targetStore = (currentStoreName || customerName.trim() || 'Store').trim()
-      const newKey = await generateAccountVipKey(targetUser, targetStore)
-      await applyVipActivation(newKey, targetStore)
-      setFeedback({
-        type: 'success',
-        message: `Test payment verified for @${targetUser}! 1:1 VIP Pro Lifetime activated.`
-      })
-    } catch (err) {
-      setFeedback({ type: 'error', message: 'Simulation error: ' + (err as Error)?.message })
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -618,17 +596,11 @@ export function VipUpgradeModal({
                         <span>Waiting for payment verification (2.5s radar active)...</span>
                       </div>
 
-                      {/* Sandbox simulation button */}
-                      <div className="pt-2 w-full flex items-center justify-center gap-2">
-                        <button
-                          type="button"
-                          onClick={handleSimulatePayment}
-                          disabled={loading}
-                          className="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 font-mono text-xs font-bold transition cursor-pointer flex items-center gap-1.5"
-                        >
-                          <Zap className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>Simulate Payment (Sandbox / Test)</span>
-                        </button>
+                      {/* Live Security & Payment Instruction Notice */}
+                      <div className="pt-2 w-full text-center px-4">
+                        <p className="text-[11px] text-stone-400 font-mono leading-relaxed">
+                          Scan the official QR Ph code above using GCash, Maya, ShopeePay, or your banking app. Your VIP Pro Lifetime license will activate automatically the moment payment is verified.
+                        </p>
                       </div>
                     </div>
                   ) : (

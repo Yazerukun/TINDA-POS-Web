@@ -3,79 +3,10 @@
  * High-assurance client-side cryptographic hashing, input sanitization, and device fingerprinting.
  */
 
-const PBKDF2_ITERATIONS = 10_000
-const HASH_ALGO = 'SHA-256'
-
 function bytesToHex(bytes: Uint8Array): string {
   return Array.from(bytes)
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
-}
-
-function hexToBytes(hex: string): Uint8Array {
-  const bytes = new Uint8Array(hex.length / 2)
-  for (let i = 0; i < hex.length; i += 2) {
-    bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16)
-  }
-  return bytes
-}
-
-/**
- * Hashes a 4-6 digit numeric PIN using PBKDF2 with SHA-256 and a random cryptographic salt.
- */
-export async function hashPin(pin: string, existingSalt?: string): Promise<{ hash: string; salt: string }> {
-  const encoder = new TextEncoder()
-  const salt = existingSalt ? hexToBytes(existingSalt) : crypto.getRandomValues(new Uint8Array(16))
-
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(pin.trim()),
-    { name: 'PBKDF2' },
-    false,
-    ['deriveBits', 'deriveKey']
-  )
-
-  const derivedBits = await crypto.subtle.deriveBits(
-    {
-      name: 'PBKDF2',
-      salt: salt as unknown as BufferSource,
-      iterations: PBKDF2_ITERATIONS,
-      hash: HASH_ALGO
-    },
-    keyMaterial,
-    256
-  )
-
-  const hashHex = bytesToHex(new Uint8Array(derivedBits))
-  const saltHex = bytesToHex(salt)
-
-  return { hash: hashHex, salt: saltHex }
-}
-
-/**
- * Verifies an entered PIN against a stored PBKDF2 hash or legacy plaintext PIN.
- */
-export async function verifyPin(
-  inputPin: string,
-  storedValue: string,
-  storedSalt?: string
-): Promise<{ valid: boolean; needsRehash: boolean }> {
-  const trimmed = inputPin.trim()
-  if (!storedValue) return { valid: false, needsRehash: false }
-
-  // Plaintext PINs are intentionally never accepted in browser storage.
-
-  // If there's a stored salt or if the hash is 64 hex chars (PBKDF2-SHA256)
-  if (storedSalt) {
-    try {
-      const { hash } = await hashPin(trimmed, storedSalt)
-      return { valid: hash === storedValue, needsRehash: false }
-    } catch {
-      return { valid: false, needsRehash: false }
-    }
-  }
-
-  return { valid: false, needsRehash: false }
 }
 
 /**

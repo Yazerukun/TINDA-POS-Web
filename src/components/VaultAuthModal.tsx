@@ -28,6 +28,7 @@ import { money } from '../utils/format'
 import { db } from '../db'
 import type { UserAccount, UserRole } from '../types'
 import { loginWithCloud, rotatePinOnCloud, syncUserToCloud } from '../services/cloudSync'
+import { isVipActive, getVipLicenseInfo } from '../utils/vip'
 
 export interface VaultSession {
   userId?: number
@@ -42,6 +43,8 @@ export interface VaultSession {
   username?: string
   storeName?: string
   avatarUrl?: string
+  isVip?: boolean
+  vipKey?: string
 }
 
 interface VaultAuthModalProps {
@@ -453,7 +456,8 @@ export function VaultAuthModal({
         created_at: new Date().toISOString(),
         store_name: trimmedStore,
         email: trimmedEmail || undefined,
-        is_owner: true
+        is_owner: true,
+        is_vip: false
       }
 
       const insertedId = await db.users.add(newAccount)
@@ -559,7 +563,9 @@ export function VaultAuthModal({
       isMasterAdmin: isMaster,
       username: authenticatedUser.username,
       storeName: userStoreName,
-      avatarUrl: authenticatedUser.avatar_url
+      avatarUrl: authenticatedUser.avatar_url,
+      isVip: isMaster || isVipActive(authenticatedUser.username),
+      vipKey: authenticatedUser.vip_key
     }
 
     const isNewAccount = !!authenticatedUser.created_at &&
@@ -643,14 +649,10 @@ export function VaultAuthModal({
         const cleanKey = forgotRecoveryCode.trim().toUpperCase()
         const isMaster = cleanKey === 'MASTER-RECOVERY-2026' || cleanKey === 'MASTER-VIP-2026'
 
-        const savedVip = localStorage.getItem('tinda_vip_license')
+        const userLicense = getVipLicenseInfo(targetUser.username)
         let isVipKey = false
-        if (savedVip) {
-          try {
-            const parsed = JSON.parse(savedVip)
-            if (parsed?.key && parsed.key.toUpperCase() === cleanKey) isVipKey = true
-          } catch {}
-        }
+        if (userLicense?.key && userLicense.key.toUpperCase() === cleanKey) isVipKey = true
+        if (targetUser.vip_key && targetUser.vip_key.toUpperCase() === cleanKey) isVipKey = true
 
         if (!isMaster && !isVipKey) {
           setErrorMessage('Invalid Master Emergency Key. (Default: MASTER-RECOVERY-2026)')

@@ -23,63 +23,33 @@ import { getDeviceMachineId } from '../utils/security'
 import { db } from '../db'
 import { playSuccessSound } from '../lib/sound'
 import { createDynamicQrPayment, pollPaymentStatus } from '../utils/paymongo'
+import {
+  generateAccountVipKey,
+  verifyAccountVipKey,
+  saveAccountVipLicense,
+  getVipLicenseInfo,
+  isVipActive,
+  getActiveVaultUsername,
+  type VipLicenseData
+} from '../utils/vip'
 
 interface VipUpgradeModalProps {
   open: boolean
   onClose: () => void
   onActivated?: () => void
+  currentUsername?: string
+  currentStoreName?: string
 }
 
 type ModalTab = 'QR_PH' | 'ENTER_KEY' | 'RECOVER_KEY' | 'MANUAL'
 
-/**
- * Deterministic cryptographic VIP License Key generator.
- * Produces keys matching the standard: VIP-XXXX-XXXX-XXXX-XXXX
- */
-export async function generateDeterministicVipKey(machineId: string): Promise<string> {
-  const norm = (machineId || 'TINDA-DEVICE').trim().toUpperCase()
-  const enc = new TextEncoder()
-  const pepper = 'TINDA_VIP_SECURE_PEPPER_2026_FRANCIS_MAYA_09912255156'
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw',
-    enc.encode(pepper),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  )
-  const sigBuf = await crypto.subtle.sign('HMAC', keyMaterial, enc.encode(`TINDA_AUTH_V1::${norm}::VIP_PRO`))
-  const hex = Array.from(new Uint8Array(sigBuf))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-    .toUpperCase()
-
-  const chunk1 = hex.substring(0, 4)
-  const chunk2 = hex.substring(4, 8)
-  const chunk3 = hex.substring(8, 12)
-
-  const checksumBuf = await crypto.subtle.digest('SHA-256', enc.encode(`${norm}:${chunk1}${chunk2}${chunk3}`))
-  const checksumHex = Array.from(new Uint8Array(checksumBuf))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-    .toUpperCase()
-  const checksum = checksumHex.substring(0, 4)
-
-  return `VIP-${chunk1}-${chunk2}-${chunk3}-${checksum}`
-}
-
-/**
- * Validates whether a given key is mathematically valid for this machine or a master key.
- */
-export async function verifyVipLicenseKey(key: string, machineId: string): Promise<boolean> {
-  if (!key || typeof key !== 'string') return false
-  const cleanKey = key.trim().toUpperCase()
-  if (cleanKey === 'MASTER-VIP-2026') return true
-  const expectedKey = await generateDeterministicVipKey(machineId)
-  if (cleanKey === expectedKey) return true
-  return /^VIP-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(cleanKey)
-}
-
-export function VipUpgradeModal({ open, onClose, onActivated }: VipUpgradeModalProps): React.JSX.Element | null {
+export function VipUpgradeModal({
+  open,
+  onClose,
+  onActivated,
+  currentUsername,
+  currentStoreName
+}: VipUpgradeModalProps): React.JSX.Element | null {
   const [tab, setTab] = useState<ModalTab>('QR_PH')
   const [machineId, setMachineId] = useState<string>('Loading...')
   const [keyInput, setKeyInput] = useState('')
@@ -116,26 +86,18 @@ export function VipUpgradeModal({ open, onClose, onActivated }: VipUpgradeModalP
       if (active) setMachineId(mid)
     })
 
-    // Check localStorage / Dexie for VIP registration
-    const savedVip = localStorage.getItem('tinda_vip_license')
-    if (savedVip) {
-      try {
-        const parsed = JSON.parse(savedVip)
-        if (parsed?.active) {
-          setIsVip(true)
-          setVipRegisteredTo(parsed.registeredTo || 'Valued Store Owner')
-          setActiveLicenseKey(parsed.key || '')
-        }
-      } catch {}
-    }
+    const targetUser = (currentUsername || getActiveVaultUsername() || '').trim().toLowerCase()
+    const licenseInfo = getVipLicenseInfo(targetUser)
 
-    db.settings.get('vip_license').then((rec) => {
-      if (active && rec?.value?.active) {
-        setIsVip(true)
-        setVipRegisteredTo(rec.value.registeredTo || 'Valued Store Owner')
-        setActiveLicenseKey(rec.value.key || '')
-      }
-    }).catch(() => {})
+    if (licenseInfo.active) {
+      setIsVip(true)
+      setVipRegisteredTo(licenseInfo.registeredTo || currentStoreName || targetUser || 'Valued Store Owner')
+      setActiveLicenseKey(licenseInfo.key || '')
+    } else {
+      setIsVip(false)
+      setVipRegisteredTo('')
+      setActiveLicenseKey('')
+    }
 
     // Load store settings for PayMongo key
     db.settings.get('store_settings').then((rec) => {
@@ -148,7 +110,7 @@ export function VipUpgradeModal({ open, onClose, onActivated }: VipUpgradeModalP
       active = false
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current)
     }
-  }, [open])
+  }, [open, currentUsername, currentStoreName])
 
   // Close on Escape key
   useEffect(() => {
@@ -197,19 +159,35 @@ export function VipUpgradeModal({ open, onClose, onActivated }: VipUpgradeModalP
     window.open('https://www.facebook.com/Ukauru', '_blank', 'noopener,noreferrer')
   }
 
-  // Core Activation Engine
+  // Core 1:1 Account Activation Engine
   const applyVipActivation = async (licenseKey: string, ownerName: string) => {
-    const regName = ownerName.trim() || customerName.trim() || 'Valued Store Owner'
-    const licenseRecord = {
+    const targetUser = (currentUsername || getActiveVaultUsername() || 'admin').trim().toLowerCase()
+    const regName = ownerName.trim() || customerName.trim() || currentStoreName || 'Valued Store Owner'
+    const licenseRecord: VipLicenseData = {
       active: true,
       key: licenseKey,
       registeredTo: regName,
-      machineId,
+      username: targetUser,
+      storeName: currentStoreName || regName,
       activatedAt: new Date().toISOString()
     }
 
-    localStorage.setItem('tinda_vip_license', JSON.stringify(licenseRecord))
-    await db.settings.put({ key: 'vip_license', value: licenseRecord })
+    // 1. Save 1:1 account license to localStorage
+    saveAccountVipLicense(targetUser, licenseRecord)
+
+    // 2. Update user record in Dexie DB
+    try {
+      await db.users.where('username').equalsIgnoreCase(targetUser).modify({
+        is_vip: true,
+        vip_key: licenseKey,
+        vip_activated_at: licenseRecord.activatedAt
+      })
+    } catch (err) {
+      console.warn('Could not update user record in IndexedDB:', err)
+    }
+
+    // 3. Update legacy settings for backwards compatibility
+    await db.settings.put({ key: `vip_license_${targetUser}`, value: licenseRecord })
     await db.settings.put({
       key: 'pro_access_state',
       value: {
@@ -244,11 +222,12 @@ export function VipUpgradeModal({ open, onClose, onActivated }: VipUpgradeModalP
 
     setLoading(true)
     try {
-      const isValid = await verifyVipLicenseKey(cleanKey, machineId)
+      const targetUser = (currentUsername || getActiveVaultUsername() || 'admin').trim().toLowerCase()
+      const isValid = await verifyAccountVipKey(cleanKey, targetUser, currentStoreName)
       if (!isValid) {
         setFeedback({
           type: 'error',
-          message: 'Invalid VIP License Key. Use Pay via QR Ph or message Dev Francis on Facebook.'
+          message: `This VIP Key does not match account "@${targetUser}". Each VIP license is strictly 1:1 per account.`
         })
         setLoading(false)
         return
@@ -257,7 +236,7 @@ export function VipUpgradeModal({ open, onClose, onActivated }: VipUpgradeModalP
       await applyVipActivation(cleanKey, customerName)
       setFeedback({
         type: 'success',
-        message: `Mabuhay! VIP Pro Lifetime License is now activated for "${customerName.trim() || 'Valued Store Owner'}"!`
+        message: `VIP Pro Lifetime License is now activated for account "@${targetUser}"!`
       })
       setKeyInput('')
     } catch (err) {
@@ -278,12 +257,20 @@ export function VipUpgradeModal({ open, onClose, onActivated }: VipUpgradeModalP
     setPaymentIntentId(null)
     if (pollIntervalRef.current) clearInterval(pollIntervalRef.current)
 
+    const targetUser = (currentUsername || getActiveVaultUsername() || 'admin').trim().toLowerCase()
+    const targetStore = (currentStoreName || customerName.trim() || 'Store').trim()
+
     try {
       // ₱500.00 = 50,000 cents
       const res = await createDynamicQrPayment({
         secretKey: secretKeyConfigured || '',
         amountCents: 50000,
-        description: `TINDA POS VIP Pro Lifetime - ${machineId}`
+        description: `TINDA POS VIP Pro - @${targetUser} (${targetStore})`,
+        metadata: {
+          username: targetUser,
+          store_name: targetStore,
+          type: 'VIP_PRO_LIFETIME'
+        }
       })
 
       if (res.ok && res.qrImageUrl) {
@@ -305,11 +292,11 @@ export function VipUpgradeModal({ open, onClose, onActivated }: VipUpgradeModalP
               if (statusRes.paid) {
                 if (pollIntervalRef.current) clearInterval(pollIntervalRef.current)
                 setPollStatus('paid')
-                const newKey = await generateDeterministicVipKey(machineId)
-                await applyVipActivation(newKey, customerName)
+                const newKey = await generateAccountVipKey(targetUser, targetStore)
+                await applyVipActivation(newKey, targetStore)
                 setFeedback({
                   type: 'success',
-                  message: 'Payment received via PayMongo! VIP Pro Lifetime License generated and activated!'
+                  message: `Payment received for @${targetUser}! VIP Pro Lifetime License generated and activated!`
                 })
               }
             } catch {}
@@ -338,11 +325,13 @@ export function VipUpgradeModal({ open, onClose, onActivated }: VipUpgradeModalP
     try {
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current)
       setPollStatus('paid')
-      const newKey = await generateDeterministicVipKey(machineId)
-      await applyVipActivation(newKey, customerName || 'VIP Merchant')
+      const targetUser = (currentUsername || getActiveVaultUsername() || 'admin').trim().toLowerCase()
+      const targetStore = (currentStoreName || customerName.trim() || 'Store').trim()
+      const newKey = await generateAccountVipKey(targetUser, targetStore)
+      await applyVipActivation(newKey, targetStore)
       setFeedback({
         type: 'success',
-        message: 'Test payment simulated successfully! VIP Pro Lifetime License activated on this terminal.'
+        message: `Test payment verified for @${targetUser}! 1:1 VIP Pro Lifetime activated.`
       })
     } catch (err) {
       setFeedback({ type: 'error', message: 'Simulation error: ' + (err as Error)?.message })
@@ -357,45 +346,35 @@ export function VipUpgradeModal({ open, onClose, onActivated }: VipUpgradeModalP
     setIsRecovering(true)
     setFeedback(null)
 
-    const query = recoverInput.trim().toUpperCase()
+    const query = recoverInput.trim().toLowerCase()
     if (!query) {
-      setFeedback({ type: 'error', message: 'Please enter your Store Name, Email, or Machine ID.' })
+      setFeedback({ type: 'error', message: 'Please enter your Account Username or Store Name.' })
       setIsRecovering(false)
       return
     }
 
     try {
-      // 1. Check local DB settings
-      const existingSettings = await db.settings.toArray()
-      let matchedRecord: any = null
-
-      for (const item of existingSettings) {
-        if (item.key === 'vip_license' && item.value?.active) {
-          matchedRecord = item.value
-          break
-        }
-      }
-
-      // 2. Check if query matches current machine ID or store name or email
-      const isMachineMatch = query === machineId.toUpperCase()
-      const isOwnerMatch = matchedRecord?.registeredTo?.toUpperCase().includes(query)
-
-      if (matchedRecord || isMachineMatch || isOwnerMatch) {
-        const restoredKey = matchedRecord?.key || (await generateDeterministicVipKey(machineId))
-        const owner = matchedRecord?.registeredTo || recoverInput.trim()
-        await applyVipActivation(restoredKey, owner)
+      const savedInfo = getVipLicenseInfo(query)
+      if (savedInfo.active && savedInfo.key) {
+        await applyVipActivation(savedInfo.key, savedInfo.registeredTo || query)
         setFeedback({
           type: 'success',
-          message: `VIP Pro License recovered and reactivated for "${owner}"! Key: ${restoredKey}`
+          message: `VIP Pro License recovered for @${query}! Key: ${savedInfo.key}`
         })
       } else {
-        // Grandfathering: compute key for their machine ID automatically
-        const generatedForMachine = await generateDeterministicVipKey(machineId)
-        await applyVipActivation(generatedForMachine, recoverInput.trim())
-        setFeedback({
-          type: 'success',
-          message: `Legacy terminal grandfathered! Lifetime VIP Pro activated for "${recoverInput.trim()}". Key: ${generatedForMachine}`
-        })
+        const u = await db.users.where('username').equalsIgnoreCase(query).first()
+        if (u && u.is_vip && u.vip_key) {
+          await applyVipActivation(u.vip_key, u.store_name || u.name)
+          setFeedback({
+            type: 'success',
+            message: `VIP Pro License recovered for @${query}! Key: ${u.vip_key}`
+          })
+        } else {
+          setFeedback({
+            type: 'error',
+            message: `No active VIP Pro record found for account "@${query}". Each account requires its own VIP license.`
+          })
+        }
       }
     } catch (err) {
       setFeedback({ type: 'error', message: 'Recovery error: ' + (err as Error)?.message })
@@ -599,6 +578,13 @@ export function VipUpgradeModal({ open, onClose, onActivated }: VipUpgradeModalP
                     </span>
                   </div>
 
+                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-950 border border-white/[0.08] text-xs">
+                    <span className="text-stone-400 font-mono text-[11px]">Target Account:</span>
+                    <span className="font-bold text-amber-300 font-mono">
+                      @{currentUsername || getActiveVaultUsername() || 'admin'}
+                    </span>
+                  </div>
+
                   <div>
                     <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
                       Store Name / Registered Owner
@@ -680,6 +666,13 @@ export function VipUpgradeModal({ open, onClose, onActivated }: VipUpgradeModalP
                     <p className="text-[0.6875rem] text-stone-400">
                       Already bought a license from desktop or online? Enter your 16-character VIP key below.
                     </p>
+                  </div>
+
+                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-950 border border-white/[0.08] text-xs">
+                    <span className="text-stone-400 font-mono text-[11px]">Target Account:</span>
+                    <span className="font-bold text-amber-300 font-mono">
+                      @{currentUsername || getActiveVaultUsername() || 'admin'}
+                    </span>
                   </div>
 
                   <div>

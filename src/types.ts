@@ -179,6 +179,10 @@ export interface UserAccount {
   is_owner?: boolean
   email?: string
   avatar_url?: string
+  is_vip?: boolean
+  vip_key?: string
+  vip_activated_at?: string
+  vip_payment_ref?: string
 }
 
 export interface ExpenseCategory {

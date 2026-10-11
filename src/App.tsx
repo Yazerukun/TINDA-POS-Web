@@ -63,19 +63,6 @@ export default function App(): React.JSX.Element {
   const [isHelpGuideOpen, setIsHelpGuideOpen] = useState(false)
   const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false)
   const [isBarcodeScannerOpen, setIsBarcodeScannerOpen] = useState(false)
-  const [isVipUpgradeOpen, setIsVipUpgradeOpen] = useState(false)
-  const [isVip, setIsVip] = useState(isVipActive())
-
-  // Keep isVip reactive across tabs and components
-  useEffect(() => {
-    return subscribeVipStatus(setIsVip)
-  }, [])
-
-  // Initialize theme on mount
-  useEffect(() => {
-    initTheme()
-  }, [])
-
   // Vault Session / Cashier Authentication State (Screen 1 vs Screen 2)
   const [vaultSession, setVaultSession] = useState<VaultSession | null>(() => {
     try {
@@ -85,6 +72,22 @@ export default function App(): React.JSX.Element {
       return null
     }
   })
+
+  const [isVipUpgradeOpen, setIsVipUpgradeOpen] = useState(false)
+  const [isVip, setIsVip] = useState(() => isVipActive(vaultSession?.username))
+
+  // Keep isVip reactive across tabs and user accounts
+  useEffect(() => {
+    setIsVip(isVipActive(vaultSession?.username))
+    return subscribeVipStatus(() => {
+      setIsVip(isVipActive(vaultSession?.username))
+    })
+  }, [vaultSession?.username])
+
+  // Initialize theme on mount
+  useEffect(() => {
+    initTheme()
+  }, [])
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [authModalInitialStep, setAuthModalInitialStep] = useState<'LOGIN' | 'SIGNUP'>('LOGIN')
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
@@ -1184,7 +1187,12 @@ export default function App(): React.JSX.Element {
       <VipUpgradeModal
         open={isVipUpgradeOpen}
         onClose={() => setIsVipUpgradeOpen(false)}
-        onActivated={loadData}
+        onActivated={() => {
+          setIsVip(isVipActive(vaultSession?.username))
+          loadData()
+        }}
+        currentUsername={vaultSession?.username}
+        currentStoreName={vaultSession?.storeName || activeStoreName}
       />
 
     </div>

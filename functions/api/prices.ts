@@ -1,6 +1,8 @@
 // Cloudflare Pages Function: /api/prices
 // Serverless edge price lookup & catalog sync endpoint
 
+import { CORS } from '../_shared/auth'
+
 interface Env {
   ASSETS: {
     fetch: (request: Request | string) => Promise<Response>
@@ -21,7 +23,7 @@ export const onRequestGet = async (context: { request: Request; env: Env }) => {
     if (!assetRes.ok) {
       return new Response(JSON.stringify({ error: 'Price catalog not found' }), {
         status: 404,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+        headers: CORS
       })
     }
 
@@ -37,8 +39,7 @@ export const onRequestGet = async (context: { request: Request; env: Env }) => {
         timestamp: new Date().toISOString()
       }), {
         headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
+          ...CORS,
           'Cache-Control': 'public, max-age=3600'
         }
       })
@@ -65,8 +66,7 @@ export const onRequestGet = async (context: { request: Request; env: Env }) => {
       items
     }), {
       headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
+        ...CORS,
         'Cache-Control': 'public, max-age=1800'
       }
     })
@@ -76,7 +76,7 @@ export const onRequestGet = async (context: { request: Request; env: Env }) => {
       details: err.message
     }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      headers: CORS
     })
   }
 }

@@ -34,19 +34,19 @@ const CHAPTERS: Chapter[] = [
     id: 'cashier-flow',
     number: 1,
     title: 'Cashier Tour & Daily Flow',
-    subtitle: 'Ang 4-step daily cashier flow: Scan, Utang check, Checkout, at Drawer balancing',
+    subtitle: 'The 4-step daily cashier flow: Barcode scan, Credit check, Tender checkout, and Drawer balancing',
     readTime: '3 min read',
     content: {
-      summary: 'Ang bawat cashier shift ay nagsisimula sa pagbilang ng opening float at nagtatapos sa Z-Reading cash balancing.',
+      summary: 'Every cashier shift begins with counting the opening cash float and concludes with Z-Reading drawer reconciliation.',
       keyPoints: [
-        'Hakbang 1: I-verify ang Opening Cash Float bago magsimulang magbenta.',
-        'Hakbang 2: Gamitin ang barcode scanner o mabilisang search bar para sa bawat item.',
-        'Hakbang 3: Kung suki ang bibili gamit ang utang, i-verify kung may available credit limit pa.',
-        'Hakbang 4: Kumpirmahin ang eksaktong bayad at ibigay ang wastong sukli kasama ang resibo.'
+        'Step 1: Verify the Opening Cash Float before serving your first customer.',
+        'Step 2: Utilize the barcode scanner or instant search bar for each product.',
+        'Step 3: If a credit customer purchases on account, verify their remaining credit limit first.',
+        'Step 4: Confirm exact tendered payment, hand over change, and issue thermal receipt.'
       ],
       bestPractices: [
-        'Huwag mag-iwan ng bukas na kaha habang nag-aabot ng paninda.',
-        'Laging ipasok ang tamang denomination kapag nagsu-sukli para maiwasan ang short sa kaha.'
+        'Never leave the cash drawer unattended or open while handling merchandise.',
+        'Always enter the correct tendered denomination to prevent drawer cash discrepancies.'
       ]
     }
   },
@@ -54,18 +54,18 @@ const CHAPTERS: Chapter[] = [
     id: 'barcode-hardware',
     number: 2,
     title: 'Barcode Scanning & POS Hardware',
-    subtitle: 'Paggamit ng USB Barcode Scanners, Camera Scanner, at thermal printers',
+    subtitle: 'Connecting USB scanners, mobile camera scanners, and thermal receipt printers',
     readTime: '4 min read',
     content: {
-      summary: 'Ang TINDA POS ay sumusuporta sa kahit anong standard USB plug-and-play barcode scanner at mobile phone cameras.',
+      summary: 'TINDA POS provides native plug-and-play support for standard USB barcode scanners, Bluetooth devices, and mobile phone cameras.',
       keyPoints: [
-        'Ang USB scanner ay awtomatikong nagta-type ng barcode at nagpe-press ng Enter.',
-        'Siguraduhing malinis ang barcode sa pakete ng paninda para sa mabilis na pagbasa.',
-        'Kung walang barcode ang tingi (hal. itlog, asin, asuk), gamitin ang Quick Fast Buttons sa counter.'
+        'USB barcode scanners automatically input barcodes and submit with an Enter keystroke.',
+        'Ensure barcode labels on packaging are clean and unbent for instant recognition.',
+        'For unbarcoded loose goods (e.g., eggs, sugar, salt), utilize Quick Fast Buttons on the counter.'
       ],
       bestPractices: [
-        'I-set ang scanner beep sound sa ON para marinig agad kapag pumasok ang item.',
-        'Mag-print ng shelf barcode tags mula sa Thermal & Label Studio para sa mga unbranded goods.'
+        'Keep scanner audio confirmation enabled to immediately verify item detection.',
+        'Generate and print shelf barcode tags from the Thermal & Label Studio for unbranded goods.'
       ]
     }
   },
@@ -73,75 +73,75 @@ const CHAPTERS: Chapter[] = [
     id: 'inventory-restock',
     number: 3,
     title: 'Inventory & Stock Reordering',
-    subtitle: 'Pag-iwas sa out-of-stock sa tulong ng low stock thresholds at expiration tracker',
+    subtitle: 'Preventing stockouts using low-stock safety thresholds and expiration tracking',
     readTime: '3 min read',
     content: {
-      summary: 'Ang tamang pamamahala ng imbentaryo ay nagsisiguro na hindi mawawalan ng mabiling produkto ang inyong tindahan.',
+      summary: 'Accurate inventory control ensures your retail store never runs out of fast-moving products or loses profit to expired goods.',
       keyPoints: [
-        'Maglagay ng Low Stock Threshold (halimbawa: 5 piraso) sa bawat produkto.',
-        'Tingnan ang Expiration Radar tuwing Lunes para sa mga gatas, tinapay, at de lata.',
-        'I-record agad ang bagong delivery ng supplier para tugma ang bilang sa kaha at istante.'
+        'Configure a Low Stock Threshold (e.g., 5 units) on every active inventory item.',
+        'Review the Expiration Radar weekly for dairy, bread, and perishable canned items.',
+        'Immediately log new supplier delivery batches so shelf inventory matches cashier records.'
       ],
       bestPractices: [
-        'FIFO Rule: First In, First Out. Ilagay sa unahan ang mga panindang mas maagang mag-e-expire.',
-        'I-archive ang mga produktong hindi na ititinda sa halip na burahin para manatili ang lumang sales history.'
+        'FIFO Rule: First In, First Out. Place newer batches at the rear and nearest expiration items in front.',
+        'Archive discontinued products rather than deleting them to safeguard past transaction reports.'
       ]
     }
   },
   {
     id: 'utang-management',
     number: 4,
-    title: 'Utang & Credit Etiquette',
-    subtitle: 'Pagpapanatili ng magandang samahan sa suki habang pinoprotektahan ang cashflow',
+    title: 'Store Credit & Utang Etiquette',
+    subtitle: 'Maintaining strong customer loyalty while protecting vital daily retail cashflow',
     readTime: '5 min read',
     content: {
-      summary: 'Ang pautang ay sandata ng sari-sari store para lumago ang suki, ngunit kailangan ng disiplina para hindi malugi.',
+      summary: 'Store credit is a proven community sales driver, but strict credit discipline is required to avoid cashflow shortages.',
       keyPoints: [
-        'Magtakda ng Credit Limit sa bawat suki (hal. ₱500 hanggang ₱1,500 depende sa kakayahan).',
-        'Huwag nang dagdagan ang pautang kung lampas na sa itinakdang limitasyon.',
-        'Gamitin ang Courteous Reminder generator sa Utang Ledger para sa magalang na paniningil via SMS o Messenger.'
+        'Assign a Credit Limit to each credit account (e.g., ₱500 to ₱1,500 based on repayment history).',
+        'Hold further credit extensions once an account reaches or exceeds its assigned limit.',
+        'Utilize the Courteous Reminder generator in the Utang Ledger for respectful SMS or messaging updates.'
       ],
       bestPractices: [
-        'Singilin ang suki sa araw ng kanilang suweldo (15th at 30th).',
-        'Laging i-record ang bawat partial payment (hulog) agad-agad sa harap ng suki.'
+        'Schedule reminders around local salary periods (15th and 30th of each month).',
+        'Immediately record each partial payment in front of the customer to maintain full transparency.'
       ]
     }
   },
   {
     id: 'loss-prevention',
     number: 5,
-    title: 'Loss Prevention & Store Security',
-    subtitle: 'Proteksyon laban sa kupit, fake bills, at short sa physical cash drawer',
+    title: 'Loss Prevention & Cash Security',
+    subtitle: 'Safeguarding against shrinkage, counterfeit bills, and cash drawer discrepancies',
     readTime: '4 min read',
     content: {
-      summary: 'Panatilihing protektado ang kita sa pamamagitan ng regular na cash counts at shift balancing.',
+      summary: 'Keep daily retail earnings secure through systematic cash audits and cashier shift handovers.',
       keyPoints: [
-        'Magsagawa ng mid-day X-Reading kung magpapalitan ng kahera.',
-        'Suriin ang mga ₱500 at ₱1,000 bills gamit ang watermark at security thread.',
-        'Huwag magtago ng sobrang laking cash sa kaha; mag-cash drop o transfer kapag lumampas na sa ₱5,000.'
+        'Perform mid-day X-Readings during cashier shift transitions.',
+        'Inspect ₱500 and ₱1,000 bills against light for security watermarks and embedded threads.',
+        'Avoid keeping excessive loose cash in the drawer; perform cash drops or bank transfers above ₱5,000.'
       ],
       bestPractices: [
-        'Laging i-lock ang terminal gamit ang Staff PIN kapag aalis sa harap ng counter.',
-        'I-record ang bawat kinuha para sa personal na gamit o meryenda bilang Operating Expense.'
+        'Lock the terminal screen with Staff PIN whenever stepping away from the counter.',
+        'Record all items taken for personal consumption or staff meals as Operating Expenses.'
       ]
     }
   },
   {
     id: 'bir-zreadings',
     number: 6,
-    title: 'BIR Compliance & End-of-Day Z-Reading',
-    subtitle: 'Pang-araw-araw na Z-Reading report at wastong diskwento para sa Senior at PWD',
+    title: 'Compliance & End-of-Day Z-Reading',
+    subtitle: 'Generating daily audit reports and applying statutory Senior Citizen and PWD discounts',
     readTime: '3 min read',
     content: {
-      summary: 'Ang Z-Reading ang opisyal na buod ng benta sa buong araw at nagre-reset ng daily running total.',
+      summary: 'The Z-Reading serves as the official daily sales summary, closing the fiscal period and balancing recorded cash against the drawer.',
       keyPoints: [
-        'I-print ang Z-Reading tuwing bago magsara ang tindahan sa gabi.',
-        'I-check kung tugma ang Drawer Cash sa totoong perang pisikal sa kaha.',
-        'Ibigay ang 20% discount sa mga Senior Citizens at PWD na may dalang valid ID para sa basic necessities.'
+        'Generate and print the Z-Reading every evening prior to store closure.',
+        'Cross-check recorded drawer cash against physical currency counted in the drawer.',
+        'Grant the 20% statutory discount to Senior Citizens and PWDs presenting valid government IDs.'
       ],
       bestPractices: [
-        'Itabi ang na-print na thermal Z-Reading tapes sa isang ligtas na binder para sa buwanang filing.',
-        'Mag-download ng buwanang backup mula sa Data & Backup Hub.'
+        'Store printed thermal Z-Reading tapes in a dedicated binder for monthly tax and audit filings.',
+        'Download a monthly offline database backup archive from the Data & Backup Hub.'
       ]
     }
   }
@@ -249,7 +249,7 @@ export function HandbookScreen(): React.JSX.Element {
             {/* Summary Banner */}
             <div className="p-4 rounded-2xl bg-amber-500/[0.06] border border-amber-500/20 text-stone-300 text-xs leading-relaxed font-sans">
               <span className="font-bold text-amber-300 uppercase tracking-wider block mb-1">
-                Buod ng Alituntunin (Summary):
+                Policy Summary &amp; Overview:
               </span>
               {activeChapter.content.summary}
             </div>
@@ -258,7 +258,7 @@ export function HandbookScreen(): React.JSX.Element {
             <div className="space-y-3">
               <h3 className="text-xs font-bold text-stone-200 uppercase tracking-wider font-sans flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Mga Mahalagang Hakbang (Standard Procedures)</span>
+                <span>Standard Operating Procedures</span>
               </h3>
               <div className="space-y-2">
                 {activeChapter.content.keyPoints.map((pt, idx) => (
@@ -279,7 +279,7 @@ export function HandbookScreen(): React.JSX.Element {
             <div className="space-y-3 pt-2">
               <h3 className="text-xs font-bold text-amber-300 uppercase tracking-wider font-sans flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-amber-400" />
-                <span>Mga Mungkahi at Paalala (Pro Tips)</span>
+                <span>Operational Best Practices &amp; Pro Tips</span>
               </h3>
               <div className="space-y-2">
                 {activeChapter.content.bestPractices.map((tip, idx) => (

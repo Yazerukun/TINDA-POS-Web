@@ -481,7 +481,7 @@ export function CheckoutModal({
     },
     {
       key: 'UTANG',
-      label: 'Utang',
+      label: 'Store Credit',
       icon: <Wallet className="h-4 w-4 text-rose-400" />,
       shortcut: '',
       activeClass: '!border-rose-500 !text-rose-400 bg-rose-500/10 shadow-[0_0_12px_rgba(244,63,94,0.15)]'
@@ -728,7 +728,7 @@ export function CheckoutModal({
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold uppercase tracking-wider text-stone-300">
-                        {changeC >= 0 ? 'Sukli (Change Due)' : 'Kulang (Remaining Due)'}
+                        {changeC >= 0 ? 'Change Due' : 'Remaining Due'}
                       </span>
                       {changeC > 0 && (
                         <span className="text-[10px] font-bold text-emerald-400">Ready to dispense</span>
@@ -772,12 +772,12 @@ export function CheckoutModal({
                 </div>
               )}
 
-              {/* UTANG SECTION */}
+              {/* STORE CREDIT SECTION */}
               {method === 'UTANG' && (
                 <div className="p-4 rounded-2xl bg-obsidian-950 border border-rose-500/30 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-rose-300">
-                      Store Credit / Utang Charge
+                      Store Credit Charge
                     </span>
                     <span className="text-xs font-mono font-bold text-rose-400">
                       {money(total_c)}
@@ -785,17 +785,17 @@ export function CheckoutModal({
                   </div>
                   <div>
                     <label className="block text-[11px] text-stone-400 uppercase font-semibold mb-1">
-                      Select Customer / Suki Account *
+                      Select Customer Account *
                     </label>
                     <select
                       value={customerId || ''}
                       onChange={(e) => setCustomerId(e.target.value ? Number(e.target.value) : null)}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900 border border-slate-800 text-stone-100 text-xs focus:border-rose-500 outline-none"
                     >
-                      <option value="">-- Pumili ng Suki Account --</option>
+                      <option value="">-- Select Customer Account --</option>
                       {customers.map((c) => (
                         <option key={c.id} value={c.id}>
-                          {c.name} {c.balance_c > 0 ? `(Balanse: ${money(c.balance_c)})` : ''}
+                          {c.name} {c.balance_c > 0 ? `(Balance: ${money(c.balance_c)})` : ''}
                         </option>
                       ))}
                     </select>
@@ -803,13 +803,13 @@ export function CheckoutModal({
                   {selectedCustomerObj && (
                     <div className="p-3 rounded-xl bg-obsidian-900 border border-slate-800 text-xs space-y-1">
                       <div className="flex justify-between text-stone-400">
-                        <span>Kasalukuyang Utang:</span>
+                        <span>Current Outstanding Balance:</span>
                         <span className="font-mono font-bold text-rose-400">
                           {money(selectedCustomerObj.balance_c || 0)}
                         </span>
                       </div>
                       <div className="flex justify-between text-stone-200 font-bold border-t border-slate-800 pt-1">
-                        <span>Bagong Balanse Matapos nito:</span>
+                        <span>New Balance After Purchase:</span>
                         <span className="font-mono text-rose-300">
                           {money((selectedCustomerObj.balance_c || 0) + total_c)}
                         </span>
@@ -929,9 +929,9 @@ export function CheckoutModal({
                 </button>
               </div>
 
-              {/* Utang Row */}
+              {/* Store Credit Row */}
               <div className="flex items-center gap-2">
-                <span className="w-16 font-semibold text-stone-400">Utang:</span>
+                <span className="w-16 font-semibold text-stone-400">Credit:</span>
                 <input
                   type="number"
                   step="any"
@@ -952,7 +952,7 @@ export function CheckoutModal({
               {splitUtangC > 0 && (
                 <div className="pt-2 border-t border-slate-800">
                   <label className="block text-[11px] text-stone-400 uppercase font-semibold mb-1">
-                    Select Suki Account for Utang Portion:
+                    Select Customer Account for Credit Portion:
                   </label>
                   <select
                     value={customerId || ''}
@@ -961,7 +961,7 @@ export function CheckoutModal({
                     }
                     className="w-full px-3 py-1.5 rounded-lg bg-obsidian-900 border border-slate-800 text-stone-100 text-xs focus:border-rose-500 outline-none"
                   >
-                    <option value="">-- Pumili ng Suki Account --</option>
+                    <option value="">-- Select Customer Account --</option>
                     {customers.map((c) => (
                       <option key={c.id} value={c.id}>
                         {c.name}

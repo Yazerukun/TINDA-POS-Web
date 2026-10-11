@@ -318,7 +318,7 @@ export default function App(): React.JSX.Element {
       if (!file) return
 
       if (!file.name.endsWith('.tinda-backup') && !file.name.endsWith('.json')) {
-        alert('Palihug pag-drag og balidong .tinda-backup o .json backup file.')
+        alert('Please drop a valid .tinda-backup or .json backup file.')
         return
       }
 
@@ -333,7 +333,7 @@ export default function App(): React.JSX.Element {
           alert(`Auto-detect failed: ${result.message}`)
         }
       } catch (err) {
-        alert('Sayop sa pagbasa sa backup file: ' + (err as Error)?.message)
+        alert('Error reading backup file: ' + (err as Error)?.message)
       } finally {
         setAutoImporting(false)
       }
@@ -754,10 +754,10 @@ export default function App(): React.JSX.Element {
             <Upload className="w-12 h-12" />
           </div>
           <h2 className="text-2xl font-black text-stone-100 uppercase tracking-wider">
-            I-Drop Ang Backup File Dinhi
+            Drop Backup File Here
           </h2>
           <p className="text-sm text-emerald-400 mt-2 font-mono">
-            Awtomatikong basahon ug i-import ang `.tinda-backup` gikan sa Desktop TINDA POS!
+            Automatically reads and imports .tinda-backup database from Desktop TINDA POS!
           </p>
         </div>
       )}
@@ -769,10 +769,10 @@ export default function App(): React.JSX.Element {
             <HardDriveDownload className="w-8 h-8" />
           </div>
           <h3 className="text-lg font-bold text-stone-100">
-            Gi-Auto Detect ug Gi-Import ang Database...
+            Auto-Detecting and Importing Database...
           </h3>
           <p className="text-xs text-stone-400 mt-1 font-mono">
-            Giproseso ang mga produkto, presyo, suki, ug halin. Palihug paghulat og kadiyot.
+            Processing products, price lists, customer accounts, and sales history. Please wait...
           </p>
         </div>
       )}
@@ -1112,7 +1112,7 @@ export default function App(): React.JSX.Element {
             })
             setActiveTab('pos')
           } else {
-            alert(`Detected barcode: ${code} (Walang katugmang produkto sa imbentaryo)`)
+            alert(`Detected barcode: ${code} (No matching product found in inventory)`)
           }
         }}
       />

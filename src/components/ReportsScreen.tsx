@@ -184,7 +184,7 @@ export function ReportsScreen({
                 {formatCurrency(grossSalesCents)}
               </p>
               <p className="text-[0.625rem] text-stone-500 mt-1 font-mono">
-                {filteredTransactions.length} Resibo Issued
+                {filteredTransactions.length} Receipts Issued
               </p>
             </div>
 
@@ -338,7 +338,7 @@ export function ReportsScreen({
                   <span>{formatCurrency(gcashSalesCents)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>UTANG:</span>
+                  <span>STORE CREDIT:</span>
                   <span>{formatCurrency(utangSalesCents)}</span>
                 </div>
               </div>

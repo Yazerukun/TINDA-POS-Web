@@ -96,7 +96,7 @@ export function UtangScreen({
 
     const payCents = Math.round(parseFloat(paymentAmountStr) * 100)
     if (isNaN(payCents) || payCents <= 0) {
-      alert('Pakilagay ang wastong halaga ng bayad.')
+      alert('Please enter a valid payment amount.')
       return
     }
 
@@ -139,7 +139,7 @@ export function UtangScreen({
       } as unknown as Transaction)
 
       playSuccessSound()
-      alert(`Naitala ang bayad na ${formatCurrency(payCents)} mula kay ${selectedCustomer.name}! Bagong balanse: ${formatCurrency(newBalance)}`)
+      alert(`Payment of ${formatCurrency(payCents)} recorded for ${selectedCustomer.name}! New balance: ${formatCurrency(newBalance)}`)
 
       setSelectedCustomer(null)
       setPaymentAmountStr('')
@@ -147,7 +147,7 @@ export function UtangScreen({
       onRefresh()
     } catch (err) {
       console.error('Failed to settle utang payment:', err)
-      alert('Nagka-problema sa pag-record ng bayad.')
+      alert('An error occurred while recording the payment.')
     } finally {
       setIsProcessingPayment(false)
     }
@@ -156,7 +156,7 @@ export function UtangScreen({
   // Courteous SMS / Messenger reminder generator
   const copyReminderMessage = (c: Customer) => {
     const balFormatted = formatCurrency(c.balance_c || 0)
-    const text = `Magandang araw po ${c.name}! Paalala lang po mula sa ${storeName} tungkol sa inyong natitirang balance na ${balFormatted}. Maaari po kayong magbayad over-the-counter o via GCash/Maya sa inyong kaginhawahan. Maraming salamat po sa inyong suporta!`
+    const text = `Hello ${c.name}! This is a gentle reminder from ${storeName} regarding your outstanding credit balance of ${balFormatted}. You may settle over-the-counter or via GCash/Maya at your convenience. Thank you!`
 
     navigator.clipboard.writeText(text).then(() => {
       setCopiedReminderId(c.id)
@@ -192,7 +192,7 @@ export function UtangScreen({
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
-            May Utang ({customersWithBalanceCount})
+            With Balance ({customersWithBalanceCount})
           </button>
           <button
             onClick={() => setActiveTab('OVERDUE')}
@@ -212,7 +212,7 @@ export function UtangScreen({
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
-            Lahat ({customers.length})
+            All ({customers.length})
           </button>
         </div>
       </div>
@@ -222,7 +222,7 @@ export function UtangScreen({
         <div className="p-4 rounded-2xl bg-obsidian-900 border border-rose-500/30 flex items-center justify-between">
           <div>
             <p className="text-[0.6875rem] font-bold text-stone-500 uppercase tracking-wider">
-              Kabuuang Pautang (Outstanding)
+              Total Outstanding Credit
             </p>
             <p className="text-2xl font-mono font-bold text-rose-400 mt-1">
               {formatCurrency(totalOutstandingBalance)}
@@ -236,10 +236,10 @@ export function UtangScreen({
         <div className="p-4 rounded-2xl bg-obsidian-900 border border-slate-800 flex items-center justify-between">
           <div>
             <p className="text-[0.6875rem] font-bold text-stone-500 uppercase tracking-wider">
-              Mga Suki na may Balance
+              Customers with Balance
             </p>
             <p className="text-2xl font-mono font-bold text-stone-100 mt-1">
-              {customersWithBalanceCount} Suki
+              {customersWithBalanceCount} Customers
             </p>
           </div>
           <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
@@ -280,10 +280,10 @@ export function UtangScreen({
             <table className="w-full text-left text-xs text-stone-300">
               <thead className="bg-obsidian-950/80 border-b border-slate-800 uppercase text-[0.625rem] tracking-wider text-stone-400 font-mono">
                 <tr>
-                  <th className="px-5 py-3">Customer / Suki</th>
+                  <th className="px-5 py-3">Customer / Account</th>
                   <th className="px-5 py-3">Contact</th>
                   <th className="px-5 py-3 text-right">Credit Limit</th>
-                  <th className="px-5 py-3 text-right">Outstanding Utang</th>
+                  <th className="px-5 py-3 text-right">Outstanding Credit</th>
                   <th className="px-5 py-3 text-center">Status</th>
                   <th className="px-5 py-3 text-right">Actions</th>
                 </tr>
@@ -304,9 +304,9 @@ export function UtangScreen({
                             </p>
                           )}
                         </td>
-                        <td className="px-5 py-3.5 text-stone-400 text-xs">{c.contact || 'Walang Contact'}</td>
+                        <td className="px-5 py-3.5 text-stone-400 text-xs">{c.contact || 'No Contact'}</td>
                         <td className="px-5 py-3.5 text-right font-mono text-stone-400">
-                          {limit > 0 ? formatCurrency(limit) : 'Walang Limit'}
+                          {limit > 0 ? formatCurrency(limit) : 'No Limit'}
                         </td>
                         <td className="px-5 py-3.5 text-right font-mono font-bold text-base text-rose-400">
                           {formatCurrency(balance)}
@@ -322,7 +322,7 @@ export function UtangScreen({
                             </span>
                           ) : (
                             <span className="px-2.5 py-1 rounded-full text-[0.625rem] bg-rose-500/15 text-rose-400 border border-rose-500/30 font-bold uppercase">
-                              ACTIVE UTANG
+                              ACTIVE CREDIT
                             </span>
                           )}
                         </td>
@@ -351,7 +351,7 @@ export function UtangScreen({
                                   className="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 font-sans font-bold text-xs transition-all flex items-center gap-1.5"
                                 >
                                   <HandCoins className="w-3.5 h-3.5" />
-                                  <span>Magbayad</span>
+                                  <span>Settle</span>
                                 </button>
                               </>
                             )}
@@ -360,7 +360,7 @@ export function UtangScreen({
                             <button
                               type="button"
                               onClick={() => setCustomerToDelete(c)}
-                              title={`Papason si ${c.name} gikan sa Utang Ledger`}
+                              title={`Delete ${c.name} from credit ledger`}
                               className="p-2 rounded-xl border border-white/[0.08] bg-obsidian-950 text-stone-500 hover:text-rose-400 hover:border-rose-500/40 hover:bg-rose-500/10 transition-all shrink-0"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -373,7 +373,7 @@ export function UtangScreen({
                 ) : (
                   <tr>
                     <td colSpan={6} className="px-5 py-8 text-center text-stone-500 font-sans">
-                      Walang customer records sa kategoryang ito.
+                      No customer records found in this category.
                     </td>
                   </tr>
                 )}
@@ -389,7 +389,7 @@ export function UtangScreen({
           <div className="w-full max-w-md bg-obsidian-900 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
               <div>
-                <h3 className="text-base font-bold text-stone-100">Itala ang Bayad sa Utang</h3>
+                <h3 className="text-base font-bold text-stone-100">Record Credit Payment</h3>
                 <p className="text-xs text-stone-400">{selectedCustomer.name}</p>
               </div>
               <button
@@ -401,7 +401,7 @@ export function UtangScreen({
             </div>
 
             <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-between">
-              <span className="text-xs font-bold text-stone-300">Kasalukuyang Utang:</span>
+              <span className="text-xs font-bold text-stone-300">Current Outstanding:</span>
               <span className="font-mono text-lg font-bold text-rose-400">
                 {formatCurrency(selectedCustomer.balance_c || 0)}
               </span>
@@ -410,7 +410,7 @@ export function UtangScreen({
             <form onSubmit={handleRecordPayment} className="space-y-4">
               <div>
                 <label className="block text-[0.6875rem] font-bold text-stone-400 uppercase tracking-wider mb-1">
-                  Halaga ng ibabayad (₱)
+                  Payment Amount (₱)
                 </label>
                 <input
                   type="number"
@@ -424,13 +424,13 @@ export function UtangScreen({
 
               <div>
                 <label className="block text-[0.6875rem] font-bold text-stone-400 uppercase tracking-wider mb-1">
-                  Notes / Resibo Number (Optional)
+                  Notes / Receipt Number (Optional)
                 </label>
                 <input
                   type="text"
                   value={paymentNotes}
                   onChange={(e) => setPaymentNotes(e.target.value)}
-                  placeholder="Hal. Bayad mula sa sahod"
+                  placeholder="e.g. Partial salary payment, cash deposit"
                   className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-950 border border-slate-800 text-stone-200 text-xs outline-none"
                 />
               </div>
@@ -441,14 +441,14 @@ export function UtangScreen({
                   onClick={() => setSelectedCustomer(null)}
                   className="py-2.5 rounded-xl bg-obsidian-850 border border-slate-800 text-stone-400 text-xs font-bold"
                 >
-                  Kanselahin
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isProcessingPayment}
                   className="py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 text-xs font-bold uppercase tracking-wider shadow-glow-emerald"
                 >
-                  {isProcessingPayment ? 'Tinatala...' : 'Kumpirmahin Bayad'}
+                  {isProcessingPayment ? 'Recording...' : 'Confirm Payment'}
                 </button>
               </div>
             </form>
@@ -463,7 +463,7 @@ export function UtangScreen({
             <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
               <div className="flex items-center gap-2.5 text-rose-400">
                 <Trash2 className="h-5 w-5" />
-                <h3 className="text-base font-bold text-stone-100">Papason ang Customer Account</h3>
+                <h3 className="text-base font-bold text-stone-100">Delete Customer Account</h3>
               </div>
               <button
                 type="button"
@@ -476,26 +476,26 @@ export function UtangScreen({
 
             <div className="space-y-3">
               <p className="text-xs text-stone-300">
-                Sigurado ka ba nga papason nimo ang customer account ni{' '}
+                Are you sure you want to delete the customer account of{' '}
                 <strong className="text-stone-100 font-bold">{customerToDelete.name}</strong>?
               </p>
 
               {(customerToDelete.balance_c || 0) > 0 ? (
-                <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2.5">
+                <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2.5">
                   <AlertTriangle className="h-5 w-5 text-rose-400 shrink-0 mt-0.5" />
                   <div className="text-xs text-rose-300">
-                    <p className="font-bold">May Natipigan Pa Nga Utang:</p>
+                    <p className="font-bold">Outstanding Debt Balance Remaining:</p>
                     <p className="mt-0.5 font-mono font-bold text-sm text-rose-200">
                       {formatCurrency(customerToDelete.balance_c)}
                     </p>
                     <p className="mt-1 text-[11px] text-rose-400/90">
-                      Kon papason nimo kini karon, mawala ang record sa utang gikan sa database.
+                      If you delete this customer now, their debt ledger records will be permanently removed from the database.
                     </p>
                   </div>
                 </div>
               ) : (
                 <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300">
-                  Kini nga suki walay utang (Zero balance). Luwas kining papason.
+                  This customer has zero balance. It is safe to delete.
                 </div>
               )}
             </div>
@@ -506,7 +506,7 @@ export function UtangScreen({
                 onClick={() => setCustomerToDelete(null)}
                 className="px-4 py-2 rounded-xl bg-obsidian-850 border border-slate-800 text-stone-300 text-xs font-bold hover:bg-obsidian-800 transition"
               >
-                Kanselahin
+                Cancel
               </button>
               <button
                 type="button"
@@ -521,7 +521,7 @@ export function UtangScreen({
                 className="btn-press px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-lg transition flex items-center gap-1.5"
               >
                 <Trash2 className="h-4 w-4" />
-                <span>Kumpirmahin Pagpapas</span>
+                <span>Confirm Deletion</span>
               </button>
             </div>
           </div>

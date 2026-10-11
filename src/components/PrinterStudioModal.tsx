@@ -231,7 +231,7 @@ export function PrinterStudioModal({
                         onChange={(e) => setReceiptShowChange(e.target.checked)}
                         className="rounded text-indigo-500"
                       />
-                      <span className="text-xs text-stone-300 font-semibold">Ipakita Sukli (Change)</span>
+                      <span className="text-xs text-stone-300 font-semibold">Show Change Due</span>
                     </label>
                   </div>
                 </div>
@@ -283,7 +283,7 @@ export function PrinterStudioModal({
                     </div>
                     {receiptShowChange && (
                       <div className="flex justify-between text-gray-700">
-                        <span>CHANGE / SUKLI:</span>
+                        <span>CHANGE DUE:</span>
                         <span>₱50.00</span>
                       </div>
                     )}

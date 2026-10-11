@@ -25,10 +25,10 @@ interface ChatMessage {
 }
 
 const PRESET_QUERIES = [
-  'Paano magpalaki ng kita sa Sari-Sari store?',
-  'Anong mga paninda ang mabilis masira o mag-expire?',
-  'Paano sumingil ng utang nang magalang?',
-  'Ano ang tamang markup sa paninda?'
+  'How to maximize retail profit margins?',
+  'Which inventory items expire fastest?',
+  'How to manage customer debt professionally?',
+  'What is the recommended markup per category?'
 ]
 
 export function AiAssistantModal({
@@ -40,8 +40,8 @@ export function AiAssistantModal({
     {
       id: '1',
       sender: 'bot',
-      text: `Kumusta! Ako si TindaBot, ang inyong Retail AI Assistant sa ${storeName}. May maitutulong ba ako sa pagpapatakbo ng inyong tindahan, imbentaryo, o paniningil sa suki?`,
-      timestamp: 'Ngayon'
+      text: `Hello! I am TindaBot, your Retail AI Assistant for ${storeName}. How can I assist you with store operations, inventory control, or customer accounts today?`,
+      timestamp: 'Now'
     }
   ])
   const [inputText, setInputText] = useState('')
@@ -69,16 +69,16 @@ export function AiAssistantModal({
       let reply = ''
       const lower = q.toLowerCase()
 
-      if (lower.includes('kita') || lower.includes('profit') || lower.includes('palaki')) {
-        reply = 'Para mapalaki ang kita: 1) Mag-alok ng complementary items (hal. kape at asuk, noodles at itlog). 2) Magdagdag ng high-margin services tulad ng E-Wallet bills cash-in at document printing. 3) Iwasan ang overstocking sa mga matamlay na paninda gamit ang Z-Reading analytics!'
-      } else if (lower.includes('expire') || lower.includes('sira') || lower.includes('panis')) {
-        reply = 'Gamitin ang FIFO (First In, First Out) rule! Ilagay sa pinakaharapan ng estante ang mga gatas, tinapay, at de-lata na may pinakamaagang expiration date. Tingnan din ang Shelf Expiration Watch sa Fast Tools dock linggo-linggo.'
-      } else if (lower.includes('utang') || lower.includes('singil') || lower.includes('suki')) {
-        reply = 'Sa paniningil ng utang, maging magalang ngunit parehas: Magpadala ng paalala sa araw ng suweldo (15/30) gamit ang "Courteous Reminder" sa Utang Ledger. Magtakda rin ng mahigpit na credit limit para hindi maubos ang inyong working capital.'
-      } else if (lower.includes('markup') || lower.includes('presyo') || lower.includes('srp')) {
-        reply = 'Para sa basic commodities (bigas, mantika, asuk), panatilihin ang markup sa 5% hanggang 10% sang-ayon sa DTI Bantay Presyo. Para sa meryenda, chichirya, at inumin, maaari kang mag-markup ng 15% hanggang 25% para sa magandang kita.'
+      if (lower.includes('profit') || lower.includes('margin') || lower.includes('revenue') || lower.includes('income')) {
+        reply = 'To boost store profits: 1) Suggest high-margin complementary items (e.g. coffee & creamers, snacks & cold drinks). 2) Offer digital counter services like bill payments, cash-in, and document printing. 3) Reduce holding costs on slow-moving inventory by auditing your daily Z-Readings!'
+      } else if (lower.includes('expire') || lower.includes('spoil') || lower.includes('shelf') || lower.includes('damage')) {
+        reply = 'Enforce the strict FIFO (First In, First Out) principle! Position products with earlier expiration dates right at the front edge of display shelves. Review the Shelf Expiration Watch in your Fast Tools dock weekly.'
+      } else if (lower.includes('debt') || lower.includes('credit') || lower.includes('collect') || lower.includes('ledger')) {
+        reply = 'To keep customer credit healthy: Send courteous reminders on salary dates (15th and 30th) using the "Copy Reminder" feature in the Utang Ledger. Always enforce firm credit limits per account to protect working capital.'
+      } else if (lower.includes('markup') || lower.includes('price') || lower.includes('cost') || lower.includes('srp')) {
+        reply = 'For essential commodities (rice, cooking oil, sugar), maintain modest 5% to 10% margins aligned with official SRP benchmarks. For convenience items, beverages, and specialty snacks, apply 15% to 25% margins for strong counter profitability.'
       } else {
-        reply = `Naiintindihan ko! Para sa pinakamahusay na operasyon sa ${storeName}, laging panatilihing updated ang Counter at mag-print ng pang-araw-araw na Z-Reading tuwing gabi para tugma ang inyong pera sa kaha.`
+        reply = `Understood! For peak retail efficiency at ${storeName}, keep your counter catalog synchronized and generate a daily Z-Reading every closing to balance your cash register.`
       }
 
       const botMsg: ChatMessage = {
@@ -152,7 +152,7 @@ export function AiAssistantModal({
             <div className="flex justify-start">
               <div className="p-3 rounded-2xl bg-obsidian-850 border border-slate-800 text-xs text-indigo-400 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 animate-spin" />
-                <span>Nagiisip si TindaBot...</span>
+                <span>TindaBot is thinking...</span>
               </div>
             </div>
           )}
@@ -178,7 +178,7 @@ export function AiAssistantModal({
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Magtanong kay TindaBot tungkol sa inyong tindahan..."
+            placeholder="Ask TindaBot anything about your store operations..."
             className="flex-1 px-4 py-2.5 rounded-2xl bg-obsidian-900 border border-slate-800 text-stone-200 text-xs outline-none focus:border-indigo-500"
           />
           <button

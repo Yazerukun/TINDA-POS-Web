@@ -139,7 +139,7 @@ export function ExpensesScreen({
   // Delete Expense
   const handleDeleteExpense = async (id?: number) => {
     if (!id) return
-    if (!confirm('Sigurado ka nga papason kining maong expense record?')) return
+    if (!confirm('Are you sure you want to delete this expense record?')) return
     try {
       await db.expenses.delete(id)
       await loadData()

@@ -19,26 +19,26 @@ interface HelpGuideModalProps {
 
 const GUIDE_STEPS = [
   {
-    title: '1. Counter & Mabilisang Pag-Scan',
-    desc: 'Pindutin ang Space o i-click ang search bar sa Counter. Maaari kang mag-scan gamit ang USB Barcode Scanner, maghanap ng pangalan ng item, o gumamit ng camera sa phone.',
+    title: '1. Fast Counter & Barcode Scanning',
+    desc: 'Press Space or click the search bar at the counter. You can scan using a USB Barcode Scanner, search item names, or use your mobile phone camera.',
     icon: Barcode,
     badge: 'SCAN'
   },
   {
-    title: '2. Suki Utang & Diskwento',
-    desc: 'Kung ang mamimili ay Senior Citizen o PWD, pindutin ang Discount button sa cart. Kung suki na mangungutang, pumili ng Customer Name bago mag-checkout.',
+    title: '2. Store Credit & Suki Discounts',
+    desc: 'If the customer is a Senior Citizen or PWD, apply the discount in the cart. If a regular customer is purchasing on credit, select their Customer Name before checkout.',
     icon: Wallet,
-    badge: 'SUKI'
+    badge: 'CREDIT'
   },
   {
-    title: '3. Pagbabayad at Resibo',
-    desc: 'Pindutin ang Checkout (F12 o Enter). Piliin kung Cash, GCash, o Maya. Awtomatikong kukuwentahin ang tamang sukli at mag-i-print ng resibo.',
+    title: '3. Payment Tender & Thermal Receipt',
+    desc: 'Press Checkout (F12 or Enter). Choose Cash, GCash, or Maya. The system automatically computes the exact change and prints the thermal receipt.',
     icon: Receipt,
     badge: 'TENDER'
   },
   {
     title: '4. End-of-Day Z-Reading',
-    desc: 'Bago magsara sa gabi, pumunta sa Reports & Z-Reading. I-print ang Z-Reading para mabilang ang perang kinita at mai-audit ang kaha.',
+    desc: 'Before closing for the day, head to Reports & Z-Reading. Print the Z-Reading to audit gross sales and balance the cash drawer.',
     icon: CheckCircle2,
     badge: 'AUDIT'
   }
@@ -84,7 +84,7 @@ export function HelpGuideModal({ open, onClose }: HelpGuideModalProps): React.JS
 
           <div>
             <span className="text-[0.6875rem] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase">
-              Hakbang {currentStep + 1} ng {GUIDE_STEPS.length} · {step.badge}
+              Step {currentStep + 1} of {GUIDE_STEPS.length} · {step.badge}
             </span>
             <h4 className="text-lg font-bold text-stone-100 mt-2 font-serif">{step.title}</h4>
             <p className="text-xs text-stone-300 mt-2 leading-relaxed max-w-sm mx-auto font-sans">
@@ -114,7 +114,7 @@ export function HelpGuideModal({ open, onClose }: HelpGuideModalProps): React.JS
             className="px-3.5 py-2 rounded-xl bg-white/[0.04] disabled:opacity-30 text-stone-300 text-xs font-bold flex items-center gap-1"
           >
             <ChevronLeft className="w-4 h-4" />
-            <span>Nakaraan</span>
+            <span>Previous</span>
           </button>
 
           {currentStep < GUIDE_STEPS.length - 1 ? (
@@ -122,7 +122,7 @@ export function HelpGuideModal({ open, onClose }: HelpGuideModalProps): React.JS
               onClick={() => setCurrentStep((prev) => Math.min(GUIDE_STEPS.length - 1, prev + 1))}
               className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-obsidian-950 text-xs font-bold flex items-center gap-1 shadow-glow-amber"
             >
-              <span>Susunod</span>
+              <span>Next</span>
               <ChevronRight className="w-4 h-4" />
             </button>
           ) : (
@@ -130,7 +130,7 @@ export function HelpGuideModal({ open, onClose }: HelpGuideModalProps): React.JS
               onClick={onClose}
               className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 text-xs font-bold shadow-glow-emerald"
             >
-              Naiintindihan Ko Na!
+              Got It, Let's Start!
             </button>
           )}
         </div>

@@ -472,11 +472,11 @@ export function VaultAuthModal({
     const next = rotatePin.replace(/\D/g, '')
     const confirm = rotateConfirm.replace(/\D/g, '')
     if (next.length < 4 || next.length > 6) {
-      setErrorMessage('Ang bagong PIN ay dapat 4 hanggang 6 na numero.')
+      setErrorMessage('The new PIN must be 4 to 6 digits.')
       return
     }
     if (next !== confirm) {
-      setErrorMessage('Hindi magkatugma ang dalawang PIN.')
+      setErrorMessage('The two PINs do not match.')
       return
     }
     const user = authenticatedUser
@@ -489,7 +489,7 @@ export function VaultAuthModal({
     const ok = await rotatePinOnCloud(user.username, pin, next)
     if (!ok) {
       setIsVerifying(false)
-      setErrorMessage('Hindi napalitan ang PIN sa cloud. Pakisubukang muli.')
+      setErrorMessage('Failed to update PIN on cloud. Please try again.')
       return
     }
     if (user.id) await db.users.update(user.id, { pin: next }).catch(() => {})

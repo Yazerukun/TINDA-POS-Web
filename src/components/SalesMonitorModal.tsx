@@ -217,13 +217,13 @@ export function SalesMonitorModal({
             </div>
           </div>
 
-          {/* 1. Celebratory Change / Sukli Announcement Banner */}
+          {/* 1. Celebratory Change Due Announcement Banner */}
           {lastSale && (
             <div className="p-6 rounded-3xl bg-gradient-to-r from-emerald-950/60 via-emerald-900/40 to-obsidian-900 border-2 border-emerald-400/80 shadow-[0_0_40px_rgba(16,185,129,0.3)] animate-in fade-in zoom-in-95 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-2 text-xs font-bold text-emerald-300 uppercase tracking-wider font-mono">
                   <Sparkles className="w-4 h-4 text-amber-400" />
-                  Bag-ong Nahuman Nga Halin ({lastSale.transaction.invoice_number})
+                  Recent Transaction ({lastSale.transaction.invoice_number})
                 </span>
                 <span className="text-[11px] font-mono text-stone-400">
                   {lastSale.transaction.payment_method}
@@ -233,19 +233,19 @@ export function SalesMonitorModal({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
                 <div>
                   <p className="text-xs text-stone-300 uppercase tracking-wider font-sans">
-                    Bayad Nadawat (Amount Tendered)
+                    Amount Tendered
                   </p>
                   <p className="text-2xl font-mono font-bold text-stone-100">
                     {formatCurrency(lastSale.transaction.amount_tendered_c || lastSale.transaction.total_c)}
                   </p>
                   <p className="text-xs text-stone-400 mt-1">
-                    Kabuuang Halaga: {formatCurrency(lastSale.transaction.total_c)}
+                    Total Invoice Amount: {formatCurrency(lastSale.transaction.total_c)}
                   </p>
                 </div>
 
                 <div className="bg-obsidian-950/80 p-4 rounded-2xl border border-emerald-500/40 text-right">
                   <p className="text-xs font-bold text-emerald-400 uppercase tracking-widest">
-                    Imong Sukli (Change Due)
+                    Change Due
                   </p>
                   <p className="text-3xl sm:text-4xl font-mono font-black text-emerald-300 tracking-tight mt-1">
                     {formatCurrency(lastSale.change_c)}
@@ -305,7 +305,7 @@ export function SalesMonitorModal({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="p-4 rounded-2xl bg-obsidian-950/80 border border-white/[0.08]">
                   <p className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">
-                    Total Halin Karon (Today's Sales)
+                    Today's Gross Sales
                   </p>
                   <p className="text-2xl font-mono font-bold text-emerald-400 mt-1">
                     {formatCurrency(todaySalesC)}
@@ -314,20 +314,20 @@ export function SalesMonitorModal({
 
                 <div className="p-4 rounded-2xl bg-obsidian-950/80 border border-white/[0.08]">
                   <p className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">
-                    Mga Transaksyon Karon
+                    Total Receipts Today
                   </p>
                   <p className="text-2xl font-mono font-bold text-sky-400 mt-1">
-                    {todayTxCount} Resibo
+                    {todayTxCount} Receipts
                   </p>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-obsidian-950/80 border border-white/[0.08]">
                   <p className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">
-                    Kaha Status
+                    Terminal Status
                   </p>
                   <p className="text-sm font-bold text-amber-300 flex items-center gap-1.5 mt-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Andam Na Mag-Scan</span>
+                    <span>Ready for Scanning</span>
                   </p>
                 </div>
               </div>
@@ -337,13 +337,13 @@ export function SalesMonitorModal({
                 <div className="space-y-2 text-center sm:text-left">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-bold uppercase">
                     <Banknote className="w-3.5 h-3.5" />
-                    <span>Dawat Cash, GCash, Maya &amp; QR Ph</span>
+                    <span>Accepts Cash, GCash, Maya &amp; QR Ph</span>
                   </div>
                   <h4 className="text-lg font-bold text-stone-100">
-                    Paspas ug Sayon nga Bayad sa Counter
+                    Fast &amp; Seamless Counter Payment
                   </h4>
                   <p className="text-xs text-stone-400 max-w-md">
-                    I-andam ang inyong QR payment app o cash. Ang imong mga items ug presyo awtomatikong motungha dinhi sa screen samtang gi-scan sa cashier.
+                    Have your cash or digital payment app ready. Scanned items and prices will automatically appear here on this display in real time.
                   </p>
                 </div>
 

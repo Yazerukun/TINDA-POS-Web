@@ -702,7 +702,7 @@ export function POSScreen({
             <kbd className="text-emerald-400 font-bold">F4</kbd> Discount
           </span>
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-obsidian-900/[0.8] border border-white/[0.06] shrink-0">
-            <kbd className="text-emerald-400 font-bold">F6</kbd> Suki
+            <kbd className="text-emerald-400 font-bold">F6</kbd> Customer
           </span>
           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-obsidian-900/[0.8] border border-white/[0.06] shrink-0">
             <kbd className="text-emerald-400 font-bold">F7</kbd> Expense
@@ -845,10 +845,10 @@ export function POSScreen({
             </div>
             <div>
               <p className="font-serif text-lg font-bold tracking-wide text-stone-100">
-                Walay Sulod Nga Imbentaryo (No Products Yet)
+                Empty Inventory (No Products Found)
               </p>
               <p className="text-xs text-stone-400 mt-1 max-w-md mx-auto">
-                Gusto ba nimo i-auto detect o i-import ang imong mga produkto gikan sa Offline Desktop TINDA POS (<code className="text-amber-300 font-mono">.tinda-backup</code>) o JSON backup?
+                Would you like to auto-detect or import your product catalog from the Offline Desktop TINDA POS (<code className="text-amber-300 font-mono">.tinda-backup</code>) or JSON backup archive?
               </p>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
@@ -1150,7 +1150,7 @@ export function POSScreen({
                   <Check className="h-3 w-3" />
                 </span>
                 <div className="min-w-0">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400">Suki: </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400">Customer: </span>
                   <span className="font-bold text-emerald-300 truncate" title={selectedCustomer.name}>
                     {selectedCustomer.name}
                   </span>
@@ -1191,10 +1191,10 @@ export function POSScreen({
                 type="button"
                 onClick={() => setIsCustomerModalOpen(true)}
                 className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 px-2 py-0.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 transition"
-                title="Select Suki or Borrower (F6)"
+                title="Select Customer Account (F6)"
               >
                 <UserPlus className="h-3 w-3" />
-                <span>Select Suki</span>
+                <span>Select Customer</span>
                 <kbd className="font-mono text-[9px] px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">F6</kbd>
               </button>
             </div>
@@ -2146,7 +2146,7 @@ function CustomerPickerModal({
           <div className="flex items-center gap-2">
             <UserCheck className="w-5 h-5 text-emerald-400" />
             <h3 className="text-sm font-bold text-stone-100">
-              Select Customer or Suki (F6)
+              Select Customer Account (F6)
             </h3>
           </div>
           <button onClick={onClose} className="text-stone-400 hover:text-stone-200">
@@ -2420,7 +2420,7 @@ function QuickCalculatorModal({
             </div>
             {tenderCents >= cartTotal_c && tenderCents > 0 && (
               <div className="flex justify-between items-center pt-1.5 border-t border-white/[0.06] text-emerald-400 font-bold">
-                <span>Sukli / Change Due:</span>
+                <span>Change Due:</span>
                 <span className="text-base font-black font-mono">{money(changeDue_c)}</span>
               </div>
             )}

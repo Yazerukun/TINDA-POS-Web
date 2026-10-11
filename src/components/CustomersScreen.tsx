@@ -88,7 +88,7 @@ export function CustomersScreen({
 
   const handleCopyReminder = (c: Customer) => {
     const formattedAmt = (c.balance_c / 100).toFixed(2)
-    const text = `Magandang araw po ${c.name}, paalala lang po mula sa ${storeName !== 'PLATFORM_HQ' ? storeName : 'TINDA POS'} patungkol sa inyong tindahan credit balance na ₱${formattedAmt}. Maraming salamat po!`
+    const text = `Hello ${c.name}, this is a gentle reminder from ${storeName !== 'PLATFORM_HQ' ? storeName : 'TINDA POS'} regarding your store credit balance of ₱${formattedAmt}. Thank you for your continued patronage!`
     navigator.clipboard.writeText(text)
     setCopiedId(c.id)
     setTimeout(() => setCopiedId(null), 2500)
@@ -102,7 +102,7 @@ export function CustomersScreen({
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-black text-stone-100 tracking-tight flex items-center gap-2">
               <Users className="h-6 w-6 text-gold-light" />
-              <span>Customer Store Credit Ledger (Utang)</span>
+              <span>Customer Store Credit Ledger</span>
             </h2>
             <span className="text-[0.7rem] font-mono uppercase px-2 py-0.5 rounded-full bg-gold/15 text-gold-light border border-gold/30">
               Active Ledger

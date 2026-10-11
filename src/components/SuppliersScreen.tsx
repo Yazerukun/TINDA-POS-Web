@@ -114,7 +114,7 @@ export function SuppliersScreen(): React.JSX.Element {
 
   const handleDelete = async (id?: number) => {
     if (!id) return
-    if (!confirm('Sigurado ka nga papason kining maong supplier?')) return
+    if (!confirm('Are you sure you want to delete this supplier?')) return
     try {
       await db.suppliers.delete(id)
       await loadData()

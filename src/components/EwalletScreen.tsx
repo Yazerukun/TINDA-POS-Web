@@ -979,7 +979,7 @@ export function EwalletScreen({
                     type="text"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="e.g. Suki neighbor, load discount"
+                    placeholder="e.g. Regular customer, load discount"
                     className="w-full rounded-xl border border-white/[0.08] bg-obsidian-950 px-3 py-2 text-xs text-stone-100 outline-none focus:border-emerald-500/60 transition-all"
                   />
                 </div>
@@ -1343,7 +1343,7 @@ export function EwalletScreen({
                 </div>
               </div>
 
-              {/* Cash Received & Live Change / Sukli Calculator */}
+              {/* Cash Received & Live Change Due Calculator */}
               <div className="rounded-2xl border border-white/[0.08] bg-obsidian-950/80 p-3.5 space-y-2">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-stone-400 font-bold uppercase tracking-wider">Total Amount Due</span>
@@ -1372,7 +1372,7 @@ export function EwalletScreen({
 
                   <div className="text-right min-w-[100px]">
                     <span className="text-[10px] uppercase font-bold text-stone-400 block">
-                      Change (Sukli)
+                      Change Due
                     </span>
                     <span className={`font-serif text-base font-black ${
                       (parseFloat(billCashReceivedStr) || 0) >=
@@ -2283,7 +2283,7 @@ export function EwalletScreen({
                 )}
                 {slipBillTx.change !== undefined && (
                   <div className="flex justify-between font-bold text-stone-800">
-                    <span>Change (Sukli):</span>
+                    <span>Change Due:</span>
                     <span>₱{slipBillTx.change.toFixed(2)}</span>
                   </div>
                 )}

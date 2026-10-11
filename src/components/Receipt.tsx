@@ -195,7 +195,7 @@ export function Receipt({
   else if (activeTx.payment_method === 'GCASH') paymentLabel = 'GCASH E-WALLET'
   else if (activeTx.payment_method === 'MAYA') paymentLabel = 'MAYA E-WALLET'
   else if (activeTx.payment_method === 'MARIBANK') paymentLabel = 'MARIBANK'
-  else if (activeTx.payment_method === 'UTANG') paymentLabel = 'STORE CREDIT (UTANG)'
+  else if (activeTx.payment_method === 'UTANG') paymentLabel = 'STORE CREDIT'
   else if (activeTx.payment_method === 'SPLIT') paymentLabel = 'SPLIT / MIXED'
 
   return (
@@ -371,7 +371,7 @@ export function Receipt({
                     onChange={(e) => setShowChange(e.target.checked)}
                     className="rounded text-indigo-500"
                   />
-                  <span className="text-[11px] text-stone-300">Show Sukli / Change</span>
+                  <span className="text-[11px] text-stone-300">Show Change Due</span>
                 </label>
               </div>
 
@@ -467,16 +467,16 @@ export function Receipt({
             </div>
           )}
 
-          {/* Customer / Suki Information */}
+          {/* Customer Information */}
           {showCustomer && (customerName || activeTx.customer_id) && (
             <div className="pt-1 border-t border-dotted border-gray-400 mt-1">
               <div className="flex justify-between font-bold">
-                <span>SUKI / CUSTOMER:</span>
+                <span>CUSTOMER:</span>
                 <span className="uppercase">{customerName || `VIP #${activeTx.customer_id}`}</span>
               </div>
               {customerBalance_c !== undefined && customerBalance_c > 0 && (
                 <div className="flex justify-between text-gray-800">
-                  <span>OUTSTANDING UTANG:</span>
+                  <span>PRIOR CREDIT BALANCE:</span>
                   <span>{money(customerBalance_c)}</span>
                 </div>
               )}
@@ -565,14 +565,14 @@ export function Receipt({
 
             {showChange && activeTx.payment_method === 'CASH' && (
               <div className="flex justify-between font-bold text-[11px] pt-0.5">
-                <span>SUKLI / CHANGE DUE:</span>
+                <span>CHANGE DUE:</span>
                 <span className="text-[12px]">{money(activeTx.change_c)}</span>
               </div>
             )}
 
             {activeTx.payment_method === 'UTANG' && (
               <div className="flex justify-between text-gray-800 font-bold">
-                <span>NEW UTANG BALANCE:</span>
+                <span>NEW CREDIT BALANCE:</span>
                 <span>{money((customerBalance_c || 0) + activeTx.total_c)}</span>
               </div>
             )}
@@ -602,7 +602,7 @@ export function Receipt({
           </div>
           <div className="pt-2 border-b border-black border-dotted w-3/4 mx-auto" />
           <p className="text-[8px] text-center text-gray-500 uppercase tracking-widest">
-            Customer / Suki Signature
+            Customer Signature
           </p>
         </div>
 

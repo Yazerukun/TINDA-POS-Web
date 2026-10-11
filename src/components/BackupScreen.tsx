@@ -78,11 +78,11 @@ export function BackupScreen({
       await downloadBackupFile()
       playSuccessSound()
       setStatusType('success')
-      setStatusMessage('Matagumpay na na-download ang kumpletong .tinda-backup archive!')
+      setStatusMessage('Full .tinda-backup archive successfully exported and downloaded!')
     } catch (err) {
       console.error('Backup export error:', err)
       setStatusType('error')
-      setStatusMessage('Nagka-aberya sa pag-export ng backup file.')
+      setStatusMessage('An error occurred while exporting the backup file.')
     } finally {
       setIsExporting(false)
     }
@@ -157,7 +157,7 @@ export function BackupScreen({
     if (!file) return
 
     const confirmRestore = window.confirm(
-      'BABALA: Ang pag-restore ay magsasama at mag-a-update ng mga records sa iyong database. Nais mo bang magpatuloy?'
+      'WARNING: Restoring will merge and update records in your local database. Do you wish to proceed?'
     )
     if (!confirmRestore) {
       e.target.value = ''
@@ -180,7 +180,7 @@ export function BackupScreen({
     if (!file) return
 
     if (!file.name.endsWith('.tinda-backup') && !file.name.endsWith('.json')) {
-      alert('Paki-drop lamang ang .tinda-backup o .json file.')
+      alert('Please drop a valid .tinda-backup or .json backup file.')
       return
     }
 
@@ -190,7 +190,7 @@ export function BackupScreen({
 
   // Emergency Rollback handler
   const handleRollback = async () => {
-    if (!confirm('I-rollback ang database sa estado bago ang huling import?')) return
+    if (!confirm('Rollback database to the snapshot prior to the last import?')) return
     setIsImporting(true)
     try {
       const result = await rollbackRestoreCheckpoint()
@@ -358,7 +358,7 @@ export function BackupScreen({
             </h3>
           </div>
           <p className="text-xs text-stone-400 leading-relaxed font-sans">
-            100% compatible sa Offline Desktop TINDA POS (Windows/Linux SQLite) ug Web database. Pwede nimo i-auto detect ang data o i-manual og select ang <code className="text-amber-300 font-mono text-[11px]">.tinda-backup</code> o <code className="text-amber-300 font-mono text-[11px]">.json</code> file.
+            100% interoperable with Offline Desktop TINDA POS (Windows/Linux SQLite) and Web database. You can auto-detect local backups or manually select a <code className="text-amber-300 font-mono text-[11px]">.tinda-backup</code> or <code className="text-amber-300 font-mono text-[11px]">.json</code> file.
           </p>
 
           {/* Drag & Drop Zone */}
@@ -378,10 +378,10 @@ export function BackupScreen({
           >
             <Upload className="w-6 h-6 mx-auto mb-2 text-stone-400" />
             <p className="text-xs font-bold text-stone-200">
-              I-drag &amp; drop ang imong backup file diri
+              Drag &amp; drop your backup file here
             </p>
             <p className="text-[11px] text-stone-500 mt-0.5">
-              Suportado ang parehong <span className="text-amber-400 font-mono">.tinda-backup</span> ug <span className="text-emerald-400 font-mono">.json</span>
+              Supports both <span className="text-amber-400 font-mono">.tinda-backup</span> and <span className="text-emerald-400 font-mono">.json</span> archives
             </p>
           </div>
 

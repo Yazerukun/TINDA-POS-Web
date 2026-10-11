@@ -153,7 +153,7 @@ export function SettingsScreen({
   }
 
   const handleRollbackCheckpoint = async () => {
-    if (!confirm('I-restore ang database sa kahimtang sa wala pa ang pinaka-ulahing import?')) return
+    if (!confirm('Restore database to the state prior to the most recent import checkpoint?')) return
     setImporting(true)
     try {
       const result = await rollbackRestoreCheckpoint()
@@ -659,7 +659,7 @@ export function SettingsScreen({
             <span>Retail Display Themes &amp; Color Palettes</span>
           </h3>
           <p className="text-xs text-stone-400 mt-0.5">
-            Pilia ang pinaka-nindot ug haom nga tema alang sa imong counter, tindahan, o boutique.
+            Choose the most elegant and fitting color theme for your retail counter, store, or boutique.
           </p>
         </div>
 
@@ -1255,8 +1255,8 @@ export function SettingsScreen({
                   className="rounded border-slate-900/30 text-amber-500 focus:ring-0 w-4 h-4 bg-slate-850 cursor-pointer"
                 />
                 <div>
-                  <span className="text-xs font-semibold text-stone-100 block">Customer Utang &amp; Credit Balance</span>
-                  <span className="text-[0.75rem] text-slate-400 block">Print remaining ledger balance for utang transactions</span>
+                  <span className="text-xs font-semibold text-stone-100 block">Customer Store Credit Balance</span>
+                  <span className="text-[0.75rem] text-slate-400 block">Print remaining ledger balance for credit transactions</span>
                 </div>
               </label>
 
@@ -1294,7 +1294,7 @@ export function SettingsScreen({
             <span>Universal .tinda-backup Archive &amp; Offline Desktop Importer</span>
           </h3>
           <p className="text-xs text-stone-400 mt-0.5">
-            100% interoperable tali sa Offline Desktop TINDA POS (Windows/Linux), Android APK, ug kining Web version. Awtomatikong i-convert ang SQLite tables ug i-map ang mga presyo, stocks, ug suki.
+            100% interoperable between Offline Desktop TINDA POS (Windows/Linux SQLite), Android APK, and this Web edition. Automatically converts SQLite tables and maps prices, stock inventory, and customers.
           </p>
         </div>
 
@@ -1307,7 +1307,7 @@ export function SettingsScreen({
                 <span>Export .tinda-backup</span>
               </h4>
               <p className="text-[0.8125rem] text-stone-400 mt-1">
-                I-download ang tibuok database sa imong tindahan (mga produkto, presyo, halin, suki ledger, expenses) isip usa ka offline backup file.
+                Download a full archive of your store database (products, prices, sales history, customer ledger, expenses) as a protected offline backup file.
               </p>
             </div>
             <button
@@ -1326,7 +1326,7 @@ export function SettingsScreen({
                 <span>Restore / Import Offline Database</span>
               </h4>
               <p className="text-[0.8125rem] text-stone-400 mt-1">
-                I-load ang `.tinda-backup` file gikan sa imong Windows Desktop POS o Android phone. Awtomatikong basahon ang tanang SQLite tables!
+                Load a .tinda-backup file from your Windows Desktop POS or Android device. Automatically converts and imports all tables!
               </p>
             </div>
             <input
@@ -1386,7 +1386,7 @@ export function SettingsScreen({
 
         {/* Reset Database */}
         <div className="pt-3 border-t border-white/[0.06] flex flex-col sm:flex-row justify-between sm:items-center gap-2">
-          <span className="text-xs text-stone-500">I-reset ang tibuok database (tanang produkto, halin, suki utang, ug restock logs mapapas).</span>
+          <span className="text-xs text-stone-500">Reset entire local database (all products, sales history, customer debt records, and restock logs will be permanently deleted).</span>
           <button
             onClick={handleResetData}
             className="btn-press px-3 py-1.5 rounded-xl border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs font-semibold flex items-center gap-1.5 self-start sm:self-auto"

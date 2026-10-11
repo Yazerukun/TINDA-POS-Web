@@ -54,7 +54,7 @@
 | **Chiteng CT221B Labels** | 40x30mm, 30x20mm thermal sticker calibration | Scaled vector Code 128 Subset C SVG label studio | **100% Match** |
 | **Live Sales Monitor** | Dual-display CFD / secondary screen | Real-time `#sales-monitor` & fullscreen kiosk CFD | **100% Match** |
 | **Desktop DB Import** | `.tinda-backup` (JSON SQLite schema dump) | Multi-format desktop database parser & mapper | **100% Match** |
-| **VIP Pro Licensing** | Machine ID locked ₱500 lifetime unlock | Device ID fingerprinting, Maya 09912255156, key unlock | **100% Match** |
+| **VIP Pro Licensing** | Machine ID locked ₱500 lifetime unlock | Server-authoritative account licensing | **100% Match** |
 | **Retail Themes Engine** | Dark terminal / high-contrast themes | 6 themes: Emerald, Sapphire, Stealth, Cyber, Amber, Light | **100% Match** |
 
 ---

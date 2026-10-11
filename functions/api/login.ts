@@ -13,7 +13,8 @@ import {
   mintToken,
   recordFailure,
   unauthorized,
-  verifyPin
+  verifyPin,
+  logServerError
 } from '../_shared/auth'
 
 export async function onRequestOptions() {
@@ -91,6 +92,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       { headers: CORS }
     )
   } catch (err) {
-    return Response.json({ ok: false, error: String(err) }, { status: 500, headers: CORS })
+    logServerError('login', err)
+    return Response.json({ ok: false, error: 'Authentication service unavailable' }, { status: 500, headers: CORS })
   }
 }

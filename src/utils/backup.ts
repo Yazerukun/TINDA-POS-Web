@@ -324,7 +324,7 @@ export async function importTindaBackup(
         username: String(row.username || `user_${idx + 1}`),
         name: String(row.name || row.username || 'User'),
         role: String(row.role || 'CASHIER').toUpperCase() === 'ADMIN' ? 'ADMIN' : 'CASHIER',
-        pin: String(row.pin || '1234'),
+        pin: undefined,
         status: (row.is_active === 0 || row.status === 'DISABLED') ? 'DISABLED' : 'ACTIVE',
         store_name: row.store_name || assignedStoreName || undefined,
         created_at: String(row.created_at || new Date().toISOString())

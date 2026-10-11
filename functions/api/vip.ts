@@ -5,7 +5,7 @@
 // 2. Zero secrets or API keys exposed to frontend or stored in client storage.
 // 3. Mathematical Anti-Replay: payment_intent_id is strictly UNIQUE in D1 vip_licenses.
 // 4. Server-signed cryptographic license tokens (HMAC-SHA256) prevent client-side forgery.
-// 5. Direct Master Admin manual fulfillment for offline Maya transfers to Ian (09912255156).
+// 5. Direct Master Admin manual fulfillment for verified offline transfers.
 
 import {
   type Env as BaseEnv,
@@ -13,6 +13,8 @@ import {
   requireSession,
   unauthorized,
   forbidden
+  ,CORS
+  ,logServerError
 } from '../_shared/auth'
 
 export interface Env extends BaseEnv {
@@ -50,7 +52,7 @@ function getCorsHeaders(request: Request): Record<string, string> {
   const allowed = isAllowedOrigin(request)
   return {
     'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': allowed && origin ? origin : 'https://tindapos-web.pages.dev',
+    ...CORS,
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Vary': 'Origin'
@@ -134,6 +136,9 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     if (!username) {
       return Response.json({ ok: false, error: 'Username parameter is required.' }, { status: 400, headers: cors })
     }
+    const session = await requireSession(request, env)
+    if (!session) return unauthorized()
+    if (username !== session.username.toLowerCase() && !session.isMaster) return forbidden()
 
     const row = await env.TINDAPOS_DB.prepare(
       'SELECT id, username, payment_intent_id, payment_method, amount_cents, status, license_signature, registered_store, activated_at FROM vip_licenses WHERE username = ? COLLATE NOCASE LIMIT 1'
@@ -161,8 +166,9 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     }
 
     return Response.json({ ok: true, isVip: false }, { headers: cors })
-  } catch (err: any) {
-    return Response.json({ ok: false, error: err?.message || 'Database lookup error' }, { status: 500, headers: cors })
+  } catch (err: unknown) {
+    logServerError('vip.get', err)
+    return Response.json({ ok: false, error: 'VIP service unavailable' }, { status: 500, headers: cors })
   }
 }
 
@@ -177,14 +183,19 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   try {
     const body: VipRequestBody = await request.json()
     const { action } = body
+    const session = await requireSession(request, env)
+    if (!session) return unauthorized()
     const secretKey = env.PAYMONGO_SECRET_KEY || ''
-    const signingSecret = env.VIP_SIGNING_SECRET || env.SESSION_SECRET || secretKey || 'tinda-vip-hardlock-2026'
+    const signingSecret = env.VIP_SIGNING_SECRET
+    if (!signingSecret || signingSecret.length < 32) {
+      return Response.json({ ok: false, error: 'VIP service is not configured.' }, { status: 503, headers: cors })
+    }
 
     // =========================================================================
     // 1. ACTION: CREATE ORDER (₱500.00 PayMongo QR Ph Intent)
     // =========================================================================
     if (action === 'create_order') {
-      const username = (body.username || '').trim().toLowerCase()
+      const username = session.username.toLowerCase()
       if (!username) {
         return Response.json({ ok: false, error: 'Username is required to create a VIP order.' }, { status: 400, headers: cors })
       }
@@ -321,7 +332,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     // =========================================================================
     if (action === 'claim_activation') {
       const { paymentIntentId } = body
-      const username = (body.username || '').trim().toLowerCase()
+      const username = session.username.toLowerCase()
       const storeName = (body.storeName || '').trim()
 
       if (!paymentIntentId || !username) {
@@ -474,10 +485,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     }
 
     // =========================================================================
-    // 3. ACTION: MASTER GRANT (Offline Direct Maya Payment to Ian 09912255156)
+    // 3. ACTION: MASTER GRANT (verified manual payment fulfillment)
     // =========================================================================
     if (action === 'master_grant') {
-      const session = await requireSession(request, env)
       if (!session || !session.isMaster) {
         return forbidden()
       }
@@ -487,7 +497,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         return Response.json({ ok: false, error: 'targetUsername is required.' }, { status: 400, headers: cors })
       }
 
-      const note = (body.reason || 'MAYA_MANUAL_IAN_09912255156').slice(0, 100)
+      const note = (body.reason || 'MANUAL_PAYMENT_VERIFIED').slice(0, 100)
       const ref = `MAYA_IAN_${Date.now()}_${Math.random().toString(36).slice(2, 8).toUpperCase()}`
       const now = new Date().toISOString()
 
@@ -561,7 +571,8 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     }
 
     return Response.json({ ok: false, error: 'Unknown action requested.' }, { status: 400, headers: cors })
-  } catch (err: any) {
-    return Response.json({ ok: false, error: err?.message || 'VIP handler error' }, { status: 500, headers: cors })
+  } catch (err: unknown) {
+    logServerError('vip.post', err)
+    return Response.json({ ok: false, error: 'VIP service unavailable' }, { status: 500, headers: cors })
   }
 }

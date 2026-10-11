@@ -3,7 +3,7 @@
 // The username comes from the session token, not the body, so this cannot be
 // used to mark an arbitrary account as active.
 
-import { CORS, type Env, isAllowedOrigin, requireSession, unauthorized } from '../_shared/auth'
+import { CORS, type Env, isAllowedOrigin, requireSession, unauthorized, logServerError } from '../_shared/auth'
 
 export async function onRequestOptions() {
   return new Response(null, { headers: CORS })
@@ -23,6 +23,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
     return Response.json({ ok: true, timestamp: now }, { headers: CORS })
   } catch (err) {
-    return Response.json({ ok: false, error: String(err) }, { status: 500, headers: CORS })
+    logServerError('heartbeat', err)
+    return Response.json({ ok: false, error: 'Request could not be completed' }, { status: 500, headers: CORS })
   }
 }

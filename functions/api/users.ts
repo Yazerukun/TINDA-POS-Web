@@ -17,6 +17,7 @@ import {
   recordFailure,
   requireSession,
   unauthorized
+  ,logServerError
 } from '../_shared/auth'
 
 const PUBLIC_COLUMNS =
@@ -58,7 +59,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     const { results } = await stmt.all()
     return Response.json({ ok: true, users: results }, { headers: CORS })
   } catch (err) {
-    return Response.json({ ok: false, error: String(err) }, { status: 500, headers: CORS })
+    logServerError('users.get', err)
+    return Response.json({ ok: false, error: 'Request could not be completed' }, { status: 500, headers: CORS })
   }
 }
 
@@ -110,18 +112,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       if (!(await checkRateLimit(env.TINDAPOS_DB, user.username))) {
         return Response.json({ ok: false, error: 'Too many attempts.' }, { status: 429, headers: CORS })
       }
-      // Either the old plaintext PIN, or the current hash, must match.
-      const legacy = await env.TINDAPOS_DB.prepare('SELECT pin FROM users WHERE id = ?')
-        .bind(user.id)
-        .first<{ pin: string | null }>()
       const current = body.current_pin ?? ''
-      let matches = false
-      if (user.pin_hash && user.pin_salt) {
-        const { hashPin } = await import('../_shared/auth')
-        matches = current ? (await hashPin(current, user.pin_salt)) === user.pin_hash : false
-      } else {
-        matches = !!legacy?.pin && legacy.pin === current
-      }
+      const { hashPin } = await import('../_shared/auth')
+      const matches = Boolean(user.pin_hash && user.pin_salt && current && (await hashPin(current, user.pin_salt)) === user.pin_hash)
       if (!matches) {
         await recordFailure(env.TINDAPOS_DB, user.username)
         return Response.json({ ok: false, error: 'Current PIN is incorrect' }, { status: 401, headers: CORS })
@@ -206,6 +199,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     await clearFailures(env.TINDAPOS_DB, `signup:${username}`)
     return Response.json({ ok: true, created: username, store: assignedStore }, { headers: CORS })
   } catch (err) {
-    return Response.json({ ok: false, error: String(err) }, { status: 500, headers: CORS })
+    logServerError('users.post', err)
+    return Response.json({ ok: false, error: 'Request could not be completed' }, { status: 500, headers: CORS })
   }
 }

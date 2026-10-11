@@ -112,7 +112,7 @@ export function BackupScreen({
       }
     } catch (err: any) {
       setStatusType('error')
-      setStatusMessage('Error parsing backup: ' + (err?.message || 'Invalid format'))
+      setStatusMessage('Unable to read backup file. Please choose a valid TINDA backup.')
     } finally {
       setIsImporting(false)
     }

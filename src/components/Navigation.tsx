@@ -627,7 +627,7 @@ export function Navigation({
                       VIP Pro Lifetime Licensing
                     </span>
                     <span className="text-[0.625rem] text-amber-400 font-mono">
-                      ₱500 Lifetime · Dev Francis Maya 09912255156
+                      ₱500 Lifetime · Verified payment channel
                     </span>
                   </div>
                 </div>

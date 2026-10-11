@@ -9,7 +9,7 @@ export interface CloudUserPayload {
   username: string
   name: string
   email?: string
-  pin: string
+  pin?: string
   status: string
   store_name?: string
   avatar_url?: string
@@ -51,15 +51,15 @@ let sessionToken: string | null = null
 export function setSessionToken(token: string | null): void {
   sessionToken = token
   try {
-    if (token) localStorage.setItem(TOKEN_KEY, token)
-    else localStorage.removeItem(TOKEN_KEY)
+    if (token) sessionStorage.setItem(TOKEN_KEY, token)
+    else sessionStorage.removeItem(TOKEN_KEY)
   } catch {}
 }
 
 export function getSessionToken(): string | null {
   if (sessionToken) return sessionToken
   try {
-    sessionToken = localStorage.getItem(TOKEN_KEY)
+    sessionToken = sessionStorage.getItem(TOKEN_KEY)
   } catch {}
   return sessionToken
 }

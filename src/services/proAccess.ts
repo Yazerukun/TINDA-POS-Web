@@ -86,23 +86,7 @@ export function useProAccess() {
     }
 
     // Fire-and-forget sync to Cloudflare D1
-    try {
-      const savedSession = localStorage.getItem('tinda_vault_session')
-      if (savedSession) {
-        const parsed = JSON.parse(savedSession)
-        if (parsed?.username) {
-          syncProStateToCloud({
-            user_id: Number(currentUserId) || 0,
-            username: parsed.username,
-            store_name: parsed.storeName || '',
-            pro_expires_at: updated.pro_expires_at,
-            tokens: updated.tokens,
-            last_ad_watched_at: updated.last_ad_watched_at,
-            total_ads_watched: updated.total_ads_watched
-          })
-        }
-      }
-    } catch {}
+    if (currentUserId) syncProStateToCloud({ user_id: Number(currentUserId) || 0, username: String(currentUserId), pro_expires_at: updated.pro_expires_at, tokens: updated.tokens, last_ad_watched_at: updated.last_ad_watched_at, total_ads_watched: updated.total_ads_watched }).catch(() => {})
   }, [currentUserId])
 
   // Called from App.tsx on login — load THIS user's state (or start fresh)

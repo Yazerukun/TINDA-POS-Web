@@ -63,10 +63,7 @@ export async function verifyPin(
   const trimmed = inputPin.trim()
   if (!storedValue) return { valid: false, needsRehash: false }
 
-  // Backward compatibility with unhashed plaintext PINs (e.g. '1234')
-  if (storedValue === trimmed) {
-    return { valid: true, needsRehash: true }
-  }
+  // Plaintext PINs are intentionally never accepted in browser storage.
 
   // If there's a stored salt or if the hash is 64 hex chars (PBKDF2-SHA256)
   if (storedSalt) {

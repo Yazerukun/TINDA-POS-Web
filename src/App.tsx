@@ -39,7 +39,7 @@ import { useProAccess } from './services/proAccess'
 import { sendHeartbeat } from './services/cloudSync'
 import { importTindaBackup } from './utils/backup'
 import { Upload, HardDriveDownload } from 'lucide-react'
-import { isVipActive, subscribeVipStatus, syncCloudVipStatus } from './utils/vip'
+import { isVipActive, subscribeVipStatus, syncCloudVipStatus, setActiveVipUser } from './utils/vip'
 
 export default function App(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard')
@@ -64,14 +64,7 @@ export default function App(): React.JSX.Element {
   const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false)
   const [isBarcodeScannerOpen, setIsBarcodeScannerOpen] = useState(false)
   // Vault Session / Cashier Authentication State (Screen 1 vs Screen 2)
-  const [vaultSession, setVaultSession] = useState<VaultSession | null>(() => {
-    try {
-      const saved = localStorage.getItem('tinda_vault_session')
-      return saved ? JSON.parse(saved) : null
-    } catch {
-      return null
-    }
-  })
+  const [vaultSession, setVaultSession] = useState<VaultSession | null>(null)
 
   const [isVipUpgradeOpen, setIsVipUpgradeOpen] = useState(false)
   const [isVip, setIsVip] = useState(() => isVipActive(vaultSession?.username))
@@ -101,7 +94,6 @@ export default function App(): React.JSX.Element {
         if (u && u.avatar_url && u.avatar_url !== vaultSession.avatarUrl) {
           const updated = { ...vaultSession, avatarUrl: u.avatar_url }
           setVaultSession(updated)
-          localStorage.setItem('tinda_vault_session', JSON.stringify(updated))
         }
       } catch (err) {
         console.error('Failed to sync avatar:', err)
@@ -115,7 +107,6 @@ export default function App(): React.JSX.Element {
     const updated = { ...vaultSession, avatarUrl }
     setVaultSession(updated)
     try {
-      localStorage.setItem('tinda_vault_session', JSON.stringify(updated))
     } catch {
       // ignore
     }
@@ -477,7 +468,7 @@ export default function App(): React.JSX.Element {
     setVaultSession(session)
     setIsAuthModalOpen(false)
     try {
-      localStorage.setItem('tinda_vault_session', JSON.stringify(session))
+      setActiveVipUser(session.username)
     } catch {
       // ignore
     }
@@ -494,7 +485,7 @@ export default function App(): React.JSX.Element {
 
   const handleLockTerminal = () => {
     try {
-      localStorage.removeItem('tinda_vault_session')
+      setActiveVipUser(undefined)
     } catch {
       // ignore
     }
@@ -1214,4 +1205,3 @@ export default function App(): React.JSX.Element {
     </div>
   )
 }
-

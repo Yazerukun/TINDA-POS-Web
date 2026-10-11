@@ -137,7 +137,7 @@ export function TransactionsScreen({
       if (onTransactionVoided) onTransactionVoided()
     } catch (err) {
       console.error('Failed to void transaction:', err)
-      alert('Error occurred while voiding transaction: ' + String(err))
+      alert('Unable to void transaction. Please try again.')
     }
   }
 

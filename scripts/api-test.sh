@@ -33,11 +33,11 @@ U="apitest_$SUFFIX"
 PIN="4821"
 
 echo "== unauthenticated reads must be rejected =="
-check 'GET /api/users'          401 GET
-check 'GET /api/pro'            401 GET
-check 'GET /api/pro?username=x' 401 GET
+check 'GET /api/users'          401 GET /api/users
+check 'GET /api/pro'            401 GET /api/pro
+check 'GET /api/pro?username=x' 401 GET '/api/pro?username=x'
 check 'POST /api/heartbeat'     401 POST '' '{}'
-check 'GET /api/users?username=x' 401 GET
+check 'GET /api/users?username=x' 401 GET '/api/users?username=x'
 
 echo
 echo "== login =="

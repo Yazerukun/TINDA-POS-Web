@@ -111,7 +111,6 @@ export function UserProfileModal({
             username: currentUsername,
             name: currentCashierName,
             role: isMasterAdmin ? 'ADMIN' : 'CASHIER',
-            pin: '1234',
             status: 'ACTIVE',
             created_at: new Date().toISOString(),
             avatar_url: compressedDataUrl,
@@ -187,7 +186,6 @@ export function UserProfileModal({
       }
 
       if (user && user.id) {
-        await db.users.update(user.id, { pin: newPin })
       }
 
       showToast('Security PIN changed successfully!')

@@ -149,7 +149,7 @@ export function VipUpgradeModal({
 
   const copyMayaNumber = async (): Promise<void> => {
     try {
-      await navigator.clipboard.writeText('09912255156')
+      await navigator.clipboard.writeText('')
       setCopiedMaya(true)
       setTimeout(() => setCopiedMaya(false), 2500)
     } catch {}
@@ -271,7 +271,7 @@ export function VipUpgradeModal({
       // Step 1: Call Cloudflare Pages Function to create real ₱500 QR Ph Intent
       const res = await fetch('/api/vip', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionStorage.getItem('tinda_session_token') || ''}` },
         body: JSON.stringify({
           action: 'create_order',
           username: targetUser,
@@ -293,7 +293,7 @@ export function VipUpgradeModal({
             try {
               const claimRes = await fetch('/api/vip', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${sessionStorage.getItem('tinda_session_token') || ''}` },
                 body: JSON.stringify({
                   action: 'claim_activation',
                   paymentIntentId: piId,
@@ -319,20 +319,17 @@ export function VipUpgradeModal({
       } else {
         setFeedback({
           type: 'error',
-          message: data.error || 'Failed to generate official PayMongo QR Ph. Please check your connection or pay via Maya 09912255156.'
+          message: data.error || 'Failed to generate official PayMongo QR Ph. Please check your connection.'
         })
       }
     } catch (err) {
-      setFeedback({
-        type: 'error',
-        message: 'Could not connect to payment server: ' + ((err as Error)?.message || 'Please use Maya transfer.')
-      })
+      setFeedback({ type: 'error', message: 'Could not connect to payment server. Please try again.' })
     } finally {
       setQrGenerating(false)
     }
   }
 
-  // Master Admin Manual Grant (Offline Maya 09912255156 fulfillment)
+  // Master Admin Manual Grant (verified manual payment fulfillment)
   const handleMasterGrant = async () => {
     const targetUser = (masterGrantTarget || customerName || currentUsername || getActiveVaultUsername() || '').trim().toLowerCase()
     if (!targetUser) {
@@ -348,8 +345,7 @@ export function VipUpgradeModal({
     setFeedback(null)
 
     try {
-      const vaultRaw = localStorage.getItem('tinda_vault_session')
-      const token = vaultRaw ? JSON.parse(vaultRaw)?.token : ''
+      const token = sessionStorage.getItem('tinda_session_token') || ''
 
       const res = await fetch('/api/vip', {
         method: 'POST',
@@ -360,7 +356,7 @@ export function VipUpgradeModal({
         body: JSON.stringify({
           action: 'master_grant',
           targetUsername: targetUser,
-          reason: 'MAYA_09912255156_OFFLINE_FULFILLMENT'
+          reason: 'MANUAL_PAYMENT_VERIFIED'
         })
       })
 
@@ -379,7 +375,7 @@ export function VipUpgradeModal({
         setFeedback({ type: 'error', message: data.error || 'Failed to issue master grant.' })
       }
     } catch (err: any) {
-      setFeedback({ type: 'error', message: err?.message || 'Master grant failed.' })
+      setFeedback({ type: 'error', message: 'Master grant failed. Please try again.' })
     } finally {
       setIsGrantingMaster(false)
     }
@@ -837,7 +833,7 @@ export function VipUpgradeModal({
                       <span>Direct Maya & Facebook Dev Support</span>
                     </h4>
                     <p className="text-[0.6875rem] text-stone-400">
-                      Transfer ₱500 to Maya and send your Username to Dev Francis for official cryptographic license issuance.
+                      Complete the authorized ₱500 payment and send your Username through the official support channel.
                     </p>
                   </div>
 
@@ -860,9 +856,9 @@ export function VipUpgradeModal({
 
                   <div className="flex items-center justify-between gap-2 p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30">
                     <div>
-                      <span className="text-[10px] text-emerald-400 uppercase tracking-wider block font-bold">2. Send ₱500 to Maya:</span>
-                      <span className="font-mono font-bold text-stone-100 text-sm">0991 225 5156</span>
-                      <span className="text-[10px] text-emerald-300/80 block font-medium">Dev Francis (Official Account)</span>
+                      <span className="text-[10px] text-emerald-400 uppercase tracking-wider block font-bold">2. Complete authorized payment:</span>
+                      <span className="font-mono font-bold text-stone-100 text-sm">Use the official support channel</span>
+                      <span className="text-[10px] text-emerald-300/80 block font-medium">Verified payment account</span>
                     </div>
                     <button
                       type="button"
@@ -877,7 +873,7 @@ export function VipUpgradeModal({
                   <div className="p-3 rounded-xl bg-blue-950/40 border border-blue-500/30 flex items-center justify-between gap-2">
                     <div className="min-w-0">
                       <span className="text-[10px] text-blue-300 uppercase tracking-wider block font-bold">3. Message on Facebook:</span>
-                      <span className="text-stone-300 text-xs truncate block font-medium">facebook.com/Ukauru (Dev Francis)</span>
+                      <span className="text-stone-300 text-xs truncate block font-medium">Official support channel</span>
                     </div>
                     <button
                       type="button"
@@ -898,7 +894,7 @@ export function VipUpgradeModal({
                         <span>Master Admin: Mint & Grant Offline Maya VIP</span>
                       </div>
                       <p className="text-[11px] text-stone-300">
-                        When a customer pays ₱500 to your Maya 09912255156, enter their username here to mint an official cryptographically signed token into Cloudflare D1.
+                        After a verified manual ₱500 payment, enter the customer username here to mint an official cryptographically signed token into Cloudflare D1.
                       </p>
                       <div className="flex items-center gap-2">
                         <input

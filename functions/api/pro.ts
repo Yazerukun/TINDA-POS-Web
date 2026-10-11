@@ -12,6 +12,7 @@ import {
   isAllowedOrigin,
   requireSession,
   unauthorized
+  ,logServerError
 } from '../_shared/auth'
 
 export async function onRequestOptions() {
@@ -44,7 +45,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     const { results } = await env.TINDAPOS_DB.prepare('SELECT * FROM pro_access ORDER BY updated_at DESC').all()
     return Response.json({ ok: true, states: results }, { headers: CORS })
   } catch (err) {
-    return Response.json({ ok: false, error: String(err) }, { status: 500, headers: CORS })
+    logServerError('pro.get', err)
+    return Response.json({ ok: false, error: 'Request could not be completed' }, { status: 500, headers: CORS })
   }
 }
 
@@ -102,6 +104,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
     return Response.json({ ok: true }, { headers: CORS })
   } catch (err) {
-    return Response.json({ ok: false, error: String(err) }, { status: 500, headers: CORS })
+    logServerError('pro.post', err)
+    return Response.json({ ok: false, error: 'Request could not be completed' }, { status: 500, headers: CORS })
   }
 }

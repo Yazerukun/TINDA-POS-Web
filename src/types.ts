@@ -169,7 +169,7 @@ export interface UserAccount {
   username: string
   name: string
   role: UserRole
-  pin: string
+  pin?: string
   status: 'ACTIVE' | 'DISABLED'
   created_at: string
   updated_at?: string

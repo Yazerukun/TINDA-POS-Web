@@ -315,8 +315,7 @@ export function MasterControlScreen({
     }
 
     try {
-      await db.users.update(editingPinUser.id, { pin: newPinValue })
-      showToast(`PIN for @${editingPinUser.username} updated to "${newPinValue}"`)
+      showToast('PIN changes are managed by the cloud authentication service.')
       setEditingPinUser(null)
       setNewPinValue('')
       await loadData()
@@ -355,7 +354,6 @@ export function MasterControlScreen({
         username: trimmedUser,
         name: trimmedName,
         role: 'ADMIN',
-        pin: trimmedPin,
         status: 'ACTIVE',
         created_at: new Date().toISOString(),
         store_name: trimmedStore,
@@ -408,7 +406,6 @@ export function MasterControlScreen({
         username: trimmedUser,
         name: trimmedName,
         role: newStaffRole,
-        pin: trimmedPin,
         status: 'ACTIVE',
         created_at: new Date().toISOString(),
         store_name: staffTargetStore,

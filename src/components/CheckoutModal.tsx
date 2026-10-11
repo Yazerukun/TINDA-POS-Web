@@ -98,6 +98,52 @@ export function CheckoutModal({
   const cashInputRef = useRef<HTMLInputElement>(null)
   const refInputRef = useRef<HTMLInputElement>(null)
 
+  const cashC = Math.round((parseFloat(cash) || 0) * 100)
+  const changeC = cashC - total_c
+
+  // Split calculations
+  const splitCashAllocatedC = Math.max(0, Math.round((parseFloat(splitState.cashAmount) || 0) * 100))
+  const splitCashTenderedC = Math.max(
+    0,
+    Math.round((parseFloat(splitState.cashTendered || splitState.cashAmount) || 0) * 100)
+  )
+  const splitGcashC = Math.max(0, Math.round((parseFloat(splitState.gcashAmount) || 0) * 100))
+  const splitMayaC = Math.max(0, Math.round((parseFloat(splitState.mayaAmount) || 0) * 100))
+  const splitMaribankC = Math.max(0, Math.round((parseFloat(splitState.maribankAmount) || 0) * 100))
+  const splitUtangC = Math.max(0, Math.round((parseFloat(splitState.utangAmount) || 0) * 100))
+
+  const totalAllocatedC =
+    splitCashAllocatedC + splitGcashC + splitMayaC + splitMaribankC + splitUtangC
+  const remainingC = total_c - totalAllocatedC
+  const splitCashChangeC =
+    splitCashAllocatedC > 0 ? Math.max(0, splitCashTenderedC - splitCashAllocatedC) : 0
+
+  const fillRemaining = (target: 'cash' | 'gcash' | 'maya' | 'maribank' | 'utang') => {
+    const otherAllocatedC =
+      (target === 'cash' ? 0 : splitCashAllocatedC) +
+      (target === 'gcash' ? 0 : splitGcashC) +
+      (target === 'maya' ? 0 : splitMayaC) +
+      (target === 'maribank' ? 0 : splitMaribankC) +
+      (target === 'utang' ? 0 : splitUtangC)
+    const neededC = Math.max(0, total_c - otherAllocatedC)
+    const neededPesos = neededC > 0 ? (neededC / 100).toFixed(2) : ''
+
+    setSplitState((prev) => {
+      switch (target) {
+        case 'cash':
+          return { ...prev, cashAmount: neededPesos, cashTendered: neededPesos }
+        case 'gcash':
+          return { ...prev, gcashAmount: neededPesos }
+        case 'maya':
+          return { ...prev, mayaAmount: neededPesos }
+        case 'maribank':
+          return { ...prev, maribankAmount: neededPesos }
+        case 'utang':
+          return { ...prev, utangAmount: neededPesos }
+      }
+    })
+  }
+
   // PayMongo Dynamic Real-Time QR Ph State
   const isPayMongoConfigured = Boolean(
     settings?.paymongo_enabled &&
@@ -247,52 +293,6 @@ export function CheckoutModal({
     splitGcashC,
     splitMayaC
   ])
-
-  const cashC = Math.round((parseFloat(cash) || 0) * 100)
-  const changeC = cashC - total_c
-
-  // Split calculations
-  const splitCashAllocatedC = Math.max(0, Math.round((parseFloat(splitState.cashAmount) || 0) * 100))
-  const splitCashTenderedC = Math.max(
-    0,
-    Math.round((parseFloat(splitState.cashTendered || splitState.cashAmount) || 0) * 100)
-  )
-  const splitGcashC = Math.max(0, Math.round((parseFloat(splitState.gcashAmount) || 0) * 100))
-  const splitMayaC = Math.max(0, Math.round((parseFloat(splitState.mayaAmount) || 0) * 100))
-  const splitMaribankC = Math.max(0, Math.round((parseFloat(splitState.maribankAmount) || 0) * 100))
-  const splitUtangC = Math.max(0, Math.round((parseFloat(splitState.utangAmount) || 0) * 100))
-
-  const totalAllocatedC =
-    splitCashAllocatedC + splitGcashC + splitMayaC + splitMaribankC + splitUtangC
-  const remainingC = total_c - totalAllocatedC
-  const splitCashChangeC =
-    splitCashAllocatedC > 0 ? Math.max(0, splitCashTenderedC - splitCashAllocatedC) : 0
-
-  const fillRemaining = (target: 'cash' | 'gcash' | 'maya' | 'maribank' | 'utang') => {
-    const otherAllocatedC =
-      (target === 'cash' ? 0 : splitCashAllocatedC) +
-      (target === 'gcash' ? 0 : splitGcashC) +
-      (target === 'maya' ? 0 : splitMayaC) +
-      (target === 'maribank' ? 0 : splitMaribankC) +
-      (target === 'utang' ? 0 : splitUtangC)
-    const neededC = Math.max(0, total_c - otherAllocatedC)
-    const neededPesos = neededC > 0 ? (neededC / 100).toFixed(2) : ''
-
-    setSplitState((prev) => {
-      switch (target) {
-        case 'cash':
-          return { ...prev, cashAmount: neededPesos, cashTendered: neededPesos }
-        case 'gcash':
-          return { ...prev, gcashAmount: neededPesos }
-        case 'maya':
-          return { ...prev, mayaAmount: neededPesos }
-        case 'maribank':
-          return { ...prev, maribankAmount: neededPesos }
-        case 'utang':
-          return { ...prev, utangAmount: neededPesos }
-      }
-    })
-  }
 
   // Hotkeys
   useEffect(() => {

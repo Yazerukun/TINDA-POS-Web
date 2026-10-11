@@ -1,17 +1,17 @@
 # Graph Report - TINDA-POS-Web  (2026-10-11)
 
 ## Corpus Check
-- 81 files · ~333,125 words
+- 81 files · ~335,636 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 7 file(s) not represented in the graph (top: (none) 4, .css 1, .jsonc 1)
 
 ## Summary
-- 520 nodes · 1255 edges · 28 communities (22 shown, 6 thin omitted)
+- 525 nodes · 1261 edges · 30 communities (24 shown, 6 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.91)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ff4731e8`
+- Built from commit: `db6c2a65`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,6 +19,7 @@
 - App.tsx
 - POSScreen.tsx
 - types.ts
+- VipUpgradeModal.tsx
 - auth.ts
 - VaultAuthModal.tsx
 - SettingsScreen.tsx
@@ -42,6 +43,7 @@
 - Project Context & Powerhouse Directives (TINDA POS Web)
 - 02 — Implement Brief: Server-Enforced Rewarded-Ad Time (TINDA POS Web)
 - Architectural Decisions & Changelog
+- SYSTEM_MASTER.md — TINDA POS Web Architecture
 
 ## God Nodes (most connected - your core abstractions)
 1. `react` - 42 edges
@@ -56,33 +58,37 @@
 10. `TindaWebDatabase` - 15 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `What exists (files)` --references--> `useProAccess()`  [INFERRED]
-  specs/rewarded-ads/01-CURRENT-STATE-TINDAPOS-Web.md → src/services/proAccess.ts
 - `4. Business Logic Guardrails` --references--> `CartQuantityInput()`  [INFERRED]
   SYSTEM_MASTER.md → src/components/POSScreen.tsx
+- `What exists (files)` --references--> `useProAccess()`  [INFERRED]
+  specs/rewarded-ads/01-CURRENT-STATE-TINDAPOS-Web.md → src/services/proAccess.ts
 - `Files to touch` --references--> `ProAccessState`  [INFERRED]
   specs/rewarded-ads/02-IMPLEMENT-BRIEF.md → src/types.ts
-- `MasterControlScreenProps` --references--> `UserAccount`  [EXTRACTED]
-  src/components/MasterControlScreen.tsx → src/types.ts
+- `PriceTagPrintModalProps` --references--> `Product`  [EXTRACTED]
+  src/components/PriceTagPrintModal.tsx → src/types.ts
 - `SettingsScreenProps` --references--> `StoreSettings`  [EXTRACTED]
   src/components/SettingsScreen.tsx → src/types.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (28 total, 6 thin omitted)
+## Communities (30 total, 6 thin omitted)
 
 ### Community 0 - "App.tsx"
 Cohesion: 0.06
-Nodes (40): react-dom, App(), AiAssistantModal(), AiAssistantModalProps, ChatMessage, PRESET_QUERIES, AppLogo(), AppLogoProps (+32 more)
+Nodes (46): react-dom, App(), AiAssistantModal(), AiAssistantModalProps, ChatMessage, PRESET_QUERIES, AppLogo(), AppLogoProps (+38 more)
 
 ### Community 1 - "POSScreen.tsx"
-Cohesion: 0.08
-Nodes (38): @zxing/browser, BarcodeScannerModal(), BarcodeScannerModalProps, hasNativeBarcodeDetector(), NATIVE_FORMATS, BILLER_PRESETS, BillTransaction, CASH_COUNT_DENOMINATIONS (+30 more)
+Cohesion: 0.07
+Nodes (47): @zxing/browser, BarcodeScannerModal(), BarcodeScannerModalProps, hasNativeBarcodeDetector(), NATIVE_FORMATS, BillCategory, BILLER_PRESETS, BillTransaction (+39 more)
 
 ### Community 2 - "types.ts"
-Cohesion: 0.06
-Nodes (83): lucide-react, react, AnalyticsScreen(), AnalyticsScreenProps, AnalyticsTab, DENOMINATIONS, CheckoutModal(), CheckoutModalProps (+75 more)
+Cohesion: 0.08
+Nodes (64): lucide-react, react, AnalyticsScreen(), AnalyticsScreenProps, AnalyticsTab, DENOMINATIONS, CheckoutModalProps, CustomersScreenProps (+56 more)
+
+### Community 3 - "VipUpgradeModal.tsx"
+Cohesion: 0.33
+Nodes (7): VipUpgradeModal(), VipUpgradeModalProps, bytesToHex(), getDeviceMachineId(), hashPin(), hexToBytes(), verifyPin()
 
 ### Community 4 - "auth.ts"
 Cohesion: 0.17
@@ -90,11 +96,11 @@ Nodes (28): onRequestPost(), onRequestPost(), onRequestGet(), onRequestPost(), o
 
 ### Community 5 - "VaultAuthModal.tsx"
 Cohesion: 0.09
-Nodes (37): 01 — Current State: TINDA POS Web rewarded-ad system, Gaps (vs. the MobiVPN reference), The user story today, What exists (files), What this means, Files to touch, getPresenceInfo(), MasterControlScreen() (+29 more)
+Nodes (38): 01 — Current State: TINDA POS Web rewarded-ad system, Gaps (vs. the MobiVPN reference), The user story today, What exists (files), What this means, Files to touch, getPresenceInfo(), MasterControlScreen() (+30 more)
 
 ### Community 6 - "SettingsScreen.tsx"
-Cohesion: 0.11
-Nodes (28): BackupScreen(), BackupScreenProps, SettingsScreen(), SettingsScreenProps, UserProfileModal(), UserProfileModalProps, VipUpgradeModal(), VipUpgradeModalProps (+20 more)
+Cohesion: 0.15
+Nodes (22): BackupScreen(), BackupScreenProps, Receipt(), SettingsScreen(), SettingsScreenProps, UserProfileModal(), UserProfileModalProps, initDatabase() (+14 more)
 
 ### Community 7 - "compilerOptions"
 Cohesion: 0.12
@@ -160,25 +166,29 @@ Nodes (7): 02 — Implement Brief: Server-Enforced Rewarded-Ad Time (TINDA POS W
 Cohesion: 0.40
 Nodes (4): 2026-09-24: Account Sign-Up, Locked-by-Default (00:00:00), 30s Cooldown & Direct Ad Onboarding, 2026-09-24: Master Platform Admin (`skorts188@gmail.com`), Zero-Ads Bypass & Store Hierarchy Control Panel, Architectural Decisions & Changelog, IMPLEMENT.md — TINDA POS Web Engineering Log
 
+### Community 29 - "SYSTEM_MASTER.md — TINDA POS Web Architecture"
+Cohesion: 0.25
+Nodes (7): 1. System Identity & North Star, 2. Tech Stack & Environment Locks, 3. Data Schema & Core Stores, 4. Business Logic Guardrails, 5. Verification & Definition of Done, 6. Forbidden Actions, SYSTEM_MASTER.md — TINDA POS Web Architecture
+
 ## Knowledge Gaps
 - **10 isolated node(s):** `@zxing/library`, `clsx`, `tailwind-merge`, `@types/canvas-confetti`, `@types/react` (+5 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 232 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 236 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react` connect `types.ts` to `App.tsx`, `POSScreen.tsx`, `VaultAuthModal.tsx`, `SettingsScreen.tsx`, `package.json`, `RewardedAdModal.tsx`?**
+- **Why does `react` connect `types.ts` to `App.tsx`, `POSScreen.tsx`, `VipUpgradeModal.tsx`, `VaultAuthModal.tsx`, `SettingsScreen.tsx`, `package.json`, `RewardedAdModal.tsx`?**
   _High betweenness centrality (0.101) - this node is a cross-community bridge._
 - **What connects `@zxing/library`, `clsx`, `tailwind-merge` to the rest of the system?**
   _10 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `App.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.06390977443609022 - nodes in this community are weakly interconnected._
-- **Why does `lucide-react` connect `types.ts` to `App.tsx`, `POSScreen.tsx`, `VaultAuthModal.tsx`, `SettingsScreen.tsx`, `package.json`, `RewardedAdModal.tsx`?**
+  _Cohesion score 0.05837173579109063 - nodes in this community are weakly interconnected._
+- **Why does `lucide-react` connect `types.ts` to `App.tsx`, `POSScreen.tsx`, `VipUpgradeModal.tsx`, `VaultAuthModal.tsx`, `SettingsScreen.tsx`, `package.json`, `RewardedAdModal.tsx`?**
   _High betweenness centrality (0.070) - this node is a cross-community bridge._
 - **Should `POSScreen.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.08350951374207188 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0726764500349406 - nodes in this community are weakly interconnected._
 - **Why does `devDependencies` connect `devDependencies` to `package.json`?**
   _High betweenness centrality (0.026) - this node is a cross-community bridge._
 - **Should `types.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.06386292834890965 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07912322908313285 - nodes in this community are weakly interconnected._

@@ -176,45 +176,6 @@
       "source_location": "L18"
     },
     {
-      "id": "src_components_printingservicesscreen_presetservice",
-      "label": "PresetService",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "presetservice",
-      "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L23"
-    },
-    {
-      "id": "src_components_printingservicesscreen_printingservicesscreenprops",
-      "label": "PrintingServicesScreenProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "printingservicesscreenprops",
-      "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L105"
-    },
-    {
-      "id": "src_components_printingservicesscreen_servicecategory",
-      "label": "ServiceCategory",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "servicecategory",
-      "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L21"
-    },
-    {
       "id": "src_components_terminaltoolsmodal_terminaltoolsmodalprops",
       "label": "TerminalToolsModalProps",
       "_callable": true,
@@ -226,6 +187,32 @@
       "norm_label": "terminaltoolsmodalprops",
       "source_file": "src/components/TerminalToolsModal.tsx",
       "source_location": "L22"
+    },
+    {
+      "id": "src_components_utangscreen_utangfiltertab",
+      "label": "UtangFilterTab",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "utangfiltertab",
+      "source_file": "src/components/UtangScreen.tsx",
+      "source_location": "L33"
+    },
+    {
+      "id": "src_components_utangscreen_utangscreenprops",
+      "label": "UtangScreenProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "utangscreenprops",
+      "source_file": "src/components/UtangScreen.tsx",
+      "source_location": "L26"
     },
     {
       "id": "src_components_barcodescannermodal_barcodescannermodalprops",
@@ -371,56 +358,69 @@
       "source_location": "L89"
     },
     {
-      "id": "src_components_pricetagprintmodal_pricetagprintmodalprops",
-      "label": "PriceTagPrintModalProps",
+      "id": "src_components_printingservicesscreen_presetservice",
+      "label": "PresetService",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "POSScreen.tsx",
       "file_type": "code",
-      "norm_label": "pricetagprintmodalprops",
-      "source_file": "src/components/PriceTagPrintModal.tsx",
-      "source_location": "L28"
+      "norm_label": "presetservice",
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L39"
     },
     {
-      "id": "src_components_pricetagprintmodal_tagsizepreset",
-      "label": "TagSizePreset",
+      "id": "src_components_printingservicesscreen_printingservicesscreenprops",
+      "label": "PrintingServicesScreenProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "POSScreen.tsx",
       "file_type": "code",
-      "norm_label": "tagsizepreset",
-      "source_file": "src/components/PriceTagPrintModal.tsx",
-      "source_location": "L19"
+      "norm_label": "printingservicesscreenprops",
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L349"
     },
     {
-      "id": "src_utils_barcode_barcodeprops",
-      "label": "BarcodeProps",
+      "id": "src_components_printingservicesscreen_printjobrecord",
+      "label": "PrintJobRecord",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "POSScreen.tsx",
       "file_type": "code",
-      "norm_label": "barcodeprops",
-      "source_file": "src/utils/barcode.tsx",
-      "source_location": "L156"
+      "norm_label": "printjobrecord",
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L56"
     },
     {
-      "id": "src_utils_barcode_barcodesvgoptions",
-      "label": "BarcodeSvgOptions",
+      "id": "src_components_printingservicesscreen_servicecategory",
+      "label": "ServiceCategory",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "POSScreen.tsx",
       "file_type": "code",
-      "norm_label": "barcodesvgoptions",
-      "source_file": "src/utils/barcode.tsx",
-      "source_location": "L54"
+      "norm_label": "servicecategory",
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L37"
+    },
+    {
+      "id": "src_components_printingservicesscreen_supplyitem",
+      "label": "SupplyItem",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "supplyitem",
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L74"
     },
     {
       "id": "src_components_rewardedadmodal_rewardedadmodalprops",
@@ -460,84 +460,6 @@
       "norm_label": "env",
       "source_file": "functions/api/prices.ts",
       "source_location": "L4"
-    },
-    {
-      "id": "src_components_analyticsscreen_analyticsscreenprops",
-      "label": "AnalyticsScreenProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "analyticsscreenprops",
-      "source_file": "src/components/AnalyticsScreen.tsx",
-      "source_location": "L24"
-    },
-    {
-      "id": "src_components_analyticsscreen_analyticstab",
-      "label": "AnalyticsTab",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "analyticstab",
-      "source_file": "src/components/AnalyticsScreen.tsx",
-      "source_location": "L33"
-    },
-    {
-      "id": "src_components_checkoutmodal_checkoutmodalprops",
-      "label": "CheckoutModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "checkoutmodalprops",
-      "source_file": "src/components/CheckoutModal.tsx",
-      "source_location": "L31"
-    },
-    {
-      "id": "src_components_customersscreen_customersscreenprops",
-      "label": "CustomersScreenProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "customersscreenprops",
-      "source_file": "src/components/CustomersScreen.tsx",
-      "source_location": "L22"
-    },
-    {
-      "id": "src_components_dashboardscreen_dashboardscreenprops",
-      "label": "DashboardScreenProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "dashboardscreenprops",
-      "source_file": "src/components/DashboardScreen.tsx",
-      "source_location": "L31"
-    },
-    {
-      "id": "src_components_expensesscreen_expensesscreenprops",
-      "label": "ExpensesScreenProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "expensesscreenprops",
-      "source_file": "src/components/ExpensesScreen.tsx",
-      "source_location": "L20"
     },
     {
       "id": "src_components_expirationtrackermodal_expirationtrackermodalprops",
@@ -618,32 +540,6 @@
       "source_location": "L45"
     },
     {
-      "id": "src_components_navigation_activetab",
-      "label": "ActiveTab",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "activetab",
-      "source_file": "src/components/Navigation.tsx",
-      "source_location": "L36"
-    },
-    {
-      "id": "src_components_posscreen_posscreenprops",
-      "label": "POSScreenProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "posscreenprops",
-      "source_file": "src/components/POSScreen.tsx",
-      "source_location": "L66"
-    },
-    {
       "id": "src_components_priceguidemodal_priceguidemodalprops",
       "label": "PriceGuideModalProps",
       "_callable": true,
@@ -657,95 +553,17 @@
       "source_location": "L20"
     },
     {
-      "id": "src_components_printreportmodal_printreportmodalprops",
-      "label": "PrintReportModalProps",
+      "id": "src_components_userprofilemodal_userprofilemodalprops",
+      "label": "UserProfileModalProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 2,
       "community_name": "types.ts",
       "file_type": "code",
-      "norm_label": "printreportmodalprops",
-      "source_file": "src/components/PrintReportModal.tsx",
+      "norm_label": "userprofilemodalprops",
+      "source_file": "src/components/UserProfileModal.tsx",
       "source_location": "L20"
-    },
-    {
-      "id": "src_components_receipt_receiptprops",
-      "label": "ReceiptProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "receiptprops",
-      "source_file": "src/components/Receipt.tsx",
-      "source_location": "L17"
-    },
-    {
-      "id": "src_components_reportsscreen_reportsscreenprops",
-      "label": "ReportsScreenProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "reportsscreenprops",
-      "source_file": "src/components/ReportsScreen.tsx",
-      "source_location": "L22"
-    },
-    {
-      "id": "src_components_salesmonitormodal_salesmonitormodalprops",
-      "label": "SalesMonitorModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "salesmonitormodalprops",
-      "source_file": "src/components/SalesMonitorModal.tsx",
-      "source_location": "L22"
-    },
-    {
-      "id": "src_components_transactionsscreen_transactionsscreenprops",
-      "label": "TransactionsScreenProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "transactionsscreenprops",
-      "source_file": "src/components/TransactionsScreen.tsx",
-      "source_location": "L23"
-    },
-    {
-      "id": "src_components_utangscreen_utangfiltertab",
-      "label": "UtangFilterTab",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "utangfiltertab",
-      "source_file": "src/components/UtangScreen.tsx",
-      "source_location": "L33"
-    },
-    {
-      "id": "src_components_utangscreen_utangscreenprops",
-      "label": "UtangScreenProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "utangscreenprops",
-      "source_file": "src/components/UtangScreen.tsx",
-      "source_location": "L26"
     },
     {
       "id": "src_db_index_tindawebdatabase",
@@ -774,19 +592,6 @@
       "source_location": "L4"
     },
     {
-      "id": "src_types_cartitem",
-      "label": "CartItem",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "cartitem",
-      "source_file": "src/types.ts",
-      "source_location": "L33"
-    },
-    {
       "id": "src_types_cashcountrecord",
       "label": "CashCountRecord",
       "_callable": true,
@@ -813,45 +618,6 @@
       "source_location": "L3"
     },
     {
-      "id": "src_types_customer",
-      "label": "Customer",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "customer",
-      "source_file": "src/types.ts",
-      "source_location": "L112"
-    },
-    {
-      "id": "src_types_discounttype",
-      "label": "DiscountType",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "discounttype",
-      "source_file": "src/types.ts",
-      "source_location": "L42"
-    },
-    {
-      "id": "src_types_expense",
-      "label": "Expense",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "expense",
-      "source_file": "src/types.ts",
-      "source_location": "L180"
-    },
-    {
       "id": "src_types_expensecategory",
       "label": "ExpenseCategory",
       "_callable": true,
@@ -876,19 +642,6 @@
       "norm_label": "heldcart",
       "source_file": "src/types.ts",
       "source_location": "L52"
-    },
-    {
-      "id": "src_types_paymentmethod",
-      "label": "PaymentMethod",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "paymentmethod",
-      "source_file": "src/types.ts",
-      "source_location": "L44"
     },
     {
       "id": "src_types_pricereference",
@@ -995,19 +748,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_types_storesettings",
-      "label": "StoreSettings",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "storesettings",
-      "source_file": "src/types.ts",
-      "source_location": "L140"
-    },
-    {
       "id": "src_types_supplier",
       "label": "Supplier",
       "_callable": true,
@@ -1021,17 +761,17 @@
       "source_location": "L191"
     },
     {
-      "id": "src_types_transaction",
-      "label": "Transaction",
+      "id": "src_types_useraccount",
+      "label": "UserAccount",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 2,
       "community_name": "types.ts",
       "file_type": "code",
-      "norm_label": "transaction",
+      "norm_label": "useraccount",
       "source_file": "src/types.ts",
-      "source_location": "L72"
+      "source_location": "L158"
     },
     {
       "id": "src_types_zreadrecord",
@@ -1073,17 +813,316 @@
       "source_location": "L4"
     },
     {
-      "id": "src_components_vipupgrademodal_vipupgrademodalprops",
-      "label": "VipUpgradeModalProps",
+      "id": "src_components_analyticsscreen_analyticsscreenprops",
+      "label": "AnalyticsScreenProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "vipupgrademodalprops",
-      "source_file": "src/components/VipUpgradeModal.tsx",
+      "norm_label": "analyticsscreenprops",
+      "source_file": "src/components/AnalyticsScreen.tsx",
+      "source_location": "L24"
+    },
+    {
+      "id": "src_components_analyticsscreen_analyticstab",
+      "label": "AnalyticsTab",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "analyticstab",
+      "source_file": "src/components/AnalyticsScreen.tsx",
+      "source_location": "L33"
+    },
+    {
+      "id": "src_components_checkoutmodal_checkoutmodalprops",
+      "label": "CheckoutModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "checkoutmodalprops",
+      "source_file": "src/components/CheckoutModal.tsx",
+      "source_location": "L31"
+    },
+    {
+      "id": "src_components_customersscreen_customersscreenprops",
+      "label": "CustomersScreenProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "customersscreenprops",
+      "source_file": "src/components/CustomersScreen.tsx",
+      "source_location": "L22"
+    },
+    {
+      "id": "src_components_dashboardscreen_dashboardscreenprops",
+      "label": "DashboardScreenProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "dashboardscreenprops",
+      "source_file": "src/components/DashboardScreen.tsx",
+      "source_location": "L31"
+    },
+    {
+      "id": "src_components_expensesscreen_expensesscreenprops",
+      "label": "ExpensesScreenProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "expensesscreenprops",
+      "source_file": "src/components/ExpensesScreen.tsx",
       "source_location": "L20"
+    },
+    {
+      "id": "src_components_navigation_activetab",
+      "label": "ActiveTab",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "activetab",
+      "source_file": "src/components/Navigation.tsx",
+      "source_location": "L36"
+    },
+    {
+      "id": "src_components_posscreen_posscreenprops",
+      "label": "POSScreenProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "posscreenprops",
+      "source_file": "src/components/POSScreen.tsx",
+      "source_location": "L66"
+    },
+    {
+      "id": "src_components_pricetagprintmodal_pricetagprintmodalprops",
+      "label": "PriceTagPrintModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "pricetagprintmodalprops",
+      "source_file": "src/components/PriceTagPrintModal.tsx",
+      "source_location": "L28"
+    },
+    {
+      "id": "src_components_pricetagprintmodal_tagsizepreset",
+      "label": "TagSizePreset",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "tagsizepreset",
+      "source_file": "src/components/PriceTagPrintModal.tsx",
+      "source_location": "L19"
+    },
+    {
+      "id": "src_components_printreportmodal_printreportmodalprops",
+      "label": "PrintReportModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "printreportmodalprops",
+      "source_file": "src/components/PrintReportModal.tsx",
+      "source_location": "L20"
+    },
+    {
+      "id": "src_components_receipt_receiptprops",
+      "label": "ReceiptProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "receiptprops",
+      "source_file": "src/components/Receipt.tsx",
+      "source_location": "L17"
+    },
+    {
+      "id": "src_components_reportsscreen_reportsscreenprops",
+      "label": "ReportsScreenProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "reportsscreenprops",
+      "source_file": "src/components/ReportsScreen.tsx",
+      "source_location": "L22"
+    },
+    {
+      "id": "src_components_salesmonitormodal_salesmonitormodalprops",
+      "label": "SalesMonitorModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "salesmonitormodalprops",
+      "source_file": "src/components/SalesMonitorModal.tsx",
+      "source_location": "L22"
+    },
+    {
+      "id": "src_components_transactionsscreen_transactionsscreenprops",
+      "label": "TransactionsScreenProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "transactionsscreenprops",
+      "source_file": "src/components/TransactionsScreen.tsx",
+      "source_location": "L23"
+    },
+    {
+      "id": "src_types_cartitem",
+      "label": "CartItem",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "cartitem",
+      "source_file": "src/types.ts",
+      "source_location": "L33"
+    },
+    {
+      "id": "src_types_customer",
+      "label": "Customer",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "customer",
+      "source_file": "src/types.ts",
+      "source_location": "L112"
+    },
+    {
+      "id": "src_types_discounttype",
+      "label": "DiscountType",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "discounttype",
+      "source_file": "src/types.ts",
+      "source_location": "L42"
+    },
+    {
+      "id": "src_types_expense",
+      "label": "Expense",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "expense",
+      "source_file": "src/types.ts",
+      "source_location": "L180"
+    },
+    {
+      "id": "src_types_paymentmethod",
+      "label": "PaymentMethod",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "paymentmethod",
+      "source_file": "src/types.ts",
+      "source_location": "L44"
+    },
+    {
+      "id": "src_types_storesettings",
+      "label": "StoreSettings",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "storesettings",
+      "source_file": "src/types.ts",
+      "source_location": "L140"
+    },
+    {
+      "id": "src_types_transaction",
+      "label": "Transaction",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "transaction",
+      "source_file": "src/types.ts",
+      "source_location": "L72"
+    },
+    {
+      "id": "src_utils_barcode_barcodeprops",
+      "label": "BarcodeProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "barcodeprops",
+      "source_file": "src/utils/barcode.tsx",
+      "source_location": "L156"
+    },
+    {
+      "id": "src_utils_barcode_barcodesvgoptions",
+      "label": "BarcodeSvgOptions",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "barcodesvgoptions",
+      "source_file": "src/utils/barcode.tsx",
+      "source_location": "L54"
     },
     {
       "id": "functions_shared_auth_d1database",
@@ -1242,19 +1281,6 @@
       "source_location": "L257"
     },
     {
-      "id": "src_types_useraccount",
-      "label": "UserAccount",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "VaultAuthModal.tsx",
-      "file_type": "code",
-      "norm_label": "useraccount",
-      "source_file": "src/types.ts",
-      "source_location": "L158"
-    },
-    {
       "id": "src_types_userrole",
       "label": "UserRole",
       "_callable": true,
@@ -1294,16 +1320,16 @@
       "source_location": "L41"
     },
     {
-      "id": "src_components_userprofilemodal_userprofilemodalprops",
-      "label": "UserProfileModalProps",
+      "id": "src_components_vipupgrademodal_vipupgrademodalprops",
+      "label": "VipUpgradeModalProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 6,
       "community_name": "SettingsScreen.tsx",
       "file_type": "code",
-      "norm_label": "userprofilemodalprops",
-      "source_file": "src/components/UserProfileModal.tsx",
+      "norm_label": "vipupgrademodalprops",
+      "source_file": "src/components/VipUpgradeModal.tsx",
       "source_location": "L20"
     },
     {
@@ -1395,18 +1421,6 @@
       "source_location": "L17"
     },
     {
-      "id": "src_components_checkoutmodal_checkoutmodal",
-      "label": "CheckoutModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "checkoutmodal()",
-      "source_file": "src/components/CheckoutModal.tsx",
-      "source_location": "L49"
-    },
-    {
       "id": "src_components_customersscreen_customersscreen",
       "label": "CustomersScreen()",
       "_callable": true,
@@ -1417,18 +1431,6 @@
       "norm_label": "customersscreen()",
       "source_file": "src/components/CustomersScreen.tsx",
       "source_location": "L28"
-    },
-    {
-      "id": "src_components_dashboardscreen_dashboardscreen",
-      "label": "DashboardScreen()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "dashboardscreen()",
-      "source_file": "src/components/DashboardScreen.tsx",
-      "source_location": "L46"
     },
     {
       "id": "src_components_errorboundary_errorboundary_componentdidcatch",
@@ -1563,6 +1565,18 @@
       "source_location": "L90"
     },
     {
+      "id": "src_components_priceguidemodal_priceguidemodal",
+      "label": "PriceGuideModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "priceguidemodal()",
+      "source_file": "src/components/PriceGuideModal.tsx",
+      "source_location": "L39"
+    },
+    {
       "id": "src_components_printerstudiomodal_printerstudiomodal",
       "label": "PrinterStudioModal()",
       "_callable": true,
@@ -1573,18 +1587,6 @@
       "norm_label": "printerstudiomodal()",
       "source_file": "src/components/PrinterStudioModal.tsx",
       "source_location": "L25"
-    },
-    {
-      "id": "src_components_printingservicesscreen_printingservicesscreen",
-      "label": "PrintingServicesScreen()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "printingservicesscreen()",
-      "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L111"
     },
     {
       "id": "src_components_reportsscreen_reportsscreen",
@@ -1633,18 +1635,6 @@
       "norm_label": "terminaltoolsmodal()",
       "source_file": "src/components/TerminalToolsModal.tsx",
       "source_location": "L33"
-    },
-    {
-      "id": "src_components_transactionsscreen_transactionsscreen",
-      "label": "TransactionsScreen()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "transactionsscreen()",
-      "source_file": "src/components/TransactionsScreen.tsx",
-      "source_location": "L31"
     },
     {
       "id": "src_components_utangscreen_utangscreen",
@@ -1803,16 +1793,16 @@
       "source_location": "L2504"
     },
     {
-      "id": "src_components_pricetagprintmodal_pricetagprintmodal",
-      "label": "PriceTagPrintModal()",
+      "id": "src_components_printingservicesscreen_printingservicesscreen",
+      "label": "PrintingServicesScreen()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "POSScreen.tsx",
       "file_type": "code",
-      "norm_label": "pricetagprintmodal()",
-      "source_file": "src/components/PriceTagPrintModal.tsx",
-      "source_location": "L36"
+      "norm_label": "printingservicesscreen()",
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L355"
     },
     {
       "id": "src_lib_sound_getaudiocontext",
@@ -1897,54 +1887,6 @@
       "norm_label": "setsoundmuted()",
       "source_file": "src/lib/sound.ts",
       "source_location": "L29"
-    },
-    {
-      "id": "src_utils_barcode_countconsecutivedigits",
-      "label": "countConsecutiveDigits()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "POSScreen.tsx",
-      "file_type": "code",
-      "norm_label": "countconsecutivedigits()",
-      "source_file": "src/utils/barcode.tsx",
-      "source_location": "L33"
-    },
-    {
-      "id": "src_utils_barcode_escapexml",
-      "label": "escapeXml()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "POSScreen.tsx",
-      "file_type": "code",
-      "norm_label": "escapexml()",
-      "source_file": "src/utils/barcode.tsx",
-      "source_location": "L41"
-    },
-    {
-      "id": "src_utils_barcode_generatebarcodesvg",
-      "label": "generateBarcodeSvg()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "POSScreen.tsx",
-      "file_type": "code",
-      "norm_label": "generatebarcodesvg()",
-      "source_file": "src/utils/barcode.tsx",
-      "source_location": "L67"
-    },
-    {
-      "id": "src_utils_format_money",
-      "label": "money()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "POSScreen.tsx",
-      "file_type": "code",
-      "norm_label": "money()",
-      "source_file": "src/utils/format.ts",
-      "source_location": "L1"
     },
     {
       "id": "src_components_rewardedadmodal_rewardedadmodal",
@@ -2043,40 +1985,16 @@
       "source_location": "L10"
     },
     {
-      "id": "src_components_analyticsscreen_analyticsscreen",
-      "label": "AnalyticsScreen()",
+      "id": "src_components_userprofilemodal_userprofilemodal",
+      "label": "UserProfileModal()",
       "_callable": true,
       "_origin": "ast",
       "community": 2,
       "community_name": "types.ts",
       "file_type": "code",
-      "norm_label": "analyticsscreen()",
-      "source_file": "src/components/AnalyticsScreen.tsx",
-      "source_location": "L48"
-    },
-    {
-      "id": "src_components_priceguidemodal_priceguidemodal",
-      "label": "PriceGuideModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "priceguidemodal()",
-      "source_file": "src/components/PriceGuideModal.tsx",
-      "source_location": "L39"
-    },
-    {
-      "id": "src_components_printreportmodal_printreportmodal",
-      "label": "PrintReportModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "printreportmodal()",
-      "source_file": "src/components/PrintReportModal.tsx",
-      "source_location": "L36"
+      "norm_label": "userprofilemodal()",
+      "source_file": "src/components/UserProfileModal.tsx",
+      "source_location": "L33"
     },
     {
       "id": "src_db_index_tindawebdatabase_constructor",
@@ -2103,30 +2021,6 @@
       "source_location": "L17"
     },
     {
-      "id": "src_utils_barcode_barcode",
-      "label": "Barcode()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "barcode()",
-      "source_file": "src/utils/barcode.tsx",
-      "source_location": "L167"
-    },
-    {
-      "id": "src_utils_format_formatdatetime",
-      "label": "formatDateTime()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "formatdatetime()",
-      "source_file": "src/utils/format.ts",
-      "source_location": "L17"
-    },
-    {
       "id": "src_utils_format_formatshortdate",
       "label": "formatShortDate()",
       "_callable": true,
@@ -2139,28 +2033,16 @@
       "source_location": "L30"
     },
     {
-      "id": "src_utils_format_moneyshort",
-      "label": "moneyShort()",
+      "id": "src_utils_image_compressimagefile",
+      "label": "compressImageFile()",
       "_callable": true,
       "_origin": "ast",
       "community": 2,
       "community_name": "types.ts",
       "file_type": "code",
-      "norm_label": "moneyshort()",
-      "source_file": "src/utils/format.ts",
-      "source_location": "L39"
-    },
-    {
-      "id": "src_utils_format_parsepesotocents",
-      "label": "parsePesoToCents()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "parsepesotocents()",
-      "source_file": "src/utils/format.ts",
-      "source_location": "L10"
+      "norm_label": "compressimagefile()",
+      "source_file": "src/utils/image.ts",
+      "source_location": "L6"
     },
     {
       "id": "src_utils_srp_findsuggestedprice",
@@ -2187,88 +2069,184 @@
       "source_location": "L64"
     },
     {
-      "id": "src_components_vipupgrademodal_vipupgrademodal",
-      "label": "VipUpgradeModal()",
+      "id": "src_components_analyticsscreen_analyticsscreen",
+      "label": "AnalyticsScreen()",
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "vipupgrademodal()",
-      "source_file": "src/components/VipUpgradeModal.tsx",
-      "source_location": "L26"
+      "norm_label": "analyticsscreen()",
+      "source_file": "src/components/AnalyticsScreen.tsx",
+      "source_location": "L48"
     },
     {
-      "id": "src_utils_security_bytestohex",
-      "label": "bytesToHex()",
+      "id": "src_components_checkoutmodal_checkoutmodal",
+      "label": "CheckoutModal()",
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "bytestohex()",
-      "source_file": "src/utils/security.ts",
-      "source_location": "L9"
+      "norm_label": "checkoutmodal()",
+      "source_file": "src/components/CheckoutModal.tsx",
+      "source_location": "L49"
     },
     {
-      "id": "src_utils_security_getdevicemachineid",
-      "label": "getDeviceMachineId()",
+      "id": "src_components_dashboardscreen_dashboardscreen",
+      "label": "DashboardScreen()",
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "getdevicemachineid()",
-      "source_file": "src/utils/security.ts",
-      "source_location": "L100"
+      "norm_label": "dashboardscreen()",
+      "source_file": "src/components/DashboardScreen.tsx",
+      "source_location": "L46"
     },
     {
-      "id": "src_utils_security_hashpin",
-      "label": "hashPin()",
+      "id": "src_components_pricetagprintmodal_pricetagprintmodal",
+      "label": "PriceTagPrintModal()",
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "hashpin()",
-      "source_file": "src/utils/security.ts",
-      "source_location": "L26"
+      "norm_label": "pricetagprintmodal()",
+      "source_file": "src/components/PriceTagPrintModal.tsx",
+      "source_location": "L36"
     },
     {
-      "id": "src_utils_security_hextobytes",
-      "label": "hexToBytes()",
+      "id": "src_components_printreportmodal_printreportmodal",
+      "label": "PrintReportModal()",
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "hextobytes()",
-      "source_file": "src/utils/security.ts",
-      "source_location": "L15"
+      "norm_label": "printreportmodal()",
+      "source_file": "src/components/PrintReportModal.tsx",
+      "source_location": "L36"
     },
     {
-      "id": "src_utils_security_sanitizebarcodeinput",
-      "label": "sanitizeBarcodeInput()",
+      "id": "src_components_receipt_receipt",
+      "label": "Receipt()",
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "sanitizebarcodeinput()",
-      "source_file": "src/utils/security.ts",
-      "source_location": "L88"
+      "norm_label": "receipt()",
+      "source_file": "src/components/Receipt.tsx",
+      "source_location": "L54"
     },
     {
-      "id": "src_utils_security_verifypin",
-      "label": "verifyPin()",
+      "id": "src_components_transactionsscreen_transactionsscreen",
+      "label": "TransactionsScreen()",
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "verifypin()",
-      "source_file": "src/utils/security.ts",
-      "source_location": "L58"
+      "norm_label": "transactionsscreen()",
+      "source_file": "src/components/TransactionsScreen.tsx",
+      "source_location": "L31"
+    },
+    {
+      "id": "src_utils_barcode_barcode",
+      "label": "Barcode()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "barcode()",
+      "source_file": "src/utils/barcode.tsx",
+      "source_location": "L167"
+    },
+    {
+      "id": "src_utils_barcode_countconsecutivedigits",
+      "label": "countConsecutiveDigits()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "countconsecutivedigits()",
+      "source_file": "src/utils/barcode.tsx",
+      "source_location": "L33"
+    },
+    {
+      "id": "src_utils_barcode_escapexml",
+      "label": "escapeXml()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "escapexml()",
+      "source_file": "src/utils/barcode.tsx",
+      "source_location": "L41"
+    },
+    {
+      "id": "src_utils_barcode_generatebarcodesvg",
+      "label": "generateBarcodeSvg()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "generatebarcodesvg()",
+      "source_file": "src/utils/barcode.tsx",
+      "source_location": "L67"
+    },
+    {
+      "id": "src_utils_format_formatdatetime",
+      "label": "formatDateTime()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "formatdatetime()",
+      "source_file": "src/utils/format.ts",
+      "source_location": "L17"
+    },
+    {
+      "id": "src_utils_format_money",
+      "label": "money()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "money()",
+      "source_file": "src/utils/format.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_utils_format_moneyshort",
+      "label": "moneyShort()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "moneyshort()",
+      "source_file": "src/utils/format.ts",
+      "source_location": "L39"
+    },
+    {
+      "id": "src_utils_format_parsepesotocents",
+      "label": "parsePesoToCents()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "parsepesotocents()",
+      "source_file": "src/utils/format.ts",
+      "source_location": "L10"
     },
     {
       "id": "functions_api_heartbeat_onrequestoptions",
@@ -2847,18 +2825,6 @@
       "source_location": "L32"
     },
     {
-      "id": "src_components_receipt_receipt",
-      "label": "Receipt()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SettingsScreen.tsx",
-      "file_type": "code",
-      "norm_label": "receipt()",
-      "source_file": "src/components/Receipt.tsx",
-      "source_location": "L54"
-    },
-    {
       "id": "src_components_settingsscreen_settingsscreen",
       "label": "SettingsScreen()",
       "_callable": true,
@@ -2871,16 +2837,16 @@
       "source_location": "L57"
     },
     {
-      "id": "src_components_userprofilemodal_userprofilemodal",
-      "label": "UserProfileModal()",
+      "id": "src_components_vipupgrademodal_vipupgrademodal",
+      "label": "VipUpgradeModal()",
       "_callable": true,
       "_origin": "ast",
       "community": 6,
       "community_name": "SettingsScreen.tsx",
       "file_type": "code",
-      "norm_label": "userprofilemodal()",
-      "source_file": "src/components/UserProfileModal.tsx",
-      "source_location": "L33"
+      "norm_label": "vipupgrademodal()",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L26"
     },
     {
       "id": "src_db_index_initdatabase",
@@ -2955,16 +2921,76 @@
       "source_location": "L116"
     },
     {
-      "id": "src_utils_image_compressimagefile",
-      "label": "compressImageFile()",
+      "id": "src_utils_security_bytestohex",
+      "label": "bytesToHex()",
       "_callable": true,
       "_origin": "ast",
       "community": 6,
       "community_name": "SettingsScreen.tsx",
       "file_type": "code",
-      "norm_label": "compressimagefile()",
-      "source_file": "src/utils/image.ts",
-      "source_location": "L6"
+      "norm_label": "bytestohex()",
+      "source_file": "src/utils/security.ts",
+      "source_location": "L9"
+    },
+    {
+      "id": "src_utils_security_getdevicemachineid",
+      "label": "getDeviceMachineId()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "getdevicemachineid()",
+      "source_file": "src/utils/security.ts",
+      "source_location": "L100"
+    },
+    {
+      "id": "src_utils_security_hashpin",
+      "label": "hashPin()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "hashpin()",
+      "source_file": "src/utils/security.ts",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_utils_security_hextobytes",
+      "label": "hexToBytes()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "hextobytes()",
+      "source_file": "src/utils/security.ts",
+      "source_location": "L15"
+    },
+    {
+      "id": "src_utils_security_sanitizebarcodeinput",
+      "label": "sanitizeBarcodeInput()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "sanitizebarcodeinput()",
+      "source_file": "src/utils/security.ts",
+      "source_location": "L88"
+    },
+    {
+      "id": "src_utils_security_verifypin",
+      "label": "verifyPin()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "verifypin()",
+      "source_file": "src/utils/security.ts",
+      "source_location": "L58"
     },
     {
       "id": "src_utils_theme_applytheme",
@@ -3159,28 +3185,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_components_printingservicesscreen",
-      "label": "PrintingServicesScreen.tsx",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "printingservicesscreen.tsx",
-      "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_printingservicesscreen_preset_services",
-      "label": "PRESET_SERVICES",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "preset_services",
-      "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L33"
-    },
-    {
       "id": "src_components_terminaltoolsmodal",
       "label": "TerminalToolsModal.tsx",
       "_origin": "ast",
@@ -3189,6 +3193,17 @@
       "file_type": "code",
       "norm_label": "terminaltoolsmodal.tsx",
       "source_file": "src/components/TerminalToolsModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_utangscreen",
+      "label": "UtangScreen.tsx",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "utangscreen.tsx",
+      "source_file": "src/components/UtangScreen.tsx",
       "source_location": "L1"
     },
     {
@@ -3346,26 +3361,37 @@
       "source_location": "L1"
     },
     {
-      "id": "src_components_pricetagprintmodal",
-      "label": "PriceTagPrintModal.tsx",
+      "id": "src_components_printingservicesscreen",
+      "label": "PrintingServicesScreen.tsx",
       "_origin": "ast",
       "community": 1,
       "community_name": "POSScreen.tsx",
       "file_type": "code",
-      "norm_label": "pricetagprintmodal.tsx",
-      "source_file": "src/components/PriceTagPrintModal.tsx",
+      "norm_label": "printingservicesscreen.tsx",
+      "source_file": "src/components/PrintingServicesScreen.tsx",
       "source_location": "L1"
     },
     {
-      "id": "src_components_pricetagprintmodal_preset_dimensions",
-      "label": "PRESET_DIMENSIONS",
+      "id": "src_components_printingservicesscreen_initial_preset_services",
+      "label": "INITIAL_PRESET_SERVICES",
       "_origin": "ast",
       "community": 1,
       "community_name": "POSScreen.tsx",
       "file_type": "code",
-      "norm_label": "preset_dimensions",
-      "source_file": "src/components/PriceTagPrintModal.tsx",
-      "source_location": "L21"
+      "norm_label": "initial_preset_services",
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L86"
+    },
+    {
+      "id": "src_components_printingservicesscreen_initial_supplies",
+      "label": "INITIAL_SUPPLIES",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "initial_supplies",
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L333"
     },
     {
       "id": "src_lib_sound",
@@ -3377,28 +3403,6 @@
       "norm_label": "sound.ts",
       "source_file": "src/lib/sound.ts",
       "source_location": "L1"
-    },
-    {
-      "id": "src_utils_barcode",
-      "label": "barcode.tsx",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "POSScreen.tsx",
-      "file_type": "code",
-      "norm_label": "barcode.tsx",
-      "source_file": "src/utils/barcode.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_utils_barcode_code128_patterns",
-      "label": "CODE128_PATTERNS",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "POSScreen.tsx",
-      "file_type": "code",
-      "norm_label": "code128_patterns",
-      "source_file": "src/utils/barcode.tsx",
-      "source_location": "L13"
     },
     {
       "id": "ref_zxing_browser",
@@ -3894,116 +3898,6 @@
       "source_location": "L1"
     },
     {
-      "id": "package_allowscripts",
-      "label": "allowScripts",
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "allowScripts",
-      "file_type": "code",
-      "norm_label": "allowscripts",
-      "source_file": "package.json",
-      "source_location": "L34"
-    },
-    {
-      "id": "package_allowscripts_esbuild_0_28_1",
-      "label": "esbuild@0.28.1",
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "allowScripts",
-      "file_type": "code",
-      "norm_label": "esbuild@0.28.1",
-      "source_file": "package.json",
-      "source_location": "L35"
-    },
-    {
-      "id": "tailwind_config",
-      "label": "tailwind.config.ts",
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "tailwindcss",
-      "file_type": "code",
-      "norm_label": "tailwind.config.ts",
-      "source_file": "tailwind.config.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "ref_tailwindcss",
-      "label": "tailwindcss",
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "tailwindcss",
-      "file_type": "concept",
-      "norm_label": "tailwindcss",
-      "source_file": "package.json",
-      "source_location": "L29"
-    },
-    {
-      "id": "src_components_analyticsscreen",
-      "label": "AnalyticsScreen.tsx",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "analyticsscreen.tsx",
-      "source_file": "src/components/AnalyticsScreen.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_analyticsscreen_denominations",
-      "label": "DENOMINATIONS",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "denominations",
-      "source_file": "src/components/AnalyticsScreen.tsx",
-      "source_location": "L35"
-    },
-    {
-      "id": "src_components_checkoutmodal",
-      "label": "CheckoutModal.tsx",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "checkoutmodal.tsx",
-      "source_file": "src/components/CheckoutModal.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_customersscreen",
-      "label": "CustomersScreen.tsx",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "customersscreen.tsx",
-      "source_file": "src/components/CustomersScreen.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_dashboardscreen",
-      "label": "DashboardScreen.tsx",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "dashboardscreen.tsx",
-      "source_file": "src/components/DashboardScreen.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_expensesscreen",
-      "label": "ExpensesScreen.tsx",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "expensesscreen.tsx",
-      "source_file": "src/components/ExpensesScreen.tsx",
-      "source_location": "L1"
-    },
-    {
       "id": "src_components_expirationtrackermodal",
       "label": "ExpirationTrackerModal.tsx",
       "_origin": "ast",
@@ -4048,61 +3942,6 @@
       "source_location": "L28"
     },
     {
-      "id": "src_components_printreportmodal",
-      "label": "PrintReportModal.tsx",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "printreportmodal.tsx",
-      "source_file": "src/components/PrintReportModal.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_receipt",
-      "label": "Receipt.tsx",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "receipt.tsx",
-      "source_file": "src/components/Receipt.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_receipt_default_receipt_config",
-      "label": "DEFAULT_RECEIPT_CONFIG",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "default_receipt_config",
-      "source_file": "src/components/Receipt.tsx",
-      "source_location": "L39"
-    },
-    {
-      "id": "src_components_reportsscreen",
-      "label": "ReportsScreen.tsx",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "reportsscreen.tsx",
-      "source_file": "src/components/ReportsScreen.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_salesmonitormodal",
-      "label": "SalesMonitorModal.tsx",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "salesmonitormodal.tsx",
-      "source_file": "src/components/SalesMonitorModal.tsx",
-      "source_location": "L1"
-    },
-    {
       "id": "src_components_suppliersscreen",
       "label": "SuppliersScreen.tsx",
       "_origin": "ast",
@@ -4114,25 +3953,14 @@
       "source_location": "L1"
     },
     {
-      "id": "src_components_transactionsscreen",
-      "label": "TransactionsScreen.tsx",
+      "id": "src_components_userprofilemodal",
+      "label": "UserProfileModal.tsx",
       "_origin": "ast",
       "community": 2,
       "community_name": "types.ts",
       "file_type": "code",
-      "norm_label": "transactionsscreen.tsx",
-      "source_file": "src/components/TransactionsScreen.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_utangscreen",
-      "label": "UtangScreen.tsx",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "utangscreen.tsx",
-      "source_file": "src/components/UtangScreen.tsx",
+      "norm_label": "userprofilemodal.tsx",
+      "source_file": "src/components/UserProfileModal.tsx",
       "source_location": "L1"
     },
     {
@@ -4202,14 +4030,14 @@
       "source_location": "L1"
     },
     {
-      "id": "src_utils_format",
-      "label": "format.ts",
+      "id": "src_utils_image",
+      "label": "image.ts",
       "_origin": "ast",
       "community": 2,
       "community_name": "types.ts",
       "file_type": "code",
-      "norm_label": "format.ts",
-      "source_file": "src/utils/format.ts",
+      "norm_label": "image.ts",
+      "source_file": "src/utils/image.ts",
       "source_location": "L1"
     },
     {
@@ -4222,28 +4050,6 @@
       "norm_label": "srp.ts",
       "source_file": "src/utils/srp.ts",
       "source_location": "L1"
-    },
-    {
-      "id": "ref_lucide_react",
-      "label": "lucide-react",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "concept",
-      "norm_label": "lucide-react",
-      "source_file": "package.json",
-      "source_location": "L17"
-    },
-    {
-      "id": "ref_react",
-      "label": "react",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "concept",
-      "norm_label": "react",
-      "source_file": "package.json",
-      "source_location": "L18"
     },
     {
       "id": "postcss_config",
@@ -5408,26 +5214,213 @@
       "source_location": "L1"
     },
     {
-      "id": "src_components_vipupgrademodal",
-      "label": "VipUpgradeModal.tsx",
+      "id": "src_components_analyticsscreen",
+      "label": "AnalyticsScreen.tsx",
       "_origin": "ast",
       "community": 3,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "vipupgrademodal.tsx",
-      "source_file": "src/components/VipUpgradeModal.tsx",
+      "norm_label": "analyticsscreen.tsx",
+      "source_file": "src/components/AnalyticsScreen.tsx",
       "source_location": "L1"
     },
     {
-      "id": "src_utils_security",
-      "label": "security.ts",
+      "id": "src_components_analyticsscreen_denominations",
+      "label": "DENOMINATIONS",
       "_origin": "ast",
       "community": 3,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "security.ts",
-      "source_file": "src/utils/security.ts",
+      "norm_label": "denominations",
+      "source_file": "src/components/AnalyticsScreen.tsx",
+      "source_location": "L35"
+    },
+    {
+      "id": "src_components_checkoutmodal",
+      "label": "CheckoutModal.tsx",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "checkoutmodal.tsx",
+      "source_file": "src/components/CheckoutModal.tsx",
       "source_location": "L1"
+    },
+    {
+      "id": "src_components_customersscreen",
+      "label": "CustomersScreen.tsx",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "customersscreen.tsx",
+      "source_file": "src/components/CustomersScreen.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_dashboardscreen",
+      "label": "DashboardScreen.tsx",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "dashboardscreen.tsx",
+      "source_file": "src/components/DashboardScreen.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_expensesscreen",
+      "label": "ExpensesScreen.tsx",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "expensesscreen.tsx",
+      "source_file": "src/components/ExpensesScreen.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_pricetagprintmodal",
+      "label": "PriceTagPrintModal.tsx",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "pricetagprintmodal.tsx",
+      "source_file": "src/components/PriceTagPrintModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_pricetagprintmodal_preset_dimensions",
+      "label": "PRESET_DIMENSIONS",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "preset_dimensions",
+      "source_file": "src/components/PriceTagPrintModal.tsx",
+      "source_location": "L21"
+    },
+    {
+      "id": "src_components_printreportmodal",
+      "label": "PrintReportModal.tsx",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "printreportmodal.tsx",
+      "source_file": "src/components/PrintReportModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_receipt",
+      "label": "Receipt.tsx",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "receipt.tsx",
+      "source_file": "src/components/Receipt.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_receipt_default_receipt_config",
+      "label": "DEFAULT_RECEIPT_CONFIG",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "default_receipt_config",
+      "source_file": "src/components/Receipt.tsx",
+      "source_location": "L39"
+    },
+    {
+      "id": "src_components_reportsscreen",
+      "label": "ReportsScreen.tsx",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "reportsscreen.tsx",
+      "source_file": "src/components/ReportsScreen.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_salesmonitormodal",
+      "label": "SalesMonitorModal.tsx",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "salesmonitormodal.tsx",
+      "source_file": "src/components/SalesMonitorModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_transactionsscreen",
+      "label": "TransactionsScreen.tsx",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "transactionsscreen.tsx",
+      "source_file": "src/components/TransactionsScreen.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_utils_barcode",
+      "label": "barcode.tsx",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "barcode.tsx",
+      "source_file": "src/utils/barcode.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_utils_barcode_code128_patterns",
+      "label": "CODE128_PATTERNS",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "code128_patterns",
+      "source_file": "src/utils/barcode.tsx",
+      "source_location": "L13"
+    },
+    {
+      "id": "src_utils_format",
+      "label": "format.ts",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "format.ts",
+      "source_file": "src/utils/format.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "ref_lucide_react",
+      "label": "lucide-react",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "concept",
+      "norm_label": "lucide-react",
+      "source_file": "package.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "ref_react",
+      "label": "react",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "concept",
+      "norm_label": "react",
+      "source_file": "package.json",
+      "source_location": "L18"
     },
     {
       "id": "functions_api_heartbeat",
@@ -5668,14 +5661,14 @@
       "source_location": "L1"
     },
     {
-      "id": "src_components_userprofilemodal",
-      "label": "UserProfileModal.tsx",
+      "id": "src_components_vipupgrademodal",
+      "label": "VipUpgradeModal.tsx",
       "_origin": "ast",
       "community": 6,
       "community_name": "SettingsScreen.tsx",
       "file_type": "code",
-      "norm_label": "userprofilemodal.tsx",
-      "source_file": "src/components/UserProfileModal.tsx",
+      "norm_label": "vipupgrademodal.tsx",
+      "source_file": "src/components/VipUpgradeModal.tsx",
       "source_location": "L1"
     },
     {
@@ -5690,14 +5683,14 @@
       "source_location": "L1"
     },
     {
-      "id": "src_utils_image",
-      "label": "image.ts",
+      "id": "src_utils_security",
+      "label": "security.ts",
       "_origin": "ast",
       "community": 6,
       "community_name": "SettingsScreen.tsx",
       "file_type": "code",
-      "norm_label": "image.ts",
-      "source_file": "src/utils/image.ts",
+      "norm_label": "security.ts",
+      "source_file": "src/utils/security.ts",
       "source_location": "L1"
     },
     {
@@ -5921,6 +5914,28 @@
       "source_location": "L1"
     },
     {
+      "id": "package_allowscripts",
+      "label": "allowScripts",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "allowscripts",
+      "source_file": "package.json",
+      "source_location": "L34"
+    },
+    {
+      "id": "package_allowscripts_esbuild_0_28_1",
+      "label": "esbuild@0.28.1",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "esbuild@0.28.1",
+      "source_file": "package.json",
+      "source_location": "L35"
+    },
+    {
       "id": "package_name",
       "label": "name",
       "_origin": "ast",
@@ -5963,6 +5978,17 @@
       "norm_label": "version",
       "source_file": "package.json",
       "source_location": "L4"
+    },
+    {
+      "id": "tailwind_config",
+      "label": "tailwind.config.ts",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "package.json",
+      "file_type": "code",
+      "norm_label": "tailwind.config.ts",
+      "source_file": "tailwind.config.ts",
+      "source_location": "L1"
     },
     {
       "id": "ref_autoprefixer",
@@ -6018,6 +6044,17 @@
       "norm_label": "tailwind-merge",
       "source_file": "package.json",
       "source_location": "L20"
+    },
+    {
+      "id": "ref_tailwindcss",
+      "label": "tailwindcss",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "package.json",
+      "file_type": "concept",
+      "norm_label": "tailwindcss",
+      "source_file": "package.json",
+      "source_location": "L29"
     },
     {
       "id": "ref_types_canvas_confetti",
@@ -7934,26 +7971,50 @@
     },
     {
       "source": "src_components_printingservicesscreen_printingservicesscreen",
-      "target": "src_lib_sound_playsuccesssound",
+      "target": "src_lib_sound_playcheckoutchime",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L158",
+      "source_location": "L599",
       "weight": 1.0
     },
     {
       "source": "src_components_printingservicesscreen_printingservicesscreen",
-      "target": "src_utils_format_formatcurrency",
+      "target": "src_lib_sound_playscansuccess",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L324",
+      "source_location": "L626",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_printingservicesscreen_printingservicesscreen",
+      "target": "src_lib_sound_playscanerror",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L662",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_printingservicesscreen_printingservicesscreen",
+      "target": "src_utils_format_formatdatetime",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L691",
       "weight": 1.0
     },
     {
@@ -12035,19 +12096,55 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L18",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
       "source": "src_components_printingservicesscreen",
-      "target": "src_lib_sound_playsuccesssound",
+      "target": "src_utils_format_formatdatetime",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L19",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_printingservicesscreen",
+      "target": "src_lib_sound_playcheckoutchime",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_printingservicesscreen",
+      "target": "src_lib_sound_playscanerror",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_printingservicesscreen",
+      "target": "src_lib_sound_playscansuccess",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -15077,6 +15174,18 @@
     },
     {
       "source": "src_components_printingservicesscreen",
+      "target": "ref_lucide_react",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_printingservicesscreen",
       "target": "src_utils_format",
       "relation": "imports_from",
       "_origin": "ast",
@@ -15084,7 +15193,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L18",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -15096,19 +15205,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L19",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_printingservicesscreen",
-      "target": "ref_lucide_react",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L2",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -18988,13 +19085,24 @@
     },
     {
       "source": "src_components_printingservicesscreen",
+      "target": "src_components_printingservicesscreen_initial_supplies",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L333",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_printingservicesscreen",
       "target": "src_components_printingservicesscreen_printingservicesscreenprops",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L105",
+      "source_location": "L349",
       "weight": 1.0
     },
     {
@@ -19005,7 +19113,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L111",
+      "source_location": "L355",
       "weight": 1.0
     },
     {
@@ -19016,7 +19124,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L21",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -19027,18 +19135,40 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L23",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
       "source": "src_components_printingservicesscreen",
-      "target": "src_components_printingservicesscreen_preset_services",
+      "target": "src_components_printingservicesscreen_printjobrecord",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/PrintingServicesScreen.tsx",
-      "source_location": "L33",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_printingservicesscreen",
+      "target": "src_components_printingservicesscreen_supplyitem",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_printingservicesscreen",
+      "target": "src_components_printingservicesscreen_initial_preset_services",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/PrintingServicesScreen.tsx",
+      "source_location": "L86",
       "weight": 1.0
     },
     {
@@ -20993,5 +21123,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "db6c2a65ac2e1108bd5f66daf5b87345c8858e97"
+  "built_at_commit": "aa78ec13a03aa976d262ee8992ce3824d063752f"
 }

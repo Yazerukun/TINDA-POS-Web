@@ -22,6 +22,7 @@ export interface Product {
   low_stock_threshold?: number | null
   expiration_date?: string | null
   supplier_id?: number | null
+  pieces_per_case?: number | null
   image_path: string | null
   status: 'ACTIVE' | 'ARCHIVED'
   store_name?: string

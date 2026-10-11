@@ -159,6 +159,7 @@ export interface StoreSettings {
   paymongo_auto_complete?: boolean
   store_qr_image_url?: string
   store_qr_label?: string
+  theme?: 'emerald' | 'sapphire' | 'stealth' | 'cyber' | 'amber' | 'light'
 }
 
 export type UserRole = 'ADMIN' | 'CASHIER' | 'INVENTORY_LEAD'

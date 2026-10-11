@@ -252,9 +252,9 @@
     "semantic_hash": ""
   },
   "src/components/SettingsScreen.tsx": {
-    "mtime": 1791712184.148082,
-    "seen": 1791712231.9969165,
-    "ast_hash": "1bfb56491a0995fcdf56d31e0c7da69b",
+    "mtime": 1791713256.2477157,
+    "seen": 1791713286.3928268,
+    "ast_hash": "d9fcc29571b6648a4e3eff7bb48f38a2",
     "semantic_hash": ""
   },
   "src/components/SuppliersScreen.tsx": {
@@ -342,9 +342,9 @@
     "semantic_hash": "724623b21a764a244e187989317d403e"
   },
   "src/types.ts": {
-    "mtime": 1791703819.9560173,
-    "seen": 1791704209.7024856,
-    "ast_hash": "5c4712a1490e5e211113979b429f5c86",
+    "mtime": 1791712987.2592833,
+    "seen": 1791713286.3945713,
+    "ast_hash": "9fb38748884d10a24bad100fd55a3cf5",
     "semantic_hash": ""
   },
   "src/utils/backup.ts": {

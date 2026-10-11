@@ -42,6 +42,7 @@ import { Receipt } from './Receipt'
 import { THEMES, getActiveTheme, applyTheme, type ThemeId } from '../utils/theme'
 import { getDeviceMachineId } from '../utils/security'
 import { testPayMongoConnection } from '../utils/paymongo'
+import { syncUserToCloud } from '../services/cloudSync'
 
 interface SettingsScreenProps {
   settings: StoreSettings
@@ -151,7 +152,14 @@ export function SettingsScreen({
 
       // Show staff: If Master Admin is in global mode (not masquerading), show all accounts; otherwise isolate to active store
       const targetStore = currentSessionStoreName || (isMasterAdmin ? null : settings.store_name)
-      const storeUsers = targetStore ? allUsers.filter(u => u.store_name === targetStore) : allUsers
+      let storeUsers = targetStore
+        ? allUsers.filter(u => !u.store_name || u.store_name === targetStore || u.role === 'ADMIN')
+        : allUsers
+
+      // Fallback: If store filter resulted in empty array, but accounts exist, show all accounts so none are accidentally hidden
+      if (storeUsers.length === 0 && allUsers.length > 0) {
+        storeUsers = allUsers
+      }
       setUsers(storeUsers)
 
       // Identify currently logged in user
@@ -173,7 +181,9 @@ export function SettingsScreen({
   }, [isMasterAdmin, currentSessionStoreName, currentUserId, currentUsername, currentCashierName, settings.store_name])
 
   // Theme Engine state
-  const [activeThemeId, setActiveThemeId] = useState<ThemeId>(getActiveTheme)
+  const [activeThemeId, setActiveThemeId] = useState<ThemeId>(() => {
+    return (form.theme as ThemeId) || getActiveTheme()
+  })
 
   // Machine ID & VIP licensing state
   const [machineId, setMachineId] = useState('')
@@ -195,6 +205,10 @@ export function SettingsScreen({
   const handleSelectTheme = (tId: ThemeId) => {
     setActiveThemeId(tId)
     applyTheme(tId)
+    setForm(prev => ({ ...prev, theme: tId }))
+    const targetTheme = THEMES.find(t => t.id === tId)
+    setUserSuccessMessage(`Applied theme: ${targetTheme?.name || tId}`)
+    setTimeout(() => setUserSuccessMessage(''), 3000)
   }
 
   const handleRollbackCheckpoint = async () => {
@@ -216,7 +230,7 @@ export function SettingsScreen({
 
   const handleSave = (e?: React.FormEvent) => {
     if (e) e.preventDefault()
-    onSaveSettings(form)
+    onSaveSettings({ ...form, theme: activeThemeId })
     setSaved(true)
     setTimeout(() => setSaved(false), 2500)
   }
@@ -343,7 +357,7 @@ export function SettingsScreen({
     }
 
     try {
-      await db.users.add({
+      const newStaffAccount: UserAccount = {
         name: trimmedName,
         username: trimmedUser,
         role: newUserRole,
@@ -354,7 +368,12 @@ export function SettingsScreen({
         owner_username: currentCashierName,
         is_owner: false,
         avatar_url: newUserAvatar
-      })
+      }
+
+      const insertedId = await db.users.add(newStaffAccount)
+      newStaffAccount.id = insertedId as number
+
+      syncUserToCloud(newStaffAccount).catch(() => {})
 
       setUserSuccessMessage(`User "${trimmedName}" successfully created!`)
       setTimeout(() => setUserSuccessMessage(''), 3000)
@@ -387,12 +406,15 @@ export function SettingsScreen({
 
       if (currentUser?.id) {
         await db.users.update(currentUser.id, { avatar_url: dataUrl })
+        const u = await db.users.get(currentUser.id)
+        if (u) syncUserToCloud(u).catch(() => {})
       } else if (currentUsername) {
         const existing = await db.users.where('username').equalsIgnoreCase(currentUsername).first()
         if (existing?.id) {
           await db.users.update(existing.id, { avatar_url: dataUrl })
+          syncUserToCloud({ ...existing, avatar_url: dataUrl }).catch(() => {})
         } else {
-          await db.users.add({
+          const newAcc: UserAccount = {
             username: currentUsername,
             name: currentCashierName || 'Staff Member',
             role: isMasterAdmin ? 'ADMIN' : 'CASHIER',
@@ -402,7 +424,15 @@ export function SettingsScreen({
             avatar_url: dataUrl,
             store_name: currentSessionStoreName || settings.store_name,
             is_owner: isMasterAdmin
-          })
+          }
+          await db.users.add(newAcc)
+          syncUserToCloud(newAcc).catch(() => {})
+        }
+      } else if (currentCashierName) {
+        const existing = await db.users.where('name').equalsIgnoreCase(currentCashierName).first()
+        if (existing?.id) {
+          await db.users.update(existing.id, { avatar_url: dataUrl })
+          syncUserToCloud({ ...existing, avatar_url: dataUrl }).catch(() => {})
         }
       }
 
@@ -425,10 +455,13 @@ export function SettingsScreen({
     try {
       if (currentUser?.id) {
         await db.users.update(currentUser.id, { avatar_url: undefined })
+        const u = await db.users.get(currentUser.id)
+        if (u) syncUserToCloud(u).catch(() => {})
       } else if (currentUsername) {
         const existing = await db.users.where('username').equalsIgnoreCase(currentUsername).first()
         if (existing?.id) {
           await db.users.update(existing.id, { avatar_url: undefined })
+          syncUserToCloud({ ...existing, avatar_url: undefined }).catch(() => {})
         }
       }
       onUpdateAvatar?.(undefined)
@@ -454,6 +487,8 @@ export function SettingsScreen({
     try {
       const dataUrl = await compressImageFile(file, 320, 320, 0.85)
       await db.users.update(targetUser.id, { avatar_url: dataUrl })
+      const u = await db.users.get(targetUser.id)
+      if (u) syncUserToCloud(u).catch(() => {})
 
       if (targetUser.id === currentUser?.id || (currentUsername && targetUser.username.toLowerCase() === currentUsername.toLowerCase())) {
         onUpdateAvatar?.(dataUrl)
@@ -465,6 +500,8 @@ export function SettingsScreen({
     } catch (err) {
       console.error('Failed to upload staff photo:', err)
       alert('Failed to update staff photo.')
+    } finally {
+      e.target.value = ''
     }
   }
 
@@ -473,6 +510,9 @@ export function SettingsScreen({
     if (!confirm(`Are you sure you want to remove the profile picture for ${targetUser.name}?`)) return
     try {
       await db.users.update(targetUser.id, { avatar_url: undefined })
+      const u = await db.users.get(targetUser.id)
+      if (u) syncUserToCloud(u).catch(() => {})
+
       if (targetUser.id === currentUser?.id || (currentUsername && targetUser.username.toLowerCase() === currentUsername.toLowerCase())) {
         onUpdateAvatar?.(undefined)
       }
@@ -509,6 +549,8 @@ export function SettingsScreen({
     }
 
     await db.users.update(user.id, { status: newStatus })
+    const u = await db.users.get(user.id)
+    if (u) syncUserToCloud(u).catch(() => {})
     await loadUsers()
   }
 
@@ -518,6 +560,12 @@ export function SettingsScreen({
       return
     }
     await db.users.update(userId, { pin: newPinValue })
+    const updatedUser = await db.users.get(userId)
+    if (updatedUser) {
+      syncUserToCloud(updatedUser).catch(() => {})
+      setUserSuccessMessage(`Security PIN updated for ${updatedUser.name}!`)
+      setTimeout(() => setUserSuccessMessage(''), 3000)
+    }
     setEditingPinUserId(null)
     setNewPinValue('')
     await loadUsers()
@@ -1183,7 +1231,7 @@ export function SettingsScreen({
                       />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-amber-400 to-emerald-600 flex items-center justify-center text-zinc-950 font-bold text-xl">
-                        {(currentCashierName || 'User').substring(0, 2).toUpperCase()}
+                        {((currentUser?.name || currentCashierName || currentUsername || 'User')).substring(0, 2).toUpperCase()}
                       </div>
                     )}
                     {isUploadingCurrentAvatar && (
@@ -1269,6 +1317,7 @@ export function SettingsScreen({
 
               {isAdmin && (
                 <button
+                  type="button"
                   onClick={() => setShowAddUserModal(true)}
                   className="btn-press flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold text-xs hover:bg-amber-500/25 transition-all self-start sm:self-auto shrink-0 cursor-pointer"
                 >
@@ -1300,7 +1349,7 @@ export function SettingsScreen({
 
                   return (
                     <div
-                      key={u.id}
+                      key={u.id ?? u.username}
                       className={`p-3.5 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
                         u.status === 'ACTIVE'
                           ? 'bg-zinc-900 border-white/[0.08]'
@@ -1311,7 +1360,7 @@ export function SettingsScreen({
                         {u.avatar_url ? (
                           <img
                             src={u.avatar_url}
-                            alt={u.name}
+                            alt={u.name || u.username}
                             className="h-10 w-10 rounded-xl object-cover border border-amber-500/40 shadow-glow-amber shrink-0"
                           />
                         ) : (
@@ -1320,13 +1369,13 @@ export function SettingsScreen({
                               ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-zinc-950 shadow-glow-amber'
                               : 'bg-zinc-800 border border-white/10 text-stone-200'
                           }`}>
-                            {u.name.substring(0, 2).toUpperCase()}
+                            {((u.name || u.username || 'User')).substring(0, 2).toUpperCase()}
                           </div>
                         )}
 
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <p className="text-xs sm:text-sm font-semibold text-stone-100">{u.name}</p>
+                            <p className="text-xs sm:text-sm font-semibold text-stone-100">{u.name || u.username || 'Staff Member'}</p>
                             <span className="text-[0.75rem] font-mono px-2 py-0.5 rounded-full bg-white/[0.05] text-stone-400">
                               @{u.username}
                             </span>
@@ -1351,7 +1400,7 @@ export function SettingsScreen({
                             )}
                           </div>
                           <p className="text-[0.75rem] text-stone-500 font-mono mt-0.5">
-                            Created: {new Date(u.created_at).toLocaleDateString()}
+                            Created: {u.created_at ? new Date(u.created_at).toLocaleDateString() : 'N/A'}
                           </p>
                         </div>
                       </div>
@@ -1367,9 +1416,16 @@ export function SettingsScreen({
                                 placeholder="New PIN"
                                 value={newPinValue}
                                 onChange={(e) => setNewPinValue(e.target.value.replace(/[^0-9]/g, ''))}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault()
+                                    if (u.id) handleUpdatePin(u.id)
+                                  }
+                                }}
                                 className="w-20 px-2 py-1 rounded-lg bg-zinc-950 border border-amber-500/50 text-xs font-mono text-amber-300 focus:outline-none"
                               />
                               <button
+                                type="button"
                                 onClick={() => u.id && handleUpdatePin(u.id)}
                                 className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 cursor-pointer"
                                 title="Save PIN"
@@ -1377,6 +1433,7 @@ export function SettingsScreen({
                                 <Check className="h-3.5 w-3.5" />
                               </button>
                               <button
+                                type="button"
                                 onClick={() => {
                                   setEditingPinUserId(null)
                                   setNewPinValue('')
@@ -1389,6 +1446,7 @@ export function SettingsScreen({
                             </div>
                           ) : (
                             <button
+                              type="button"
                               onClick={() => {
                                 setEditingPinUserId(u.id ?? null)
                                 setNewPinValue('')
@@ -1417,6 +1475,7 @@ export function SettingsScreen({
 
                           {u.avatar_url && (
                             <button
+                              type="button"
                               onClick={() => handleRemoveStaffAvatar(u)}
                               className="btn-press p-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs cursor-pointer"
                               title="Remove Photo"
@@ -1426,6 +1485,7 @@ export function SettingsScreen({
                           )}
 
                           <button
+                            type="button"
                             onClick={() => handleToggleUserStatus(u)}
                             className={`btn-press p-1.5 rounded-lg border text-xs flex items-center gap-1 cursor-pointer ${
                               u.status === 'ACTIVE'
@@ -1439,6 +1499,7 @@ export function SettingsScreen({
 
                           {(!isMaster || users.filter((x) => x.role === 'ADMIN').length > 1) && (
                             <button
+                              type="button"
                               onClick={() => handleDeleteUser(u)}
                               className="btn-press p-1.5 rounded-lg border border-red-500/20 bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs cursor-pointer"
                               title="Delete User"
@@ -1473,6 +1534,13 @@ export function SettingsScreen({
               </p>
             </div>
 
+            {userSuccessMessage && (
+              <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center gap-2 animate-fade-in">
+                <CheckCircle2 className="h-4 w-4" />
+                <span>{userSuccessMessage}</span>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {THEMES.map((theme) => {
                 const isSelected = activeThemeId === theme.id
@@ -1481,9 +1549,10 @@ export function SettingsScreen({
                     key={theme.id}
                     type="button"
                     onClick={() => handleSelectTheme(theme.id)}
+                    style={isSelected ? { borderColor: theme.accentColor, boxShadow: `0 0 25px -4px ${theme.accentColor}44` } : undefined}
                     className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-3 relative overflow-hidden group cursor-pointer ${
                       isSelected
-                        ? 'border-emerald-500 bg-zinc-900 shadow-glow-emerald ring-1 ring-emerald-500/50'
+                        ? 'bg-zinc-900 ring-1 ring-white/20'
                         : 'border-white/[0.08] bg-zinc-900/40 hover:border-white/20 hover:bg-zinc-900/80'
                     }`}
                   >
@@ -1496,7 +1565,10 @@ export function SettingsScreen({
                         <h4 className="text-xs font-bold text-stone-100">{theme.name}</h4>
                       </div>
                       {isSelected && (
-                        <span className="flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                        <span
+                          className="flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border"
+                          style={{ color: theme.accentColor, backgroundColor: `${theme.accentColor}18`, borderColor: `${theme.accentColor}44` }}
+                        >
                           <Check className="h-3 w-3" /> ACTIVE
                         </span>
                       )}

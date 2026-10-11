@@ -252,9 +252,9 @@
     "semantic_hash": ""
   },
   "src/components/SettingsScreen.tsx": {
-    "mtime": 1791710512.077716,
-    "seen": 1791710782.283769,
-    "ast_hash": "fee0503ca9394e5dddf64be8ce720f36",
+    "mtime": 1791712184.148082,
+    "seen": 1791712231.9969165,
+    "ast_hash": "1bfb56491a0995fcdf56d31e0c7da69b",
     "semantic_hash": ""
   },
   "src/components/SuppliersScreen.tsx": {

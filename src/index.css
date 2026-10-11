@@ -25,6 +25,10 @@ body {
 
 /* Multi-Theme Background & Surface Overrides */
 body.theme-sapphire {
+  --gold-primary: #0284c7;
+  --gold-light: #38bdf8;
+  --gold-muted: #0369a1;
+  --gold-dark: #075985;
   background-color: #060d17;
   background-image:
     radial-gradient(ellipse at 50% -10%, rgba(2, 132, 199, 0.18) 0%, transparent 65%),
@@ -33,11 +37,19 @@ body.theme-sapphire {
 }
 
 body.theme-stealth {
+  --gold-primary: #f8fafc;
+  --gold-light: #ffffff;
+  --gold-muted: #94a3b8;
+  --gold-dark: #64748b;
   background-color: #000000;
   background-image: none;
 }
 
 body.theme-cyber {
+  --gold-primary: #22c55e;
+  --gold-light: #4ade80;
+  --gold-muted: #16a34a;
+  --gold-dark: #15803d;
   background-color: #040d06;
   background-image:
     radial-gradient(ellipse at 50% -10%, rgba(34, 197, 94, 0.2) 0%, transparent 65%),
@@ -46,6 +58,10 @@ body.theme-cyber {
 }
 
 body.theme-amber {
+  --gold-primary: #f59e0b;
+  --gold-light: #fbbf24;
+  --gold-muted: #d97706;
+  --gold-dark: #b45309;
   background-color: #120b06;
   background-image:
     radial-gradient(ellipse at 50% -10%, rgba(245, 158, 11, 0.2) 0%, transparent 65%),
@@ -54,6 +70,10 @@ body.theme-amber {
 }
 
 body.theme-light {
+  --gold-primary: #059669;
+  --gold-light: #10b981;
+  --gold-muted: #047857;
+  --gold-dark: #065f46;
   background-color: #f8fafc;
   color: #0f172a;
   background-image:
@@ -73,9 +93,34 @@ body.theme-light .glass-card {
 body.theme-light .text-stone-100 {
   color: #0f172a !important;
 }
+body.theme-light .text-stone-200 {
+  color: #1e293b !important;
+}
 body.theme-light .text-stone-300,
 body.theme-light .text-stone-400 {
-  color: #334155 !important;
+  color: #475569 !important;
+}
+body.theme-light input,
+body.theme-light select,
+body.theme-light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+body.theme-light .bg-zinc-950,
+body.theme-light [class*="bg-zinc-950"] {
+  background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+body.theme-light .bg-zinc-900,
+body.theme-light [class*="bg-zinc-900"] {
+  background-color: #f1f5f9 !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+body.theme-light .border-white\/\[0\.08\],
+body.theme-light .border-white\/10,
+body.theme-light .border-white\/20 {
+  border-color: rgba(0, 0, 0, 0.1) !important;
 }
 
 /* Surface tokens — Tailark-grade dark glassmorphic panels */
@@ -115,9 +160,9 @@ body.theme-light .text-stone-400 {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Primary Brand Action Button (Desktop-matched Emerald Green) */
+/* Primary Brand Action Button (Dynamic Theme Matched) */
 .btn-gold {
-  background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+  background: linear-gradient(135deg, var(--gold-light, #34d399) 0%, var(--gold-primary, #10b981) 50%, var(--gold-dark, #047857) 100%);
   color: #ffffff;
   font-weight: 700;
   box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -125,7 +170,7 @@ body.theme-light .text-stone-400 {
 }
 
 .btn-gold:hover {
-  background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%);
+  background: linear-gradient(135deg, var(--gold-light, #34d399) 0%, var(--gold-primary, #10b981) 40%, var(--gold-muted, #059669) 100%);
   box-shadow: 0 6px 25px 0px rgba(16, 185, 129, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25);
   transform: translateY(-1px);
 }

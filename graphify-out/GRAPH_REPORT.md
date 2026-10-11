@@ -1,17 +1,17 @@
 # Graph Report - TINDA-POS-Web  (2026-10-11)
 
 ## Corpus Check
-- 83 files · ~348,436 words
+- 83 files · ~348,755 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 7 file(s) not represented in the graph (top: (none) 4, .css 1, .jsonc 1)
 
 ## Summary
-- 546 nodes · 1308 edges · 32 communities (25 shown, 7 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.91)
+- 546 nodes · 1311 edges · 32 communities (25 shown, 7 thin omitted)
+- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.92)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e91e3e23`
+- Built from commit: `1f0a8bc5`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

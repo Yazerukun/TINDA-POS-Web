@@ -268,6 +268,88 @@ export default function App(): React.JSX.Element {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // run once on mount only
 
+  // Standalone Customer Facing Display (#monitor) mode
+  const [isHashMonitor, setIsHashMonitor] = useState(
+    () => window.location.hash === '#monitor' || window.location.hash === '#sales-monitor'
+  )
+
+  useEffect(() => {
+    const handleHash = () => {
+      setIsHashMonitor(window.location.hash === '#monitor' || window.location.hash === '#sales-monitor')
+    }
+    window.addEventListener('hashchange', handleHash)
+    return () => window.removeEventListener('hashchange', handleHash)
+  }, [])
+
+  // Broadcast cart updates to Customer Facing Display / Sales Monitor
+  useEffect(() => {
+    try {
+      const channel = new BroadcastChannel('tinda_sales_monitor')
+      channel.postMessage({
+        type: 'CART_UPDATE',
+        cart,
+        storeName: activeStoreName
+      })
+    } catch {}
+  }, [cart, activeStoreName])
+
+  // Global Drag & Drop Auto-Detection for Desktop Backup Files (.tinda-backup)
+  const [isDraggingFile, setIsDraggingFile] = useState(false)
+  const [autoImporting, setAutoImporting] = useState(false)
+
+  useEffect(() => {
+    const handleDragOver = (e: DragEvent) => {
+      e.preventDefault()
+      if (e.dataTransfer?.types?.includes('Files')) {
+        setIsDraggingFile(true)
+      }
+    }
+
+    const handleDragLeave = (e: DragEvent) => {
+      if (e.clientX <= 0 || e.clientY <= 0) {
+        setIsDraggingFile(false)
+      }
+    }
+
+    const handleDrop = async (e: DragEvent) => {
+      e.preventDefault()
+      setIsDraggingFile(false)
+      const file = e.dataTransfer?.files?.[0]
+      if (!file) return
+
+      if (!file.name.endsWith('.tinda-backup') && !file.name.endsWith('.json')) {
+        alert('Palihug pag-drag og balidong .tinda-backup o .json backup file.')
+        return
+      }
+
+      setAutoImporting(true)
+      try {
+        const text = await file.text()
+        const result = await importTindaBackup(text)
+        if (result.success) {
+          alert(`⚡ AUTO-DETECT SUCCESS: ${result.message}`)
+          await loadData()
+        } else {
+          alert(`Auto-detect failed: ${result.message}`)
+        }
+      } catch (err) {
+        alert('Sayop sa pagbasa sa backup file: ' + (err as Error)?.message)
+      } finally {
+        setAutoImporting(false)
+      }
+    }
+
+    window.addEventListener('dragover', handleDragOver)
+    window.addEventListener('dragleave', handleDragLeave)
+    window.addEventListener('drop', handleDrop)
+
+    return () => {
+      window.removeEventListener('dragover', handleDragOver)
+      window.removeEventListener('dragleave', handleDragLeave)
+      window.removeEventListener('drop', handleDrop)
+    }
+  }, [loadData])
+
   // Hold Cart functionality
   const handleHoldCart = async () => {
     if (cart.length === 0) return
@@ -586,6 +668,21 @@ export default function App(): React.JSX.Element {
     )
   }
 
+  // Standalone Customer Facing Display (#monitor) mode (kiosk/dual-screen)
+  if (isHashMonitor) {
+    return (
+      <SalesMonitorModal
+        open={true}
+        onClose={() => {
+          window.location.hash = ''
+        }}
+        cart={cart}
+        storeName={activeStoreName}
+        isStandalone={true}
+      />
+    )
+  }
+
   // Unauthenticated Visitor Gatekeeper: Public Tailark-Grade Landing Page + Auth Modal
   if (!vaultSession) {
     return (
@@ -646,103 +743,6 @@ export default function App(): React.JSX.Element {
     proAccess.requireProFeature('Shelf Life Expiry Watch', () => {
       setIsExpirationOpen(true)
     })
-  }
-
-  // Standalone Customer Facing Display (#monitor) mode
-  const [isHashMonitor, setIsHashMonitor] = useState(
-    () => window.location.hash === '#monitor' || window.location.hash === '#sales-monitor'
-  )
-
-  useEffect(() => {
-    const handleHash = () => {
-      setIsHashMonitor(window.location.hash === '#monitor' || window.location.hash === '#sales-monitor')
-    }
-    window.addEventListener('hashchange', handleHash)
-    return () => window.removeEventListener('hashchange', handleHash)
-  }, [])
-
-  // Broadcast cart updates to Customer Facing Display / Sales Monitor
-  useEffect(() => {
-    try {
-      const channel = new BroadcastChannel('tinda_sales_monitor')
-      channel.postMessage({
-        type: 'CART_UPDATE',
-        cart,
-        storeName: activeStoreName
-      })
-    } catch {}
-  }, [cart, activeStoreName])
-
-  // Global Drag & Drop Auto-Detection for Desktop Backup Files (.tinda-backup)
-  const [isDraggingFile, setIsDraggingFile] = useState(false)
-  const [autoImporting, setAutoImporting] = useState(false)
-
-  useEffect(() => {
-    const handleDragOver = (e: DragEvent) => {
-      e.preventDefault()
-      if (e.dataTransfer?.types?.includes('Files')) {
-        setIsDraggingFile(true)
-      }
-    }
-
-    const handleDragLeave = (e: DragEvent) => {
-      if (e.clientX <= 0 || e.clientY <= 0) {
-        setIsDraggingFile(false)
-      }
-    }
-
-    const handleDrop = async (e: DragEvent) => {
-      e.preventDefault()
-      setIsDraggingFile(false)
-      const file = e.dataTransfer?.files?.[0]
-      if (!file) return
-
-      if (!file.name.endsWith('.tinda-backup') && !file.name.endsWith('.json')) {
-        alert('Palihug pag-drag og balidong .tinda-backup o .json backup file.')
-        return
-      }
-
-      setAutoImporting(true)
-      try {
-        const text = await file.text()
-        const result = await importTindaBackup(text)
-        if (result.success) {
-          alert(`⚡ AUTO-DETECT SUCCESS: ${result.message}`)
-          await loadData()
-        } else {
-          alert(`Auto-detect failed: ${result.message}`)
-        }
-      } catch (err) {
-        alert('Sayop sa pagbasa sa backup file: ' + (err as Error)?.message)
-      } finally {
-        setAutoImporting(false)
-      }
-    }
-
-    window.addEventListener('dragover', handleDragOver)
-    window.addEventListener('dragleave', handleDragLeave)
-    window.addEventListener('drop', handleDrop)
-
-    return () => {
-      window.removeEventListener('dragover', handleDragOver)
-      window.removeEventListener('dragleave', handleDragLeave)
-      window.removeEventListener('drop', handleDrop)
-    }
-  }, [loadData])
-
-  // Render standalone customer display if opened via #monitor route
-  if (isHashMonitor) {
-    return (
-      <SalesMonitorModal
-        open={true}
-        onClose={() => {
-          window.location.hash = ''
-        }}
-        cart={cart}
-        storeName={activeStoreName}
-        isStandalone={true}
-      />
-    )
   }
 
   return (

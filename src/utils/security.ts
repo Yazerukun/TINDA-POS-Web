@@ -38,7 +38,7 @@ export async function hashPin(pin: string, existingSalt?: string): Promise<{ has
   const derivedBits = await crypto.subtle.deriveBits(
     {
       name: 'PBKDF2',
-      salt,
+      salt: salt as unknown as BufferSource,
       iterations: PBKDF2_ITERATIONS,
       hash: HASH_ALGO
     },

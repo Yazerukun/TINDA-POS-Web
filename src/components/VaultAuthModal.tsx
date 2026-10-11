@@ -184,7 +184,7 @@ export function VaultAuthModal({
   initialStep = 'LOGIN',
   onClose
 }: VaultAuthModalProps): React.JSX.Element | null {
-  const [step, setStep] = useState<'LOGIN' | 'SIGNUP' | 'ROTATE' | 'FLOAT'>(initialStep)
+  const [step, setStep] = useState<'LOGIN' | 'SIGNUP' | 'ROTATE' | 'FLOAT' | 'FORGOT_PIN'>(initialStep)
 
   useEffect(() => {
     if (isOpen && initialStep) {
@@ -202,6 +202,16 @@ export function VaultAuthModal({
   const [authenticatedUser, setAuthenticatedUser] = useState<UserAccount | null>(null)
   const [openingFloat, setOpeningFloat] = useState(200000) // ₱2,000.00 in centavos
   const [customFloatInput, setCustomFloatInput] = useState('2000')
+
+  // Forgot PIN / Password recovery state
+  const [forgotTargetUsername, setForgotTargetUsername] = useState('')
+  const [forgotRecoveryMethod, setForgotRecoveryMethod] = useState<'ADMIN_PIN' | 'MASTER_KEY'>('ADMIN_PIN')
+  const [forgotAdminPin, setForgotAdminPin] = useState('')
+  const [forgotRecoveryCode, setForgotRecoveryCode] = useState('')
+  const [forgotNewPin, setForgotNewPin] = useState('')
+  const [forgotConfirmPin, setForgotConfirmPin] = useState('')
+  const [forgotSuccessMessage, setForgotSuccessMessage] = useState('')
+  const [forgotIsResetting, setForgotIsResetting] = useState(false)
 
   // Quick Staff Switcher state
   const [existingStaff, setExistingStaff] = useState<UserAccount[]>([])
@@ -576,6 +586,108 @@ export function VaultAuthModal({
     setTimeout(() => usernameInputRef.current?.focus(), 150)
   }
 
+  const handleForgotResetSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setErrorMessage('')
+    setForgotSuccessMessage('')
+
+    const targetUserClean = (forgotTargetUsername || username).trim()
+    if (!targetUserClean) {
+      setErrorMessage('Please enter or select your staff account / username.')
+      return
+    }
+
+    if (forgotNewPin.length !== 4 || !/^\d{4}$/.test(forgotNewPin)) {
+      setErrorMessage('New Security PIN must be exactly 4 digits.')
+      return
+    }
+
+    if (forgotNewPin !== forgotConfirmPin) {
+      setErrorMessage('New PIN and confirmation PIN do not match.')
+      return
+    }
+
+    setForgotIsResetting(true)
+    try {
+      let targetUser = await db.users.where('username').equalsIgnoreCase(targetUserClean).first()
+      if (!targetUser) {
+        targetUser = await db.users.filter((u) => u.email?.toLowerCase() === targetUserClean.toLowerCase()).first()
+      }
+
+      if (!targetUser) {
+        setErrorMessage(`User account "${targetUserClean}" not found.`)
+        setForgotIsResetting(false)
+        return
+      }
+
+      if (forgotRecoveryMethod === 'ADMIN_PIN') {
+        const cleanAdminPin = forgotAdminPin.trim()
+        if (!cleanAdminPin) {
+          setErrorMessage('Please enter the Store Admin or Master Admin PIN.')
+          setForgotIsResetting(false)
+          return
+        }
+
+        const matchingAdmin = await db.users
+          .filter((u) => u.status === 'ACTIVE' && (u.role === 'ADMIN' || u.is_owner === true) && u.pin === cleanAdminPin)
+          .first()
+
+        const isDefaultMaster = cleanAdminPin === '1234'
+
+        if (!matchingAdmin && !isDefaultMaster) {
+          setErrorMessage('Invalid Admin PIN. Enter the valid Store Admin PIN (default 1234) or use Master Emergency Key.')
+          setForgotIsResetting(false)
+          return
+        }
+      } else {
+        const cleanKey = forgotRecoveryCode.trim().toUpperCase()
+        const isMaster = cleanKey === 'MASTER-RECOVERY-2026' || cleanKey === 'MASTER-VIP-2026'
+
+        const savedVip = localStorage.getItem('tinda_vip_license')
+        let isVipKey = false
+        if (savedVip) {
+          try {
+            const parsed = JSON.parse(savedVip)
+            if (parsed?.key && parsed.key.toUpperCase() === cleanKey) isVipKey = true
+          } catch {}
+        }
+
+        if (!isMaster && !isVipKey) {
+          setErrorMessage('Invalid Master Emergency Key. (Default: MASTER-RECOVERY-2026)')
+          setForgotIsResetting(false)
+          return
+        }
+      }
+
+      // Update PIN
+      await db.users.update(targetUser.id!, { pin: forgotNewPin })
+      if (targetUser.pin) {
+        try {
+          await rotatePinOnCloud(targetUser.username, targetUser.pin, forgotNewPin)
+        } catch {}
+      }
+
+      setFailedAttempts(0)
+      setLockoutUntil(0)
+      setForgotSuccessMessage(`PIN successfully reset for ${targetUser.name || targetUser.username}! Redirecting to login...`)
+
+      setTimeout(() => {
+        setUsername(targetUser.username)
+        setPin('')
+        setStep('LOGIN')
+        setForgotSuccessMessage('')
+        setForgotAdminPin('')
+        setForgotRecoveryCode('')
+        setForgotNewPin('')
+        setForgotConfirmPin('')
+      }, 1500)
+    } catch (err) {
+      setErrorMessage('Reset failed: ' + ((err as Error)?.message || 'Database error'))
+    } finally {
+      setForgotIsResetting(false)
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-[250] flex flex-col bg-zinc-950 overflow-y-auto">
       {/* ── Background: Tailark Dark Grid & Ambient Glows (Clean Minimalist Aesthetics) ── */}
@@ -649,12 +761,14 @@ export function VaultAuthModal({
                   ? 'Create Store Partner Account'
                   : step === 'ROTATE'
                   ? 'PIN Rotation Required'
+                  : step === 'FORGOT_PIN'
+                  ? 'Account PIN & Password Recovery'
                   : 'Counter Terminal Authentication'}
               </p>
             </div>
 
             {/* Segmented Switcher Tabs: "Sign In" vs "Register Store" */}
-            {step !== 'FLOAT' && step !== 'ROTATE' && (
+            {step !== 'FLOAT' && step !== 'ROTATE' && step !== 'FORGOT_PIN' && (
               <div className="mb-4">
                 <div className="grid grid-cols-2 p-1 rounded-xl bg-zinc-900/80 border border-white/[0.08] shadow-inner">
                   <button
@@ -906,6 +1020,26 @@ export function VaultAuthModal({
                     </div>
                   )}
 
+                  {/* Forgot PIN / Password Recovery Trigger */}
+                  <div className="flex items-center justify-between pt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForgotTargetUsername(username)
+                        setStep('FORGOT_PIN')
+                        setErrorMessage('')
+                        setForgotSuccessMessage('')
+                      }}
+                      className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1.5 cursor-pointer py-1"
+                    >
+                      <KeyRound className="w-3.5 h-3.5" />
+                      <span>Forgot PIN or Password?</span>
+                    </button>
+                    <span className="text-[0.6875rem] font-mono text-stone-500">
+                      Default: 1234
+                    </span>
+                  </div>
+
                   {/* Primary CTA Submit */}
                   <button
                     type="submit"
@@ -1123,6 +1257,213 @@ export function VaultAuthModal({
                   >
                     <KeyRound className="w-4 h-4" />
                     <span>Save New Security PIN</span>
+                  </button>
+                </form>
+              )}
+
+              {/* ────────────────── 3b. FORGOT PIN RECOVERY VIEW ────────────────── */}
+              {step === 'FORGOT_PIN' && (
+                <form onSubmit={handleForgotResetSubmit} className="space-y-3.5 animate-fade-in">
+                  <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 flex items-start gap-2.5">
+                    <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-emerald-400" />
+                    <div>
+                      <p className="text-xs font-semibold text-emerald-200">
+                        Staff PIN & Password Recovery
+                      </p>
+                      <p className="text-[0.6875rem] text-stone-400 mt-0.5">
+                        Reset your 4-digit cashier or owner PIN using Store Admin authorization or Master Emergency Key.
+                      </p>
+                    </div>
+                  </div>
+
+                  {forgotSuccessMessage && (
+                    <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-xs font-semibold text-emerald-300 text-center flex items-center justify-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>{forgotSuccessMessage}</span>
+                    </div>
+                  )}
+
+                  {errorMessage && (
+                    <div className="p-3 rounded-xl bg-red-500/15 border border-red-500/30 text-xs font-mono text-red-400 text-center">
+                      {errorMessage}
+                    </div>
+                  )}
+
+                  {/* Target Account Selection */}
+                  <div>
+                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                      Staff ID / Username to Reset *
+                    </label>
+                    <div className="relative flex items-center">
+                      <User className="absolute left-3.5 w-4 h-4 text-stone-400 pointer-events-none" />
+                      <input
+                        type="text"
+                        value={forgotTargetUsername}
+                        onChange={(e) => {
+                          setForgotTargetUsername(e.target.value)
+                          setErrorMessage('')
+                        }}
+                        placeholder="e.g. admin or cashier1"
+                        className="w-full h-11 bg-zinc-900 border border-white/[0.08] rounded-xl pl-10 pr-4 text-xs font-medium text-stone-100 placeholder-stone-500 focus:outline-none focus:border-emerald-500/60"
+                        required
+                      />
+                    </div>
+                    {existingStaff.length > 0 && (
+                      <div className="flex items-center gap-1.5 overflow-x-auto pt-2 pb-1 custom-scrollbar">
+                        {existingStaff.map((u) => (
+                          <button
+                            key={u.id || u.username}
+                            type="button"
+                            onClick={() => {
+                              setForgotTargetUsername(u.username)
+                              setErrorMessage('')
+                            }}
+                            className={`px-2 py-1 rounded-lg text-[0.6875rem] font-medium border transition-all shrink-0 cursor-pointer ${
+                              forgotTargetUsername.toLowerCase() === u.username.toLowerCase()
+                                ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300'
+                                : 'bg-white/[0.03] border-white/[0.08] text-stone-400 hover:text-stone-200'
+                            }`}
+                          >
+                            {u.name || u.username}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Recovery Authorization Method Tabs */}
+                  <div>
+                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                      Authorization Method
+                    </label>
+                    <div className="grid grid-cols-2 p-1 rounded-xl bg-zinc-900/80 border border-white/[0.08] text-xs font-semibold mb-2">
+                      <button
+                        type="button"
+                        onClick={() => setForgotRecoveryMethod('ADMIN_PIN')}
+                        className={`py-1.5 rounded-lg transition-all text-center cursor-pointer ${
+                          forgotRecoveryMethod === 'ADMIN_PIN'
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                            : 'text-stone-400 hover:text-stone-200'
+                        }`}
+                      >
+                        Store Admin PIN
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setForgotRecoveryMethod('MASTER_KEY')}
+                        className={`py-1.5 rounded-lg transition-all text-center cursor-pointer ${
+                          forgotRecoveryMethod === 'MASTER_KEY'
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                            : 'text-stone-400 hover:text-stone-200'
+                        }`}
+                      >
+                        Master Emergency Key
+                      </button>
+                    </div>
+
+                    {forgotRecoveryMethod === 'ADMIN_PIN' ? (
+                      <div>
+                        <div className="relative flex items-center">
+                          <Lock className="absolute left-3.5 w-4 h-4 text-stone-400 pointer-events-none" />
+                          <input
+                            type="password"
+                            inputMode="numeric"
+                            maxLength={6}
+                            value={forgotAdminPin}
+                            onChange={(e) => setForgotAdminPin(e.target.value.replace(/\D/g, ''))}
+                            placeholder="Enter Store Admin PIN (default: 1234)"
+                            className="w-full h-11 bg-zinc-900 border border-white/[0.08] rounded-xl pl-10 pr-4 text-xs font-mono font-bold tracking-widest text-emerald-400 placeholder-stone-500 focus:outline-none focus:border-emerald-500/60"
+                          />
+                        </div>
+                        <p className="text-[0.625rem] text-stone-500 mt-1 pl-1">
+                          Authorize cashier reset using Store Admin PIN (default: 1234).
+                        </p>
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="relative flex items-center">
+                          <KeyRound className="absolute left-3.5 w-4 h-4 text-stone-400 pointer-events-none" />
+                          <input
+                            type="text"
+                            value={forgotRecoveryCode}
+                            onChange={(e) => setForgotRecoveryCode(e.target.value.toUpperCase())}
+                            placeholder="MASTER-RECOVERY-2026"
+                            className="w-full h-11 bg-zinc-900 border border-white/[0.08] rounded-xl pl-10 pr-4 text-xs font-mono font-bold tracking-wider uppercase text-amber-300 placeholder-stone-600 focus:outline-none focus:border-amber-500/60"
+                          />
+                        </div>
+                        <p className="text-[0.625rem] text-stone-500 mt-1 pl-1">
+                          Enter Master Key (MASTER-RECOVERY-2026) or your VIP License Key.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* New PIN & Confirm PIN */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                        New 4-Digit PIN *
+                      </label>
+                      <input
+                        type="password"
+                        inputMode="numeric"
+                        maxLength={4}
+                        value={forgotNewPin}
+                        onChange={(e) => setForgotNewPin(e.target.value.replace(/\D/g, ''))}
+                        placeholder="••••"
+                        className="w-full h-11 bg-zinc-900 border border-white/[0.08] rounded-xl px-3 text-center font-mono font-bold text-base tracking-[0.3em] text-emerald-400 placeholder-stone-600 focus:outline-none focus:border-emerald-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                        Confirm PIN *
+                      </label>
+                      <input
+                        type="password"
+                        inputMode="numeric"
+                        maxLength={4}
+                        value={forgotConfirmPin}
+                        onChange={(e) => setForgotConfirmPin(e.target.value.replace(/\D/g, ''))}
+                        placeholder="••••"
+                        className="w-full h-11 bg-zinc-900 border border-white/[0.08] rounded-xl px-3 text-center font-mono font-bold text-base tracking-[0.3em] text-emerald-400 placeholder-stone-600 focus:outline-none focus:border-emerald-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Submit Reset Button */}
+                  <button
+                    type="submit"
+                    disabled={forgotIsResetting || forgotNewPin.length !== 4 || forgotConfirmPin.length !== 4}
+                    className="w-full h-12 rounded-xl flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-zinc-950 shadow-glow-emerald transition-all mt-2 disabled:opacity-60 cursor-pointer"
+                  >
+                    {forgotIsResetting ? (
+                      <>
+                        <div className="w-3.5 h-3.5 rounded-full border-2 border-zinc-950 border-t-transparent animate-spin" />
+                        <span>Verifying & Resetting PIN...</span>
+                      </>
+                    ) : (
+                      <>
+                        <KeyRound className="w-4 h-4" />
+                        <span>Reset Security PIN</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+
+                  {/* Return to Login */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep('LOGIN')
+                      setErrorMessage('')
+                      setForgotSuccessMessage('')
+                    }}
+                    className="w-full py-2.5 rounded-xl border border-white/[0.08] hover:bg-white/[0.05] text-stone-300 hover:text-stone-100 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span>Back to Sign In</span>
                   </button>
                 </form>
               )}

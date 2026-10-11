@@ -196,7 +196,7 @@ export default function App(): React.JSX.Element {
         db.users.toArray()
       ])
 
-      // Auto-migrate untagged transactions or expenses based on cashier name
+      // Auto-migrate untagged records based on cashier name or active store
       const userStoreMap = new Map<string, string>()
       allUsers.forEach((u) => {
         const sName = u.store_name || (u.username === 'skorts188@gmail.com' ? 'PLATFORM_HQ' : `${u.name}'s Store`)
@@ -204,34 +204,45 @@ export default function App(): React.JSX.Element {
         if (u.username) userStoreMap.set(u.username.toLowerCase(), sName)
       })
 
+      const fallbackStore = activeStoreName || 'PLATFORM_HQ'
+
+      for (const prod of allProducts) {
+        if (!prod.store_name) {
+          prod.store_name = fallbackStore
+          if (prod.id) db.products.update(prod.id, { store_name: fallbackStore }).catch(() => {})
+        }
+      }
+
+      for (const cust of allCust) {
+        if (!cust.store_name) {
+          cust.store_name = fallbackStore
+          if (cust.id) db.customers.update(cust.id, { store_name: fallbackStore }).catch(() => {})
+        }
+      }
+
       for (const tx of allTx) {
         if (!tx.store_name) {
-          const matchedStore = (tx.cashier_name && userStoreMap.get(tx.cashier_name.toLowerCase())) || 'PLATFORM_HQ'
+          const matchedStore = (tx.cashier_name && userStoreMap.get(tx.cashier_name.toLowerCase())) || fallbackStore
           tx.store_name = matchedStore
-          db.transactions.update(tx.id, { store_name: matchedStore }).catch(() => {})
+          if (tx.id) db.transactions.update(tx.id, { store_name: matchedStore }).catch(() => {})
         }
       }
 
       for (const exp of allExpenses) {
         if (!exp.store_name) {
-          const matchedStore = (exp.cashier_name && userStoreMap.get(exp.cashier_name.toLowerCase())) || 'PLATFORM_HQ'
+          const matchedStore = (exp.cashier_name && userStoreMap.get(exp.cashier_name.toLowerCase())) || fallbackStore
           exp.store_name = matchedStore
           if (exp.id) db.expenses.update(exp.id, { store_name: matchedStore }).catch(() => {})
         }
       }
 
-      // Filter data strictly by active store
-      const filteredTx = allTx.filter((tx) => tx.store_name === activeStoreName)
-      const filteredExpenses = allExpenses.filter((e) => e.store_name === activeStoreName)
-      const filteredCustomers = allCust.filter(
-        (c) => c.store_name === activeStoreName || (!c.store_name && activeStoreName === 'PLATFORM_HQ')
-      )
-      const filteredHeld = savedHeld.filter(
-        (h) => h.store_name === activeStoreName || (!h.store_name && activeStoreName === 'PLATFORM_HQ')
-      )
-      const filteredProducts = allProducts.filter(
-        (p) => p.store_name === activeStoreName || (!p.store_name && (activeStoreName === 'PLATFORM_HQ' || allUsers.length <= 1))
-      )
+      // Filter data for the active store (Platform HQ sees all; specific store sees their store's records and newly imported items)
+      const isPlatformHq = activeStoreName === 'PLATFORM_HQ'
+      const filteredTx = isPlatformHq ? allTx : allTx.filter((tx) => tx.store_name === activeStoreName || !tx.store_name)
+      const filteredExpenses = isPlatformHq ? allExpenses : allExpenses.filter((e) => e.store_name === activeStoreName || !e.store_name)
+      const filteredCustomers = isPlatformHq ? allCust : allCust.filter((c) => c.store_name === activeStoreName || !c.store_name)
+      const filteredHeld = isPlatformHq ? savedHeld : savedHeld.filter((h) => h.store_name === activeStoreName || !h.store_name)
+      const filteredProducts = isPlatformHq ? allProducts : allProducts.filter((p) => p.store_name === activeStoreName || !p.store_name)
 
       setProducts(filteredProducts)
       setCategories(allCategories)
@@ -325,7 +336,7 @@ export default function App(): React.JSX.Element {
       setAutoImporting(true)
       try {
         const text = await file.text()
-        const result = await importTindaBackup(text)
+        const result = await importTindaBackup(text, { targetStoreName: activeStoreName })
         if (result.success) {
           alert(`⚡ AUTO-DETECT SUCCESS: ${result.message}`)
           await loadData()
@@ -348,7 +359,7 @@ export default function App(): React.JSX.Element {
       window.removeEventListener('dragleave', handleDragLeave)
       window.removeEventListener('drop', handleDrop)
     }
-  }, [loadData])
+  }, [loadData, activeStoreName])
 
   // Hold Cart functionality
   const handleHoldCart = async () => {

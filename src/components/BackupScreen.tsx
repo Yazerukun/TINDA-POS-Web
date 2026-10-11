@@ -95,7 +95,7 @@ export function BackupScreen({
     setImportStats(null)
 
     try {
-      const result = await importTindaBackup(text)
+      const result = await importTindaBackup(text, { targetStoreName: storeName })
       if (result.success) {
         playSuccessSound()
         setStatusType('success')

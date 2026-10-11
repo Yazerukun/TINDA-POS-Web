@@ -128,7 +128,7 @@ export async function rollbackRestoreCheckpoint(): Promise<{ success: boolean; m
  */
 export async function importTindaBackup(
   jsonString: string,
-  options?: { skipCheckpoint?: boolean }
+  options?: { skipCheckpoint?: boolean; targetStoreName?: string }
 ): Promise<{ success: boolean; message: string; stats?: BackupStats }> {
   try {
     if (!options?.skipCheckpoint) {
@@ -164,6 +164,8 @@ export async function importTindaBackup(
     let cashCountsToInsert: CashCountRecord[] = []
     let zReadsToInsert: ZReadRecord[] = []
 
+    const assignedStoreName = options?.targetStoreName || undefined
+
     if (isDesktopFormat) {
       // Extract tables array from desktop structure
       const rawTables: Array<{ name: string; rows: Record<string, any>[] }> =
@@ -194,6 +196,7 @@ export async function importTindaBackup(
         address: row.address ? String(row.address) : '',
         notes: row.notes ? String(row.notes) : '',
         status: row.status === 'INACTIVE' ? 'INACTIVE' : 'ACTIVE',
+        store_name: row.store_name || assignedStoreName || undefined,
         created_at: String(row.created_at || new Date().toISOString())
       }))
 
@@ -222,6 +225,7 @@ export async function importTindaBackup(
           supplier_id: row.supplier_id ? Number(row.supplier_id) : null,
           image_path: row.image_path ? String(row.image_path) : null,
           status: (row.is_active === 0 || row.status === 'ARCHIVED') ? 'ARCHIVED' : 'ACTIVE',
+          store_name: row.store_name || assignedStoreName || undefined,
           created_at: String(row.created_at || new Date().toISOString()),
           updated_at: String(row.updated_at || new Date().toISOString())
         }
@@ -236,6 +240,7 @@ export async function importTindaBackup(
         balance_c: Number(row.balance_cents ?? row.balance_c ?? 0),
         credit_limit_c: Number(row.credit_limit_cents ?? row.credit_limit_c ?? 0),
         notes: String(row.notes || ''),
+        store_name: row.store_name || assignedStoreName || undefined,
         created_at: String(row.created_at || new Date().toISOString()),
         updated_at: String(row.updated_at || new Date().toISOString())
       }))
@@ -281,6 +286,7 @@ export async function importTindaBackup(
           change_c: Number(s.change_cents ?? s.change_c ?? 0),
           customer_id: s.customer_id ? Number(s.customer_id) : null,
           cashier_name: String(s.cashier_name || 'Admin'),
+          store_name: s.store_name || assignedStoreName || undefined,
           status: s.status === 'VOIDED' ? 'VOIDED' : 'COMPLETED'
         }
       })
@@ -300,6 +306,7 @@ export async function importTindaBackup(
         date: String(row.expense_date || row.date || new Date().toISOString().split('T')[0]),
         description: String(row.description || ''),
         cashier_name: String(row.created_by || row.cashier_name || 'Admin'),
+        store_name: row.store_name || assignedStoreName || undefined,
         created_at: String(row.created_at || new Date().toISOString())
       }))
 
@@ -312,6 +319,7 @@ export async function importTindaBackup(
         role: String(row.role || 'CASHIER').toUpperCase() === 'ADMIN' ? 'ADMIN' : 'CASHIER',
         pin: String(row.pin || '1234'),
         status: (row.is_active === 0 || row.status === 'DISABLED') ? 'DISABLED' : 'ACTIVE',
+        store_name: row.store_name || assignedStoreName || undefined,
         created_at: String(row.created_at || new Date().toISOString())
       }))
 
@@ -321,20 +329,39 @@ export async function importTindaBackup(
         key: String(row.key),
         value: row.value
       }))
+      const desktopSettingsObj = parsed.data?.settings || parsed.settings
+      if (desktopSettingsObj && typeof desktopSettingsObj === 'object' && !Array.isArray(desktopSettingsObj)) {
+        const storeObj = { ...desktopSettingsObj }
+        if (assignedStoreName && assignedStoreName !== 'PLATFORM_HQ') {
+          storeObj.store_name = assignedStoreName
+        }
+        settingsToInsert.push({ key: 'store_settings', value: storeObj })
+        if (assignedStoreName) {
+          settingsToInsert.push({ key: `store_settings_${assignedStoreName}`, value: storeObj })
+        }
+      }
     } else {
       // Web Flat Format
       const data = parsed.data || parsed
+      const targetStore = assignedStoreName && assignedStoreName !== 'PLATFORM_HQ' ? assignedStoreName : undefined
       if (Array.isArray(data.categories)) categoriesToInsert = data.categories
-      if (Array.isArray(data.products)) productsToInsert = data.products
-      if (Array.isArray(data.transactions)) transactionsToInsert = data.transactions
-      if (Array.isArray(data.customers)) customersToInsert = data.customers
+      if (Array.isArray(data.products))
+        productsToInsert = data.products.map((p: any) => ({ ...p, store_name: targetStore || p.store_name || assignedStoreName }))
+      if (Array.isArray(data.transactions))
+        transactionsToInsert = data.transactions.map((t: any) => ({ ...t, store_name: targetStore || t.store_name || assignedStoreName }))
+      if (Array.isArray(data.customers))
+        customersToInsert = data.customers.map((c: any) => ({ ...c, store_name: targetStore || c.store_name || assignedStoreName }))
       if (Array.isArray(data.settings)) settingsToInsert = data.settings
-      if (Array.isArray(data.expenses)) expensesToInsert = data.expenses
+      if (Array.isArray(data.expenses))
+        expensesToInsert = data.expenses.map((e: any) => ({ ...e, store_name: targetStore || e.store_name || assignedStoreName }))
       if (Array.isArray(data.expense_categories)) expenseCategoriesToInsert = data.expense_categories
-      if (Array.isArray(data.suppliers)) suppliersToInsert = data.suppliers
-      if (Array.isArray(data.cash_counts)) cashCountsToInsert = data.cash_counts
+      if (Array.isArray(data.suppliers))
+        suppliersToInsert = data.suppliers.map((s: any) => ({ ...s, store_name: targetStore || s.store_name || assignedStoreName }))
+      if (Array.isArray(data.cash_counts))
+        cashCountsToInsert = data.cash_counts.map((cc: any) => ({ ...cc, store_name: targetStore || cc.store_name || assignedStoreName }))
       if (Array.isArray(data.z_reads)) zReadsToInsert = data.z_reads
-      if (Array.isArray(data.users)) usersToInsert = data.users
+      if (Array.isArray(data.users))
+        usersToInsert = data.users.map((u: any) => ({ ...u, store_name: targetStore || u.store_name || assignedStoreName }))
     }
 
     // Populate stats
@@ -380,8 +407,7 @@ export async function importTindaBackup(
           await db.customers.bulkAdd(customersToInsert)
         }
         if (settingsToInsert.length > 0) {
-          await db.settings.clear()
-          await db.settings.bulkAdd(settingsToInsert)
+          await db.settings.bulkPut(settingsToInsert)
         }
         if (expensesToInsert.length > 0) {
           await db.expenses.clear()
@@ -404,8 +430,7 @@ export async function importTindaBackup(
           await db.z_reads.bulkAdd(zReadsToInsert)
         }
         if (usersToInsert.length > 0) {
-          await db.users.clear()
-          await db.users.bulkAdd(usersToInsert)
+          await db.users.bulkPut(usersToInsert)
         }
       }
     )

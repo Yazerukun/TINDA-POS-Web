@@ -228,7 +228,7 @@ export function POSScreen({
         })
         const file = await handle.getFile()
         const text = await file.text()
-        const res = await importTindaBackup(text)
+        const res = await importTindaBackup(text, { targetStoreName: storeName })
         if (res.success) {
           alert(res.message)
           if (onRefreshData) await onRefreshData()
@@ -252,7 +252,7 @@ export function POSScreen({
     setIsAutoImporting(true)
     try {
       const text = await file.text()
-      const res = await importTindaBackup(text)
+      const res = await importTindaBackup(text, { targetStoreName: storeName })
       if (res.success) {
         alert(res.message)
         if (onRefreshData) await onRefreshData()

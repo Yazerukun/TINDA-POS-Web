@@ -135,7 +135,7 @@ export function SettingsScreen({
     const file = e.target.files?.[0]
     if (!file) return
     try {
-      const compressed = await compressImageFile(file, { maxWidth: 800, quality: 0.85 })
+      const compressed = await compressImageFile(file, 800, 800, 0.85)
       setForm((prev) => ({ ...prev, store_qr_image_url: compressed }))
     } catch {
       alert('Failed to process image file.')
@@ -236,7 +236,8 @@ export function SettingsScreen({
         })
         const file = await handle.getFile()
         const text = await file.text()
-        const result = await importTindaBackup(text)
+        const targetStore = currentSessionStoreName || form.store_name || settings.store_name
+        const result = await importTindaBackup(text, { targetStoreName: targetStore })
         if (result.success) {
           alert(result.message)
           const nowIso = new Date().toISOString()
@@ -263,7 +264,8 @@ export function SettingsScreen({
     setImporting(true)
     try {
       const text = await file.text()
-      const result = await importTindaBackup(text)
+      const targetStore = currentSessionStoreName || form.store_name || settings.store_name
+      const result = await importTindaBackup(text, { targetStoreName: targetStore })
       if (result.success) {
         alert(result.message)
         const nowIso = new Date().toISOString()

@@ -1,17 +1,17 @@
 # Graph Report - TINDA-POS-Web  (2026-10-11)
 
 ## Corpus Check
-- 83 files · ~344,656 words
+- 83 files · ~347,753 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 7 file(s) not represented in the graph (top: (none) 4, .css 1, .jsonc 1)
 
 ## Summary
-- 542 nodes · 1295 edges · 31 communities (24 shown, 7 thin omitted)
+- 545 nodes · 1309 edges · 31 communities (24 shown, 7 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.91)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5c62e354`
+- Built from commit: `18d6f895`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -19,16 +19,16 @@
 - App.tsx
 - POSScreen.tsx
 - types.ts
-- money
+- react
 - auth.ts
 - VaultAuthModal.tsx
-- VipUpgradeModal.tsx
+- SettingsScreen.tsx
 - compilerOptions
 - package.json
 - .surgical_fix.js
 - devDependencies
 - dependencies
-- CheckoutModal.tsx
+- RewardedAdModal.tsx
 - hash-pins.mjs
 - vite.config.ts
 - api-test.sh
@@ -77,19 +77,19 @@
 
 ### Community 0 - "App.tsx"
 Cohesion: 0.06
-Nodes (56): lucide-react, react, App(), AiAssistantModal(), AiAssistantModalProps, ChatMessage, PRESET_QUERIES, AppLogo() (+48 more)
+Nodes (41): App(), AiAssistantModal(), AiAssistantModalProps, ChatMessage, PRESET_QUERIES, AppLogo(), AppLogoProps, CustomersScreen() (+33 more)
 
 ### Community 1 - "POSScreen.tsx"
 Cohesion: 0.08
 Nodes (44): @zxing/browser, BarcodeScannerModal(), BarcodeScannerModalProps, hasNativeBarcodeDetector(), NATIVE_FORMATS, BillCategory, BILLER_PRESETS, BillTransaction (+36 more)
 
 ### Community 2 - "types.ts"
-Cohesion: 0.09
-Nodes (46): CheckoutModalProps, CustomersScreenProps, ExpirationTrackerModal(), ExpirationTrackerModalProps, BatchInItem, CatalogFilter, CatalogSort, InventoryScreen() (+38 more)
+Cohesion: 0.10
+Nodes (42): CheckoutModalProps, CustomersScreenProps, ExpirationTrackerModalProps, BatchInItem, CatalogFilter, CatalogSort, InventoryScreenProps, InventoryTab (+34 more)
 
-### Community 3 - "money"
+### Community 3 - "react"
 Cohesion: 0.11
-Nodes (35): AnalyticsScreen(), AnalyticsScreenProps, AnalyticsTab, DENOMINATIONS, DashboardScreen(), DashboardScreenProps, ExpensesScreen(), ExpensesScreenProps (+27 more)
+Nodes (38): lucide-react, react, AnalyticsScreen(), AnalyticsScreenProps, AnalyticsTab, DENOMINATIONS, DashboardScreen(), DashboardScreenProps (+30 more)
 
 ### Community 4 - "auth.ts"
 Cohesion: 0.17
@@ -99,9 +99,9 @@ Nodes (28): onRequestPost(), onRequestPost(), onRequestGet(), onRequestPost(), o
 Cohesion: 0.09
 Nodes (37): 01 — Current State: TINDA POS Web rewarded-ad system, Gaps (vs. the MobiVPN reference), The user story today, What exists (files), What this means, Files to touch, getPresenceInfo(), MasterControlScreen() (+29 more)
 
-### Community 6 - "VipUpgradeModal.tsx"
-Cohesion: 0.33
-Nodes (7): VipUpgradeModal(), VipUpgradeModalProps, bytesToHex(), getDeviceMachineId(), hashPin(), hexToBytes(), verifyPin()
+### Community 6 - "SettingsScreen.tsx"
+Cohesion: 0.09
+Nodes (34): BackupScreen(), BackupScreenProps, CheckoutModal(), SettingsScreen(), SettingsScreenProps, generateDeterministicVipKey(), ModalTab, verifyVipLicenseKey() (+26 more)
 
 ### Community 7 - "compilerOptions"
 Cohesion: 0.12
@@ -123,9 +123,9 @@ Nodes (11): devDependencies, autoprefixer, postcss, tailwindcss, @types/canvas-c
 Cohesion: 0.20
 Nodes (10): dependencies, canvas-confetti, clsx, dexie, lucide-react, react, react-dom, tailwind-merge (+2 more)
 
-### Community 12 - "CheckoutModal.tsx"
-Cohesion: 0.15
-Nodes (15): canvas-confetti, CheckoutModal(), MONETAG_DIRECT_LINKS, RewardedAdModal(), RewardedAdModalProps, AdBlockerStatus, detectAdBlocker(), useAdBlocker() (+7 more)
+### Community 12 - "RewardedAdModal.tsx"
+Cohesion: 0.31
+Nodes (7): canvas-confetti, MONETAG_DIRECT_LINKS, RewardedAdModal(), RewardedAdModalProps, AdBlockerStatus, detectAdBlocker(), useAdBlocker()
 
 ### Community 13 - "hash-pins.mjs"
 Cohesion: 0.22
@@ -173,23 +173,23 @@ Nodes (7): 1. System Identity & North Star, 2. Tech Stack & Environment Locks, 3
 
 ## Knowledge Gaps
 - **10 isolated node(s):** `@zxing/library`, `clsx`, `tailwind-merge`, `@types/canvas-confetti`, `@types/react` (+5 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 247 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 248 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react` connect `App.tsx` to `POSScreen.tsx`, `types.ts`, `money`, `VaultAuthModal.tsx`, `VipUpgradeModal.tsx`, `package.json`, `CheckoutModal.tsx`?**
+- **Why does `react` connect `react` to `App.tsx`, `POSScreen.tsx`, `types.ts`, `VaultAuthModal.tsx`, `SettingsScreen.tsx`, `package.json`, `RewardedAdModal.tsx`?**
   _High betweenness centrality (0.100) - this node is a cross-community bridge._
 - **What connects `@zxing/library`, `clsx`, `tailwind-merge` to the rest of the system?**
   _10 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `App.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.06220095693779904 - nodes in this community are weakly interconnected._
-- **Why does `lucide-react` connect `App.tsx` to `POSScreen.tsx`, `types.ts`, `money`, `VaultAuthModal.tsx`, `VipUpgradeModal.tsx`, `package.json`, `CheckoutModal.tsx`?**
+  _Cohesion score 0.06412583182093164 - nodes in this community are weakly interconnected._
+- **Why does `lucide-react` connect `react` to `App.tsx`, `POSScreen.tsx`, `types.ts`, `VaultAuthModal.tsx`, `SettingsScreen.tsx`, `package.json`, `RewardedAdModal.tsx`?**
   _High betweenness centrality (0.070) - this node is a cross-community bridge._
 - **Should `POSScreen.tsx` be split into smaller, more focused modules?**
   _Cohesion score 0.07510204081632653 - nodes in this community are weakly interconnected._
 - **Why does `devDependencies` connect `devDependencies` to `package.json`?**
   _High betweenness centrality (0.025) - this node is a cross-community bridge._
 - **Should `types.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.08757062146892655 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09711779448621553 - nodes in this community are weakly interconnected._

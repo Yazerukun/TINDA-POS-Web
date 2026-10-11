@@ -84,9 +84,9 @@
     "semantic_hash": "8c38985d96eebb62e8a7d6161f24235e"
   },
   "src/App.tsx": {
-    "mtime": 1791691178.120685,
-    "seen": 1791692154.1572251,
-    "ast_hash": "e6cabd240d5376b473b531e5e7f1e2cd",
+    "mtime": 1791710059.5286324,
+    "seen": 1791710782.28044,
+    "ast_hash": "647e7ab105fa2ff8873de18f606ff511",
     "semantic_hash": ""
   },
   "src/components/AiAssistantModal.tsx": {
@@ -108,9 +108,9 @@
     "semantic_hash": "dda41ee39a60e05eca0a881f89d03e5f"
   },
   "src/components/BackupScreen.tsx": {
-    "mtime": 1791691259.2524755,
-    "seen": 1791692154.1573477,
-    "ast_hash": "cd9e3ba8a1c92321f6b73cce99e18f70",
+    "mtime": 1791710104.0619357,
+    "seen": 1791710782.280675,
+    "ast_hash": "41a3c3a7ffdd513f6c2d804ecabab420",
     "semantic_hash": ""
   },
   "src/components/BarcodeScannerModal.tsx": {
@@ -120,9 +120,9 @@
     "semantic_hash": "f37fc7179d8249d662aaecee5c952b52"
   },
   "src/components/CheckoutModal.tsx": {
-    "mtime": 1791704724.164741,
-    "seen": 1791704798.0266016,
-    "ast_hash": "6a2af979669d6352c5105cbd44a545b4",
+    "mtime": 1791710489.7115636,
+    "seen": 1791710782.280771,
+    "ast_hash": "8cc611e507d22a09ad4a10ee33a934f0",
     "semantic_hash": ""
   },
   "src/components/CustomersScreen.tsx": {
@@ -198,9 +198,9 @@
     "semantic_hash": "f3a0167359d1395ce2d3fddbeb555f09"
   },
   "src/components/POSScreen.tsx": {
-    "mtime": 1791692113.9229326,
-    "seen": 1791692154.1578133,
-    "ast_hash": "75a8a5ed905417c9767cd71dc1f53181",
+    "mtime": 1791710073.2197256,
+    "seen": 1791710782.2824702,
+    "ast_hash": "c370453fd209d3cab735365649784a38",
     "semantic_hash": ""
   },
   "src/components/PriceGuideModal.tsx": {
@@ -252,9 +252,9 @@
     "semantic_hash": ""
   },
   "src/components/SettingsScreen.tsx": {
-    "mtime": 1791703979.6834264,
-    "seen": 1791704209.7016299,
-    "ast_hash": "d1c42d759357753c2a7c45d4d570c871",
+    "mtime": 1791710512.077716,
+    "seen": 1791710782.283769,
+    "ast_hash": "fee0503ca9394e5dddf64be8ce720f36",
     "semantic_hash": ""
   },
   "src/components/SuppliersScreen.tsx": {
@@ -288,9 +288,9 @@
     "semantic_hash": ""
   },
   "src/components/VaultAuthModal.tsx": {
-    "mtime": 1791691931.0081105,
-    "seen": 1791692154.1582973,
-    "ast_hash": "85e219cf3cf447dce9be9015a23df9f6",
+    "mtime": 1791710471.3544385,
+    "seen": 1791710782.2846062,
+    "ast_hash": "ef3efa4814a2fe39e005c07a2f2f469c",
     "semantic_hash": ""
   },
   "src/data/seedPriceReferences.ts": {
@@ -348,10 +348,10 @@
     "semantic_hash": ""
   },
   "src/utils/backup.ts": {
-    "mtime": 1791674220.0993366,
-    "seen": 1791674642.6943843,
-    "ast_hash": "b35f9fd33b003a7eb1a924889aad6ff3",
-    "semantic_hash": "b35f9fd33b003a7eb1a924889aad6ff3"
+    "mtime": 1791710212.9426773,
+    "seen": 1791710782.2861145,
+    "ast_hash": "626ab1034c4f9ceaa082a6a753ebd870",
+    "semantic_hash": ""
   },
   "src/utils/barcode.tsx": {
     "mtime": 1791673913.2662787,
@@ -402,16 +402,16 @@
     "semantic_hash": "b5adf99013e43b0cb8c2b5cbd6271b91"
   },
   "src/components/VipUpgradeModal.tsx": {
-    "mtime": 1791674297.4349186,
-    "seen": 1791674642.6933105,
-    "ast_hash": "e0a4fcfb8de05e39f0023d18c9843ced",
-    "semantic_hash": "e0a4fcfb8de05e39f0023d18c9843ced"
+    "mtime": 1791710734.9342494,
+    "seen": 1791710782.2846208,
+    "ast_hash": "ed1c62808441c6014e66f72690202aac",
+    "semantic_hash": ""
   },
   "src/utils/security.ts": {
-    "mtime": 1791674247.0585372,
-    "seen": 1791674642.694621,
-    "ast_hash": "e90b6703e6b25300f6e7bb60e8e0732d",
-    "semantic_hash": "e90b6703e6b25300f6e7bb60e8e0732d"
+    "mtime": 1791710527.9098241,
+    "seen": 1791710782.2865887,
+    "ast_hash": "c32fbbb5ddc275e0c526380451cff2f0",
+    "semantic_hash": ""
   },
   "src/utils/theme.ts": {
     "mtime": 1791674257.805618,
@@ -528,9 +528,9 @@
     "semantic_hash": ""
   },
   "functions/api/paymongo.ts": {
-    "mtime": 1791703788.4087393,
-    "seen": 1791704209.6993577,
-    "ast_hash": "518fb25614c6f9200b39fd230b6cb017",
+    "mtime": 1791710630.2916822,
+    "seen": 1791710782.2794554,
+    "ast_hash": "9c5c393de207b57e04695540938daeb5",
     "semantic_hash": ""
   },
   "src/utils/paymongo.ts": {

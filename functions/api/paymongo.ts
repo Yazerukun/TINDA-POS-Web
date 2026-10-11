@@ -23,10 +23,11 @@ export async function onRequestOptions() {
   return new Response(null, { headers: CORS_HEADERS })
 }
 
-export async function onRequestPost({ request }: { request: Request }) {
+export async function onRequestPost({ request, env }: { request: Request; env?: Record<string, string> }) {
   try {
     const body: PayMongoRequest = await request.json()
-    const { action, secretKey } = body
+    const { action } = body
+    const secretKey = body.secretKey || env?.PAYMONGO_SECRET_KEY || ''
 
     if (!secretKey || typeof secretKey !== 'string' || !secretKey.startsWith('sk_')) {
       return Response.json(

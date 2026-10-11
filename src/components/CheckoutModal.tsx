@@ -225,8 +225,8 @@ export function CheckoutModal({
 
   // Real-time polling listener for PayMongo status
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
-    let countdownInterval: NodeJS.Timeout | null = null
+    let interval: ReturnType<typeof setInterval> | null = null
+    let countdownInterval: ReturnType<typeof setInterval> | null = null
 
     if (
       qrData &&

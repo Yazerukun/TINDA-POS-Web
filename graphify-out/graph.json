@@ -46,19 +46,6 @@
       "source_location": "L3"
     },
     {
-      "id": "src_components_backupscreen_backupscreenprops",
-      "label": "BackupScreenProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "backupscreenprops",
-      "source_file": "src/components/BackupScreen.tsx",
-      "source_location": "L27"
-    },
-    {
       "id": "src_components_errorboundary_errorboundary",
       "label": "ErrorBoundary",
       "_callable": true,
@@ -137,6 +124,19 @@
       "source_location": "L27"
     },
     {
+      "id": "src_components_navigation_activetab",
+      "label": "ActiveTab",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "activetab",
+      "source_file": "src/components/Navigation.tsx",
+      "source_location": "L36"
+    },
+    {
       "id": "src_components_navigation_navigationprops",
       "label": "NavigationProps",
       "_callable": true,
@@ -189,19 +189,6 @@
       "source_location": "L18"
     },
     {
-      "id": "src_components_salesmonitormodal_salesmonitormodalprops",
-      "label": "SalesMonitorModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "salesmonitormodalprops",
-      "source_file": "src/components/SalesMonitorModal.tsx",
-      "source_location": "L22"
-    },
-    {
       "id": "src_components_terminaltoolsmodal_terminaltoolsmodalprops",
       "label": "TerminalToolsModalProps",
       "_callable": true,
@@ -239,45 +226,6 @@
       "norm_label": "utangscreenprops",
       "source_file": "src/components/UtangScreen.tsx",
       "source_location": "L26"
-    },
-    {
-      "id": "src_utils_backup_backupstats",
-      "label": "BackupStats",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "backupstats",
-      "source_file": "src/utils/backup.ts",
-      "source_location": "L16"
-    },
-    {
-      "id": "src_utils_theme_themedefinition",
-      "label": "ThemeDefinition",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "themedefinition",
-      "source_file": "src/utils/theme.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "src_utils_theme_themeid",
-      "label": "ThemeId",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "themeid",
-      "source_file": "src/utils/theme.ts",
-      "source_location": "L6"
     },
     {
       "id": "src_components_barcodescannermodal_barcodescannermodalprops",
@@ -494,7 +442,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 12,
-      "community_name": "CheckoutModal.tsx",
+      "community_name": "RewardedAdModal.tsx",
       "file_type": "code",
       "norm_label": "rewardedadmodalprops",
       "source_file": "src/components/RewardedAdModal.tsx",
@@ -507,63 +455,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 12,
-      "community_name": "CheckoutModal.tsx",
+      "community_name": "RewardedAdModal.tsx",
       "file_type": "code",
       "norm_label": "adblockerstatus",
       "source_file": "src/services/adBlocker.ts",
       "source_location": "L8"
-    },
-    {
-      "id": "src_types_splitpaymentrecord",
-      "label": "SplitPaymentRecord",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "CheckoutModal.tsx",
-      "file_type": "code",
-      "norm_label": "splitpaymentrecord",
-      "source_file": "src/types.ts",
-      "source_location": "L46"
-    },
-    {
-      "id": "src_utils_paymongo_createdynamicqrresult",
-      "label": "CreateDynamicQrResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "CheckoutModal.tsx",
-      "file_type": "code",
-      "norm_label": "createdynamicqrresult",
-      "source_file": "src/utils/paymongo.ts",
-      "source_location": "L15"
-    },
-    {
-      "id": "src_utils_paymongo_paymongoconnectionresult",
-      "label": "PayMongoConnectionResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "CheckoutModal.tsx",
-      "file_type": "code",
-      "norm_label": "paymongoconnectionresult",
-      "source_file": "src/utils/paymongo.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "src_utils_paymongo_pollpaymentstatusresult",
-      "label": "PollPaymentStatusResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "CheckoutModal.tsx",
-      "file_type": "code",
-      "norm_label": "pollpaymentstatusresult",
-      "source_file": "src/utils/paymongo.ts",
-      "source_location": "L24"
     },
     {
       "id": "functions_api_prices_env",
@@ -930,6 +826,19 @@
       "source_location": "L124"
     },
     {
+      "id": "src_types_splitpaymentrecord",
+      "label": "SplitPaymentRecord",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types.ts",
+      "file_type": "code",
+      "norm_label": "splitpaymentrecord",
+      "source_file": "src/types.ts",
+      "source_location": "L46"
+    },
+    {
       "id": "src_types_stockstatus",
       "label": "StockStatus",
       "_callable": true,
@@ -1027,7 +936,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "analyticsscreenprops",
       "source_file": "src/components/AnalyticsScreen.tsx",
@@ -1040,7 +949,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "analyticstab",
       "source_file": "src/components/AnalyticsScreen.tsx",
@@ -1053,7 +962,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "dashboardscreenprops",
       "source_file": "src/components/DashboardScreen.tsx",
@@ -1066,24 +975,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "expensesscreenprops",
       "source_file": "src/components/ExpensesScreen.tsx",
       "source_location": "L20"
-    },
-    {
-      "id": "src_components_navigation_activetab",
-      "label": "ActiveTab",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "money",
-      "file_type": "code",
-      "norm_label": "activetab",
-      "source_file": "src/components/Navigation.tsx",
-      "source_location": "L36"
     },
     {
       "id": "src_components_pricetagprintmodal_pricetagprintmodalprops",
@@ -1092,7 +988,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "pricetagprintmodalprops",
       "source_file": "src/components/PriceTagPrintModal.tsx",
@@ -1105,7 +1001,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "tagsizepreset",
       "source_file": "src/components/PriceTagPrintModal.tsx",
@@ -1118,7 +1014,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "printreportmodalprops",
       "source_file": "src/components/PrintReportModal.tsx",
@@ -1131,7 +1027,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "receiptprops",
       "source_file": "src/components/Receipt.tsx",
@@ -1144,24 +1040,24 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "reportsscreenprops",
       "source_file": "src/components/ReportsScreen.tsx",
       "source_location": "L22"
     },
     {
-      "id": "src_components_settingsscreen_settingsscreenprops",
-      "label": "SettingsScreenProps",
+      "id": "src_components_salesmonitormodal_salesmonitormodalprops",
+      "label": "SalesMonitorModalProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "settingsscreenprops",
-      "source_file": "src/components/SettingsScreen.tsx",
-      "source_location": "L48"
+      "norm_label": "salesmonitormodalprops",
+      "source_file": "src/components/SalesMonitorModal.tsx",
+      "source_location": "L22"
     },
     {
       "id": "src_components_transactionsscreen_transactionsscreenprops",
@@ -1170,7 +1066,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "transactionsscreenprops",
       "source_file": "src/components/TransactionsScreen.tsx",
@@ -1183,7 +1079,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "expense",
       "source_file": "src/types.ts",
@@ -1196,7 +1092,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "printercustomizationsettings",
       "source_file": "src/types.ts",
@@ -1209,7 +1105,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "storesettings",
       "source_file": "src/types.ts",
@@ -1222,7 +1118,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "transaction",
       "source_file": "src/types.ts",
@@ -1235,7 +1131,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "barcodeprops",
       "source_file": "src/utils/barcode.tsx",
@@ -1248,7 +1144,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "barcodesvgoptions",
       "source_file": "src/utils/barcode.tsx",
@@ -1424,17 +1320,134 @@
       "source_location": "L164"
     },
     {
+      "id": "src_components_backupscreen_backupscreenprops",
+      "label": "BackupScreenProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "backupscreenprops",
+      "source_file": "src/components/BackupScreen.tsx",
+      "source_location": "L27"
+    },
+    {
+      "id": "src_components_settingsscreen_settingsscreenprops",
+      "label": "SettingsScreenProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "settingsscreenprops",
+      "source_file": "src/components/SettingsScreen.tsx",
+      "source_location": "L48"
+    },
+    {
+      "id": "src_components_vipupgrademodal_modaltab",
+      "label": "ModalTab",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "modaltab",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L33"
+    },
+    {
       "id": "src_components_vipupgrademodal_vipupgrademodalprops",
       "label": "VipUpgradeModalProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "SettingsScreen.tsx",
       "file_type": "code",
       "norm_label": "vipupgrademodalprops",
       "source_file": "src/components/VipUpgradeModal.tsx",
-      "source_location": "L20"
+      "source_location": "L27"
+    },
+    {
+      "id": "src_utils_backup_backupstats",
+      "label": "BackupStats",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "backupstats",
+      "source_file": "src/utils/backup.ts",
+      "source_location": "L16"
+    },
+    {
+      "id": "src_utils_paymongo_createdynamicqrresult",
+      "label": "CreateDynamicQrResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "createdynamicqrresult",
+      "source_file": "src/utils/paymongo.ts",
+      "source_location": "L15"
+    },
+    {
+      "id": "src_utils_paymongo_paymongoconnectionresult",
+      "label": "PayMongoConnectionResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "paymongoconnectionresult",
+      "source_file": "src/utils/paymongo.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "src_utils_paymongo_pollpaymentstatusresult",
+      "label": "PollPaymentStatusResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "pollpaymentstatusresult",
+      "source_file": "src/utils/paymongo.ts",
+      "source_location": "L24"
+    },
+    {
+      "id": "src_utils_theme_themedefinition",
+      "label": "ThemeDefinition",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "themedefinition",
+      "source_file": "src/utils/theme.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "src_utils_theme_themeid",
+      "label": "ThemeId",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "themeid",
+      "source_file": "src/utils/theme.ts",
+      "source_location": "L6"
     },
     {
       "id": "src_app_app",
@@ -1471,18 +1484,6 @@
       "norm_label": "applogo()",
       "source_file": "src/components/AppLogo.tsx",
       "source_location": "L17"
-    },
-    {
-      "id": "src_components_backupscreen_backupscreen",
-      "label": "BackupScreen()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "backupscreen()",
-      "source_file": "src/components/BackupScreen.tsx",
-      "source_location": "L32"
     },
     {
       "id": "src_components_customersscreen_customersscreen",
@@ -1545,6 +1546,30 @@
       "source_location": "L35"
     },
     {
+      "id": "src_components_expensesscreen_expensesscreen",
+      "label": "ExpensesScreen()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "expensesscreen()",
+      "source_file": "src/components/ExpensesScreen.tsx",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_components_expirationtrackermodal_expirationtrackermodal",
+      "label": "ExpirationTrackerModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "expirationtrackermodal()",
+      "source_file": "src/components/ExpirationTrackerModal.tsx",
+      "source_location": "L23"
+    },
+    {
       "id": "src_components_handbookscreen_handbookscreen",
       "label": "HandbookScreen()",
       "_callable": true,
@@ -1593,6 +1618,18 @@
       "source_location": "L90"
     },
     {
+      "id": "src_components_priceguidemodal_priceguidemodal",
+      "label": "PriceGuideModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "priceguidemodal()",
+      "source_file": "src/components/PriceGuideModal.tsx",
+      "source_location": "L39"
+    },
+    {
       "id": "src_components_printerstudiomodal_printerstudiomodal",
       "label": "PrinterStudioModal()",
       "_callable": true,
@@ -1627,18 +1664,6 @@
       "norm_label": "salesmonitormodal()",
       "source_file": "src/components/SalesMonitorModal.tsx",
       "source_location": "L30"
-    },
-    {
-      "id": "src_components_settingsscreen_settingsscreen",
-      "label": "SettingsScreen()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "settingsscreen()",
-      "source_file": "src/components/SettingsScreen.tsx",
-      "source_location": "L64"
     },
     {
       "id": "src_components_suppliersscreen_suppliersscreen",
@@ -1687,114 +1712,6 @@
       "norm_label": "initdatabase()",
       "source_file": "src/db/index.ts",
       "source_location": "L91"
-    },
-    {
-      "id": "src_utils_backup_createrestorecheckpoint",
-      "label": "createRestoreCheckpoint()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "createrestorecheckpoint()",
-      "source_file": "src/utils/backup.ts",
-      "source_location": "L103"
-    },
-    {
-      "id": "src_utils_backup_downloadbackupfile",
-      "label": "downloadBackupFile()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "downloadbackupfile()",
-      "source_file": "src/utils/backup.ts",
-      "source_location": "L86"
-    },
-    {
-      "id": "src_utils_backup_exporttindabackup",
-      "label": "exportTindaBackup()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "exporttindabackup()",
-      "source_file": "src/utils/backup.ts",
-      "source_location": "L27"
-    },
-    {
-      "id": "src_utils_backup_importtindabackup",
-      "label": "importTindaBackup()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "importtindabackup()",
-      "source_file": "src/utils/backup.ts",
-      "source_location": "L129"
-    },
-    {
-      "id": "src_utils_backup_rollbackrestorecheckpoint",
-      "label": "rollbackRestoreCheckpoint()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "rollbackrestorecheckpoint()",
-      "source_file": "src/utils/backup.ts",
-      "source_location": "L116"
-    },
-    {
-      "id": "src_utils_paymongo_testpaymongoconnection",
-      "label": "testPayMongoConnection()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "testpaymongoconnection()",
-      "source_file": "src/utils/paymongo.ts",
-      "source_location": "L58"
-    },
-    {
-      "id": "src_utils_theme_applytheme",
-      "label": "applyTheme()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "applytheme()",
-      "source_file": "src/utils/theme.ts",
-      "source_location": "L85"
-    },
-    {
-      "id": "src_utils_theme_getactivetheme",
-      "label": "getActiveTheme()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "getactivetheme()",
-      "source_file": "src/utils/theme.ts",
-      "source_location": "L77"
-    },
-    {
-      "id": "src_utils_theme_inittheme",
-      "label": "initTheme()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "inittheme()",
-      "source_file": "src/utils/theme.ts",
-      "source_location": "L122"
     },
     {
       "id": "src_components_barcodescannermodal_barcodescannermodal",
@@ -2037,24 +1954,12 @@
       "source_location": "L29"
     },
     {
-      "id": "src_components_checkoutmodal_checkoutmodal",
-      "label": "CheckoutModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "CheckoutModal.tsx",
-      "file_type": "code",
-      "norm_label": "checkoutmodal()",
-      "source_file": "src/components/CheckoutModal.tsx",
-      "source_location": "L56"
-    },
-    {
       "id": "src_components_rewardedadmodal_rewardedadmodal",
       "label": "RewardedAdModal()",
       "_callable": true,
       "_origin": "ast",
       "community": 12,
-      "community_name": "CheckoutModal.tsx",
+      "community_name": "RewardedAdModal.tsx",
       "file_type": "code",
       "norm_label": "rewardedadmodal()",
       "source_file": "src/components/RewardedAdModal.tsx",
@@ -2066,7 +1971,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 12,
-      "community_name": "CheckoutModal.tsx",
+      "community_name": "RewardedAdModal.tsx",
       "file_type": "code",
       "norm_label": "detectadblocker()",
       "source_file": "src/services/adBlocker.ts",
@@ -2078,59 +1983,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 12,
-      "community_name": "CheckoutModal.tsx",
+      "community_name": "RewardedAdModal.tsx",
       "file_type": "code",
       "norm_label": "useadblocker()",
       "source_file": "src/services/adBlocker.ts",
       "source_location": "L76"
-    },
-    {
-      "id": "src_utils_paymongo_createdynamicqrpayment",
-      "label": "createDynamicQrPayment()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "CheckoutModal.tsx",
-      "file_type": "code",
-      "norm_label": "createdynamicqrpayment()",
-      "source_file": "src/utils/paymongo.ts",
-      "source_location": "L125"
-    },
-    {
-      "id": "src_utils_paymongo_isvalidpaymongosecretkey",
-      "label": "isValidPayMongoSecretKey()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "CheckoutModal.tsx",
-      "file_type": "code",
-      "norm_label": "isvalidpaymongosecretkey()",
-      "source_file": "src/utils/paymongo.ts",
-      "source_location": "L48"
-    },
-    {
-      "id": "src_utils_paymongo_masksecretkey",
-      "label": "maskSecretKey()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "CheckoutModal.tsx",
-      "file_type": "code",
-      "norm_label": "masksecretkey()",
-      "source_file": "src/utils/paymongo.ts",
-      "source_location": "L36"
-    },
-    {
-      "id": "src_utils_paymongo_pollpaymentstatus",
-      "label": "pollPaymentStatus()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "CheckoutModal.tsx",
-      "file_type": "code",
-      "norm_label": "pollpaymentstatus()",
-      "source_file": "src/utils/paymongo.ts",
-      "source_location": "L267"
     },
     {
       "id": "scripts_hash_pins_b64url",
@@ -2217,54 +2074,6 @@
       "source_location": "L26"
     },
     {
-      "id": "src_components_expirationtrackermodal_expirationtrackermodal",
-      "label": "ExpirationTrackerModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "expirationtrackermodal()",
-      "source_file": "src/components/ExpirationTrackerModal.tsx",
-      "source_location": "L23"
-    },
-    {
-      "id": "src_components_inventoryscreen_inventoryscreen",
-      "label": "InventoryScreen()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "inventoryscreen()",
-      "source_file": "src/components/InventoryScreen.tsx",
-      "source_location": "L65"
-    },
-    {
-      "id": "src_components_priceguidemodal_priceguidemodal",
-      "label": "PriceGuideModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "priceguidemodal()",
-      "source_file": "src/components/PriceGuideModal.tsx",
-      "source_location": "L39"
-    },
-    {
-      "id": "src_components_pricetagprintmodal_pricetagprintmodal",
-      "label": "PriceTagPrintModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "pricetagprintmodal()",
-      "source_file": "src/components/PriceTagPrintModal.tsx",
-      "source_location": "L36"
-    },
-    {
       "id": "src_components_userprofilemodal_userprofilemodal",
       "label": "UserProfileModal()",
       "_callable": true,
@@ -2299,18 +2108,6 @@
       "norm_label": "synconlinepricecatalog()",
       "source_file": "src/services/onlinePriceSync.ts",
       "source_location": "L17"
-    },
-    {
-      "id": "src_utils_format_formatshortdate",
-      "label": "formatShortDate()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "formatshortdate()",
-      "source_file": "src/utils/format.ts",
-      "source_location": "L30"
     },
     {
       "id": "src_utils_image_compressimagefile",
@@ -2354,7 +2151,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "analyticsscreen()",
       "source_file": "src/components/AnalyticsScreen.tsx",
@@ -2366,23 +2163,35 @@
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "dashboardscreen()",
       "source_file": "src/components/DashboardScreen.tsx",
       "source_location": "L46"
     },
     {
-      "id": "src_components_expensesscreen_expensesscreen",
-      "label": "ExpensesScreen()",
+      "id": "src_components_inventoryscreen_inventoryscreen",
+      "label": "InventoryScreen()",
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
-      "norm_label": "expensesscreen()",
-      "source_file": "src/components/ExpensesScreen.tsx",
-      "source_location": "L26"
+      "norm_label": "inventoryscreen()",
+      "source_file": "src/components/InventoryScreen.tsx",
+      "source_location": "L65"
+    },
+    {
+      "id": "src_components_pricetagprintmodal_pricetagprintmodal",
+      "label": "PriceTagPrintModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "pricetagprintmodal()",
+      "source_file": "src/components/PriceTagPrintModal.tsx",
+      "source_location": "L36"
     },
     {
       "id": "src_components_printreportmodal_printreportmodal",
@@ -2390,7 +2199,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "printreportmodal()",
       "source_file": "src/components/PrintReportModal.tsx",
@@ -2402,7 +2211,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "receipt()",
       "source_file": "src/components/Receipt.tsx",
@@ -2414,7 +2223,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "transactionsscreen()",
       "source_file": "src/components/TransactionsScreen.tsx",
@@ -2426,7 +2235,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "barcode()",
       "source_file": "src/utils/barcode.tsx",
@@ -2438,7 +2247,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "countconsecutivedigits()",
       "source_file": "src/utils/barcode.tsx",
@@ -2450,7 +2259,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "escapexml()",
       "source_file": "src/utils/barcode.tsx",
@@ -2462,7 +2271,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "generatebarcodesvg()",
       "source_file": "src/utils/barcode.tsx",
@@ -2474,11 +2283,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "formatdatetime()",
       "source_file": "src/utils/format.ts",
       "source_location": "L17"
+    },
+    {
+      "id": "src_utils_format_formatshortdate",
+      "label": "formatShortDate()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "formatshortdate()",
+      "source_file": "src/utils/format.ts",
+      "source_location": "L30"
     },
     {
       "id": "src_utils_format_money",
@@ -2486,7 +2307,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "money()",
       "source_file": "src/utils/format.ts",
@@ -2498,7 +2319,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "moneyshort()",
       "source_file": "src/utils/format.ts",
@@ -2510,7 +2331,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "parsepesotocents()",
       "source_file": "src/utils/format.ts",
@@ -3081,16 +2902,196 @@
       "source_location": "L41"
     },
     {
+      "id": "src_components_backupscreen_backupscreen",
+      "label": "BackupScreen()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "backupscreen()",
+      "source_file": "src/components/BackupScreen.tsx",
+      "source_location": "L32"
+    },
+    {
+      "id": "src_components_checkoutmodal_checkoutmodal",
+      "label": "CheckoutModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "checkoutmodal()",
+      "source_file": "src/components/CheckoutModal.tsx",
+      "source_location": "L56"
+    },
+    {
+      "id": "src_components_settingsscreen_settingsscreen",
+      "label": "SettingsScreen()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "settingsscreen()",
+      "source_file": "src/components/SettingsScreen.tsx",
+      "source_location": "L64"
+    },
+    {
+      "id": "src_components_vipupgrademodal_generatedeterministicvipkey",
+      "label": "generateDeterministicVipKey()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "generatedeterministicvipkey()",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L39"
+    },
+    {
+      "id": "src_components_vipupgrademodal_verifyviplicensekey",
+      "label": "verifyVipLicenseKey()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "verifyviplicensekey()",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L73"
+    },
+    {
       "id": "src_components_vipupgrademodal_vipupgrademodal",
       "label": "VipUpgradeModal()",
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "SettingsScreen.tsx",
       "file_type": "code",
       "norm_label": "vipupgrademodal()",
       "source_file": "src/components/VipUpgradeModal.tsx",
-      "source_location": "L26"
+      "source_location": "L82"
+    },
+    {
+      "id": "src_utils_backup_createrestorecheckpoint",
+      "label": "createRestoreCheckpoint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "createrestorecheckpoint()",
+      "source_file": "src/utils/backup.ts",
+      "source_location": "L103"
+    },
+    {
+      "id": "src_utils_backup_downloadbackupfile",
+      "label": "downloadBackupFile()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "downloadbackupfile()",
+      "source_file": "src/utils/backup.ts",
+      "source_location": "L86"
+    },
+    {
+      "id": "src_utils_backup_exporttindabackup",
+      "label": "exportTindaBackup()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "exporttindabackup()",
+      "source_file": "src/utils/backup.ts",
+      "source_location": "L27"
+    },
+    {
+      "id": "src_utils_backup_importtindabackup",
+      "label": "importTindaBackup()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "importtindabackup()",
+      "source_file": "src/utils/backup.ts",
+      "source_location": "L129"
+    },
+    {
+      "id": "src_utils_backup_rollbackrestorecheckpoint",
+      "label": "rollbackRestoreCheckpoint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "rollbackrestorecheckpoint()",
+      "source_file": "src/utils/backup.ts",
+      "source_location": "L116"
+    },
+    {
+      "id": "src_utils_paymongo_createdynamicqrpayment",
+      "label": "createDynamicQrPayment()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "createdynamicqrpayment()",
+      "source_file": "src/utils/paymongo.ts",
+      "source_location": "L125"
+    },
+    {
+      "id": "src_utils_paymongo_isvalidpaymongosecretkey",
+      "label": "isValidPayMongoSecretKey()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "isvalidpaymongosecretkey()",
+      "source_file": "src/utils/paymongo.ts",
+      "source_location": "L48"
+    },
+    {
+      "id": "src_utils_paymongo_masksecretkey",
+      "label": "maskSecretKey()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "masksecretkey()",
+      "source_file": "src/utils/paymongo.ts",
+      "source_location": "L36"
+    },
+    {
+      "id": "src_utils_paymongo_pollpaymentstatus",
+      "label": "pollPaymentStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "pollpaymentstatus()",
+      "source_file": "src/utils/paymongo.ts",
+      "source_location": "L267"
+    },
+    {
+      "id": "src_utils_paymongo_testpaymongoconnection",
+      "label": "testPayMongoConnection()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "testpaymongoconnection()",
+      "source_file": "src/utils/paymongo.ts",
+      "source_location": "L58"
     },
     {
       "id": "src_utils_security_bytestohex",
@@ -3098,7 +3099,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "SettingsScreen.tsx",
       "file_type": "code",
       "norm_label": "bytestohex()",
       "source_file": "src/utils/security.ts",
@@ -3110,7 +3111,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "SettingsScreen.tsx",
       "file_type": "code",
       "norm_label": "getdevicemachineid()",
       "source_file": "src/utils/security.ts",
@@ -3122,7 +3123,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "SettingsScreen.tsx",
       "file_type": "code",
       "norm_label": "hashpin()",
       "source_file": "src/utils/security.ts",
@@ -3134,7 +3135,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "SettingsScreen.tsx",
       "file_type": "code",
       "norm_label": "hextobytes()",
       "source_file": "src/utils/security.ts",
@@ -3146,7 +3147,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "SettingsScreen.tsx",
       "file_type": "code",
       "norm_label": "sanitizebarcodeinput()",
       "source_file": "src/utils/security.ts",
@@ -3158,11 +3159,47 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "SettingsScreen.tsx",
       "file_type": "code",
       "norm_label": "verifypin()",
       "source_file": "src/utils/security.ts",
       "source_location": "L58"
+    },
+    {
+      "id": "src_utils_theme_applytheme",
+      "label": "applyTheme()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "applytheme()",
+      "source_file": "src/utils/theme.ts",
+      "source_location": "L85"
+    },
+    {
+      "id": "src_utils_theme_getactivetheme",
+      "label": "getActiveTheme()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "getactivetheme()",
+      "source_file": "src/utils/theme.ts",
+      "source_location": "L77"
+    },
+    {
+      "id": "src_utils_theme_inittheme",
+      "label": "initTheme()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "inittheme()",
+      "source_file": "src/utils/theme.ts",
+      "source_location": "L122"
     },
     {
       "id": "scripts_fix_vault_copy_edit",
@@ -3230,17 +3267,6 @@
       "file_type": "code",
       "norm_label": "applogo.tsx",
       "source_file": "src/components/AppLogo.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_backupscreen",
-      "label": "BackupScreen.tsx",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "backupscreen.tsx",
-      "source_file": "src/components/BackupScreen.tsx",
       "source_location": "L1"
     },
     {
@@ -3332,28 +3358,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_components_salesmonitormodal",
-      "label": "SalesMonitorModal.tsx",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "salesmonitormodal.tsx",
-      "source_file": "src/components/SalesMonitorModal.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_settingsscreen",
-      "label": "SettingsScreen.tsx",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "settingsscreen.tsx",
-      "source_file": "src/components/SettingsScreen.tsx",
-      "source_location": "L1"
-    },
-    {
       "id": "src_components_terminaltoolsmodal",
       "label": "TerminalToolsModal.tsx",
       "_origin": "ast",
@@ -3418,50 +3422,6 @@
       "norm_label": "formatcurrency",
       "source_file": "src/utils/format.ts",
       "source_location": "L47"
-    },
-    {
-      "id": "src_utils_theme",
-      "label": "theme.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "theme.ts",
-      "source_file": "src/utils/theme.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_utils_theme_themes",
-      "label": "THEMES",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "themes",
-      "source_file": "src/utils/theme.ts",
-      "source_location": "L18"
-    },
-    {
-      "id": "ref_lucide_react",
-      "label": "lucide-react",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "concept",
-      "norm_label": "lucide-react",
-      "source_file": "package.json",
-      "source_location": "L17"
-    },
-    {
-      "id": "ref_react",
-      "label": "react",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "concept",
-      "norm_label": "react",
-      "source_file": "package.json",
-      "source_location": "L18"
     },
     {
       "id": "browser",
@@ -3849,22 +3809,11 @@
       "source_location": "L13"
     },
     {
-      "id": "src_components_checkoutmodal",
-      "label": "CheckoutModal.tsx",
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "CheckoutModal.tsx",
-      "file_type": "code",
-      "norm_label": "checkoutmodal.tsx",
-      "source_file": "src/components/CheckoutModal.tsx",
-      "source_location": "L1"
-    },
-    {
       "id": "src_components_rewardedadmodal",
       "label": "RewardedAdModal.tsx",
       "_origin": "ast",
       "community": 12,
-      "community_name": "CheckoutModal.tsx",
+      "community_name": "RewardedAdModal.tsx",
       "file_type": "code",
       "norm_label": "rewardedadmodal.tsx",
       "source_file": "src/components/RewardedAdModal.tsx",
@@ -3875,7 +3824,7 @@
       "label": "MONETAG_DIRECT_LINKS",
       "_origin": "ast",
       "community": 12,
-      "community_name": "CheckoutModal.tsx",
+      "community_name": "RewardedAdModal.tsx",
       "file_type": "code",
       "norm_label": "monetag_direct_links",
       "source_file": "src/components/RewardedAdModal.tsx",
@@ -3886,21 +3835,10 @@
       "label": "adBlocker.ts",
       "_origin": "ast",
       "community": 12,
-      "community_name": "CheckoutModal.tsx",
+      "community_name": "RewardedAdModal.tsx",
       "file_type": "code",
       "norm_label": "adblocker.ts",
       "source_file": "src/services/adBlocker.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_utils_paymongo",
-      "label": "utils/paymongo.ts",
-      "_origin": "ast",
-      "community": 12,
-      "community_name": "CheckoutModal.tsx",
-      "file_type": "code",
-      "norm_label": "utils/paymongo.ts",
-      "source_file": "src/utils/paymongo.ts",
       "source_location": "L1"
     },
     {
@@ -3908,7 +3846,7 @@
       "label": "canvas-confetti",
       "_origin": "ast",
       "community": 12,
-      "community_name": "CheckoutModal.tsx",
+      "community_name": "RewardedAdModal.tsx",
       "file_type": "concept",
       "norm_label": "canvas-confetti",
       "source_file": "package.json",
@@ -4164,6 +4102,17 @@
       "norm_label": "esbuild@0.28.1",
       "source_file": "package.json",
       "source_location": "L35"
+    },
+    {
+      "id": "src_components_checkoutmodal",
+      "label": "CheckoutModal.tsx",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types.ts",
+      "file_type": "code",
+      "norm_label": "checkoutmodal.tsx",
+      "source_file": "src/components/CheckoutModal.tsx",
+      "source_location": "L1"
     },
     {
       "id": "src_components_customersscreen",
@@ -5508,7 +5457,7 @@
       "label": "AnalyticsScreen.tsx",
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "analyticsscreen.tsx",
       "source_file": "src/components/AnalyticsScreen.tsx",
@@ -5519,7 +5468,7 @@
       "label": "DENOMINATIONS",
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "denominations",
       "source_file": "src/components/AnalyticsScreen.tsx",
@@ -5530,7 +5479,7 @@
       "label": "DashboardScreen.tsx",
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "dashboardscreen.tsx",
       "source_file": "src/components/DashboardScreen.tsx",
@@ -5541,7 +5490,7 @@
       "label": "ExpensesScreen.tsx",
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "expensesscreen.tsx",
       "source_file": "src/components/ExpensesScreen.tsx",
@@ -5552,7 +5501,7 @@
       "label": "PriceTagPrintModal.tsx",
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "pricetagprintmodal.tsx",
       "source_file": "src/components/PriceTagPrintModal.tsx",
@@ -5563,7 +5512,7 @@
       "label": "PRESET_DIMENSIONS",
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "preset_dimensions",
       "source_file": "src/components/PriceTagPrintModal.tsx",
@@ -5574,7 +5523,7 @@
       "label": "PrintReportModal.tsx",
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "printreportmodal.tsx",
       "source_file": "src/components/PrintReportModal.tsx",
@@ -5585,7 +5534,7 @@
       "label": "Receipt.tsx",
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "receipt.tsx",
       "source_file": "src/components/Receipt.tsx",
@@ -5596,7 +5545,7 @@
       "label": "DEFAULT_RECEIPT_CONFIG",
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "default_receipt_config",
       "source_file": "src/components/Receipt.tsx",
@@ -5607,10 +5556,21 @@
       "label": "ReportsScreen.tsx",
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "reportsscreen.tsx",
       "source_file": "src/components/ReportsScreen.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_salesmonitormodal",
+      "label": "SalesMonitorModal.tsx",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "code",
+      "norm_label": "salesmonitormodal.tsx",
+      "source_file": "src/components/SalesMonitorModal.tsx",
       "source_location": "L1"
     },
     {
@@ -5618,7 +5578,7 @@
       "label": "TransactionsScreen.tsx",
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "transactionsscreen.tsx",
       "source_file": "src/components/TransactionsScreen.tsx",
@@ -5629,7 +5589,7 @@
       "label": "barcode.tsx",
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "barcode.tsx",
       "source_file": "src/utils/barcode.tsx",
@@ -5640,7 +5600,7 @@
       "label": "CODE128_PATTERNS",
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "code128_patterns",
       "source_file": "src/utils/barcode.tsx",
@@ -5651,11 +5611,33 @@
       "label": "format.ts",
       "_origin": "ast",
       "community": 3,
-      "community_name": "money",
+      "community_name": "react",
       "file_type": "code",
       "norm_label": "format.ts",
       "source_file": "src/utils/format.ts",
       "source_location": "L1"
+    },
+    {
+      "id": "ref_lucide_react",
+      "label": "lucide-react",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "concept",
+      "norm_label": "lucide-react",
+      "source_file": "package.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "ref_react",
+      "label": "react",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "react",
+      "file_type": "concept",
+      "norm_label": "react",
+      "source_file": "package.json",
+      "source_location": "L18"
     },
     {
       "id": "tailwind_config",
@@ -5896,14 +5878,47 @@
       "source_location": "L44"
     },
     {
+      "id": "src_components_backupscreen",
+      "label": "BackupScreen.tsx",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "backupscreen.tsx",
+      "source_file": "src/components/BackupScreen.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_settingsscreen",
+      "label": "SettingsScreen.tsx",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "settingsscreen.tsx",
+      "source_file": "src/components/SettingsScreen.tsx",
+      "source_location": "L1"
+    },
+    {
       "id": "src_components_vipupgrademodal",
       "label": "VipUpgradeModal.tsx",
       "_origin": "ast",
       "community": 6,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "SettingsScreen.tsx",
       "file_type": "code",
       "norm_label": "vipupgrademodal.tsx",
       "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_utils_paymongo",
+      "label": "utils/paymongo.ts",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "utils/paymongo.ts",
+      "source_file": "src/utils/paymongo.ts",
       "source_location": "L1"
     },
     {
@@ -5911,11 +5926,33 @@
       "label": "security.ts",
       "_origin": "ast",
       "community": 6,
-      "community_name": "VipUpgradeModal.tsx",
+      "community_name": "SettingsScreen.tsx",
       "file_type": "code",
       "norm_label": "security.ts",
       "source_file": "src/utils/security.ts",
       "source_location": "L1"
+    },
+    {
+      "id": "src_utils_theme",
+      "label": "theme.ts",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "theme.ts",
+      "source_file": "src/utils/theme.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_utils_theme_themes",
+      "label": "THEMES",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "themes",
+      "source_file": "src/utils/theme.ts",
+      "source_location": "L18"
     },
     {
       "id": "tsconfig",
@@ -7000,6 +7037,18 @@
     },
     {
       "source": "src_app_app",
+      "target": "src_components_settingsscreen_settingsscreen",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/App.tsx",
+      "source_location": "L1007",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_app",
       "target": "src_components_errorboundary_errorboundary",
       "relation": "calls",
       "_origin": "ast",
@@ -7007,7 +7056,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L1014",
+      "source_location": "L1025",
       "weight": 1.0
     },
     {
@@ -7019,7 +7068,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L1015",
+      "source_location": "L1026",
       "weight": 1.0
     },
     {
@@ -7031,7 +7080,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L1027",
+      "source_location": "L1038",
       "weight": 1.0
     },
     {
@@ -7043,7 +7092,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L1047",
+      "source_location": "L1058",
       "weight": 1.0
     },
     {
@@ -7055,7 +7104,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L1059",
+      "source_location": "L1070",
       "weight": 1.0
     },
     {
@@ -7067,7 +7116,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L1074",
+      "source_location": "L1085",
       "weight": 1.0
     },
     {
@@ -7079,7 +7128,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L1080",
+      "source_location": "L1091",
       "weight": 1.0
     },
     {
@@ -7091,7 +7140,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L1087",
+      "source_location": "L1098",
       "weight": 1.0
     },
     {
@@ -7103,7 +7152,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L1121",
+      "source_location": "L1132",
       "weight": 1.0
     },
     {
@@ -7115,7 +7164,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L1130",
+      "source_location": "L1141",
       "weight": 1.0
     },
     {
@@ -7127,7 +7176,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L1138",
+      "source_location": "L1149",
       "weight": 1.0
     },
     {
@@ -7139,7 +7188,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L1152",
+      "source_location": "L1163",
       "weight": 1.0
     },
     {
@@ -7175,7 +7224,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L328",
+      "source_location": "L339",
       "weight": 1.0
     },
     {
@@ -7199,7 +7248,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L663",
+      "source_location": "L674",
       "weight": 1.0
     },
     {
@@ -7211,7 +7260,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L674",
+      "source_location": "L685",
       "weight": 1.0
     },
     {
@@ -7235,7 +7284,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L690",
+      "source_location": "L701",
       "weight": 1.0
     },
     {
@@ -7247,7 +7296,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L701",
+      "source_location": "L712",
       "weight": 1.0
     },
     {
@@ -7259,7 +7308,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L781",
+      "source_location": "L792",
       "weight": 1.0
     },
     {
@@ -7271,7 +7320,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L869",
+      "source_location": "L880",
       "weight": 1.0
     },
     {
@@ -7283,7 +7332,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L886",
+      "source_location": "L897",
       "weight": 1.0
     },
     {
@@ -7295,7 +7344,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L903",
+      "source_location": "L914",
       "weight": 1.0
     },
     {
@@ -7307,7 +7356,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L913",
+      "source_location": "L924",
       "weight": 1.0
     },
     {
@@ -7319,7 +7368,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L923",
+      "source_location": "L934",
       "weight": 1.0
     },
     {
@@ -7331,7 +7380,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L931",
+      "source_location": "L942",
       "weight": 1.0
     },
     {
@@ -7343,7 +7392,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L939",
+      "source_location": "L950",
       "weight": 1.0
     },
     {
@@ -7355,7 +7404,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L943",
+      "source_location": "L954",
       "weight": 1.0
     },
     {
@@ -7367,7 +7416,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L950",
+      "source_location": "L961",
       "weight": 1.0
     },
     {
@@ -7379,7 +7428,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L958",
+      "source_location": "L969",
       "weight": 1.0
     },
     {
@@ -7391,7 +7440,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L967",
+      "source_location": "L978",
       "weight": 1.0
     },
     {
@@ -7403,7 +7452,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L977",
+      "source_location": "L988",
       "weight": 1.0
     },
     {
@@ -7415,7 +7464,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L984",
+      "source_location": "L995",
       "weight": 1.0
     },
     {
@@ -7427,19 +7476,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/App.tsx",
-      "source_location": "L988",
-      "weight": 1.0
-    },
-    {
-      "source": "src_app_app",
-      "target": "src_components_settingsscreen_settingsscreen",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/App.tsx",
-      "source_location": "L996",
+      "source_location": "L999",
       "weight": 1.0
     },
     {
@@ -8363,7 +8400,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/SettingsScreen.tsx",
-      "source_location": "L1570",
+      "source_location": "L1572",
       "weight": 1.0
     },
     {
@@ -8375,7 +8412,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/SettingsScreen.tsx",
-      "source_location": "L1730",
+      "source_location": "L1732",
       "weight": 1.0
     },
     {
@@ -8423,7 +8460,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/SettingsScreen.tsx",
-      "source_location": "L239",
+      "source_location": "L240",
       "weight": 1.0
     },
     {
@@ -8435,7 +8472,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/SettingsScreen.tsx",
-      "source_location": "L294",
+      "source_location": "L296",
       "weight": 1.0
     },
     {
@@ -8567,7 +8604,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/VaultAuthModal.tsx",
-      "source_location": "L1157",
+      "source_location": "L1498",
       "weight": 1.0
     },
     {
@@ -8579,7 +8616,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/VaultAuthModal.tsx",
-      "source_location": "L332",
+      "source_location": "L342",
       "weight": 1.0
     },
     {
@@ -8591,7 +8628,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/VaultAuthModal.tsx",
-      "source_location": "L452",
+      "source_location": "L462",
       "weight": 1.0
     },
     {
@@ -8603,7 +8640,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/VaultAuthModal.tsx",
-      "source_location": "L489",
+      "source_location": "L499",
       "weight": 1.0
     },
     {
@@ -8615,7 +8652,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/VaultAuthModal.tsx",
-      "source_location": "L591",
+      "source_location": "L703",
       "weight": 1.0
     },
     {
@@ -8627,7 +8664,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/VaultAuthModal.tsx",
-      "source_location": "L616",
+      "source_location": "L728",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_vipupgrademodal_verifyviplicensekey",
+      "target": "src_components_vipupgrademodal_generatedeterministicvipkey",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L77",
       "weight": 1.0
     },
     {
@@ -8639,7 +8688,67 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/VipUpgradeModal.tsx",
-      "source_location": "L42",
+      "source_location": "L115",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_vipupgrademodal_vipupgrademodal",
+      "target": "src_lib_sound_playsuccesssound",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L227",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_vipupgrademodal_vipupgrademodal",
+      "target": "src_components_vipupgrademodal_verifyviplicensekey",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L247",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_vipupgrademodal_vipupgrademodal",
+      "target": "src_utils_paymongo_createdynamicqrpayment",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L283",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_vipupgrademodal_vipupgrademodal",
+      "target": "src_utils_paymongo_pollpaymentstatus",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L299",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_vipupgrademodal_vipupgrademodal",
+      "target": "src_components_vipupgrademodal_generatedeterministicvipkey",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L308",
       "weight": 1.0
     },
     {
@@ -13285,7 +13394,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/VipUpgradeModal.tsx",
-      "source_location": "L17",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -13297,7 +13406,43 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/VipUpgradeModal.tsx",
-      "source_location": "L18",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_vipupgrademodal",
+      "target": "src_lib_sound_playsuccesssound",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_vipupgrademodal",
+      "target": "src_utils_paymongo_createdynamicqrpayment",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_vipupgrademodal",
+      "target": "src_utils_paymongo_pollpaymentstatus",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -16349,6 +16494,18 @@
     },
     {
       "source": "src_components_vipupgrademodal",
+      "target": "ref_lucide_react",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_vipupgrademodal",
       "target": "src_utils_security",
       "relation": "imports_from",
       "_origin": "ast",
@@ -16356,7 +16513,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/VipUpgradeModal.tsx",
-      "source_location": "L17",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -16368,19 +16525,31 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/VipUpgradeModal.tsx",
-      "source_location": "L18",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
       "source": "src_components_vipupgrademodal",
-      "target": "ref_lucide_react",
+      "target": "src_lib_sound",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/VipUpgradeModal.tsx",
-      "source_location": "L2",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_vipupgrademodal",
+      "target": "src_utils_paymongo",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -19890,7 +20059,40 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/VipUpgradeModal.tsx",
-      "source_location": "L20",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_vipupgrademodal",
+      "target": "src_components_vipupgrademodal_modaltab",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_vipupgrademodal",
+      "target": "src_components_vipupgrademodal_generatedeterministicvipkey",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_vipupgrademodal",
+      "target": "src_components_vipupgrademodal_verifyviplicensekey",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L73",
       "weight": 1.0
     },
     {
@@ -19901,7 +20103,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/VipUpgradeModal.tsx",
-      "source_location": "L26",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
@@ -21592,5 +21794,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "5c62e354b941ace7003065975591fba3bc09f889"
+  "built_at_commit": "18d6f8956cd029fff3b5f2135ac07668b91bc5ab"
 }

@@ -36,7 +36,7 @@ import { LandingPage } from './components/LandingPage'
 import { VipUpgradeModal } from './components/VipUpgradeModal'
 import { initTheme } from './utils/theme'
 import { useProAccess } from './services/proAccess'
-import { sendHeartbeat } from './services/cloudSync'
+import { sendHeartbeat, validateSession, clearSession } from './services/cloudSync'
 import { importTindaBackup } from './utils/backup'
 import { Upload, HardDriveDownload } from 'lucide-react'
 import { isVipActive, subscribeVipStatus, syncCloudVipStatus, setActiveVipUser } from './utils/vip'
@@ -64,7 +64,17 @@ export default function App(): React.JSX.Element {
   const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false)
   const [isBarcodeScannerOpen, setIsBarcodeScannerOpen] = useState(false)
   // Vault Session / Cashier Authentication State (Screen 1 vs Screen 2)
-  const [vaultSession, setVaultSession] = useState<VaultSession | null>(null)
+  // A reload restores the last session so an F5 does not dump the cashier back
+  // to the login screen. The cached snapshot is only a UI hint: on mount it is
+  // revalidated against /api/me, and dropped when the token is gone or rejected.
+  const [vaultSession, setVaultSession] = useState<VaultSession | null>(() => {
+    try {
+      const saved = localStorage.getItem('tinda_vault_session')
+      return saved ? (JSON.parse(saved) as VaultSession) : null
+    } catch {
+      return null
+    }
+  })
 
   const [isVipUpgradeOpen, setIsVipUpgradeOpen] = useState(false)
   const [isVip, setIsVip] = useState(() => isVipActive(vaultSession?.username))
@@ -76,6 +86,56 @@ export default function App(): React.JSX.Element {
       setIsVip(isVipActive(vaultSession?.username))
     })
   }, [vaultSession?.username])
+
+  // Persist the session snapshot so a reload keeps the cashier signed in. The
+  // bearer token itself lives in sessionStorage, so this survives an F5 but not
+  // a new tab, and a restored snapshot is revalidated on mount (below).
+  useEffect(() => {
+    try {
+      if (vaultSession) localStorage.setItem('tinda_vault_session', JSON.stringify(vaultSession))
+      else localStorage.removeItem('tinda_vault_session')
+    } catch {
+      // ignore storage failures (private mode)
+    }
+  }, [vaultSession])
+
+  // Revalidate a restored session once on mount. Offline keeps the cached
+  // session (the POS must keep selling); a rejected or missing token drops it,
+  // and master/admin flags come from the server, never the local snapshot.
+  useEffect(() => {
+    if (!vaultSession) return
+    let active = true
+    validateSession()
+      .then((result) => {
+        if (!active || !result) return
+        if (!result.ok) {
+          setVaultSession(null)
+          return
+        }
+        const u = result.user
+        if (!u) return
+        setVaultSession((prev) =>
+          prev
+            ? {
+                ...prev,
+                userId: u.id,
+                username: u.username,
+                userRole: u.role as VaultSession['userRole'],
+                isAdmin: u.role === 'ADMIN',
+                isMasterAdmin: u.is_master,
+                storeName: u.store_name || prev.storeName,
+                avatarUrl: u.avatar_url ?? prev.avatarUrl,
+                cashierName: u.is_master ? prev.cashierName : u.name || prev.cashierName
+              }
+            : prev
+        )
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Initialize theme on mount
   useEffect(() => {
@@ -104,12 +164,7 @@ export default function App(): React.JSX.Element {
 
   const handleUpdateAvatar = (avatarUrl?: string) => {
     if (!vaultSession) return
-    const updated = { ...vaultSession, avatarUrl }
-    setVaultSession(updated)
-    try {
-    } catch {
-      // ignore
-    }
+    setVaultSession({ ...vaultSession, avatarUrl })
   }
 
   // Real-time online presence heartbeat (every 25 seconds & on tab focus)
@@ -279,7 +334,7 @@ export default function App(): React.JSX.Element {
   useEffect(() => {
     if (vaultSession && !vaultSession.isMasterAdmin && vaultSession.userId) {
       const userId = vaultSession.userId ?? vaultSession.username ?? 'guest'
-      proAccess.loadStateForUser(userId)
+      proAccess.loadStateForUser(userId, vaultSession.username)
     } else if (vaultSession?.isMasterAdmin) {
       proAccess.toggleOwnerBypass(true)
     }
@@ -479,7 +534,7 @@ export default function App(): React.JSX.Element {
     } else {
       // Load user session
       const userId = session.userId ?? session.username ?? 'guest'
-      await proAccess.loadStateForUser(userId)
+      await proAccess.loadStateForUser(userId, session.username)
     }
   }
 
@@ -489,6 +544,7 @@ export default function App(): React.JSX.Element {
     } catch {
       // ignore
     }
+    clearSession()
     proAccess.toggleOwnerBypass(false)
     setCart([])
     setMasqueradeSession(null)

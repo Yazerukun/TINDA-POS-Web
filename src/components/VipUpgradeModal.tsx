@@ -410,29 +410,13 @@ export function VipUpgradeModal({
         }
       }
 
-      // 2. Fallback check local storage
-      const savedInfo = getVipLicenseInfo(query)
-      if (savedInfo.active && (savedInfo.token || savedInfo.key)) {
-        await applyVipActivation(savedInfo.token || savedInfo.key || '', savedInfo.registeredTo || query)
-        setFeedback({
-          type: 'success',
-          message: `VIP Pro License recovered for @${query}!`
-        })
-      } else {
-        const u = await db.users.where('username').equalsIgnoreCase(query).first()
-        if (u && u.is_vip && u.vip_key) {
-          await applyVipActivation(u.vip_key, u.store_name || u.name)
-          setFeedback({
-            type: 'success',
-            message: `VIP Pro License recovered for @${query}!`
-          })
-        } else {
-          setFeedback({
-            type: 'error',
-            message: `No active VIP Pro record found for account "@${query}". Each account requires its own separate VIP license.`
-          })
-        }
-      }
+      // 2. No server record means no license. Never grant VIP from a local
+      // Dexie row: `is_vip` / `vip_key` are writable by anyone in IndexedDB,
+      // so a license is only valid when Cloudflare D1 confirms it.
+      setFeedback({
+        type: 'error',
+        message: `No active VIP Pro record found for account "@${query}". Each account requires its own separate VIP license.`
+      })
     } catch (err) {
       setFeedback({ type: 'error', message: 'Recovery error: ' + (err as Error)?.message })
     } finally {

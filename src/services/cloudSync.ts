@@ -26,6 +26,22 @@ export interface CloudProPayload {
   total_ads_watched: number
 }
 
+export interface MeResult {
+  ok: boolean
+  user?: {
+    id: number
+    username: string
+    name: string
+    email: string | null
+    role: string
+    status: string
+    store_name: string | null
+    avatar_url: string | null
+    is_owner: boolean
+    is_master: boolean
+  }
+}
+
 export interface CloudLoginResult {
   ok: boolean
   token?: string
@@ -94,6 +110,24 @@ export async function loginWithCloud(username: string, pin: string): Promise<Clo
 /** Drop the token, e.g. on sign-out. */
 export function clearSession(): void {
   setSessionToken(null)
+}
+
+/**
+ * Revalidate a restored session against the server.
+ * Returns null when the network is unreachable (caller keeps the cached
+ * session for offline use); otherwise the server's verdict.
+ */
+export async function validateSession(): Promise<MeResult | null> {
+  const token = getSessionToken()
+  if (!token) return { ok: false }
+  try {
+    const res = await fetch(`${API_BASE}/api/me`, { headers: authHeaders(false) })
+    if (!res.ok) return { ok: false }
+    const data = (await res.json()) as MeResult
+    return data.ok ? data : { ok: false }
+  } catch {
+    return null
+  }
 }
 
 /** Change the signed-in account's PIN. Requires the current PIN. */

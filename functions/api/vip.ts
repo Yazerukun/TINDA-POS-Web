@@ -48,15 +48,17 @@ function fromB64url(s: string): Uint8Array {
 }
 
 function getCorsHeaders(request: Request): Record<string, string> {
-  const origin = request.headers.get('Origin') || ''
-  const allowed = isAllowedOrigin(request)
-  return {
-    'Content-Type': 'application/json',
+  const headers: Record<string, string> = {
     ...CORS,
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Vary': 'Origin'
   }
+  // Echo the caller's origin only when it is an allowed one, so preview and
+  // local deployments get a matching CORS header instead of the prod constant.
+  const origin = request.headers.get('Origin')
+  if (origin && isAllowedOrigin(request)) headers['Access-Control-Allow-Origin'] = origin
+  return headers
 }
 
 async function getSigningKey(secretStr: string): Promise<CryptoKey> {

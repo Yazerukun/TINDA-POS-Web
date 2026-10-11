@@ -10,7 +10,7 @@
 - **Decision**: Configured Google AdSense publisher `ca-pub-8613908595644796` in `index.html` and `public/ads.txt`, along with public `/privacy` and `/terms` disclosures displaying verified contact email `skorts188@gmail.com`.
 
 ### 2026-09-24: Master Platform Admin (`skorts188@gmail.com`), Zero-Ads Bypass & Store Hierarchy Control Panel
-- **Decision**: Platform Creator / Master Admin account configured for `skorts188@gmail.com` with password `muyco155`.
+- **Decision**: Platform Creator / Master Admin account configured for `skorts188@gmail.com`. The credential itself is stored server-side as a PIN hash and is never written to the repo.
 - **Decision**: Master Admin has **Zero Ads** (`owner_bypass: true` permanently active, never prompted with ad gates, no expiration timer).
 - **Decision**: Added dedicated `MasterControlScreen.tsx` (accessible via golden Super Admin navigation item) displaying:
   - Total registered stores / merchants

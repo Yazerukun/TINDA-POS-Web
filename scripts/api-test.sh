@@ -36,7 +36,7 @@ echo "== unauthenticated reads must be rejected =="
 check 'GET /api/users'          401 GET /api/users
 check 'GET /api/pro'            401 GET /api/pro
 check 'GET /api/pro?username=x' 401 GET '/api/pro?username=x'
-check 'POST /api/heartbeat'     401 POST '' '{}'
+check 'POST /api/heartbeat'     401 POST /api/heartbeat '{}'
 check 'GET /api/users?username=x' 401 GET '/api/users?username=x'
 
 echo
@@ -68,11 +68,14 @@ if [[ "$ESC" == *'"error":"Username already taken"'* ]]; then
   ok 'signup cannot hijack an existing account'
 else bad "escalation attempt: $ESC"; fi
 
+# The client sends pro_expires_at in milliseconds; the server refuses any
+# extension beyond ~now. Send the same unit or the attempt looks like a past
+# timestamp and is (correctly) accepted as a no-op write.
 SELF=$(curl -s -X POST "$BASE/api/pro" -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" \
-  -d "{\"username\":\"$U\",\"pro_expires_at\":$(( $(date +%s) + 8640000 )),\"tokens\":999,\"owner_bypass\":true,\"total_ads_watched\":0,\"last_ad_watched_at\":0}")
+  -d "{\"username\":\"$U\",\"pro_expires_at\":$(( $(date +%s) * 1000 + 86400000 )),\"tokens\":999,\"owner_bypass\":true,\"total_ads_watched\":0,\"last_ad_watched_at\":0}")
+if [[ "$SELF" == *'"error":"Forbidden"'* ]]; then ok 'cashier cannot mint pro access'; else bad "self pro grant: $SELF"; fi
 STATE=$(curl -s "$BASE/api/pro?username=$U" -H "Authorization: Bearer $TOKEN")
-if [[ "$STATE" == *'"owner_bypass":0'* ]]; then ok 'owner_bypass stays server-owned'; else bad "owner_bypass: $STATE"; fi
-if [[ "$STATE" == *'"pro_expires_at":0'* ]]; then ok 'cashier cannot mint pro access'; else bad "self pro grant: $STATE"; fi
+if [[ "$STATE" != *'"owner_bypass":1'* ]]; then ok 'owner_bypass stays server-owned'; else bad "owner_bypass: $STATE"; fi
 
 echo
 echo "== no credential material in any response =="

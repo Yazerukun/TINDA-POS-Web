@@ -184,6 +184,8 @@ export function forbidden(): Response {
   return Response.json({ ok: false, error: 'Forbidden' }, { status: 403, headers: CORS })
 }
 
+export const PRODUCTION_HOST = 'tindapos-web.pages.dev'
+
 export const CORS: Record<string, string> = {
   'Content-Type': 'application/json',
   // Same-origin only. The API is called from the app's own origin, so there is
@@ -198,7 +200,27 @@ export const CORS: Record<string, string> = {
 export function isAllowedOrigin(request: Request): boolean {
   const origin = request.headers.get('Origin')
   if (!origin) return true // same-origin fetches and native clients send no Origin
-  return origin === 'https://tindapos-web.pages.dev'
+
+  let originHost: string
+  try {
+    originHost = new URL(origin).host
+  } catch {
+    return false
+  }
+
+  // Same-origin requests (local dev via `wrangler pages dev`, any deployment)
+  // carry the app's own host in Origin, so compare it instead of hardcoding one.
+  let requestHost: string
+  try {
+    requestHost = new URL(request.url).host
+  } catch {
+    return false
+  }
+  if (originHost === requestHost) return true
+
+  // The production host plus its project preview deployments
+  // (`<hash>.tindapos-web.pages.dev`).
+  return originHost === PRODUCTION_HOST || originHost.endsWith(`.${PRODUCTION_HOST}`)
 }
 
 export function logServerError(context: string, error: unknown): void {

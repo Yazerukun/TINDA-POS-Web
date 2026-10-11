@@ -43,6 +43,7 @@ import { THEMES, getActiveTheme, applyTheme, type ThemeId } from '../utils/theme
 import { getDeviceMachineId } from '../utils/security'
 import { testPayMongoConnection } from '../utils/paymongo'
 import { syncUserToCloud } from '../services/cloudSync'
+import { canAddStaffAccount, isVipActive, FREE_TIER_LIMITS } from '../utils/vip'
 
 interface SettingsScreenProps {
   settings: StoreSettings
@@ -353,6 +354,13 @@ export function SettingsScreen({
     const existing = await db.users.where('username').equalsIgnoreCase(trimmedUser).first()
     if (existing) {
       setUserFormError('This username is already taken. Please choose another.')
+      return
+    }
+
+    if (!canAddStaffAccount(users.length)) {
+      setUserFormError(
+        `Free Community Edition is limited to ${FREE_TIER_LIMITS.MAX_STAFF_ACCOUNTS} staff account. Upgrade to VIP Pro Lifetime for unlimited staff PINs!`
+      )
       return
     }
 
@@ -1318,7 +1326,19 @@ export function SettingsScreen({
               {isAdmin && (
                 <button
                   type="button"
-                  onClick={() => setShowAddUserModal(true)}
+                  onClick={() => {
+                    if (!canAddStaffAccount(users.length)) {
+                      if (
+                        confirm(
+                          `Free Community Edition is limited to ${FREE_TIER_LIMITS.MAX_STAFF_ACCOUNTS} staff account.\n\nWould you like to unlock unlimited staff accounts with VIP Pro Lifetime for ₱500?`
+                        )
+                      ) {
+                        onOpenVipUpgrade?.()
+                      }
+                      return
+                    }
+                    setShowAddUserModal(true)
+                  }}
                   className="btn-press flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold text-xs hover:bg-amber-500/25 transition-all self-start sm:self-auto shrink-0 cursor-pointer"
                 >
                   <UserPlus className="h-4 w-4" />
@@ -1326,6 +1346,24 @@ export function SettingsScreen({
                 </button>
               )}
             </div>
+
+            {!isVipActive() && (
+              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <Crown className="h-4 w-4 text-amber-400 shrink-0" />
+                  <span>
+                    Free Community Edition: <strong>{users.length} / {FREE_TIER_LIMITS.MAX_STAFF_ACCOUNTS}</strong> staff account active.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={onOpenVipUpgrade}
+                  className="font-bold underline text-amber-200 hover:text-white shrink-0"
+                >
+                  Upgrade for Unlimited Staff
+                </button>
+              </div>
+            )}
 
             {userSuccessMessage && (
               <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center gap-2 animate-fade-in">

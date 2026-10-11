@@ -203,6 +203,7 @@ export function POSScreen({
   const [isCalcModalOpen, setIsCalcModalOpen] = useState(false)
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false)
   const [isAutoImporting, setIsAutoImporting] = useState(false)
+  const [isMobileCartOpen, setIsMobileCartOpen] = useState(false)
 
   // Refs for hotkey focusing
   const searchInputRef = useRef<HTMLInputElement>(null)
@@ -1645,6 +1646,189 @@ export function POSScreen({
           }}
           onClose={() => setIsExpenseModalOpen(false)}
         />
+      )}
+
+      {/* MOBILE FLOATING CART SUMMARY BAR (< lg screens) */}
+      {cart.length > 0 && !isMobileCartOpen && (
+        <div className="lg:hidden fixed bottom-4 left-3 right-3 z-30 animate-fade-in">
+          <div className="glass-panel p-2.5 rounded-2xl border border-emerald-500/40 bg-obsidian-950/95 shadow-2xl backdrop-blur-xl flex items-center justify-between gap-2">
+            <button
+              type="button"
+              onClick={() => setIsMobileCartOpen(true)}
+              className="flex items-center gap-2.5 text-left flex-1 min-w-0"
+            >
+              <div className="relative p-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shrink-0">
+                <ShoppingBag className="w-5 h-5" />
+                <span className="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-emerald-500 text-stone-900 text-[10px] font-black font-mono">
+                  {cart.reduce((sum, i) => sum + i.quantity, 0)}
+                </span>
+              </div>
+              <div className="min-w-0">
+                <span className="text-[10px] uppercase font-bold text-stone-400 block tracking-wider">
+                  Total Due ({cart.length} {cart.length === 1 ? 'item' : 'items'})
+                </span>
+                <span className="text-base font-black font-mono text-emerald-400 block truncate">
+                  {money(grandTotal_c)}
+                </span>
+              </div>
+            </button>
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsMobileCartOpen(true)}
+                className="btn-press px-3 py-2 rounded-xl bg-obsidian-900 border border-white/[0.08] text-xs font-bold text-stone-200"
+              >
+                View Cart
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onCheckout(subtotal_c, discount_c, discountType, grandTotal_c, selectedCustomerId, undefined, 'CASH')
+                }}
+                className="btn-press px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black text-xs shadow-md shadow-emerald-950/40 flex items-center gap-1"
+              >
+                <span>Pay</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MOBILE SLIDE-UP CART BOTTOM SHEET (< lg screens) */}
+      {isMobileCartOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end bg-obsidian-950/80 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-h-[88vh] bg-obsidian-900 border-t border-slate-800 rounded-t-3xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom duration-300">
+            {/* Drawer Grab Bar & Header */}
+            <div className="p-4 border-b border-white/[0.08] bg-obsidian-950 shrink-0">
+              <div className="w-12 h-1.5 bg-stone-600 rounded-full mx-auto mb-3" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShoppingBag className="w-5 h-5 text-emerald-400" />
+                  <h3 className="font-bold text-base text-stone-100">
+                    Order Cart ({cart.reduce((sum, i) => sum + i.quantity, 0)} Items)
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileCartOpen(false)}
+                  className="w-8 h-8 rounded-full bg-obsidian-800 text-stone-400 hover:text-white flex items-center justify-center transition"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Drawer Body - Scrollable Items */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {/* Customer / Suki status */}
+              <div className="flex items-center justify-between border border-white/[0.08] bg-obsidian-950/80 px-3 py-2 text-xs rounded-xl">
+                <div className="flex items-center gap-2 min-w-0">
+                  <User className="h-4 w-4 text-emerald-400 shrink-0" />
+                  <span className="font-bold text-stone-200 truncate">
+                    {selectedCustomer ? selectedCustomer.name : 'Walk-in Customer'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsCustomerModalOpen(true)}
+                  className="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20"
+                >
+                  {selectedCustomer ? 'Change' : 'Select Suki'}
+                </button>
+              </div>
+
+              {/* Cart Item Cards */}
+              <div className="space-y-2">
+                {cart.map((item) => {
+                  const maxStock = products.find((p) => p.id === item.product.id)?.stock ?? item.product.stock
+                  return (
+                    <div
+                      key={item.product.id}
+                      className="p-3 rounded-xl border border-white/[0.06] bg-obsidian-950/60 flex items-center justify-between gap-3"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-bold text-xs text-stone-100 truncate">
+                          {item.product.name}
+                        </h4>
+                        <p className="text-[11px] text-stone-400 font-mono mt-0.5">
+                          {money(item.unit_price_c)} each
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex items-center rounded-lg border border-white/[0.08] bg-obsidian-900 p-0.5">
+                          <button
+                            type="button"
+                            onClick={() => updateQuantity(item.product.id, -1)}
+                            className="w-7 h-7 flex items-center justify-center text-stone-300 hover:text-white"
+                          >
+                            <Minus className="w-3.5 h-3.5" />
+                          </button>
+                          <span className="w-8 text-center font-mono font-bold text-xs text-white">
+                            {item.quantity}
+                          </span>
+                          <button
+                            type="button"
+                            disabled={item.quantity >= maxStock}
+                            onClick={() => updateQuantity(item.product.id, 1)}
+                            className="w-7 h-7 flex items-center justify-center text-stone-300 hover:text-white disabled:opacity-30"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        <span className="font-mono font-bold text-emerald-400 text-xs w-16 text-right">
+                          {money(item.total_c)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeItem(item.product.id)}
+                          className="p-1.5 text-stone-500 hover:text-rose-400"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Discounts & Totals */}
+              <div className="p-3.5 rounded-xl bg-obsidian-950 border border-white/[0.08] space-y-2 text-xs">
+                <div className="flex justify-between text-stone-400">
+                  <span>Subtotal</span>
+                  <span className="font-mono text-stone-200">{money(subtotal_c)}</span>
+                </div>
+                {discount_c > 0 && (
+                  <div className="flex justify-between text-emerald-400">
+                    <span>Discount</span>
+                    <span className="font-mono">-{money(discount_c)}</span>
+                  </div>
+                )}
+                <div className="pt-2 border-t border-white/[0.08] flex justify-between items-center">
+                  <span className="font-bold text-stone-200 uppercase tracking-wider">Amount Due</span>
+                  <span className="font-mono font-black text-xl text-emerald-400">{money(grandTotal_c)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Drawer Action Buttons */}
+            <div className="p-4 border-t border-white/[0.08] bg-obsidian-950 shrink-0 space-y-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileCartOpen(false)
+                  onCheckout(subtotal_c, discount_c, discountType, grandTotal_c, selectedCustomerId, undefined, 'CASH')
+                }}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/40"
+              >
+                <span>CHECKOUT NOW ({money(grandTotal_c)})</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

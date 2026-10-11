@@ -164,6 +164,8 @@ export function CheckoutModal({
   const [pollError, setPollError] = useState<string | null>(null)
   const [verifiedPaymentId, setVerifiedPaymentId] = useState<string | null>(null)
   const [countdownSeconds, setCountdownSeconds] = useState<number>(1800)
+  const [autoCompleting, setAutoCompleting] = useState(false)
+  const autoChargeRef = useRef<(() => void) | null>(null)
 
   const generatePayMongoQr = useCallback(async (amountCents: number) => {
     const secretKey = settings?.paymongo_secret_key?.trim()
@@ -258,6 +260,14 @@ export function CheckoutModal({
                 origin: { y: 0.5 }
               })
             } catch {}
+
+            // Hands-Free Real-Time Auto Complete after 1.2s celebratory delay
+            if (settings?.paymongo_auto_complete !== false) {
+              setAutoCompleting(true)
+              setTimeout(() => {
+                autoChargeRef.current?.()
+              }, 1200)
+            }
           } else if (result.status === 'cancelled' || result.status === 'failed') {
             setPollStatus('failed')
             setPollError(result.error || 'Payment was cancelled or failed.')
@@ -544,6 +554,10 @@ export function CheckoutModal({
       setProcessing(false)
     }
   }
+
+  useEffect(() => {
+    autoChargeRef.current = handleCharge
+  })
 
   const selectedCustomerObj = customers.find((c) => c.id === customerId)
 
@@ -1058,19 +1072,27 @@ export function CheckoutModal({
 
                           {/* Verified Paid Banner */}
                           {pollStatus === 'paid' && (
-                            <div className="p-3 rounded-xl bg-emerald-950/50 border border-emerald-500/50 text-emerald-200 text-xs flex items-center justify-between animate-fade-in">
-                              <div className="flex items-center gap-2">
-                                <CheckCircle2 className="h-5 w-5 text-emerald-400" />
-                                <div>
-                                  <span className="font-bold block">Payment Received &amp; Verified!</span>
-                                  <span className="text-[10px] font-mono text-emerald-300 block">
-                                    ID: {verifiedPaymentId}
-                                  </span>
+                            <div className="p-3 rounded-xl bg-emerald-950/50 border border-emerald-500/50 text-emerald-200 text-xs space-y-2 animate-fade-in">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                                  <div>
+                                    <span className="font-bold block">Payment Received &amp; Verified!</span>
+                                    <span className="text-[10px] font-mono text-emerald-300 block">
+                                      ID: {verifiedPaymentId}
+                                    </span>
+                                  </div>
                                 </div>
+                                <span className="px-2 py-1 rounded bg-emerald-500/20 font-mono font-bold text-[10px]">
+                                  PAID
+                                </span>
                               </div>
-                              <span className="px-2 py-1 rounded bg-emerald-500/20 font-mono font-bold text-[10px]">
-                                PAID
-                              </span>
+                              {autoCompleting && (
+                                <div className="flex items-center gap-2 pt-1 border-t border-emerald-500/30 text-[11px] text-emerald-300 font-medium">
+                                  <RefreshCw className="h-3.5 w-3.5 animate-spin text-emerald-400" />
+                                  <span>Completing transaction hands-free in real time...</span>
+                                </div>
+                              )}
                             </div>
                           )}
 

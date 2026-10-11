@@ -39,6 +39,7 @@ import { useProAccess } from './services/proAccess'
 import { sendHeartbeat } from './services/cloudSync'
 import { importTindaBackup } from './utils/backup'
 import { Upload, HardDriveDownload } from 'lucide-react'
+import { isVipActive, subscribeVipStatus } from './utils/vip'
 
 export default function App(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard')
@@ -63,6 +64,12 @@ export default function App(): React.JSX.Element {
   const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false)
   const [isBarcodeScannerOpen, setIsBarcodeScannerOpen] = useState(false)
   const [isVipUpgradeOpen, setIsVipUpgradeOpen] = useState(false)
+  const [isVip, setIsVip] = useState(isVipActive())
+
+  // Keep isVip reactive across tabs and components
+  useEffect(() => {
+    return subscribeVipStatus(setIsVip)
+  }, [])
 
   // Initialize theme on mount
   useEffect(() => {
@@ -864,15 +871,27 @@ export default function App(): React.JSX.Element {
               <span className="lg:hidden">SUPER ADMIN</span>
               <span className="text-[0.75rem] text-gold underline ml-1">Control →</span>
             </button>
-          ) : (
+          ) : isVip ? (
             <div
-              className="flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-xs font-mono font-bold shadow-glow-emerald shrink-0"
+              className="flex items-center gap-2 px-3 py-1 rounded-full border border-amber-500/40 bg-amber-500/10 text-amber-300 text-xs font-mono font-bold shadow-glow-amber shrink-0"
+            >
+              <Crown className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden lg:inline">VIP PRO LIFETIME</span>
+              <span className="lg:hidden">VIP PRO</span>
+              <span className="text-[0.75rem] text-amber-300/80 font-normal">· UNLIMITED</span>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setIsVipUpgradeOpen(true)}
+              className="flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-xs font-mono font-bold shadow-glow-emerald hover:bg-emerald-500/20 transition-all shrink-0 cursor-pointer"
+              title="Click to upgrade to VIP Pro Lifetime for ₱500"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="hidden lg:inline">PRO ENTERPRISE EDITION</span>
-              <span className="lg:hidden">PRO ACTIVE</span>
-              <span className="text-[0.75rem] text-emerald-400/80 font-normal">· UNLIMITED</span>
-            </div>
+              <span className="hidden lg:inline">COMMUNITY EDITION (50 Item Limit)</span>
+              <span className="lg:hidden">COMMUNITY</span>
+              <span className="text-[0.75rem] text-emerald-300 underline">Upgrade VIP →</span>
+            </button>
           )}
         </div>
 
@@ -917,6 +936,7 @@ export default function App(): React.JSX.Element {
             onTransactionVoided={loadData}
             isAdmin={isUserAdmin}
             currentCashierName={vaultSession?.cashierName || 'Master Admin'}
+            onOpenVipUpgrade={() => setIsVipUpgradeOpen(true)}
           />
         )}
 
@@ -927,6 +947,7 @@ export default function App(): React.JSX.Element {
             onRefresh={loadData}
             cashierName={vaultSession?.cashierName}
             storeName={activeStoreName}
+            onOpenVipUpgrade={() => setIsVipUpgradeOpen(true)}
           />
         )}
 

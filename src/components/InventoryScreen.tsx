@@ -32,7 +32,8 @@ import {
   ExternalLink,
   ShieldAlert,
   Archive,
-  BarChart2
+  BarChart2,
+  Crown
 } from 'lucide-react'
 import type { Product, Category, RestockLog, RestockType, PriceReference, Supplier } from '../types'
 import { money, formatDateTime, formatShortDate } from '../utils/format'
@@ -41,6 +42,7 @@ import { findSuggestedPrice, getSrpComparison } from '../utils/srp'
 import { syncOnlinePriceCatalog } from '../services/onlinePriceSync'
 import { db } from '../db'
 import { PriceTagPrintModal } from './PriceTagPrintModal'
+import { canAddProduct, isVipActive, FREE_TIER_LIMITS } from '../utils/vip'
 
 type InventoryTab = 'CATALOG' | 'REORDER' | 'BATCH_IN' | 'EXPIRATION' | 'HISTORY'
 type CatalogFilter = 'ALL' | 'LOW_STOCK' | 'OUT_OF_STOCK' | 'HIGH_MARGIN' | 'NO_BARCODE' | 'NO_PHOTO'
@@ -60,6 +62,7 @@ interface InventoryScreenProps {
   onRefresh: () => void
   cashierName?: string
   storeName?: string
+  onOpenVipUpgrade?: () => void
 }
 
 export function InventoryScreen({
@@ -67,7 +70,8 @@ export function InventoryScreen({
   categories,
   onRefresh,
   cashierName,
-  storeName = 'PLATFORM_HQ'
+  storeName = 'PLATFORM_HQ',
+  onOpenVipUpgrade
 }: InventoryScreenProps): React.JSX.Element {
   // Navigation & Active View Tabs
   const [activeTab, setActiveTab] = useState<InventoryTab>('CATALOG')
@@ -699,6 +703,16 @@ export function InventoryScreen({
           {/* Add New Product Button */}
           <button
             onClick={() => {
+              if (!canAddProduct(products.length)) {
+                if (
+                  confirm(
+                    `Free Community Edition is limited to ${FREE_TIER_LIMITS.MAX_PRODUCTS} products.\n\nWould you like to unlock unlimited products with VIP Pro Lifetime for only ₱500?`
+                  )
+                ) {
+                  onOpenVipUpgrade?.()
+                }
+                return
+              }
               setEditingProduct({
                 name: '',
                 sku: '',
@@ -722,6 +736,32 @@ export function InventoryScreen({
           </button>
         </div>
       </div>
+
+      {/* VIP Community Edition Limit Banner */}
+      {!isVipActive() && (
+        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-950/30 via-obsidian-900 to-obsidian-950 border border-amber-500/30 flex items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <Crown className="w-5 h-5 text-amber-400 shrink-0" />
+            <div className="min-w-0">
+              <span className="font-bold text-stone-100 block truncate">
+                Free Community Edition: {products.length} / {FREE_TIER_LIMITS.MAX_PRODUCTS} Products
+              </span>
+              <span className="text-[11px] text-amber-400/80 block font-mono">
+                {products.length >= FREE_TIER_LIMITS.MAX_PRODUCTS
+                  ? 'Limit reached. Upgrade to VIP Pro to add unlimited products.'
+                  : `${FREE_TIER_LIMITS.MAX_PRODUCTS - products.length} product slots remaining before upgrade.`}
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onOpenVipUpgrade}
+            className="btn-press px-3 py-1.5 rounded-xl bg-amber-500 text-obsidian-950 font-bold text-xs shrink-0 shadow-glow-amber hover:bg-amber-400 transition"
+          >
+            Upgrade to VIP Pro
+          </button>
+        </div>
+      )}
 
       {/* ──────────────────────────────────────────────────────────────────────────
           2. EXECUTIVE INVENTORY VALUATION & KPI STRIP

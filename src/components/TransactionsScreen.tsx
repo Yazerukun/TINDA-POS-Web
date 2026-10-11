@@ -13,12 +13,14 @@ import {
   X,
   CreditCard,
   Banknote,
-  Wallet
+  Wallet,
+  Crown
 } from 'lucide-react'
 import type { Transaction, StoreSettings, Product } from '../types'
 import { db } from '../db'
 import { money, formatDateTime } from '../utils/format'
 import { Receipt as ReceiptComponent } from './Receipt'
+import { isVipActive, FREE_TIER_LIMITS } from '../utils/vip'
 
 interface TransactionsScreenProps {
   transactions: Transaction[]
@@ -26,6 +28,7 @@ interface TransactionsScreenProps {
   onTransactionVoided?: () => void
   isAdmin?: boolean
   currentCashierName?: string
+  onOpenVipUpgrade?: () => void
 }
 
 export function TransactionsScreen({
@@ -33,7 +36,8 @@ export function TransactionsScreen({
   settings,
   onTransactionVoided,
   isAdmin = false,
-  currentCashierName = 'Master Admin'
+  currentCashierName = 'Master Admin',
+  onOpenVipUpgrade
 }: TransactionsScreenProps): React.JSX.Element {
   const [search, setSearch] = useState('')
   const [paymentFilter, setPaymentFilter] = useState<string>('ALL')
@@ -75,6 +79,13 @@ export function TransactionsScreen({
       )
     })
   }, [transactions, search, paymentFilter, statusFilter, fromDate, toDate])
+
+  const isVip = isVipActive()
+
+  const displayedTransactions = useMemo(() => {
+    if (isVip) return filteredTransactions
+    return filteredTransactions.slice(0, FREE_TIER_LIMITS.MAX_TRANSACTIONS)
+  }, [filteredTransactions, isVip])
 
   // Total sales of filtered (excluding voided)
   const totalFilteredSales_c = useMemo(() => {
@@ -244,9 +255,33 @@ export function TransactionsScreen({
         </div>
       </div>
 
+      {/* Free Community Limit Banner */}
+      {!isVip && transactions.length >= FREE_TIER_LIMITS.MAX_TRANSACTIONS && (
+        <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-950/30 via-obsidian-900 to-obsidian-950 border border-amber-500/30 flex items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <Crown className="w-5 h-5 text-amber-400 shrink-0" />
+            <div className="min-w-0">
+              <span className="font-bold text-stone-100 block truncate">
+                Free Community Edition: Showing latest {FREE_TIER_LIMITS.MAX_TRANSACTIONS} of {transactions.length} receipts
+              </span>
+              <span className="text-[11px] text-amber-400/80 block font-mono">
+                Upgrade to VIP Pro Lifetime (₱500) for unlimited receipt history, export, and complete audit trail.
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onOpenVipUpgrade}
+            className="btn-press px-3 py-1.5 rounded-xl bg-amber-500 text-obsidian-950 font-bold text-xs shrink-0 shadow-glow-amber hover:bg-amber-400 transition"
+          >
+            Upgrade to VIP Pro
+          </button>
+        </div>
+      )}
+
       {/* Transactions Table */}
       <div className="rounded-3xl border border-white/10 bg-obsidian-900/50 overflow-hidden">
-        {filteredTransactions.length === 0 ? (
+        {displayedTransactions.length === 0 ? (
           <div className="py-20 text-center space-y-2">
             <Receipt className="h-10 w-10 text-stone-500 mx-auto" />
             <p className="text-sm font-bold text-stone-300">No transactions match your search</p>
@@ -270,7 +305,7 @@ export function TransactionsScreen({
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.04]">
-                {filteredTransactions.map((tx) => {
+                {displayedTransactions.map((tx) => {
                   const isVoided = (tx.status || 'COMPLETED') === 'VOIDED'
                   return (
                     <tr

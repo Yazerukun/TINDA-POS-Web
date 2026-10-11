@@ -71,9 +71,9 @@ export const onRequestGet = async (context: { request: Request; env: Env }) => {
       }
     })
   } catch (err: any) {
+    console.error('Failed to process price lookup')
     return new Response(JSON.stringify({
-      error: 'Failed to process price lookup',
-      details: err.message
+      error: 'Failed to process price lookup'
     }), {
       status: 500,
       headers: CORS

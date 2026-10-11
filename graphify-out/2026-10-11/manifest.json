@@ -222,10 +222,10 @@
     "semantic_hash": ""
   },
   "src/components/PrintingServicesScreen.tsx": {
-    "mtime": 1791654777.8641844,
-    "seen": 1791673137.9668307,
-    "ast_hash": "ac8368c651b04e01f8298a94be3ae726",
-    "semantic_hash": "ac8368c651b04e01f8298a94be3ae726"
+    "mtime": 1791698475.9739478,
+    "seen": 1791698533.3853798,
+    "ast_hash": "2710e8b425c25889c17266dc29a765b7",
+    "semantic_hash": ""
   },
   "src/components/Receipt.tsx": {
     "mtime": 1791691835.727163,

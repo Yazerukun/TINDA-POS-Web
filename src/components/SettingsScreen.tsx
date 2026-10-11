@@ -28,7 +28,13 @@ import {
   Sparkles,
   Smartphone,
   RotateCcw,
-  Zap
+  Zap,
+  CreditCard,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+  AlertCircle,
+  ExternalLink
 } from 'lucide-react'
 import type { StoreSettings, UserAccount, UserRole, Transaction } from '../types'
 import { downloadBackupFile, importTindaBackup, rollbackRestoreCheckpoint } from '../utils/backup'
@@ -37,6 +43,7 @@ import { db, initDatabase } from '../db'
 import { Receipt } from './Receipt'
 import { THEMES, getActiveTheme, applyTheme, type ThemeId } from '../utils/theme'
 import { getDeviceMachineId } from '../utils/security'
+import { testPayMongoConnection, isValidPayMongoSecretKey } from '../utils/paymongo'
 
 interface SettingsScreenProps {
   settings: StoreSettings
@@ -99,6 +106,41 @@ export function SettingsScreen({
   const [userFormError, setUserFormError] = useState('')
   const [userSuccessMessage, setUserSuccessMessage] = useState('')
   const newUserAvatarInputRef = useRef<HTMLInputElement>(null)
+
+  // PayMongo Gateway & Real-Time E-Wallet state
+  const [showSecretKey, setShowSecretKey] = useState(false)
+  const [isTestingPayMongo, setIsTestingPayMongo] = useState(false)
+  const [payMongoTestResult, setPayMongoTestResult] = useState<{
+    ok: boolean
+    message: string
+    livemode?: boolean
+  } | null>(null)
+  const qrImageInputRef = useRef<HTMLInputElement>(null)
+
+  const handleTestPayMongo = async () => {
+    if (!form.paymongo_secret_key) return
+    setIsTestingPayMongo(true)
+    setPayMongoTestResult(null)
+    try {
+      const res = await testPayMongoConnection(form.paymongo_secret_key)
+      setPayMongoTestResult({ ok: res.ok, message: res.message, livemode: res.livemode })
+    } catch (err: any) {
+      setPayMongoTestResult({ ok: false, message: err?.message || 'Connection test failed' })
+    } finally {
+      setIsTestingPayMongo(false)
+    }
+  }
+
+  const handleUploadCustomQr = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    try {
+      const compressed = await compressImageFile(file, { maxWidth: 800, quality: 0.85 })
+      setForm((prev) => ({ ...prev, store_qr_image_url: compressed }))
+    } catch {
+      alert('Failed to process image file.')
+    }
+  }
 
   const loadUsers = useCallback(async () => {
     try {
@@ -1272,6 +1314,220 @@ export function SettingsScreen({
                   <span className="text-[0.75rem] text-slate-400 block">Automatically open print dialog after sale settlement</span>
                 </div>
               </label>
+            </div>
+          </div>
+
+          {/* ── DIGITAL PAYMENT GATEWAY & REAL-TIME QR PH (PAYMONGO) ── */}
+          <div className="pt-5 border-t border-slate-900/[0.08] space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h4 className="text-sm font-bold text-stone-100 flex items-center gap-2">
+                  <CreditCard className="h-4 w-4 text-sky-400" />
+                  <span>Digital Payments &amp; Real-Time Dynamic QR Ph (GCash / Maya)</span>
+                </h4>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Accept automated real-time payments directly into your own PayMongo account. Zero cashier reference typing required.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-sky-500/10 text-sky-300 border border-sky-500/20">
+                  <ShieldCheck className="h-3 w-3" />
+                  <span>Per-Store Encrypted</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Enable PayMongo Gateway Switch */}
+            <div className="p-4 rounded-2xl bg-obsidian-900/[0.08] border border-slate-900/[0.08] space-y-3">
+              <label className="flex items-center justify-between cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400">
+                    <QrCode className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-stone-100 block">
+                      Enable PayMongo Real-Time Dynamic QR Ph
+                    </span>
+                    <span className="text-[11px] text-slate-400 block">
+                      When enabled, checkout generates live QR Ph codes for GCash &amp; Maya with instant webhook &amp; polling verification.
+                    </span>
+                  </div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={form.paymongo_enabled ?? false}
+                  onChange={(e) => setForm({ ...form, paymongo_enabled: e.target.checked })}
+                  className="rounded border-slate-900/30 text-sky-500 focus:ring-0 w-5 h-5 bg-slate-850 cursor-pointer"
+                />
+              </label>
+
+              {form.paymongo_enabled && (
+                <div className="pt-3 border-t border-slate-900/[0.06] space-y-3">
+                  {/* Environment Switcher */}
+                  <div className="grid grid-cols-2 gap-2 p-1 bg-obsidian-950/80 rounded-xl border border-slate-900/[0.08] text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, paymongo_environment: 'test' })}
+                      className={`py-1.5 font-bold rounded-lg transition-all ${
+                        (form.paymongo_environment ?? 'test') === 'test'
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-sm'
+                          : 'text-stone-400 hover:text-stone-200'
+                      }`}
+                    >
+                      🧪 Test Sandbox Mode
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, paymongo_environment: 'live' })}
+                      className={`py-1.5 font-bold rounded-lg transition-all ${
+                        form.paymongo_environment === 'live'
+                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shadow-sm'
+                          : 'text-stone-400 hover:text-stone-200'
+                      }`}
+                    >
+                      🚀 Live Production (Real Money)
+                    </button>
+                  </div>
+
+                  {/* Secret Key Input with Masking & Testing */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                        <Lock className="h-3.5 w-3.5 text-amber-400" />
+                        <span>PayMongo Secret Key (sk_test_... or sk_live_...)</span>
+                      </label>
+                      <span className="text-[10px] text-slate-500 font-mono">
+                        Admin Only · Private &amp; Isolated
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <input
+                          type={showSecretKey ? 'text' : 'password'}
+                          value={form.paymongo_secret_key || ''}
+                          onChange={(e) => {
+                            setForm({ ...form, paymongo_secret_key: e.target.value.trim() })
+                            setPayMongoTestResult(null)
+                          }}
+                          placeholder="sk_test_... or sk_live_..."
+                          className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08] text-xs font-mono text-stone-100 focus:outline-none focus:border-sky-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowSecretKey(!showSecretKey)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-100 p-1"
+                          title={showSecretKey ? 'Hide key' : 'Show key'}
+                        >
+                          {showSecretKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={handleTestPayMongo}
+                        disabled={isTestingPayMongo || !form.paymongo_secret_key}
+                        className="btn-press px-3.5 py-2.5 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-300 hover:bg-sky-500/25 text-xs font-bold shrink-0 disabled:opacity-40 transition-all flex items-center gap-1.5"
+                      >
+                        {isTestingPayMongo ? (
+                          <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Zap className="h-3.5 w-3.5" />
+                        )}
+                        <span>{isTestingPayMongo ? 'Testing...' : 'Test Connection'}</span>
+                      </button>
+                    </div>
+
+                    {/* Test Result Message */}
+                    {payMongoTestResult && (
+                      <div
+                        className={`mt-2 p-2.5 rounded-xl text-xs flex items-center gap-2 border ${
+                          payMongoTestResult.ok
+                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                            : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                        }`}
+                      >
+                        {payMongoTestResult.ok ? (
+                          <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
+                        ) : (
+                          <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
+                        )}
+                        <span className="font-medium">{payMongoTestResult.message}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Auto Finalize Sale Toggle */}
+                  <label className="flex items-center gap-2.5 p-2.5 rounded-xl bg-obsidian-950/40 border border-slate-900/[0.06] cursor-pointer hover:border-slate-900/20 transition-all">
+                    <input
+                      type="checkbox"
+                      checked={form.paymongo_auto_complete ?? true}
+                      onChange={(e) => setForm({ ...form, paymongo_auto_complete: e.target.checked })}
+                      className="rounded border-slate-900/30 text-sky-500 focus:ring-0 w-4 h-4 bg-slate-850 cursor-pointer"
+                    />
+                    <div>
+                      <span className="text-xs font-semibold text-stone-100 block">
+                        Auto-Finalize Sale on Payment Confirmation
+                      </span>
+                      <span className="text-[11px] text-slate-400 block">
+                        Automatically closes checkout and prints the receipt the moment payment hits PayMongo.
+                      </span>
+                    </div>
+                  </label>
+                </div>
+              )}
+            </div>
+
+            {/* Fallback Personal Static QR Upload */}
+            <div className="p-4 rounded-2xl bg-obsidian-900/[0.08] border border-slate-900/[0.08] space-y-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-bold text-stone-100 block">
+                    Personal Store GCash / Maya Static QR Image (Fallback)
+                  </span>
+                  <span className="text-[11px] text-slate-400 block">
+                    Upload a photo of your printed store QR code. This displays at checkout when manual verification is selected.
+                  </span>
+                </div>
+                <input
+                  ref={qrImageInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleUploadCustomQr}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => qrImageInputRef.current?.click()}
+                  className="btn-press px-3 py-1.5 rounded-xl bg-white/[0.06] border border-white/[0.1] text-stone-300 hover:text-white text-xs font-bold flex items-center gap-1.5 shrink-0 transition-all"
+                >
+                  <Upload className="h-3.5 w-3.5" />
+                  <span>{form.store_qr_image_url ? 'Change QR Image' : 'Upload QR Photo'}</span>
+                </button>
+              </div>
+
+              {form.store_qr_image_url && (
+                <div className="mt-2 flex items-center gap-3 p-2 rounded-xl bg-obsidian-950/80 border border-slate-900/[0.08]">
+                  <img
+                    src={form.store_qr_image_url}
+                    alt="Store QR"
+                    className="h-16 w-16 object-contain rounded-lg border border-slate-800 bg-white"
+                  />
+                  <div className="flex-1 text-xs">
+                    <span className="font-semibold text-stone-200 block">Personal QR active</span>
+                    <span className="text-[10px] text-stone-400 block">Shows on customer checkout screen</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, store_qr_image_url: undefined })}
+                    className="p-1 text-rose-400 hover:text-rose-300 transition-colors"
+                    title="Remove QR"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 

@@ -81,7 +81,11 @@ export const DEFAULT_SETTINGS: StoreSettings = {
   printer_show_barcode: true,
   printer_show_logo: true,
   printer_show_customer_info: true,
-  printer_auto_print: false
+  printer_auto_print: false,
+  paymongo_enabled: false,
+  paymongo_secret_key: '',
+  paymongo_environment: 'test',
+  paymongo_auto_complete: true
 }
 
 export async function initDatabase(): Promise<void> {

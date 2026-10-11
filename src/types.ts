@@ -151,6 +151,14 @@ export interface StoreSettings {
   printer_show_customer_info?: boolean
   printer_auto_print?: boolean
   printer_custom_header?: string
+  // PayMongo Gateway & Real-Time E-Wallet Settings
+  paymongo_enabled?: boolean
+  paymongo_secret_key?: string
+  paymongo_public_key?: string
+  paymongo_environment?: 'test' | 'live'
+  paymongo_auto_complete?: boolean
+  store_qr_image_url?: string
+  store_qr_label?: string
 }
 
 export type UserRole = 'ADMIN' | 'CASHIER' | 'INVENTORY_LEAD'

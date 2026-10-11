@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import {
   X,
   Check,
@@ -11,7 +11,13 @@ import {
   Printer,
   Loader2,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  QrCode,
+  ShieldCheck,
+  Zap,
+  RefreshCw,
+  AlertCircle,
+  ExternalLink
 } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import type {
@@ -26,7 +32,8 @@ import type {
 import { money } from '../utils/format'
 import { db } from '../db'
 import { Receipt } from './Receipt'
-import { playCheckoutChime } from '../lib/sound'
+import { playCheckoutChime, playScanSuccess } from '../lib/sound'
+import { createDynamicQrPayment, pollPaymentStatus, isValidPayMongoSecretKey } from '../utils/paymongo'
 
 interface CheckoutModalProps {
   items: CartItem[]
@@ -90,6 +97,156 @@ export function CheckoutModal({
 
   const cashInputRef = useRef<HTMLInputElement>(null)
   const refInputRef = useRef<HTMLInputElement>(null)
+
+  // PayMongo Dynamic Real-Time QR Ph State
+  const isPayMongoConfigured = Boolean(
+    settings?.paymongo_enabled &&
+    settings?.paymongo_secret_key &&
+    isValidPayMongoSecretKey(settings.paymongo_secret_key)
+  )
+
+  const [payMongoMode, setPayMongoMode] = useState<'DYNAMIC_QR' | 'MANUAL_REF'>('DYNAMIC_QR')
+  const [qrGenerating, setQrGenerating] = useState(false)
+  const [qrData, setQrData] = useState<{
+    paymentIntentId: string
+    qrImageUrl: string
+    testUrl: string | null
+    expiresAt: string | null
+  } | null>(null)
+  const [qrError, setQrError] = useState<string | null>(null)
+  const [pollStatus, setPollStatus] = useState<'idle' | 'listening' | 'paid' | 'failed' | 'expired'>('idle')
+  const [pollError, setPollError] = useState<string | null>(null)
+  const [verifiedPaymentId, setVerifiedPaymentId] = useState<string | null>(null)
+  const [countdownSeconds, setCountdownSeconds] = useState<number>(1800)
+
+  const generatePayMongoQr = useCallback(async (amountCents: number) => {
+    const secretKey = settings?.paymongo_secret_key?.trim()
+    if (!secretKey || !isValidPayMongoSecretKey(secretKey)) {
+      setPayMongoMode('MANUAL_REF')
+      return
+    }
+
+    if (amountCents < 1000) {
+      setQrError('Minimum dynamic QR amount is ₱10.00. Please use Manual Reference or Cash.')
+      return
+    }
+
+    setQrGenerating(true)
+    setQrError(null)
+    setPollError(null)
+    setPollStatus('idle')
+
+    try {
+      const res = await createDynamicQrPayment({
+        secretKey,
+        amountCents,
+        description: `${storeName} Order #${Date.now().toString().slice(-4)}`
+      })
+
+      if (res.ok && res.qrImageUrl && res.paymentIntentId) {
+        setQrData({
+          paymentIntentId: res.paymentIntentId,
+          qrImageUrl: res.qrImageUrl,
+          testUrl: res.testUrl || null,
+          expiresAt: res.expiresAt || null
+        })
+        setPollStatus('listening')
+        setCountdownSeconds(1800)
+      } else {
+        setQrError(res.error || 'Failed to generate Dynamic QR code.')
+      }
+    } catch (err: any) {
+      setQrError(err?.message || 'Error generating dynamic QR.')
+    } finally {
+      setQrGenerating(false)
+    }
+  }, [settings?.paymongo_secret_key, storeName])
+
+  // Trigger QR generation when switching to GCASH or MAYA
+  useEffect(() => {
+    if (
+      !isSplit &&
+      (method === 'GCASH' || method === 'MAYA') &&
+      isPayMongoConfigured &&
+      payMongoMode === 'DYNAMIC_QR' &&
+      !qrData &&
+      !qrGenerating &&
+      total_c >= 1000
+    ) {
+      generatePayMongoQr(total_c)
+    }
+  }, [method, isSplit, isPayMongoConfigured, payMongoMode, qrData, qrGenerating, total_c, generatePayMongoQr])
+
+  // Real-time polling listener for PayMongo status
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null
+    let countdownInterval: NodeJS.Timeout | null = null
+
+    if (
+      qrData &&
+      pollStatus === 'listening' &&
+      settings?.paymongo_secret_key &&
+      (method === 'GCASH' || method === 'MAYA')
+    ) {
+      const targetAmountCents = isSplit ? (method === 'GCASH' ? splitGcashC : splitMayaC) : total_c
+
+      interval = setInterval(async () => {
+        try {
+          const result = await pollPaymentStatus({
+            secretKey: settings.paymongo_secret_key!,
+            paymentIntentId: qrData.paymentIntentId,
+            expectedAmountCents: targetAmountCents
+          })
+
+          if (result.paid && result.paymentId) {
+            setPollStatus('paid')
+            setVerifiedPaymentId(result.paymentId)
+            setReference(`PayMongo:${result.paymentId}`)
+            playScanSuccess()
+
+            try {
+              confetti({
+                particleCount: 50,
+                spread: 60,
+                colors: ['#0077b6', '#00b4d8', '#10b981', '#34d399'],
+                origin: { y: 0.5 }
+              })
+            } catch {}
+          } else if (result.status === 'cancelled' || result.status === 'failed') {
+            setPollStatus('failed')
+            setPollError(result.error || 'Payment was cancelled or failed.')
+          }
+        } catch (err: any) {
+          console.error('Polling error:', err)
+        }
+      }, 2500)
+
+      countdownInterval = setInterval(() => {
+        setCountdownSeconds((s) => {
+          if (s <= 1) {
+            setPollStatus('expired')
+            setPollError('QR Ph code has expired. Please regenerate a new QR.')
+            return 0
+          }
+          return s - 1
+        })
+      }, 1000)
+    }
+
+    return () => {
+      if (interval) clearInterval(interval)
+      if (countdownInterval) clearInterval(countdownInterval)
+    }
+  }, [
+    qrData,
+    pollStatus,
+    settings?.paymongo_secret_key,
+    method,
+    isSplit,
+    total_c,
+    splitGcashC,
+    splitMayaC
+  ])
 
   const cashC = Math.round((parseFloat(cash) || 0) * 100)
   const changeC = cashC - total_c
@@ -248,9 +405,11 @@ export function CheckoutModal({
           finalChangeC = Math.max(0, changeC)
           payments = [{ method: 'CASH', amount_c: cashC, reference: null }]
         } else if (method === 'GCASH') {
-          payments = [{ method: 'GCASH', amount_c: total_c, reference: reference.trim() || null }]
+          const finalRef = reference.trim() || (verifiedPaymentId ? `PayMongo:${verifiedPaymentId}` : null)
+          payments = [{ method: 'GCASH', amount_c: total_c, reference: finalRef }]
         } else if (method === 'MAYA') {
-          payments = [{ method: 'MAYA', amount_c: total_c, reference: reference.trim() || null }]
+          const finalRef = reference.trim() || (verifiedPaymentId ? `PayMongo:${verifiedPaymentId}` : null)
+          payments = [{ method: 'MAYA', amount_c: total_c, reference: finalRef }]
         } else if (method === 'MARIBANK') {
           payments = [{ method: 'MARIBANK', amount_c: total_c, reference: reference.trim() || null }]
         } else if (method === 'UTANG') {
@@ -748,27 +907,229 @@ export function CheckoutModal({
               {/* DIGITAL PAYMENT SECTION (GCASH, MAYA, MARIBANK) */}
               {(method === 'GCASH' || method === 'MAYA' || method === 'MARIBANK') && (
                 <div className="p-4 rounded-2xl bg-obsidian-950 border border-slate-800 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-stone-200">
-                      {method} Payment Confirmation
-                    </span>
-                    <span className="text-xs font-mono font-bold text-emerald-400">
-                      {money(total_c)}
-                    </span>
-                  </div>
-                  <div>
-                    <label className="block text-[11px] text-stone-400 uppercase font-semibold mb-1">
-                      Reference / Trace No. (Optional)
-                    </label>
-                    <input
-                      ref={refInputRef}
-                      type="text"
-                      value={reference}
-                      onChange={(e) => setReference(e.target.value)}
-                      placeholder="e.g. 10928347102"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900 border border-slate-800 text-stone-100 text-xs font-mono focus:border-indigo-500 outline-none"
-                    />
-                  </div>
+                  {/* Mode Selector for GCash and Maya when PayMongo is available */}
+                  {(method === 'GCASH' || method === 'MAYA') && isPayMongoConfigured && (
+                    <div className="grid grid-cols-2 p-1 bg-obsidian-900 border border-slate-800 rounded-xl text-xs">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPayMongoMode('DYNAMIC_QR')
+                          if (!qrData && total_c >= 1000) generatePayMongoQr(total_c)
+                        }}
+                        className={`py-1.5 font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                          payMongoMode === 'DYNAMIC_QR'
+                            ? 'bg-sky-600 text-white shadow-sm'
+                            : 'text-stone-400 hover:text-stone-200'
+                        }`}
+                      >
+                        <Zap className="h-3.5 w-3.5 text-amber-300" />
+                        <span>Real-Time Dynamic QR Ph</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPayMongoMode('MANUAL_REF')}
+                        className={`py-1.5 font-bold rounded-lg transition-all ${
+                          payMongoMode === 'MANUAL_REF'
+                            ? 'bg-slate-800 text-white shadow-sm'
+                            : 'text-stone-400 hover:text-stone-200'
+                        }`}
+                      >
+                        Manual Reference
+                      </button>
+                    </div>
+                  )}
+
+                  {/* DYNAMIC REAL-TIME QR PH VIEW */}
+                  {(method === 'GCASH' || method === 'MAYA') && isPayMongoConfigured && payMongoMode === 'DYNAMIC_QR' ? (
+                    <div className="space-y-3">
+                      {/* Header with QR Ph and Bank Badges */}
+                      <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-black bg-rose-500 text-white tracking-wider">
+                            QR Ph
+                          </span>
+                          <span className="text-xs font-bold text-stone-200">
+                            {method} Real-Time Scan
+                          </span>
+                        </div>
+                        <span className="text-xs font-mono font-black text-sky-400">
+                          {money(total_c)}
+                        </span>
+                      </div>
+
+                      {/* Loading state */}
+                      {qrGenerating && (
+                        <div className="py-10 text-center space-y-3">
+                          <RefreshCw className="h-8 w-8 animate-spin text-sky-400 mx-auto" />
+                          <p className="text-xs text-stone-300 font-medium">
+                            Generating bank-grade Dynamic QR Ph via PayMongo...
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Error state */}
+                      {!qrGenerating && qrError && (
+                        <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs space-y-2">
+                          <div className="flex items-center gap-2">
+                            <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
+                            <span>{qrError}</span>
+                          </div>
+                          <div className="flex gap-2">
+                            {total_c >= 1000 && (
+                              <button
+                                type="button"
+                                onClick={() => generatePayMongoQr(total_c)}
+                                className="px-3 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-xs font-bold text-rose-200"
+                              >
+                                Retry Generate QR
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => setPayMongoMode('MANUAL_REF')}
+                              className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-stone-200"
+                            >
+                              Switch to Manual
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* QR Display and Live Polling Radar */}
+                      {!qrGenerating && qrData && (
+                        <div className="space-y-3">
+                          {/* QR Code Container */}
+                          <div className="relative mx-auto w-60 p-3 bg-white rounded-2xl shadow-xl border-4 border-slate-700/50 flex flex-col items-center">
+                            {/* Philippine QR Ph banner */}
+                            <div className="w-full flex items-center justify-between pb-1.5 border-b border-stone-200 mb-1">
+                              <span className="text-[10px] font-black text-rose-600 tracking-tighter">QR Ph</span>
+                              <span className="text-[9px] font-bold text-stone-600">Scan via GCash or Maya</span>
+                            </div>
+
+                            <img
+                              src={qrData.qrImageUrl}
+                              alt="PayMongo Dynamic QR Ph"
+                              className="w-48 h-48 object-contain"
+                            />
+
+                            <div className="w-full text-center pt-1.5 border-t border-stone-200 mt-1">
+                              <span className="text-xs font-mono font-black text-stone-900">
+                                Exact Amount: {money(total_c)}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Live Status Indicators */}
+                          {pollStatus === 'listening' && (
+                            <div className="p-3 rounded-xl bg-sky-950/40 border border-sky-500/30 space-y-2">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <span className="relative flex h-2.5 w-2.5">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-sky-500"></span>
+                                  </span>
+                                  <span className="text-xs font-semibold text-sky-200">
+                                    Listening for customer payment...
+                                  </span>
+                                </div>
+                                <span className="text-[11px] font-mono text-stone-400">
+                                  {Math.floor(countdownSeconds / 60)}:{String(countdownSeconds % 60).padStart(2, '0')}
+                                </span>
+                              </div>
+
+                              {/* Test Simulation Button (Sandbox Mode) */}
+                              {qrData.testUrl && (
+                                <div className="pt-2 border-t border-sky-500/20 flex items-center justify-between">
+                                  <span className="text-[10px] text-amber-300 font-mono">
+                                    🧪 Sandbox Test Mode Active
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => window.open(qrData.testUrl!, '_blank')}
+                                    className="btn-press px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 text-[11px] font-bold flex items-center gap-1 transition-all"
+                                  >
+                                    <span>Simulate GCash Pay</span>
+                                    <ExternalLink className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Verified Paid Banner */}
+                          {pollStatus === 'paid' && (
+                            <div className="p-3 rounded-xl bg-emerald-950/50 border border-emerald-500/50 text-emerald-200 text-xs flex items-center justify-between animate-fade-in">
+                              <div className="flex items-center gap-2">
+                                <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                                <div>
+                                  <span className="font-bold block">Payment Received &amp; Verified!</span>
+                                  <span className="text-[10px] font-mono text-emerald-300 block">
+                                    ID: {verifiedPaymentId}
+                                  </span>
+                                </div>
+                              </div>
+                              <span className="px-2 py-1 rounded bg-emerald-500/20 font-mono font-bold text-[10px]">
+                                PAID
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Expired State */}
+                          {pollStatus === 'expired' && (
+                            <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-xs flex items-center justify-between">
+                              <span>QR code expired.</span>
+                              <button
+                                type="button"
+                                onClick={() => generatePayMongoQr(total_c)}
+                                className="px-3 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-xs font-bold"
+                              >
+                                Refresh QR
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* MANUAL REFERENCE & CUSTOM STORE QR FALLBACK */
+                    <div className="space-y-3">
+                      {/* Optional Custom Static Store QR Image */}
+                      {settings?.store_qr_image_url && (
+                        <div className="p-3 rounded-xl bg-obsidian-900 border border-slate-800 text-center space-y-2">
+                          <p className="text-[11px] font-bold text-stone-300">
+                            Scan Store {method} QR Code
+                          </p>
+                          <img
+                            src={settings.store_qr_image_url}
+                            alt="Store QR"
+                            className="w-44 h-44 object-contain mx-auto rounded-lg border border-slate-700 bg-white p-1"
+                          />
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-stone-200">
+                          {method} Reference Verification
+                        </span>
+                        <span className="text-xs font-mono font-bold text-emerald-400">
+                          {money(total_c)}
+                        </span>
+                      </div>
+                      <div>
+                        <label className="block text-[11px] text-stone-400 uppercase font-semibold mb-1">
+                          Reference / Trace No. (Required for Manual Settlement)
+                        </label>
+                        <input
+                          ref={refInputRef}
+                          type="text"
+                          value={reference}
+                          onChange={(e) => setReference(e.target.value)}
+                          placeholder="e.g. 10928347102"
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900 border border-slate-800 text-stone-100 text-xs font-mono focus:border-indigo-500 outline-none"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 

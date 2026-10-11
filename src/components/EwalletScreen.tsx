@@ -22,7 +22,11 @@ import {
   DollarSign,
   TrendingUp,
   ShieldCheck,
-  ChevronRight
+  ChevronRight,
+  Download,
+  Sliders,
+  Edit3,
+  Layers
 } from 'lucide-react'
 import { formatCurrency, formatDateTime } from '../utils/format'
 import { playScanSuccess, playCheckoutChime, playScanError } from '../lib/sound'
@@ -31,6 +35,7 @@ import { playScanSuccess, playCheckoutChime, playScanError } from '../lib/sound'
 
 export type EwalletChannel = 'GCASH' | 'MAYA' | 'MARIBANK' | 'SHOPEEPAY'
 export type EwalletTransactionType = 'CASH_IN' | 'CASH_OUT'
+export type BillCategory = 'UTILITIES' | 'WATER' | 'LOANS' | 'TELCO' | 'INTERNET' | 'GOVERNMENT' | 'OTHER'
 
 export interface EwalletTransactionRecord {
   id: string
@@ -49,7 +54,7 @@ export interface EwalletTransactionRecord {
 
 export interface BillTransaction {
   id: string
-  category: 'UTILITIES' | 'WATER' | 'LOANS' | 'TELCO' | 'INTERNET'
+  category: BillCategory
   biller: string
   accountNo: string
   customerName: string
@@ -98,6 +103,20 @@ export interface CashCountDenomination {
   kind: 'BILL' | 'COIN'
 }
 
+export interface FloatBalances {
+  GCASH: number
+  MAYA: number
+  MARIBANK: number
+  SHOPEEPAY: number
+}
+
+export const DEFAULT_FLOAT_BALANCES: FloatBalances = {
+  GCASH: 10000,
+  MAYA: 5000,
+  MARIBANK: 10000,
+  SHOPEEPAY: 3000
+}
+
 export const CASH_COUNT_DENOMINATIONS: CashCountDenomination[] = [
   { label: '₱1000', cents: 100000, kind: 'BILL' },
   { label: '₱500', cents: 50000, kind: 'BILL' },
@@ -113,24 +132,64 @@ export const CASH_COUNT_DENOMINATIONS: CashCountDenomination[] = [
 ]
 
 export const BILLER_PRESETS = [
+  // Electricity / Utilities
   { name: 'Meralco', category: 'UTILITIES' as const, defaultFee: 15, icon: '⚡' },
   { name: 'Electric Cooperative', category: 'UTILITIES' as const, defaultFee: 15, icon: '⚡' },
   { name: 'VECO / Visayan Electric', category: 'UTILITIES' as const, defaultFee: 15, icon: '⚡' },
-  { name: 'Maynilad / Manila Water', category: 'WATER' as const, defaultFee: 15, icon: '💧' },
+  { name: 'Davao Light & Power', category: 'UTILITIES' as const, defaultFee: 15, icon: '⚡' },
+  { name: 'MORE Power Iloilo', category: 'UTILITIES' as const, defaultFee: 15, icon: '⚡' },
+  // Water
+  { name: 'Maynilad Water', category: 'WATER' as const, defaultFee: 15, icon: '💧' },
+  { name: 'Manila Water', category: 'WATER' as const, defaultFee: 15, icon: '💧' },
   { name: 'Local Water District', category: 'WATER' as const, defaultFee: 15, icon: '💧' },
-  { name: 'Home Credit', category: 'LOANS' as const, defaultFee: 20, icon: '💳' },
-  { name: 'Cashalo / Tala', category: 'LOANS' as const, defaultFee: 20, icon: '💳' },
-  { name: 'ShopeePay / SPayLater', category: 'LOANS' as const, defaultFee: 15, icon: '🛍️' },
+  { name: 'PrimeWater', category: 'WATER' as const, defaultFee: 15, icon: '💧' },
+  // Telco & Airtime Load
   { name: 'Globe / TM Regular & Promo', category: 'TELCO' as const, defaultFee: 5, icon: '📶' },
   { name: 'Smart / TNT Regular & Promo', category: 'TELCO' as const, defaultFee: 5, icon: '📶' },
   { name: 'DITO Telecommunity', category: 'TELCO' as const, defaultFee: 5, icon: '📶' },
+  // Internet & Cable
   { name: 'Converge ICT', category: 'INTERNET' as const, defaultFee: 20, icon: '🌐' },
-  { name: 'PLDT Home / Smart Bro', category: 'INTERNET' as const, defaultFee: 20, icon: '🌐' }
+  { name: 'PLDT Home / Smart Bro', category: 'INTERNET' as const, defaultFee: 20, icon: '🌐' },
+  { name: 'Globe At Home Broadband', category: 'INTERNET' as const, defaultFee: 20, icon: '🌐' },
+  { name: 'Sky Cable / Fiber', category: 'INTERNET' as const, defaultFee: 20, icon: '📺' },
+  // Loans & BNPL
+  { name: 'Home Credit', category: 'LOANS' as const, defaultFee: 20, icon: '💳' },
+  { name: 'Cashalo / Tala', category: 'LOANS' as const, defaultFee: 20, icon: '💳' },
+  { name: 'ShopeePay / SPayLater', category: 'LOANS' as const, defaultFee: 15, icon: '🛍️' },
+  { name: 'Maya Credit / Easy Loans', category: 'LOANS' as const, defaultFee: 20, icon: '💳' },
+  { name: 'Billease', category: 'LOANS' as const, defaultFee: 20, icon: '💳' },
+  // Government & Contributions
+  { name: 'SSS Contributions & Loans', category: 'GOVERNMENT' as const, defaultFee: 20, icon: '🏛️' },
+  { name: 'Pag-IBIG Fund (HDMF)', category: 'GOVERNMENT' as const, defaultFee: 20, icon: '🏛️' },
+  { name: 'PhilHealth Member Contribution', category: 'GOVERNMENT' as const, defaultFee: 20, icon: '🏛️' },
+  { name: 'NBI Clearance Fee', category: 'GOVERNMENT' as const, defaultFee: 25, icon: '🏛️' }
 ]
+
+export const TELCO_LOAD_AMOUNTS = [10, 20, 30, 50, 100, 150, 200, 300, 500, 1000]
+
+/**
+ * Standard Philippine Retail / Sari-Sari E-Wallet Service Fee Tier:
+ * ₱1 – ₱500: ₱10
+ * ₱501 – ₱1,000: ₱15
+ * ₱1,001 – ₱2,000: ₱20
+ * ₱2,001 – ₱3,000: ₱30
+ * ₱3,001 – ₱5,000: ₱50
+ * Above ₱5,000: 1% (or custom)
+ */
+export function calculateStandardFee(amount: number): number {
+  if (amount <= 0) return 0
+  if (amount <= 500) return 10
+  if (amount <= 1000) return 15
+  if (amount <= 2000) return 20
+  if (amount <= 3000) return 30
+  if (amount <= 5000) return 50
+  return Math.max(50, Math.ceil(amount * 0.01))
+}
 
 const EWALLET_STORAGE_KEY = 'tinda_ewallet_transactions'
 const BILLS_STORAGE_KEY = 'tinda_bills_load_records'
 const AUDITS_STORAGE_KEY = 'tinda_ewallet_audits'
+const FLOATS_STORAGE_KEY = 'tinda_ewallet_float_balances'
 
 interface EwalletScreenProps {
   currentCashierName?: string
@@ -156,6 +215,7 @@ export function EwalletScreen({
 
   // ─── 2. BILLS & E-LOAD FORM STATE ────────────────────────────────
   const [selectedBillerCat, setSelectedBillerCat] = useState<string>('ALL')
+  const [billerSearch, setBillerSearch] = useState('')
   const [selectedBiller, setSelectedBiller] = useState(BILLER_PRESETS[0]!.name)
   const [customBiller, setCustomBiller] = useState('')
   const [billAccountNo, setBillAccountNo] = useState('')
@@ -196,6 +256,19 @@ export function EwalletScreen({
     }
   })
 
+  // Live Digital Float Balances State
+  const [floatBalances, setFloatBalances] = useState<FloatBalances>(() => {
+    try {
+      const saved = localStorage.getItem(FLOATS_STORAGE_KEY)
+      return saved ? JSON.parse(saved) : DEFAULT_FLOAT_BALANCES
+    } catch {
+      return DEFAULT_FLOAT_BALANCES
+    }
+  })
+
+  const [isFloatModalOpen, setIsFloatModalOpen] = useState(false)
+  const [tempFloats, setTempFloats] = useState<FloatBalances>(DEFAULT_FLOAT_BALANCES)
+
   // Sync to localStorage
   useEffect(() => {
     try {
@@ -214,6 +287,12 @@ export function EwalletScreen({
       localStorage.setItem(AUDITS_STORAGE_KEY, JSON.stringify(audits))
     } catch {}
   }, [audits])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(FLOATS_STORAGE_KEY, JSON.stringify(floatBalances))
+    } catch {}
+  }, [floatBalances])
 
   // ─── 4. AUDIT SHEET FORM STATE ───────────────────────────────────
   const [denominations, setDenominations] = useState<number[]>(() =>
@@ -250,11 +329,15 @@ export function EwalletScreen({
     let mayaOutCount = 0, mayaOutAmt_c = 0, mayaOutFees_c = 0
     let maribankInCount = 0, maribankInAmt_c = 0, maribankInFees_c = 0
     let maribankOutCount = 0, maribankOutAmt_c = 0, maribankOutFees_c = 0
+    let shopeeInCount = 0, shopeeInAmt_c = 0, shopeeInFees_c = 0
+    let shopeeOutCount = 0, shopeeOutAmt_c = 0, shopeeOutFees_c = 0
     let totalFees_c = 0
+    let totalVolume_c = 0
     let netDrawerImpact_c = 0 // Cash In = Cash received into drawer (+); Cash Out = Cash handed out (-)
 
     for (const tx of transactions) {
       totalFees_c += tx.fee_c
+      totalVolume_c += tx.amount_c
       if (tx.channel === 'GCASH') {
         if (tx.type === 'CASH_IN') {
           gcashInCount++
@@ -296,8 +379,14 @@ export function EwalletScreen({
         }
       } else if (tx.channel === 'SHOPEEPAY') {
         if (tx.type === 'CASH_IN') {
+          shopeeInCount++
+          shopeeInAmt_c += tx.amount_c
+          shopeeInFees_c += tx.fee_c
           netDrawerImpact_c += tx.fee_collected_via === 'CASH' ? tx.amount_c + tx.fee_c : tx.amount_c
         } else {
+          shopeeOutCount++
+          shopeeOutAmt_c += tx.amount_c
+          shopeeOutFees_c += tx.fee_c
           const cashGivenOut = tx.fee_collected_via === 'WALLET' ? Math.max(0, tx.amount_c - tx.fee_c) : tx.amount_c
           netDrawerImpact_c -= cashGivenOut
         }
@@ -309,6 +398,7 @@ export function EwalletScreen({
       const fee_c = Math.round(b.serviceFee * 100)
       const amt_c = Math.round(b.amount * 100)
       totalFees_c += fee_c
+      totalVolume_c += amt_c
       const collected_c = b.feeMode === 'DEDUCT' ? Math.max(0, amt_c - fee_c) : amt_c + fee_c
       netDrawerImpact_c += collected_c
     }
@@ -320,7 +410,10 @@ export function EwalletScreen({
       mayaOutCount, mayaOutAmt_c, mayaOutFees_c,
       maribankInCount, maribankInAmt_c, maribankInFees_c,
       maribankOutCount, maribankOutAmt_c, maribankOutFees_c,
+      shopeeInCount, shopeeInAmt_c, shopeeInFees_c,
+      shopeeOutCount, shopeeOutAmt_c, shopeeOutFees_c,
       totalFees_c,
+      totalVolume_c,
       netDrawerImpact_c
     }
   }, [transactions, billRecords])
@@ -389,6 +482,15 @@ export function EwalletScreen({
       created_at: new Date().toISOString()
     }
 
+    // Automatically adjust store digital float balances
+    setFloatBalances((prev) => {
+      const current = prev[channel] || 0
+      const updated = type === 'CASH_IN'
+        ? Math.max(0, current - amt)
+        : current + amt
+      return { ...prev, [channel]: updated }
+    })
+
     setTransactions((prev) => [newTx, ...prev])
     playCheckoutChime()
 
@@ -444,6 +546,12 @@ export function EwalletScreen({
       createdAt: new Date().toISOString(),
       cashierName: currentCashierName
     }
+
+    // Automatically deduct from store source wallet float
+    setFloatBalances((prev) => {
+      const current = prev[billSourceWallet] || 0
+      return { ...prev, [billSourceWallet]: Math.max(0, current - amt) }
+    })
 
     setBillRecords((prev) => [newBill, ...prev])
     playCheckoutChime()
@@ -511,11 +619,35 @@ export function EwalletScreen({
     setAuditNotes('')
   }
 
+  // Auto-sync actual wallet inputs in audit sheet with current digital floats
+  const handleSyncFloatsToAudit = () => {
+    setActualGcashStr((floatBalances.GCASH || 0).toFixed(2))
+    setActualMayaStr((floatBalances.MAYA || 0).toFixed(2))
+    setActualMaribankStr((floatBalances.MARIBANK || 0).toFixed(2))
+    playScanSuccess()
+  }
+
   const confirmDeleteItem = () => {
     if (!itemToDelete) return
     if (itemToDelete.type === 'EWALLET') {
+      const tx = transactions.find((t) => t.id === itemToDelete.id)
+      if (tx) {
+        const amt = tx.amount_c / 100
+        setFloatBalances((prev) => {
+          const current = prev[tx.channel] || 0
+          const restored = tx.type === 'CASH_IN' ? current + amt : Math.max(0, current - amt)
+          return { ...prev, [tx.channel]: restored }
+        })
+      }
       setTransactions((prev) => prev.filter((t) => t.id !== itemToDelete.id))
     } else if (itemToDelete.type === 'BILL') {
+      const b = billRecords.find((b) => b.id === itemToDelete.id)
+      if (b) {
+        setFloatBalances((prev) => {
+          const current = prev[b.sourceWallet] || 0
+          return { ...prev, [b.sourceWallet]: current + b.amount }
+        })
+      }
       setBillRecords((prev) => prev.filter((b) => b.id !== itemToDelete.id))
     } else if (itemToDelete.type === 'AUDIT') {
       setAudits((prev) => prev.filter((a) => a.id !== itemToDelete.id))
@@ -599,6 +731,59 @@ export function EwalletScreen({
       return true
     })
   }, [transactions, billRecords, txFilterChannel, txFilterType, txSearch])
+
+  // Export Combined Ledger to CSV
+  const handleExportLedgerCsv = () => {
+    if (combinedLedger.length === 0) {
+      playScanError()
+      alert('No ledger records available to export.')
+      return
+    }
+
+    const headers = [
+      'Transaction ID',
+      'Date & Time',
+      'Channel',
+      'Type',
+      'Customer / Biller',
+      'Account / Phone / Remarks',
+      'Principal (PHP)',
+      'Service Fee (PHP)',
+      'Fee Collection Mode',
+      'Reference Number',
+      'Cashier'
+    ]
+
+    const csvRows = [headers.join(',')]
+
+    for (const r of combinedLedger) {
+      const escapeCsv = (str: string) => `"${(str || '').replace(/"/g, '""')}"`
+      csvRows.push([
+        escapeCsv(r.id),
+        escapeCsv(formatDateTime(r.date)),
+        escapeCsv(r.channel),
+        escapeCsv(r.typeLabel),
+        escapeCsv(r.title),
+        escapeCsv(r.subtitle),
+        (r.amount_c / 100).toFixed(2),
+        (r.fee_c / 100).toFixed(2),
+        escapeCsv(r.feeMethod),
+        escapeCsv(r.ref),
+        escapeCsv(currentCashierName)
+      ].join(','))
+    }
+
+    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `tinda-ewallet-ledger-${new Date().toISOString().slice(0, 10)}.csv`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+    playScanSuccess()
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fade-in font-sans">
@@ -688,6 +873,175 @@ export function EwalletScreen({
           >
             <History className="h-3.5 w-3.5" />
             <span>Audit History ({audits.length})</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────── */}
+      {/* EXECUTIVE E-SERVICES PULSE STRIP                            */}
+      {/* ─────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="glass-panel p-4 rounded-2xl border border-amber-500/20 bg-amber-500/[0.04] shadow-vault relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400">
+              Today's Fee Earnings
+            </span>
+            <span className="p-1.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+              <DollarSign className="h-4 w-4" />
+            </span>
+          </div>
+          <p className="text-xl sm:text-2xl font-serif font-black text-amber-300 mt-1">
+            ₱{(shiftMetrics.totalFees_c / 100).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+          </p>
+          <div className="flex items-center gap-1.5 text-[10px] text-stone-400 font-mono mt-1">
+            <span className="text-amber-400 font-bold">{transactions.length + billRecords.length} fees</span>
+            <span>· 100% Net Store Profit</span>
+          </div>
+        </div>
+
+        <div className="glass-panel p-4 rounded-2xl border border-sky-500/20 bg-sky-500/[0.04] shadow-vault relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-sky-400">
+              Digital Flow Volume
+            </span>
+            <span className="p-1.5 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20">
+              <TrendingUp className="h-4 w-4" />
+            </span>
+          </div>
+          <p className="text-xl sm:text-2xl font-serif font-black text-stone-100 mt-1 font-mono">
+            ₱{(shiftMetrics.totalVolume_c / 100).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+          </p>
+          <div className="flex items-center gap-1.5 text-[10px] text-stone-400 font-mono mt-1">
+            <span>Throughput across all channels</span>
+          </div>
+        </div>
+
+        <div className="glass-panel p-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] shadow-vault relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400">
+              Cash Drawer Impact
+            </span>
+            <span className="p-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <Banknote className="h-4 w-4" />
+            </span>
+          </div>
+          <p className={`text-xl sm:text-2xl font-serif font-black mt-1 font-mono ${
+            shiftMetrics.netDrawerImpact_c >= 0 ? 'text-emerald-400' : 'text-amber-400'
+          }`}>
+            {shiftMetrics.netDrawerImpact_c >= 0 ? '+' : ''}
+            ₱{(shiftMetrics.netDrawerImpact_c / 100).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+          </p>
+          <div className="flex items-center gap-1.5 text-[10px] text-stone-400 font-mono mt-1">
+            <span>{shiftMetrics.netDrawerImpact_c >= 0 ? 'Net Cash IN to drawer' : 'Net Cash OUT from drawer'}</span>
+          </div>
+        </div>
+
+        <div className="glass-panel p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.04] shadow-vault relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-purple-400">
+              Completed Records
+            </span>
+            <span className="p-1.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+              <CheckCircle2 className="h-4 w-4" />
+            </span>
+          </div>
+          <p className="text-xl sm:text-2xl font-serif font-black text-stone-100 mt-1 font-mono">
+            {transactions.length + billRecords.length}
+          </p>
+          <div className="flex items-center gap-1.5 text-[10px] text-stone-400 font-mono mt-1">
+            <span>{transactions.length} E-Wallet · {billRecords.length} Bills</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────── */}
+      {/* LIVE DIGITAL FLOAT BALANCES BAR                             */}
+      {/* ─────────────────────────────────────────────────────────── */}
+      <div className="glass-panel p-4 rounded-2xl border border-white/[0.08] shadow-vault flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 bg-obsidian-950/70">
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+            <CreditCard className="h-4 w-4" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-stone-200">
+                Store Digital Float Balances
+              </span>
+              <span className="flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 font-bold">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                LIVE TRACKING
+              </span>
+            </div>
+            <p className="text-[11px] text-stone-400">
+              Available balance in store accounts. Auto-deducts on Cash In &amp; Bills, auto-credits on Cash Out.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+          {/* GCash */}
+          <div className="flex-1 sm:flex-initial min-w-[130px] p-2.5 rounded-xl border border-sky-500/25 bg-sky-500/5">
+            <div className="flex items-center justify-between text-[10px] font-bold text-sky-400 mb-0.5">
+              <span>GCASH</span>
+              {floatBalances.GCASH < 1000 && (
+                <span className="text-[9px] px-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">LOW</span>
+              )}
+            </div>
+            <p className="text-sm font-bold font-mono text-stone-100">
+              ₱{floatBalances.GCASH.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+            </p>
+          </div>
+
+          {/* Maya */}
+          <div className="flex-1 sm:flex-initial min-w-[130px] p-2.5 rounded-xl border border-emerald-500/25 bg-emerald-500/5">
+            <div className="flex items-center justify-between text-[10px] font-bold text-emerald-400 mb-0.5">
+              <span>MAYA</span>
+              {floatBalances.MAYA < 1000 && (
+                <span className="text-[9px] px-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">LOW</span>
+              )}
+            </div>
+            <p className="text-sm font-bold font-mono text-stone-100">
+              ₱{floatBalances.MAYA.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+            </p>
+          </div>
+
+          {/* MariBank */}
+          <div className="flex-1 sm:flex-initial min-w-[130px] p-2.5 rounded-xl border border-orange-500/25 bg-orange-500/5">
+            <div className="flex items-center justify-between text-[10px] font-bold text-orange-400 mb-0.5">
+              <span>MARIBANK</span>
+              {floatBalances.MARIBANK < 1000 && (
+                <span className="text-[9px] px-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">LOW</span>
+              )}
+            </div>
+            <p className="text-sm font-bold font-mono text-stone-100">
+              ₱{floatBalances.MARIBANK.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+            </p>
+          </div>
+
+          {/* ShopeePay */}
+          <div className="flex-1 sm:flex-initial min-w-[130px] p-2.5 rounded-xl border border-amber-500/25 bg-amber-500/5">
+            <div className="flex items-center justify-between text-[10px] font-bold text-amber-400 mb-0.5">
+              <span>SHOPEEPAY</span>
+              {floatBalances.SHOPEEPAY < 1000 && (
+                <span className="text-[9px] px-1 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">LOW</span>
+              )}
+            </div>
+            <p className="text-sm font-bold font-mono text-stone-100">
+              ₱{floatBalances.SHOPEEPAY.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+            </p>
+          </div>
+
+          {/* Manage Button */}
+          <button
+            type="button"
+            onClick={() => {
+              setTempFloats({ ...floatBalances })
+              setIsFloatModalOpen(true)
+            }}
+            className="btn-press flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-white/[0.1] bg-white/[0.04] hover:bg-white/[0.08] text-xs font-bold text-stone-200 transition-all shrink-0"
+          >
+            <Sliders className="h-3.5 w-3.5 text-emerald-400" />
+            <span>Top Up / Adjust Floats</span>
           </button>
         </div>
       </div>
@@ -831,7 +1185,14 @@ export function EwalletScreen({
                     type="number"
                     step="any"
                     value={amountStr}
-                    onChange={(e) => setAmountStr(e.target.value)}
+                    onChange={(e) => {
+                      const val = e.target.value
+                      setAmountStr(val)
+                      const num = parseFloat(val)
+                      if (num && num > 0) {
+                        setFeeStr(String(calculateStandardFee(num)))
+                      }
+                    }}
                     placeholder="0.00"
                     className="w-full rounded-2xl border border-white/[0.08] bg-obsidian-950 pl-9 pr-4 py-3 text-lg font-bold text-stone-100 outline-none focus:border-emerald-500/60 font-mono transition-all"
                   />
@@ -842,7 +1203,10 @@ export function EwalletScreen({
                     <button
                       key={amt}
                       type="button"
-                      onClick={() => setAmountStr(String(amt))}
+                      onClick={() => {
+                        setAmountStr(String(amt))
+                        setFeeStr(String(calculateStandardFee(amt)))
+                      }}
                       className="px-2.5 py-1 text-xs font-mono font-semibold rounded-xl border border-white/[0.06] bg-obsidian-950 text-stone-300 hover:border-emerald-500/40 hover:text-emerald-400 transition-all"
                     >
                       ₱{amt.toLocaleString()}
@@ -857,7 +1221,19 @@ export function EwalletScreen({
                   <label className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
                     Service Fee (₱)
                   </label>
-                  <span className="text-[10px] font-mono text-emerald-400 font-bold">Store Profit</span>
+                  <div className="flex items-center gap-2">
+                    {parseFloat(amountStr) > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setFeeStr(String(calculateStandardFee(parseFloat(amountStr) || 0)))}
+                        className="btn-press flex items-center gap-1 text-[10px] font-mono text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20 hover:bg-amber-500/20 transition-all"
+                      >
+                        <Sparkles className="h-3 w-3" />
+                        <span>Auto Standard (₱{calculateStandardFee(parseFloat(amountStr) || 0)})</span>
+                      </button>
+                    )}
+                    <span className="text-[10px] font-mono text-emerald-400 font-bold">Store Profit</span>
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
@@ -883,6 +1259,9 @@ export function EwalletScreen({
                     </button>
                   ))}
                 </div>
+                <p className="text-[10px] text-stone-500 font-mono pt-0.5">
+                  PH Standard Tier: ₱1–500: ₱10 · ₱501–1k: ₱15 · ₱1k–2k: ₱20 · ₱2k–3k: ₱30 · ₱3k–5k: ₱50 · &gt;₱5k: 1%
+                </p>
               </div>
 
               {/* Fee Handling Mode */}
@@ -1080,6 +1459,26 @@ export function EwalletScreen({
                     {shiftMetrics.maribankOutCount} txn · Fee: ₱{(shiftMetrics.maribankOutFees_c / 100).toFixed(2)}
                   </p>
                 </div>
+
+                <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-3">
+                  <p className="text-[11px] font-bold text-amber-400">ShopeePay Cash In</p>
+                  <p className="text-base font-bold text-stone-100 font-mono mt-0.5">
+                    ₱{(shiftMetrics.shopeeInAmt_c / 100).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                  </p>
+                  <p className="text-[10px] text-stone-400 font-mono mt-0.5">
+                    {shiftMetrics.shopeeInCount} txn · Fee: ₱{(shiftMetrics.shopeeInFees_c / 100).toFixed(2)}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-3">
+                  <p className="text-[11px] font-bold text-amber-400">ShopeePay Cash Out</p>
+                  <p className="text-base font-bold text-stone-100 font-mono mt-0.5">
+                    ₱{(shiftMetrics.shopeeOutAmt_c / 100).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                  </p>
+                  <p className="text-[10px] text-stone-400 font-mono mt-0.5">
+                    {shiftMetrics.shopeeOutCount} txn · Fee: ₱{(shiftMetrics.shopeeOutFees_c / 100).toFixed(2)}
+                  </p>
+                </div>
               </div>
 
               {/* Total Service Fees & Net Drawer Flow */}
@@ -1148,11 +1547,14 @@ export function EwalletScreen({
                   Biller Category
                 </label>
                 <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1">
-                  {['ALL', 'UTILITIES', 'WATER', 'LOANS', 'TELCO', 'INTERNET'].map((cat) => (
+                  {['ALL', 'UTILITIES', 'WATER', 'LOANS', 'TELCO', 'INTERNET', 'GOVERNMENT'].map((cat) => (
                     <button
                       key={cat}
                       type="button"
-                      onClick={() => setSelectedBillerCat(cat)}
+                      onClick={() => {
+                        setSelectedBillerCat(cat)
+                        setBillerSearch('')
+                      }}
                       className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
                         selectedBillerCat === cat
                           ? 'bg-emerald-500 text-obsidian-950 font-bold shadow-glow-emerald'
@@ -1165,13 +1567,49 @@ export function EwalletScreen({
                 </div>
               </div>
 
-              {/* Biller Select Grid */}
-              <div>
-                <label className="text-[11px] font-bold uppercase tracking-wider text-stone-400 block mb-2">
-                  Select Preset Biller
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-44 overflow-y-auto pr-1">
-                  {BILLER_PRESETS.filter((p) => selectedBillerCat === 'ALL' || p.category === selectedBillerCat).map((b) => (
+              {/* Biller Search & Select Grid */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                    Select Preset Biller
+                  </label>
+                  {billerSearch && (
+                    <span className="text-[10px] font-mono text-emerald-400">
+                      Filtering by &quot;{billerSearch}&quot;
+                    </span>
+                  )}
+                </div>
+
+                {/* Search Bar for Billers */}
+                <div className="relative">
+                  <Search className="h-3.5 w-3.5 text-stone-500 absolute left-3 top-2.5" />
+                  <input
+                    type="text"
+                    value={billerSearch}
+                    onChange={(e) => setBillerSearch(e.target.value)}
+                    placeholder="Search biller (e.g. Meralco, SSS, Converge, Maynilad, DITO)..."
+                    className="w-full pl-8 pr-8 py-2 rounded-xl border border-white/[0.08] bg-obsidian-950 text-xs text-stone-100 outline-none focus:border-emerald-500/60 font-sans transition-all"
+                  />
+                  {billerSearch && (
+                    <button
+                      type="button"
+                      onClick={() => setBillerSearch('')}
+                      className="absolute right-2.5 top-2 text-stone-500 hover:text-stone-300"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Biller Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-1">
+                  {BILLER_PRESETS.filter((p) => {
+                    const matchesCat = selectedBillerCat === 'ALL' || p.category === selectedBillerCat
+                    const matchesSearch = !billerSearch.trim() ||
+                      p.name.toLowerCase().includes(billerSearch.toLowerCase()) ||
+                      p.category.toLowerCase().includes(billerSearch.toLowerCase())
+                    return matchesCat && matchesSearch
+                  }).map((b) => (
                     <button
                       key={b.name}
                       type="button"
@@ -1181,7 +1619,7 @@ export function EwalletScreen({
                       }}
                       className={`btn-press p-2.5 rounded-xl border text-left transition-all ${
                         selectedBiller === b.name
-                          ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 font-bold shadow-glow-emerald'
+                          ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 font-bold shadow-glow-emerald ring-1 ring-emerald-500/40'
                           : 'border-white/[0.06] bg-obsidian-950/80 text-stone-300 hover:border-white/[0.12]'
                       }`}
                     >
@@ -1189,9 +1627,10 @@ export function EwalletScreen({
                         <span className="text-base">{b.icon}</span>
                         <span className="text-xs truncate">{b.name}</span>
                       </div>
-                      <span className="text-[10px] font-mono text-stone-500 mt-1 block">
-                        Default Fee: ₱{b.defaultFee}
-                      </span>
+                      <div className="flex items-center justify-between text-[10px] font-mono text-stone-500 mt-1">
+                        <span>{b.category}</span>
+                        <span className="text-emerald-400 font-bold">₱{b.defaultFee} fee</span>
+                      </div>
                     </button>
                   ))}
                   <button
@@ -1202,7 +1641,7 @@ export function EwalletScreen({
                     }}
                     className={`btn-press p-2.5 rounded-xl border text-left transition-all ${
                       selectedBiller === 'OTHER'
-                        ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 font-bold'
+                        ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 font-bold shadow-glow-emerald ring-1 ring-emerald-500/40'
                         : 'border-white/[0.06] bg-obsidian-950/80 text-stone-300 hover:border-white/[0.12]'
                     }`}
                   >
@@ -1260,10 +1699,15 @@ export function EwalletScreen({
 
               {/* Amount & Fee */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-stone-400 block mb-1">
-                    Bill / Load Amount (₱) <span className="text-rose-400">*</span>
-                  </label>
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                      Bill / Load Amount (₱) <span className="text-rose-400">*</span>
+                    </label>
+                    {(selectedBillerCat === 'TELCO' || selectedBiller.includes('Globe') || selectedBiller.includes('Smart') || selectedBiller.includes('DITO')) && (
+                      <span className="text-[10px] font-mono text-emerald-400 font-bold">Fast E-Load Chips</span>
+                    )}
+                  </div>
                   <div className="relative">
                     <span className="absolute left-3.5 top-2.5 text-sm font-bold text-stone-500 font-serif">₱</span>
                     <input
@@ -1275,6 +1719,23 @@ export function EwalletScreen({
                       className="w-full rounded-xl border border-white/[0.08] bg-obsidian-950 pl-8 pr-3 py-2 text-base font-bold text-stone-100 outline-none focus:border-emerald-500/60 transition-all font-mono"
                     />
                   </div>
+                  {(selectedBillerCat === 'TELCO' || selectedBiller.includes('Globe') || selectedBiller.includes('Smart') || selectedBiller.includes('DITO')) && (
+                    <div className="flex flex-wrap gap-1 pt-1">
+                      {TELCO_LOAD_AMOUNTS.map((amt) => (
+                        <button
+                          key={amt}
+                          type="button"
+                          onClick={() => {
+                            setBillAmountStr(String(amt))
+                            setBillFeeStr('5')
+                          }}
+                          className="px-2 py-0.5 text-[11px] font-mono font-bold rounded-lg border border-white/[0.06] bg-obsidian-950 text-stone-300 hover:border-emerald-500/40 hover:text-emerald-400 transition-all"
+                        >
+                          ₱{amt}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label className="text-[11px] font-bold uppercase tracking-wider text-stone-400 block mb-1">
@@ -1543,6 +2004,17 @@ export function EwalletScreen({
                 <option value="CASH_OUT">Cash Out</option>
                 <option value="BILLS">Bills &amp; Load</option>
               </select>
+
+              {/* CSV Export Button */}
+              <button
+                type="button"
+                onClick={handleExportLedgerCsv}
+                className="btn-press flex items-center gap-1.5 py-1.5 px-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-xs font-bold text-emerald-400 transition-all shadow-glow-emerald"
+                title="Export filtered ledger records to CSV spreadsheet"
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span>Export CSV</span>
+              </button>
             </div>
           </div>
 
@@ -1694,6 +2166,15 @@ export function EwalletScreen({
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleSyncFloatsToAudit}
+                className="btn-press flex items-center gap-1.5 px-3 py-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/20 transition-all"
+                title="Populate actual digital wallet inputs with live float balances"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>Auto-Sync from Live Floats</span>
+              </button>
               <button
                 type="button"
                 onClick={handleResetAuditSheet}
@@ -2184,7 +2665,7 @@ export function EwalletScreen({
               <div className="text-center border-t border-stone-300 pt-2 text-[10px] text-stone-600">
                 <p>Status: COMPLETED</p>
                 <p>Cashier: {slipEwalletTx.cashier_name || currentCashierName}</p>
-                <p className="mt-1 font-sans">Salamat sa pagtangkilik!</p>
+                <p className="mt-1 font-sans">Thank you for your business!</p>
               </div>
             </div>
 
@@ -2499,6 +2980,185 @@ export function EwalletScreen({
               >
                 Clear All Logs
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────── */}
+      {/* MANAGE / TOP UP STORE DIGITAL FLOATS MODAL                 */}
+      {/* ─────────────────────────────────────────────────────────── */}
+      {isFloatModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/85 backdrop-blur-md animate-fade-in">
+          <div className="w-full max-w-lg glass-panel bg-obsidian-950 rounded-3xl border border-emerald-500/30 p-6 shadow-vault space-y-5">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+              <div className="flex items-center gap-2.5 text-emerald-400 font-bold text-sm">
+                <Sliders className="h-5 w-5" />
+                <span>Manage Store Digital Floats</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsFloatModalOpen(false)}
+                className="btn-press text-stone-400 hover:text-stone-100 p-1"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <p className="text-xs text-stone-400">
+              Set or adjust your store's live digital float balances. These balances will automatically update as Cash In, Cash Out, and Bills payments are recorded.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              {/* GCash Float */}
+              <div className="p-3.5 rounded-2xl border border-sky-500/25 bg-sky-500/5 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-sky-400">GCash Float</span>
+                  <span className="text-[10px] font-mono text-stone-400">Store Load</span>
+                </div>
+                <div className="relative">
+                  <span className="absolute left-3 top-2 text-xs font-bold text-stone-500 font-serif">₱</span>
+                  <input
+                    type="number"
+                    step="any"
+                    value={tempFloats.GCASH}
+                    onChange={(e) => setTempFloats((prev) => ({ ...prev, GCASH: parseFloat(e.target.value) || 0 }))}
+                    className="w-full rounded-xl border border-white/[0.08] bg-obsidian-950 pl-7 pr-3 py-1.5 text-sm font-bold text-stone-100 outline-none focus:border-sky-500/60 font-mono"
+                  />
+                </div>
+                <div className="flex gap-1 pt-0.5">
+                  {[1000, 5000, 10000].map((add) => (
+                    <button
+                      key={add}
+                      type="button"
+                      onClick={() => setTempFloats((prev) => ({ ...prev, GCASH: (prev.GCASH || 0) + add }))}
+                      className="flex-1 py-1 text-[10px] font-mono font-bold rounded-lg border border-sky-500/20 bg-sky-500/10 text-sky-300 hover:bg-sky-500/20 transition-all"
+                    >
+                      +₱{add >= 1000 ? `${add / 1000}k` : add}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Maya Float */}
+              <div className="p-3.5 rounded-2xl border border-emerald-500/25 bg-emerald-500/5 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-emerald-400">Maya Float</span>
+                  <span className="text-[10px] font-mono text-stone-400">Store Load</span>
+                </div>
+                <div className="relative">
+                  <span className="absolute left-3 top-2 text-xs font-bold text-stone-500 font-serif">₱</span>
+                  <input
+                    type="number"
+                    step="any"
+                    value={tempFloats.MAYA}
+                    onChange={(e) => setTempFloats((prev) => ({ ...prev, MAYA: parseFloat(e.target.value) || 0 }))}
+                    className="w-full rounded-xl border border-white/[0.08] bg-obsidian-950 pl-7 pr-3 py-1.5 text-sm font-bold text-stone-100 outline-none focus:border-emerald-500/60 font-mono"
+                  />
+                </div>
+                <div className="flex gap-1 pt-0.5">
+                  {[1000, 5000, 10000].map((add) => (
+                    <button
+                      key={add}
+                      type="button"
+                      onClick={() => setTempFloats((prev) => ({ ...prev, MAYA: (prev.MAYA || 0) + add }))}
+                      className="flex-1 py-1 text-[10px] font-mono font-bold rounded-lg border border-emerald-500/20 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20 transition-all"
+                    >
+                      +₱{add >= 1000 ? `${add / 1000}k` : add}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* MariBank Float */}
+              <div className="p-3.5 rounded-2xl border border-orange-500/25 bg-orange-500/5 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-orange-400">MariBank Float</span>
+                  <span className="text-[10px] font-mono text-stone-400">Store Load</span>
+                </div>
+                <div className="relative">
+                  <span className="absolute left-3 top-2 text-xs font-bold text-stone-500 font-serif">₱</span>
+                  <input
+                    type="number"
+                    step="any"
+                    value={tempFloats.MARIBANK}
+                    onChange={(e) => setTempFloats((prev) => ({ ...prev, MARIBANK: parseFloat(e.target.value) || 0 }))}
+                    className="w-full rounded-xl border border-white/[0.08] bg-obsidian-950 pl-7 pr-3 py-1.5 text-sm font-bold text-stone-100 outline-none focus:border-orange-500/60 font-mono"
+                  />
+                </div>
+                <div className="flex gap-1 pt-0.5">
+                  {[1000, 5000, 10000].map((add) => (
+                    <button
+                      key={add}
+                      type="button"
+                      onClick={() => setTempFloats((prev) => ({ ...prev, MARIBANK: (prev.MARIBANK || 0) + add }))}
+                      className="flex-1 py-1 text-[10px] font-mono font-bold rounded-lg border border-orange-500/20 bg-orange-500/10 text-orange-300 hover:bg-orange-500/20 transition-all"
+                    >
+                      +₱{add >= 1000 ? `${add / 1000}k` : add}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* ShopeePay Float */}
+              <div className="p-3.5 rounded-2xl border border-amber-500/25 bg-amber-500/5 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-amber-400">ShopeePay Float</span>
+                  <span className="text-[10px] font-mono text-stone-400">Store Load</span>
+                </div>
+                <div className="relative">
+                  <span className="absolute left-3 top-2 text-xs font-bold text-stone-500 font-serif">₱</span>
+                  <input
+                    type="number"
+                    step="any"
+                    value={tempFloats.SHOPEEPAY}
+                    onChange={(e) => setTempFloats((prev) => ({ ...prev, SHOPEEPAY: parseFloat(e.target.value) || 0 }))}
+                    className="w-full rounded-xl border border-white/[0.08] bg-obsidian-950 pl-7 pr-3 py-1.5 text-sm font-bold text-stone-100 outline-none focus:border-amber-500/60 font-mono"
+                  />
+                </div>
+                <div className="flex gap-1 pt-0.5">
+                  {[1000, 5000, 10000].map((add) => (
+                    <button
+                      key={add}
+                      type="button"
+                      onClick={() => setTempFloats((prev) => ({ ...prev, SHOPEEPAY: (prev.SHOPEEPAY || 0) + add }))}
+                      className="flex-1 py-1 text-[10px] font-mono font-bold rounded-lg border border-amber-500/20 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 transition-all"
+                    >
+                      +₱{add >= 1000 ? `${add / 1000}k` : add}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-white/[0.08]">
+              <button
+                type="button"
+                onClick={() => setTempFloats({ ...DEFAULT_FLOAT_BALANCES })}
+                className="text-xs text-stone-400 hover:text-stone-200 underline font-mono"
+              >
+                Reset to Default Floats
+              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsFloatModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-white/[0.1] text-xs font-semibold text-stone-300 hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFloatBalances(tempFloats)
+                    setIsFloatModalOpen(false)
+                    playScanSuccess()
+                  }}
+                  className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 font-bold text-xs shadow-glow-emerald"
+                >
+                  Save Float Balances
+                </button>
+              </div>
             </div>
           </div>
         </div>

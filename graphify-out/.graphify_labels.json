@@ -2,6 +2,7 @@
   "0": "App.tsx",
   "1": "POSScreen.tsx",
   "2": "types.ts",
+  "3": "VipUpgradeModal.tsx",
   "4": "auth.ts",
   "5": "VaultAuthModal.tsx",
   "6": "SettingsScreen.tsx",
@@ -26,5 +27,6 @@
   "25": "00 — Reference: MobiVPN Rewarded-Ad / Token / Expiry Architecture",
   "26": "Project Context & Powerhouse Directives (TINDA POS Web)",
   "27": "02 — Implement Brief: Server-Enforced Rewarded-Ad Time (TINDA POS Web)",
-  "28": "Architectural Decisions & Changelog"
+  "28": "Architectural Decisions & Changelog",
+  "29": "SYSTEM_MASTER.md — TINDA POS Web Architecture"
 }

@@ -124,19 +124,6 @@
       "source_location": "L27"
     },
     {
-      "id": "src_components_navigation_activetab",
-      "label": "ActiveTab",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "activetab",
-      "source_file": "src/components/Navigation.tsx",
-      "source_location": "L36"
-    },
-    {
       "id": "src_components_navigation_navigationprops",
       "label": "NavigationProps",
       "_callable": true,
@@ -254,6 +241,19 @@
       "source_location": "L4"
     },
     {
+      "id": "src_components_ewalletscreen_billcategory",
+      "label": "BillCategory",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "billcategory",
+      "source_file": "src/components/EwalletScreen.tsx",
+      "source_location": "L38"
+    },
+    {
       "id": "src_components_ewalletscreen_billtransaction",
       "label": "BillTransaction",
       "_callable": true,
@@ -264,7 +264,7 @@
       "file_type": "code",
       "norm_label": "billtransaction",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L50"
+      "source_location": "L55"
     },
     {
       "id": "src_components_ewalletscreen_cashcountdenomination",
@@ -277,7 +277,7 @@
       "file_type": "code",
       "norm_label": "cashcountdenomination",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L95"
+      "source_location": "L100"
     },
     {
       "id": "src_components_ewalletscreen_ewalletauditrecord",
@@ -290,7 +290,7 @@
       "file_type": "code",
       "norm_label": "ewalletauditrecord",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L69"
+      "source_location": "L74"
     },
     {
       "id": "src_components_ewalletscreen_ewalletchannel",
@@ -303,7 +303,7 @@
       "file_type": "code",
       "norm_label": "ewalletchannel",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L32"
+      "source_location": "L36"
     },
     {
       "id": "src_components_ewalletscreen_ewalletscreenprops",
@@ -316,7 +316,7 @@
       "file_type": "code",
       "norm_label": "ewalletscreenprops",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L135"
+      "source_location": "L194"
     },
     {
       "id": "src_components_ewalletscreen_ewallettransactionrecord",
@@ -329,7 +329,7 @@
       "file_type": "code",
       "norm_label": "ewallettransactionrecord",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L35"
+      "source_location": "L40"
     },
     {
       "id": "src_components_ewalletscreen_ewallettransactiontype",
@@ -342,7 +342,20 @@
       "file_type": "code",
       "norm_label": "ewallettransactiontype",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L33"
+      "source_location": "L37"
+    },
+    {
+      "id": "src_components_ewalletscreen_floatbalances",
+      "label": "FloatBalances",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "floatbalances",
+      "source_file": "src/components/EwalletScreen.tsx",
+      "source_location": "L106"
     },
     {
       "id": "src_components_posscreen_cartquantityinputprops",
@@ -356,6 +369,58 @@
       "norm_label": "cartquantityinputprops",
       "source_file": "src/components/POSScreen.tsx",
       "source_location": "L89"
+    },
+    {
+      "id": "src_components_pricetagprintmodal_pricetagprintmodalprops",
+      "label": "PriceTagPrintModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "pricetagprintmodalprops",
+      "source_file": "src/components/PriceTagPrintModal.tsx",
+      "source_location": "L28"
+    },
+    {
+      "id": "src_components_pricetagprintmodal_tagsizepreset",
+      "label": "TagSizePreset",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "tagsizepreset",
+      "source_file": "src/components/PriceTagPrintModal.tsx",
+      "source_location": "L19"
+    },
+    {
+      "id": "src_utils_barcode_barcodeprops",
+      "label": "BarcodeProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "barcodeprops",
+      "source_file": "src/utils/barcode.tsx",
+      "source_location": "L156"
+    },
+    {
+      "id": "src_utils_barcode_barcodesvgoptions",
+      "label": "BarcodeSvgOptions",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "barcodesvgoptions",
+      "source_file": "src/utils/barcode.tsx",
+      "source_location": "L54"
     },
     {
       "id": "src_components_rewardedadmodal_rewardedadmodalprops",
@@ -553,6 +618,19 @@
       "source_location": "L45"
     },
     {
+      "id": "src_components_navigation_activetab",
+      "label": "ActiveTab",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types.ts",
+      "file_type": "code",
+      "norm_label": "activetab",
+      "source_file": "src/components/Navigation.tsx",
+      "source_location": "L36"
+    },
+    {
       "id": "src_components_posscreen_posscreenprops",
       "label": "POSScreenProps",
       "_callable": true,
@@ -577,32 +655,6 @@
       "norm_label": "priceguidemodalprops",
       "source_file": "src/components/PriceGuideModal.tsx",
       "source_location": "L20"
-    },
-    {
-      "id": "src_components_pricetagprintmodal_pricetagprintmodalprops",
-      "label": "PriceTagPrintModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "pricetagprintmodalprops",
-      "source_file": "src/components/PriceTagPrintModal.tsx",
-      "source_location": "L28"
-    },
-    {
-      "id": "src_components_pricetagprintmodal_tagsizepreset",
-      "label": "TagSizePreset",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "tagsizepreset",
-      "source_file": "src/components/PriceTagPrintModal.tsx",
-      "source_location": "L19"
     },
     {
       "id": "src_components_printreportmodal_printreportmodalprops",
@@ -982,19 +1034,6 @@
       "source_location": "L72"
     },
     {
-      "id": "src_types_useraccount",
-      "label": "UserAccount",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "useraccount",
-      "source_file": "src/types.ts",
-      "source_location": "L158"
-    },
-    {
       "id": "src_types_zreadrecord",
       "label": "ZReadRecord",
       "_callable": true,
@@ -1006,32 +1045,6 @@
       "norm_label": "zreadrecord",
       "source_file": "src/types.ts",
       "source_location": "L240"
-    },
-    {
-      "id": "src_utils_barcode_barcodeprops",
-      "label": "BarcodeProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "barcodeprops",
-      "source_file": "src/utils/barcode.tsx",
-      "source_location": "L156"
-    },
-    {
-      "id": "src_utils_barcode_barcodesvgoptions",
-      "label": "BarcodeSvgOptions",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "barcodesvgoptions",
-      "source_file": "src/utils/barcode.tsx",
-      "source_location": "L54"
     },
     {
       "id": "src_utils_srp_srpcomparisonresult",
@@ -1058,6 +1071,19 @@
       "norm_label": "srpcomparisonstatus",
       "source_file": "src/utils/srp.ts",
       "source_location": "L4"
+    },
+    {
+      "id": "src_components_vipupgrademodal_vipupgrademodalprops",
+      "label": "VipUpgradeModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "VipUpgradeModal.tsx",
+      "file_type": "code",
+      "norm_label": "vipupgrademodalprops",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L20"
     },
     {
       "id": "functions_shared_auth_d1database",
@@ -1216,6 +1242,19 @@
       "source_location": "L257"
     },
     {
+      "id": "src_types_useraccount",
+      "label": "UserAccount",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "VaultAuthModal.tsx",
+      "file_type": "code",
+      "norm_label": "useraccount",
+      "source_file": "src/types.ts",
+      "source_location": "L158"
+    },
+    {
       "id": "src_types_userrole",
       "label": "UserRole",
       "_callable": true,
@@ -1265,19 +1304,6 @@
       "file_type": "code",
       "norm_label": "userprofilemodalprops",
       "source_file": "src/components/UserProfileModal.tsx",
-      "source_location": "L20"
-    },
-    {
-      "id": "src_components_vipupgrademodal_vipupgrademodalprops",
-      "label": "VipUpgradeModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SettingsScreen.tsx",
-      "file_type": "code",
-      "norm_label": "vipupgrademodalprops",
-      "source_file": "src/components/VipUpgradeModal.tsx",
       "source_location": "L20"
     },
     {
@@ -1369,6 +1395,42 @@
       "source_location": "L17"
     },
     {
+      "id": "src_components_checkoutmodal_checkoutmodal",
+      "label": "CheckoutModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "checkoutmodal()",
+      "source_file": "src/components/CheckoutModal.tsx",
+      "source_location": "L49"
+    },
+    {
+      "id": "src_components_customersscreen_customersscreen",
+      "label": "CustomersScreen()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "customersscreen()",
+      "source_file": "src/components/CustomersScreen.tsx",
+      "source_location": "L28"
+    },
+    {
+      "id": "src_components_dashboardscreen_dashboardscreen",
+      "label": "DashboardScreen()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "dashboardscreen()",
+      "source_file": "src/components/DashboardScreen.tsx",
+      "source_location": "L46"
+    },
+    {
       "id": "src_components_errorboundary_errorboundary_componentdidcatch",
       "label": ".componentDidCatch()",
       "_callable": true,
@@ -1417,6 +1479,30 @@
       "source_location": "L35"
     },
     {
+      "id": "src_components_expensesscreen_expensesscreen",
+      "label": "ExpensesScreen()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "expensesscreen()",
+      "source_file": "src/components/ExpensesScreen.tsx",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_components_expirationtrackermodal_expirationtrackermodal",
+      "label": "ExpirationTrackerModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "expirationtrackermodal()",
+      "source_file": "src/components/ExpirationTrackerModal.tsx",
+      "source_location": "L23"
+    },
+    {
       "id": "src_components_handbookscreen_handbookscreen",
       "label": "HandbookScreen()",
       "_callable": true,
@@ -1439,6 +1525,18 @@
       "norm_label": "helpguidemodal()",
       "source_file": "src/components/HelpGuideModal.tsx",
       "source_location": "L47"
+    },
+    {
+      "id": "src_components_inventoryscreen_inventoryscreen",
+      "label": "InventoryScreen()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "inventoryscreen()",
+      "source_file": "src/components/InventoryScreen.tsx",
+      "source_location": "L65"
     },
     {
       "id": "src_components_landingpage_landingpage",
@@ -1537,6 +1635,18 @@
       "source_location": "L33"
     },
     {
+      "id": "src_components_transactionsscreen_transactionsscreen",
+      "label": "TransactionsScreen()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "transactionsscreen()",
+      "source_file": "src/components/TransactionsScreen.tsx",
+      "source_location": "L31"
+    },
+    {
       "id": "src_components_utangscreen_utangscreen",
       "label": "UtangScreen()",
       "_callable": true,
@@ -1573,6 +1683,18 @@
       "source_location": "L14"
     },
     {
+      "id": "src_components_ewalletscreen_calculatestandardfee",
+      "label": "calculateStandardFee()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "calculatestandardfee()",
+      "source_file": "src/components/EwalletScreen.tsx",
+      "source_location": "L179"
+    },
+    {
       "id": "src_components_ewalletscreen_ewalletscreen",
       "label": "EwalletScreen()",
       "_callable": true,
@@ -1582,7 +1704,7 @@
       "file_type": "code",
       "norm_label": "ewalletscreen()",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L140"
+      "source_location": "L199"
     },
     {
       "id": "src_components_posscreen_cartquantityinput",
@@ -1681,6 +1803,18 @@
       "source_location": "L2504"
     },
     {
+      "id": "src_components_pricetagprintmodal_pricetagprintmodal",
+      "label": "PriceTagPrintModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "pricetagprintmodal()",
+      "source_file": "src/components/PriceTagPrintModal.tsx",
+      "source_location": "L36"
+    },
+    {
       "id": "src_lib_sound_getaudiocontext",
       "label": "getAudioContext()",
       "_callable": true,
@@ -1763,6 +1897,54 @@
       "norm_label": "setsoundmuted()",
       "source_file": "src/lib/sound.ts",
       "source_location": "L29"
+    },
+    {
+      "id": "src_utils_barcode_countconsecutivedigits",
+      "label": "countConsecutiveDigits()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "countconsecutivedigits()",
+      "source_file": "src/utils/barcode.tsx",
+      "source_location": "L33"
+    },
+    {
+      "id": "src_utils_barcode_escapexml",
+      "label": "escapeXml()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "escapexml()",
+      "source_file": "src/utils/barcode.tsx",
+      "source_location": "L41"
+    },
+    {
+      "id": "src_utils_barcode_generatebarcodesvg",
+      "label": "generateBarcodeSvg()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "generatebarcodesvg()",
+      "source_file": "src/utils/barcode.tsx",
+      "source_location": "L67"
+    },
+    {
+      "id": "src_utils_format_money",
+      "label": "money()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "money()",
+      "source_file": "src/utils/format.ts",
+      "source_location": "L1"
     },
     {
       "id": "src_components_rewardedadmodal_rewardedadmodal",
@@ -1873,78 +2055,6 @@
       "source_location": "L48"
     },
     {
-      "id": "src_components_checkoutmodal_checkoutmodal",
-      "label": "CheckoutModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "checkoutmodal()",
-      "source_file": "src/components/CheckoutModal.tsx",
-      "source_location": "L49"
-    },
-    {
-      "id": "src_components_customersscreen_customersscreen",
-      "label": "CustomersScreen()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "customersscreen()",
-      "source_file": "src/components/CustomersScreen.tsx",
-      "source_location": "L28"
-    },
-    {
-      "id": "src_components_dashboardscreen_dashboardscreen",
-      "label": "DashboardScreen()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "dashboardscreen()",
-      "source_file": "src/components/DashboardScreen.tsx",
-      "source_location": "L46"
-    },
-    {
-      "id": "src_components_expensesscreen_expensesscreen",
-      "label": "ExpensesScreen()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "expensesscreen()",
-      "source_file": "src/components/ExpensesScreen.tsx",
-      "source_location": "L26"
-    },
-    {
-      "id": "src_components_expirationtrackermodal_expirationtrackermodal",
-      "label": "ExpirationTrackerModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "expirationtrackermodal()",
-      "source_file": "src/components/ExpirationTrackerModal.tsx",
-      "source_location": "L23"
-    },
-    {
-      "id": "src_components_inventoryscreen_inventoryscreen",
-      "label": "InventoryScreen()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "inventoryscreen()",
-      "source_file": "src/components/InventoryScreen.tsx",
-      "source_location": "L65"
-    },
-    {
       "id": "src_components_priceguidemodal_priceguidemodal",
       "label": "PriceGuideModal()",
       "_callable": true,
@@ -1957,18 +2067,6 @@
       "source_location": "L39"
     },
     {
-      "id": "src_components_pricetagprintmodal_pricetagprintmodal",
-      "label": "PriceTagPrintModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "pricetagprintmodal()",
-      "source_file": "src/components/PriceTagPrintModal.tsx",
-      "source_location": "L36"
-    },
-    {
       "id": "src_components_printreportmodal_printreportmodal",
       "label": "PrintReportModal()",
       "_callable": true,
@@ -1979,30 +2077,6 @@
       "norm_label": "printreportmodal()",
       "source_file": "src/components/PrintReportModal.tsx",
       "source_location": "L36"
-    },
-    {
-      "id": "src_components_receipt_receipt",
-      "label": "Receipt()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "receipt()",
-      "source_file": "src/components/Receipt.tsx",
-      "source_location": "L54"
-    },
-    {
-      "id": "src_components_transactionsscreen_transactionsscreen",
-      "label": "TransactionsScreen()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "transactionsscreen()",
-      "source_file": "src/components/TransactionsScreen.tsx",
-      "source_location": "L31"
     },
     {
       "id": "src_db_index_tindawebdatabase_constructor",
@@ -2041,42 +2115,6 @@
       "source_location": "L167"
     },
     {
-      "id": "src_utils_barcode_countconsecutivedigits",
-      "label": "countConsecutiveDigits()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "countconsecutivedigits()",
-      "source_file": "src/utils/barcode.tsx",
-      "source_location": "L33"
-    },
-    {
-      "id": "src_utils_barcode_escapexml",
-      "label": "escapeXml()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "escapexml()",
-      "source_file": "src/utils/barcode.tsx",
-      "source_location": "L41"
-    },
-    {
-      "id": "src_utils_barcode_generatebarcodesvg",
-      "label": "generateBarcodeSvg()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "generatebarcodesvg()",
-      "source_file": "src/utils/barcode.tsx",
-      "source_location": "L67"
-    },
-    {
       "id": "src_utils_format_formatdatetime",
       "label": "formatDateTime()",
       "_callable": true,
@@ -2099,18 +2137,6 @@
       "norm_label": "formatshortdate()",
       "source_file": "src/utils/format.ts",
       "source_location": "L30"
-    },
-    {
-      "id": "src_utils_format_money",
-      "label": "money()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "money()",
-      "source_file": "src/utils/format.ts",
-      "source_location": "L1"
     },
     {
       "id": "src_utils_format_moneyshort",
@@ -2159,6 +2185,90 @@
       "norm_label": "getsrpcomparison()",
       "source_file": "src/utils/srp.ts",
       "source_location": "L64"
+    },
+    {
+      "id": "src_components_vipupgrademodal_vipupgrademodal",
+      "label": "VipUpgradeModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "VipUpgradeModal.tsx",
+      "file_type": "code",
+      "norm_label": "vipupgrademodal()",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_utils_security_bytestohex",
+      "label": "bytesToHex()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "VipUpgradeModal.tsx",
+      "file_type": "code",
+      "norm_label": "bytestohex()",
+      "source_file": "src/utils/security.ts",
+      "source_location": "L9"
+    },
+    {
+      "id": "src_utils_security_getdevicemachineid",
+      "label": "getDeviceMachineId()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "VipUpgradeModal.tsx",
+      "file_type": "code",
+      "norm_label": "getdevicemachineid()",
+      "source_file": "src/utils/security.ts",
+      "source_location": "L100"
+    },
+    {
+      "id": "src_utils_security_hashpin",
+      "label": "hashPin()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "VipUpgradeModal.tsx",
+      "file_type": "code",
+      "norm_label": "hashpin()",
+      "source_file": "src/utils/security.ts",
+      "source_location": "L26"
+    },
+    {
+      "id": "src_utils_security_hextobytes",
+      "label": "hexToBytes()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "VipUpgradeModal.tsx",
+      "file_type": "code",
+      "norm_label": "hextobytes()",
+      "source_file": "src/utils/security.ts",
+      "source_location": "L15"
+    },
+    {
+      "id": "src_utils_security_sanitizebarcodeinput",
+      "label": "sanitizeBarcodeInput()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "VipUpgradeModal.tsx",
+      "file_type": "code",
+      "norm_label": "sanitizebarcodeinput()",
+      "source_file": "src/utils/security.ts",
+      "source_location": "L88"
+    },
+    {
+      "id": "src_utils_security_verifypin",
+      "label": "verifyPin()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "VipUpgradeModal.tsx",
+      "file_type": "code",
+      "norm_label": "verifypin()",
+      "source_file": "src/utils/security.ts",
+      "source_location": "L58"
     },
     {
       "id": "functions_api_heartbeat_onrequestoptions",
@@ -2737,6 +2847,18 @@
       "source_location": "L32"
     },
     {
+      "id": "src_components_receipt_receipt",
+      "label": "Receipt()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SettingsScreen.tsx",
+      "file_type": "code",
+      "norm_label": "receipt()",
+      "source_file": "src/components/Receipt.tsx",
+      "source_location": "L54"
+    },
+    {
       "id": "src_components_settingsscreen_settingsscreen",
       "label": "SettingsScreen()",
       "_callable": true,
@@ -2759,18 +2881,6 @@
       "norm_label": "userprofilemodal()",
       "source_file": "src/components/UserProfileModal.tsx",
       "source_location": "L33"
-    },
-    {
-      "id": "src_components_vipupgrademodal_vipupgrademodal",
-      "label": "VipUpgradeModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SettingsScreen.tsx",
-      "file_type": "code",
-      "norm_label": "vipupgrademodal()",
-      "source_file": "src/components/VipUpgradeModal.tsx",
-      "source_location": "L26"
     },
     {
       "id": "src_db_index_initdatabase",
@@ -2855,78 +2965,6 @@
       "norm_label": "compressimagefile()",
       "source_file": "src/utils/image.ts",
       "source_location": "L6"
-    },
-    {
-      "id": "src_utils_security_bytestohex",
-      "label": "bytesToHex()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SettingsScreen.tsx",
-      "file_type": "code",
-      "norm_label": "bytestohex()",
-      "source_file": "src/utils/security.ts",
-      "source_location": "L9"
-    },
-    {
-      "id": "src_utils_security_getdevicemachineid",
-      "label": "getDeviceMachineId()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SettingsScreen.tsx",
-      "file_type": "code",
-      "norm_label": "getdevicemachineid()",
-      "source_file": "src/utils/security.ts",
-      "source_location": "L100"
-    },
-    {
-      "id": "src_utils_security_hashpin",
-      "label": "hashPin()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SettingsScreen.tsx",
-      "file_type": "code",
-      "norm_label": "hashpin()",
-      "source_file": "src/utils/security.ts",
-      "source_location": "L26"
-    },
-    {
-      "id": "src_utils_security_hextobytes",
-      "label": "hexToBytes()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SettingsScreen.tsx",
-      "file_type": "code",
-      "norm_label": "hextobytes()",
-      "source_file": "src/utils/security.ts",
-      "source_location": "L15"
-    },
-    {
-      "id": "src_utils_security_sanitizebarcodeinput",
-      "label": "sanitizeBarcodeInput()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SettingsScreen.tsx",
-      "file_type": "code",
-      "norm_label": "sanitizebarcodeinput()",
-      "source_file": "src/utils/security.ts",
-      "source_location": "L88"
-    },
-    {
-      "id": "src_utils_security_verifypin",
-      "label": "verifyPin()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SettingsScreen.tsx",
-      "file_type": "code",
-      "norm_label": "verifypin()",
-      "source_file": "src/utils/security.ts",
-      "source_location": "L58"
     },
     {
       "id": "src_utils_theme_applytheme",
@@ -3261,7 +3299,7 @@
       "file_type": "code",
       "norm_label": "biller_presets",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L115"
+      "source_location": "L134"
     },
     {
       "id": "src_components_ewalletscreen_cash_count_denominations",
@@ -3272,7 +3310,29 @@
       "file_type": "code",
       "norm_label": "cash_count_denominations",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L101"
+      "source_location": "L120"
+    },
+    {
+      "id": "src_components_ewalletscreen_default_float_balances",
+      "label": "DEFAULT_FLOAT_BALANCES",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "default_float_balances",
+      "source_file": "src/components/EwalletScreen.tsx",
+      "source_location": "L113"
+    },
+    {
+      "id": "src_components_ewalletscreen_telco_load_amounts",
+      "label": "TELCO_LOAD_AMOUNTS",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "telco_load_amounts",
+      "source_file": "src/components/EwalletScreen.tsx",
+      "source_location": "L168"
     },
     {
       "id": "src_components_posscreen",
@@ -3286,6 +3346,28 @@
       "source_location": "L1"
     },
     {
+      "id": "src_components_pricetagprintmodal",
+      "label": "PriceTagPrintModal.tsx",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "pricetagprintmodal.tsx",
+      "source_file": "src/components/PriceTagPrintModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_pricetagprintmodal_preset_dimensions",
+      "label": "PRESET_DIMENSIONS",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "preset_dimensions",
+      "source_file": "src/components/PriceTagPrintModal.tsx",
+      "source_location": "L21"
+    },
+    {
       "id": "src_lib_sound",
       "label": "sound.ts",
       "_origin": "ast",
@@ -3297,6 +3379,28 @@
       "source_location": "L1"
     },
     {
+      "id": "src_utils_barcode",
+      "label": "barcode.tsx",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "barcode.tsx",
+      "source_file": "src/utils/barcode.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_utils_barcode_code128_patterns",
+      "label": "CODE128_PATTERNS",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "POSScreen.tsx",
+      "file_type": "code",
+      "norm_label": "code128_patterns",
+      "source_file": "src/utils/barcode.tsx",
+      "source_location": "L13"
+    },
+    {
       "id": "ref_zxing_browser",
       "label": "@zxing/browser",
       "_origin": "ast",
@@ -3306,102 +3410,6 @@
       "norm_label": "@zxing/browser",
       "source_file": "package.json",
       "source_location": "L12"
-    },
-    {
-      "id": "system_master",
-      "label": "SYSTEM_MASTER.md",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "POSScreen.tsx",
-      "file_type": "document",
-      "node_kind": "page",
-      "norm_label": "system_master.md",
-      "source_file": "SYSTEM_MASTER.md",
-      "source_location": "L1"
-    },
-    {
-      "id": "system_master_1_system_identity_north_star",
-      "label": "1. System Identity & North Star",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "POSScreen.tsx",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "1. system identity & north star",
-      "source_file": "SYSTEM_MASTER.md",
-      "source_location": "L7"
-    },
-    {
-      "id": "system_master_2_tech_stack_environment_locks",
-      "label": "2. Tech Stack & Environment Locks",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "POSScreen.tsx",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "2. tech stack & environment locks",
-      "source_file": "SYSTEM_MASTER.md",
-      "source_location": "L17"
-    },
-    {
-      "id": "system_master_3_data_schema_core_stores",
-      "label": "3. Data Schema & Core Stores",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "POSScreen.tsx",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "3. data schema & core stores",
-      "source_file": "SYSTEM_MASTER.md",
-      "source_location": "L28"
-    },
-    {
-      "id": "system_master_4_business_logic_guardrails",
-      "label": "4. Business Logic Guardrails",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "POSScreen.tsx",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "4. business logic guardrails",
-      "source_file": "SYSTEM_MASTER.md",
-      "source_location": "L36"
-    },
-    {
-      "id": "system_master_5_verification_definition_of_done",
-      "label": "5. Verification & Definition of Done",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "POSScreen.tsx",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "5. verification & definition of done",
-      "source_file": "SYSTEM_MASTER.md",
-      "source_location": "L44"
-    },
-    {
-      "id": "system_master_6_forbidden_actions",
-      "label": "6. Forbidden Actions",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "POSScreen.tsx",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "6. forbidden actions",
-      "source_file": "SYSTEM_MASTER.md",
-      "source_location": "L52"
-    },
-    {
-      "id": "system_master_system_master_md_tinda_pos_web_architecture",
-      "label": "SYSTEM_MASTER.md \u2014 TINDA POS Web Architecture",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "POSScreen.tsx",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "system_master.md \u2014 tinda pos web architecture",
-      "source_file": "SYSTEM_MASTER.md",
-      "source_location": "L1"
     },
     {
       "id": "package_devdependencies",
@@ -4040,28 +4048,6 @@
       "source_location": "L28"
     },
     {
-      "id": "src_components_pricetagprintmodal",
-      "label": "PriceTagPrintModal.tsx",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "pricetagprintmodal.tsx",
-      "source_file": "src/components/PriceTagPrintModal.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_components_pricetagprintmodal_preset_dimensions",
-      "label": "PRESET_DIMENSIONS",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "preset_dimensions",
-      "source_file": "src/components/PriceTagPrintModal.tsx",
-      "source_location": "L21"
-    },
-    {
       "id": "src_components_printreportmodal",
       "label": "PrintReportModal.tsx",
       "_origin": "ast",
@@ -4214,28 +4200,6 @@
       "norm_label": "types.ts",
       "source_file": "src/types.ts",
       "source_location": "L1"
-    },
-    {
-      "id": "src_utils_barcode",
-      "label": "barcode.tsx",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "barcode.tsx",
-      "source_file": "src/utils/barcode.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_utils_barcode_code128_patterns",
-      "label": "CODE128_PATTERNS",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "types.ts",
-      "file_type": "code",
-      "norm_label": "code128_patterns",
-      "source_file": "src/utils/barcode.tsx",
-      "source_location": "L13"
     },
     {
       "id": "src_utils_format",
@@ -5348,6 +5312,124 @@
       "source_location": "L1"
     },
     {
+      "id": "system_master",
+      "label": "SYSTEM_MASTER.md",
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "SYSTEM_MASTER.md \u2014 TINDA POS Web Architecture",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "system_master.md",
+      "source_file": "SYSTEM_MASTER.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "system_master_1_system_identity_north_star",
+      "label": "1. System Identity & North Star",
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "SYSTEM_MASTER.md \u2014 TINDA POS Web Architecture",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "1. system identity & north star",
+      "source_file": "SYSTEM_MASTER.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "system_master_2_tech_stack_environment_locks",
+      "label": "2. Tech Stack & Environment Locks",
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "SYSTEM_MASTER.md \u2014 TINDA POS Web Architecture",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "2. tech stack & environment locks",
+      "source_file": "SYSTEM_MASTER.md",
+      "source_location": "L17"
+    },
+    {
+      "id": "system_master_3_data_schema_core_stores",
+      "label": "3. Data Schema & Core Stores",
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "SYSTEM_MASTER.md \u2014 TINDA POS Web Architecture",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "3. data schema & core stores",
+      "source_file": "SYSTEM_MASTER.md",
+      "source_location": "L28"
+    },
+    {
+      "id": "system_master_4_business_logic_guardrails",
+      "label": "4. Business Logic Guardrails",
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "SYSTEM_MASTER.md \u2014 TINDA POS Web Architecture",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "4. business logic guardrails",
+      "source_file": "SYSTEM_MASTER.md",
+      "source_location": "L36"
+    },
+    {
+      "id": "system_master_5_verification_definition_of_done",
+      "label": "5. Verification & Definition of Done",
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "SYSTEM_MASTER.md \u2014 TINDA POS Web Architecture",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "5. verification & definition of done",
+      "source_file": "SYSTEM_MASTER.md",
+      "source_location": "L44"
+    },
+    {
+      "id": "system_master_6_forbidden_actions",
+      "label": "6. Forbidden Actions",
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "SYSTEM_MASTER.md \u2014 TINDA POS Web Architecture",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "6. forbidden actions",
+      "source_file": "SYSTEM_MASTER.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "system_master_system_master_md_tinda_pos_web_architecture",
+      "label": "SYSTEM_MASTER.md \u2014 TINDA POS Web Architecture",
+      "_origin": "ast",
+      "community": 29,
+      "community_name": "SYSTEM_MASTER.md \u2014 TINDA POS Web Architecture",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "system_master.md \u2014 tinda pos web architecture",
+      "source_file": "SYSTEM_MASTER.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_components_vipupgrademodal",
+      "label": "VipUpgradeModal.tsx",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "VipUpgradeModal.tsx",
+      "file_type": "code",
+      "norm_label": "vipupgrademodal.tsx",
+      "source_file": "src/components/VipUpgradeModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_utils_security",
+      "label": "security.ts",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "VipUpgradeModal.tsx",
+      "file_type": "code",
+      "norm_label": "security.ts",
+      "source_file": "src/utils/security.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "functions_api_heartbeat",
       "label": "heartbeat.ts",
       "_origin": "ast",
@@ -5597,17 +5679,6 @@
       "source_location": "L1"
     },
     {
-      "id": "src_components_vipupgrademodal",
-      "label": "VipUpgradeModal.tsx",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SettingsScreen.tsx",
-      "file_type": "code",
-      "norm_label": "vipupgrademodal.tsx",
-      "source_file": "src/components/VipUpgradeModal.tsx",
-      "source_location": "L1"
-    },
-    {
       "id": "src_utils_backup",
       "label": "backup.ts",
       "_origin": "ast",
@@ -5627,17 +5698,6 @@
       "file_type": "code",
       "norm_label": "image.ts",
       "source_file": "src/utils/image.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_utils_security",
-      "label": "security.ts",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SettingsScreen.tsx",
-      "file_type": "code",
-      "norm_label": "security.ts",
-      "source_file": "src/utils/security.ts",
       "source_location": "L1"
     },
     {
@@ -7346,14 +7406,14 @@
     },
     {
       "source": "src_components_ewalletscreen_ewalletscreen",
-      "target": "src_utils_format_formatdatetime",
+      "target": "src_components_ewalletscreen_calculatestandardfee",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L1453",
+      "source_location": "L1193",
       "weight": 1.0
     },
     {
@@ -7365,7 +7425,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L371",
+      "source_location": "L464",
       "weight": 1.0
     },
     {
@@ -7377,7 +7437,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L393",
+      "source_location": "L495",
       "weight": 1.0
     },
     {
@@ -7389,7 +7449,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L493",
+      "source_location": "L601",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_ewalletscreen_ewalletscreen",
+      "target": "src_utils_format_formatdatetime",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/components/EwalletScreen.tsx",
+      "source_location": "L763",
       "weight": 1.0
     },
     {
@@ -11183,7 +11255,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L27",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -11195,7 +11267,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L27",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -11207,7 +11279,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L28",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -11219,7 +11291,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L28",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -11231,7 +11303,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L28",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -14297,7 +14369,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L27",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -14309,7 +14381,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L28",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -18256,13 +18328,46 @@
     },
     {
       "source": "src_components_ewalletscreen",
+      "target": "src_components_ewalletscreen_cashcountdenomination",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/EwalletScreen.tsx",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_ewalletscreen",
+      "target": "src_components_ewalletscreen_floatbalances",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/EwalletScreen.tsx",
+      "source_location": "L106",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_ewalletscreen",
+      "target": "src_components_ewalletscreen_default_float_balances",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/EwalletScreen.tsx",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_ewalletscreen",
       "target": "src_components_ewalletscreen_cash_count_denominations",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L101",
+      "source_location": "L120",
       "weight": 1.0
     },
     {
@@ -18273,7 +18378,29 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L115",
+      "source_location": "L134",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_ewalletscreen",
+      "target": "src_components_ewalletscreen_telco_load_amounts",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/EwalletScreen.tsx",
+      "source_location": "L168",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_ewalletscreen",
+      "target": "src_components_ewalletscreen_calculatestandardfee",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/EwalletScreen.tsx",
+      "source_location": "L179",
       "weight": 1.0
     },
     {
@@ -18284,7 +18411,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L135",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -18295,7 +18422,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L140",
+      "source_location": "L199",
       "weight": 1.0
     },
     {
@@ -18306,7 +18433,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L32",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -18317,7 +18444,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L33",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_ewalletscreen",
+      "target": "src_components_ewalletscreen_billcategory",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/EwalletScreen.tsx",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -18328,7 +18466,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L35",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -18339,7 +18477,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L50",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -18350,18 +18488,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L69",
-      "weight": 1.0
-    },
-    {
-      "source": "src_components_ewalletscreen",
-      "target": "src_components_ewalletscreen_cashcountdenomination",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/components/EwalletScreen.tsx",
-      "source_location": "L95",
+      "source_location": "L74",
       "weight": 1.0
     },
     {
@@ -20866,5 +20993,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "ff4731e84f16b45587da6b6f8d3d955b3b1ec420"
+  "built_at_commit": "db6c2a65ac2e1108bd5f66daf5b87345c8858e97"
 }

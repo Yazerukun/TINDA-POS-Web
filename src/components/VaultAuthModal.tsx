@@ -21,14 +21,16 @@ import {
   ShieldAlert,
   Zap,
   Activity,
-  CheckCircle2
+  CheckCircle2,
+  Crown
 } from 'lucide-react'
 import { AppLogo } from './AppLogo'
 import { money } from '../utils/format'
 import { db } from '../db'
 import type { UserAccount, UserRole } from '../types'
 import { loginWithCloud, rotatePinOnCloud, syncUserToCloud } from '../services/cloudSync'
-import { isVipActive, getVipLicenseInfo } from '../utils/vip'
+import { isVipActive, getVipLicenseInfo, verifyAccountVipKey, saveAccountVipLicense } from '../utils/vip'
+import { playSuccessSound } from '../lib/sound'
 
 export interface VaultSession {
   userId?: number
@@ -187,7 +189,7 @@ export function VaultAuthModal({
   initialStep = 'LOGIN',
   onClose
 }: VaultAuthModalProps): React.JSX.Element | null {
-  const [step, setStep] = useState<'LOGIN' | 'SIGNUP' | 'ROTATE' | 'FLOAT' | 'FORGOT_PIN'>(initialStep)
+  const [step, setStep] = useState<'LOGIN' | 'SIGNUP' | 'ROTATE' | 'FLOAT' | 'FORGOT_PIN' | 'VIP_UNLOCK'>(initialStep)
 
   useEffect(() => {
     if (isOpen && initialStep) {
@@ -205,6 +207,13 @@ export function VaultAuthModal({
   const [authenticatedUser, setAuthenticatedUser] = useState<UserAccount | null>(null)
   const [openingFloat, setOpeningFloat] = useState(200000) // ₱2,000.00 in centavos
   const [customFloatInput, setCustomFloatInput] = useState('2000')
+
+  // VIP License Key unlock state
+  const [vipKeyInput, setVipKeyInput] = useState('')
+  const [vipStoreName, setVipStoreName] = useState('')
+  const [vipUsername, setVipUsername] = useState('owner')
+  const [vipPin, setVipPin] = useState('1234')
+  const vipKeyInputRef = useRef<HTMLInputElement>(null)
 
   // Forgot PIN / Password recovery state
   const [forgotTargetUsername, setForgotTargetUsername] = useState('')
@@ -255,6 +264,8 @@ export function VaultAuthModal({
         setTimeout(() => usernameInputRef.current?.focus(), 150)
       } else if (step === 'SIGNUP') {
         setTimeout(() => signupStoreInputRef.current?.focus(), 150)
+      } else if (step === 'VIP_UNLOCK') {
+        setTimeout(() => vipKeyInputRef.current?.focus(), 150)
       }
     }
   }, [isOpen, step])
@@ -284,6 +295,112 @@ export function VaultAuthModal({
     setErrorMessage('')
   }
 
+  const handleVipUnlockSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    const cleanKey = vipKeyInput.trim().toUpperCase()
+    if (!cleanKey) {
+      setErrorMessage('Please enter your VIP License Key.')
+      vipKeyInputRef.current?.focus()
+      return
+    }
+
+    const cleanStore = vipStoreName.trim() || 'VIP Store'
+    const normUser = (vipUsername.trim() || 'owner').toLowerCase().replace(/[^a-z0-9_-]/g, '') || 'owner'
+    const chosenPin = (vipPin.trim().replace(/\D/g, '') || '1234').slice(0, 4) || '1234'
+
+    setIsVerifying(true)
+    setErrorMessage('')
+
+    try {
+      // 1. Validate VIP Key (Accepts official VIP-XXXX-XXXX-XXXX-XXXX, master keys, and server tokens)
+      const verResult = await verifyAccountVipKey(cleanKey, normUser, cleanStore)
+      if (!verResult.valid) {
+        setErrorMessage(verResult.reason || 'Invalid VIP License Key. Please check the key provided by Dev Francis.')
+        setIsVerifying(false)
+        return
+      }
+
+      // 2. Setup user account in local IndexedDB
+      let user = await db.users.where('username').equalsIgnoreCase(normUser).first()
+      if (user) {
+        await db.users.update(user.id!, {
+          role: 'ADMIN',
+          status: 'ACTIVE',
+          is_owner: true,
+          is_vip: true,
+          vip_key: cleanKey,
+          vip_activated_at: new Date().toISOString(),
+          store_name: cleanStore,
+          pin: chosenPin
+        })
+        user = await db.users.get(user.id!)
+      } else {
+        const newUser: UserAccount = {
+          username: normUser,
+          name: cleanStore,
+          role: 'ADMIN',
+          pin: chosenPin,
+          status: 'ACTIVE',
+          created_at: new Date().toISOString(),
+          store_name: cleanStore,
+          is_owner: true,
+          is_vip: true,
+          vip_key: cleanKey,
+          vip_activated_at: new Date().toISOString()
+        }
+        const newId = await db.users.add(newUser)
+        user = { ...newUser, id: newId as number }
+      }
+
+      // 3. Save account-isolated and device VIP license
+      saveAccountVipLicense(normUser, {
+        active: true,
+        registeredTo: cleanStore,
+        key: cleanKey,
+        token: cleanKey,
+        username: normUser,
+        activatedAt: new Date().toISOString()
+      })
+
+      // 4. Update legacy settings table for 100% backwards compatibility
+      await db.settings.put({
+        key: `vip_license_${normUser}`,
+        value: {
+          active: true,
+          registeredTo: cleanStore,
+          key: cleanKey,
+          username: normUser,
+          activatedAt: new Date().toISOString()
+        }
+      })
+      await db.settings.put({
+        key: 'pro_access_state',
+        value: {
+          pro_expires_at: 4102444800000,
+          tokens: 9999,
+          last_ad_watched_at: Date.now(),
+          total_ads_watched: 0,
+          owner_bypass: true
+        }
+      })
+
+      // Play success audio chime
+      try {
+        playSuccessSound()
+      } catch {}
+
+      if (user) {
+        setAuthenticatedUser(user)
+        setIsVerifying(false)
+        setStep('FLOAT')
+      }
+    } catch (err) {
+      console.error('VIP Unlock error:', err)
+      setErrorMessage('Failed to unlock VIP account: ' + ((err as Error)?.message || 'Database error'))
+      setIsVerifying(false)
+    }
+  }
+
   const handleLoginSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault()
     if (Date.now() < lockoutUntil) {
@@ -293,6 +410,18 @@ export function VaultAuthModal({
     }
 
     const trimmedUser = username.trim()
+    const upperUser = trimmedUser.toUpperCase()
+    const upperPin = (pin || '').trim().toUpperCase()
+
+    // Smart VIP Key Detection: If user pasted VIP key into username or PIN field
+    if (upperUser.startsWith('VIP-') || upperUser.startsWith('MASTER-') || upperPin.startsWith('VIP-') || upperPin.startsWith('MASTER-')) {
+      const candidateKey = upperUser.startsWith('VIP-') || upperUser.startsWith('MASTER-') ? trimmedUser : pin
+      setVipKeyInput(candidateKey)
+      setStep('VIP_UNLOCK')
+      setErrorMessage('VIP License Key detected! Please enter your store details or click Unlock.')
+      return
+    }
+
     if (!trimmedUser) {
       setErrorMessage('Please enter your Staff ID or Username.')
       usernameInputRef.current?.focus()
@@ -765,14 +894,16 @@ export function VaultAuthModal({
                   ? 'PIN Rotation Required'
                   : step === 'FORGOT_PIN'
                   ? 'Account PIN & Password Recovery'
+                  : step === 'VIP_UNLOCK'
+                  ? 'Restore & Unlock VIP Pro Account'
                   : 'Counter Terminal Authentication'}
               </p>
             </div>
 
-            {/* Segmented Switcher Tabs: "Sign In" vs "Register Store" */}
+            {/* Segmented Switcher Tabs: "Sign In" vs "Register Store" vs "VIP Key" */}
             {step !== 'FLOAT' && step !== 'ROTATE' && step !== 'FORGOT_PIN' && (
               <div className="mb-4">
-                <div className="grid grid-cols-2 p-1 rounded-xl bg-zinc-900/80 border border-white/[0.08] shadow-inner">
+                <div className="grid grid-cols-3 p-1 rounded-xl bg-zinc-900/80 border border-white/[0.08] shadow-inner">
                   <button
                     type="button"
                     onClick={() => {
@@ -801,7 +932,22 @@ export function VaultAuthModal({
                     }`}
                   >
                     <UserPlus className="w-3.5 h-3.5" />
-                    <span>Register Store</span>
+                    <span>Register</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep('VIP_UNLOCK')
+                      setErrorMessage('')
+                    }}
+                    className={`py-2 rounded-lg text-xs font-semibold tracking-wide transition-all flex items-center justify-center gap-1.5 ${
+                      step === 'VIP_UNLOCK'
+                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm ring-1 ring-amber-500/20'
+                        : 'text-amber-400/80 hover:text-amber-300'
+                    }`}
+                  >
+                    <Crown className="w-3.5 h-3.5 text-amber-400" />
+                    <span>VIP Key</span>
                   </button>
                 </div>
               </div>
@@ -1040,6 +1186,33 @@ export function VaultAuthModal({
                     <span className="text-[0.6875rem] font-mono text-stone-500">
                       Default: 1234
                     </span>
+                  </div>
+
+                  {/* Paid ₱500 VIP Pro Unlock Quick Link */}
+                  <div className="pt-0.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setStep('VIP_UNLOCK')
+                        setErrorMessage('')
+                      }}
+                      className="w-full p-2.5 rounded-xl bg-amber-500/[0.08] hover:bg-amber-500/[0.14] border border-amber-500/25 hover:border-amber-500/40 transition-all flex items-center justify-between text-left group cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-6 h-6 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
+                          <Crown className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-amber-200 group-hover:text-amber-100 truncate">
+                            Paid ₱500 for VIP? Unlock Account
+                          </p>
+                          <p className="text-[0.625rem] text-amber-300/70 truncate">
+                            Enter VIP License Key to instantly restore and sign in
+                          </p>
+                        </div>
+                      </div>
+                      <ArrowRight className="w-3.5 h-3.5 text-amber-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
+                    </button>
                   </div>
 
                   {/* Primary CTA Submit */}
@@ -1461,6 +1634,143 @@ export function VaultAuthModal({
                       setStep('LOGIN')
                       setErrorMessage('')
                       setForgotSuccessMessage('')
+                    }}
+                    className="w-full py-2.5 rounded-xl border border-white/[0.08] hover:bg-white/[0.05] text-stone-300 hover:text-stone-100 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span>Back to Sign In</span>
+                  </button>
+                </form>
+              )}
+
+              {/* ────────────────── 3c. VIP PRO LICENSE UNLOCK VIEW ────────────────── */}
+              {step === 'VIP_UNLOCK' && (
+                <form onSubmit={handleVipUnlockSubmit} className="space-y-3.5 animate-fade-in">
+                  <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 flex items-start gap-2.5">
+                    <Crown className="w-5 h-5 shrink-0 mt-0.5 text-amber-400" />
+                    <div>
+                      <p className="text-xs font-bold text-amber-200">
+                        Restore &amp; Unlock VIP Pro Account
+                      </p>
+                      <p className="text-[0.6875rem] text-stone-400 mt-0.5 leading-relaxed">
+                        Paid ₱500 to Dev Francis (Maya 0991 225 5156)? Enter your VIP Key below to restore your lifetime Pro status and immediately unlock your terminal.
+                      </p>
+                    </div>
+                  </div>
+
+                  {errorMessage && (
+                    <div className="p-2.5 rounded-xl bg-red-500/15 border border-red-500/30 text-xs font-mono text-red-400 text-center animate-fade-in">
+                      {errorMessage}
+                    </div>
+                  )}
+
+                  {/* VIP License Key Input */}
+                  <div>
+                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-amber-300 font-bold mb-1">
+                      VIP License Key *
+                    </label>
+                    <div className="relative flex items-center">
+                      <KeyRound className="absolute left-3.5 w-4 h-4 text-amber-400 pointer-events-none" />
+                      <input
+                        ref={vipKeyInputRef}
+                        type="text"
+                        required
+                        value={vipKeyInput}
+                        onChange={(e) => {
+                          setVipKeyInput(e.target.value.toUpperCase())
+                          setErrorMessage('')
+                        }}
+                        placeholder="VIP-XXXX-XXXX-XXXX-XXXX"
+                        className="w-full pl-10 pr-4 h-11 rounded-xl bg-zinc-900 border border-amber-500/30 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 text-amber-300 font-mono text-xs font-bold tracking-wider placeholder-stone-600 focus:outline-none transition-all"
+                      />
+                    </div>
+                    <p className="text-[0.625rem] text-stone-500 mt-1 pl-1">
+                      Supports VIP-XXXX-XXXX-XXXX-XXXX keys and master recovery keys.
+                    </p>
+                  </div>
+
+                  {/* Store Name Input */}
+                  <div>
+                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                      Store / Business Name
+                    </label>
+                    <div className="relative flex items-center">
+                      <Store className="absolute left-3.5 w-4 h-4 text-stone-400 pointer-events-none" />
+                      <input
+                        type="text"
+                        value={vipStoreName}
+                        onChange={(e) => {
+                          setVipStoreName(e.target.value)
+                          setErrorMessage('')
+                        }}
+                        placeholder="e.g. Aling Nena's Sari-Sari Store"
+                        className="w-full pl-10 pr-4 h-10 rounded-xl bg-zinc-900 border border-white/[0.08] focus:border-emerald-500/60 text-stone-100 text-xs font-medium placeholder-stone-500 focus:outline-none transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Username and PIN Grid */}
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div>
+                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                        Username (Staff ID)
+                      </label>
+                      <input
+                        type="text"
+                        value={vipUsername}
+                        onChange={(e) => {
+                          setVipUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))
+                          setErrorMessage('')
+                        }}
+                        placeholder="owner"
+                        className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-white/[0.08] focus:border-emerald-500/60 text-stone-100 text-xs font-mono placeholder-stone-500 focus:outline-none transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                        4-Digit PIN
+                      </label>
+                      <input
+                        type="password"
+                        inputMode="numeric"
+                        maxLength={4}
+                        value={vipPin}
+                        onChange={(e) => {
+                          setVipPin(e.target.value.replace(/\D/g, ''))
+                          setErrorMessage('')
+                        }}
+                        placeholder="1234"
+                        className="w-full h-10 text-center px-2 rounded-xl bg-zinc-900 border border-white/[0.08] focus:border-emerald-500/60 text-emerald-400 font-mono text-sm tracking-widest focus:outline-none transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Primary Unlock CTA */}
+                  <button
+                    type="submit"
+                    disabled={isVerifying || !vipKeyInput.trim()}
+                    className="w-full h-12 rounded-xl flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-amber-500 via-emerald-500 to-teal-500 hover:from-amber-400 hover:to-teal-400 text-zinc-950 shadow-glow-emerald transition-all mt-1 cursor-pointer disabled:opacity-60"
+                  >
+                    {isVerifying ? (
+                      <>
+                        <div className="w-3.5 h-3.5 rounded-full border-2 border-zinc-950 border-t-transparent animate-spin" />
+                        <span>Verifying VIP License...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Crown className="w-4 h-4" />
+                        <span>Unlock VIP Register Session</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+
+                  {/* Back to Regular Sign In */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStep('LOGIN')
+                      setErrorMessage('')
                     }}
                     className="w-full py-2.5 rounded-xl border border-white/[0.08] hover:bg-white/[0.05] text-stone-300 hover:text-stone-100 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
                   >

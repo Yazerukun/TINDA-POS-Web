@@ -423,18 +423,37 @@ export function VipUpgradeModal({
           message: `VIP Pro License recovered for @${query}!`
         })
       } else {
-        const u = await db.users.where('username').equalsIgnoreCase(query).first()
-        if (u && u.is_vip && u.vip_key) {
-          await applyVipActivation(u.vip_key, u.store_name || u.name)
-          setFeedback({
-            type: 'success',
-            message: `VIP Pro License recovered for @${query}!`
-          })
-        } else {
-          setFeedback({
-            type: 'error',
-            message: `No active VIP Pro record found for account "@${query}". Each account requires its own separate VIP license.`
-          })
+        // 3. Fallback check legacy device key 'tinda_vip_license'
+        let recovered = false
+        const legacyRaw = localStorage.getItem('tinda_vip_license')
+        if (legacyRaw) {
+          try {
+            const parsed = JSON.parse(legacyRaw)
+            if (parsed && parsed.active && (parsed.key || parsed.token)) {
+              await applyVipActivation(parsed.key || parsed.token, parsed.registeredTo || query)
+              setFeedback({
+                type: 'success',
+                message: `Legacy VIP Pro License recovered and bound to @${query}!`
+              })
+              recovered = true
+            }
+          } catch {}
+        }
+
+        if (!recovered) {
+          const u = await db.users.where('username').equalsIgnoreCase(query).first()
+          if (u && u.is_vip && u.vip_key) {
+            await applyVipActivation(u.vip_key, u.store_name || u.name)
+            setFeedback({
+              type: 'success',
+              message: `VIP Pro License recovered for @${query}!`
+            })
+          } else {
+            setFeedback({
+              type: 'error',
+              message: `No active VIP Pro record found for account "@${query}". Each account requires its own separate VIP license.`
+            })
+          }
         }
       }
     } catch (err) {

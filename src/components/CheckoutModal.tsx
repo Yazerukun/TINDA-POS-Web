@@ -662,8 +662,8 @@ export function CheckoutModal({
   ]
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/80 backdrop-blur-md animate-fade-in select-none">
-      <div className="relative w-full max-w-lg bg-obsidian-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-obsidian-950/80 backdrop-blur-md animate-fade-in select-none">
+      <div className="relative w-full max-w-lg bg-obsidian-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[94dvh] sm:max-h-[92vh]">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] bg-obsidian-950/60">
           <div className="flex items-center gap-2">
@@ -753,7 +753,7 @@ export function CheckoutModal({
           {!isSplit ? (
             <>
               {/* Payment Method Selector Grid */}
-              <div className="grid grid-cols-5 gap-1.5">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                 {methods.map((m) => (
                   <button
                     key={m.key}

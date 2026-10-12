@@ -1090,10 +1090,106 @@ export function InventoryScreen({
               </p>
             </div>
           ) : viewMode === 'TABLE' ? (
-            /* Table Mode */
-            <div className="rounded-3xl bg-obsidian-900 border border-slate-800 overflow-hidden shadow-2xl">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-stone-300">
+            /* Table Mode with Dual Mobile Card Feed */
+            <div className="space-y-3">
+              {/* Mobile Card Feed (<768px) */}
+              <div className="md:hidden space-y-3">
+                {filteredProducts.map((p) => {
+                  const threshold = p.low_stock_threshold ?? 5
+                  const isLow = p.stock <= threshold && p.stock > 0
+                  const isOut = p.stock <= 0
+                  const cat = categories.find((c) => c.id === p.category_id)
+                  const marginPercent =
+                    p.default_price_c > 0
+                      ? Math.round(((p.default_price_c - p.cost_c) / p.default_price_c) * 100)
+                      : 0
+
+                  return (
+                    <div key={p.id} className="p-4 rounded-2xl bg-obsidian-900 border border-slate-800 space-y-3 shadow-md">
+                      <div className="flex items-start gap-3">
+                        <div className="h-12 w-12 rounded-xl overflow-hidden bg-obsidian-950 border border-slate-800 flex items-center justify-center shrink-0">
+                          {p.image_path ? (
+                            <img src={p.image_path} alt={p.name} className="h-full w-full object-cover" />
+                          ) : (
+                            <Package className="h-6 w-6 text-stone-600" />
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-bold text-stone-100 text-sm truncate">{p.name}</h4>
+                          <div className="flex items-center gap-2 mt-0.5 text-xs font-mono text-stone-400">
+                            <span className="text-emerald-400 font-bold">{p.barcode || p.sku || 'No Barcode'}</span>
+                            {cat && <span className="text-stone-500 truncate max-w-[100px]">· {cat.name}</span>}
+                          </div>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-sm font-black font-serif text-emerald-400">{money(p.default_price_c)}</span>
+                            <span className="text-xs text-stone-500 font-mono">Cost: {money(p.cost_c)}</span>
+                            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/15 text-emerald-400 font-mono font-bold">
+                              {marginPercent}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Stepper with 44px Minimum Touch Targets */}
+                      <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+                        <div className="flex items-center gap-1.5 bg-obsidian-950 p-1 rounded-xl border border-slate-800">
+                          <button
+                            type="button"
+                            onClick={() => handleAdjustStock(p, -1)}
+                            className="h-10 w-10 rounded-lg bg-obsidian-900 text-stone-300 hover:text-white flex items-center justify-center text-lg font-bold active:scale-95"
+                          >
+                            -
+                          </button>
+                          <span className={`px-2.5 py-1 font-mono font-bold text-xs rounded-lg ${isOut ? 'bg-rose-500/20 text-rose-300' : isLow ? 'bg-amber-500/20 text-amber-300' : 'text-emerald-400'}`}>
+                            {p.stock} {p.base_unit}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleAdjustStock(p, 1)}
+                            className="h-10 w-10 rounded-lg bg-obsidian-900 text-stone-300 hover:text-white flex items-center justify-center text-lg font-bold active:scale-95"
+                          >
+                            +
+                          </button>
+                          {p.pieces_per_case && p.pieces_per_case > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => handleQuickAddCase(p)}
+                              className="px-2 py-1 rounded-lg text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold"
+                              title={`Add 1 Case (+${p.pieces_per_case} ${p.base_unit})`}
+                            >
+                              +Case
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => { setProductToPrint(p); setPriceTagModalOpen(true); }}
+                            className="h-10 w-10 rounded-xl bg-obsidian-950 border border-slate-800 text-stone-400 flex items-center justify-center active:scale-95"
+                            title="Print Label"
+                          >
+                            <Printer className="h-4 w-4 text-emerald-400" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => { setEditingProduct(p); setModalOpen(true); }}
+                            className="h-10 px-3.5 rounded-xl bg-obsidian-950 border border-slate-800 text-stone-300 text-xs font-bold flex items-center gap-1.5 active:scale-95"
+                          >
+                            <Edit2 className="h-3.5 w-3.5" />
+                            <span>Edit</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Desktop Table View (hidden md:block) */}
+              <div className="hidden md:block rounded-3xl bg-obsidian-900 border border-slate-800 overflow-hidden shadow-2xl">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs text-stone-300">
                   <thead className="border-b border-slate-800 bg-obsidian-950/80 text-stone-400 font-bold uppercase tracking-wider text-[0.6875rem] font-mono">
                     <tr>
                       <th className="py-3 px-4">Product Details</th>
@@ -1266,6 +1362,7 @@ export function InventoryScreen({
                   </tbody>
                 </table>
               </div>
+            </div>
             </div>
           ) : (
             /* Grid View Mode */

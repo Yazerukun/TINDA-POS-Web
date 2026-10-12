@@ -767,24 +767,20 @@ export function VaultAuthModal({
           .filter((u) => u.status === 'ACTIVE' && (u.role === 'ADMIN' || u.is_owner === true) && u.pin === cleanAdminPin)
           .first()
 
-        const isDefaultMaster = cleanAdminPin === '1234'
-
-        if (!matchingAdmin && !isDefaultMaster) {
-          setErrorMessage('Invalid Admin PIN. Enter the valid Store Admin PIN (default 1234) or use Master Emergency Key.')
+        if (!matchingAdmin) {
+          setErrorMessage('Invalid Store Admin PIN. Please authenticate with a verified Admin PIN or account recovery key.')
           setForgotIsResetting(false)
           return
         }
       } else {
         const cleanKey = forgotRecoveryCode.trim().toUpperCase()
-        const isMaster = cleanKey === 'MASTER-RECOVERY-2026' || cleanKey === 'MASTER-VIP-2026'
-
         const userLicense = getVipLicenseInfo(targetUser.username)
         let isVipKey = false
         if (userLicense?.key && userLicense.key.toUpperCase() === cleanKey) isVipKey = true
         if (targetUser.vip_key && targetUser.vip_key.toUpperCase() === cleanKey) isVipKey = true
 
-        if (!isMaster && !isVipKey) {
-          setErrorMessage('Invalid Master Emergency Key. (Default: MASTER-RECOVERY-2026)')
+        if (!isVipKey) {
+          setErrorMessage('Invalid Emergency Recovery Key. Please provide your verified Account License Key.')
           setForgotIsResetting(false)
           return
         }

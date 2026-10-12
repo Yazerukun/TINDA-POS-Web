@@ -1260,15 +1260,15 @@ export function POSScreen({
                   {/* Bottom row: Stepper + Price unit on left, Price Edit & Remove on right */}
                   <div className="mt-2 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      {/* Micro-Stepper aligned to 28px height */}
-                      <div className="flex items-center rounded-lg border border-white/[0.08] bg-obsidian-950 p-0.5">
+                      {/* Ergonomic Stepper aligned to 36px height */}
+                      <div className="flex items-center rounded-xl border border-white/[0.08] bg-obsidian-950 p-1">
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.product.id, -1)}
-                          className="flex h-6 w-6 items-center justify-center rounded text-stone-400 hover:bg-obsidian-800 hover:text-white transition active:scale-95"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg text-stone-400 hover:bg-obsidian-800 hover:text-white transition active:scale-95"
                           title="Decrease quantity"
                         >
-                          <Minus className="h-3 w-3" />
+                          <Minus className="h-3.5 w-3.5" />
                         </button>
                         <CartQuantityInput
                           productId={item.product.id}
@@ -1281,10 +1281,10 @@ export function POSScreen({
                           type="button"
                           disabled={item.quantity >= maxStock}
                           onClick={() => updateQuantity(item.product.id, 1)}
-                          className="flex h-6 w-6 items-center justify-center rounded text-stone-400 hover:bg-obsidian-800 hover:text-white transition active:scale-95 disabled:opacity-30"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg text-stone-400 hover:bg-obsidian-800 hover:text-white transition active:scale-95 disabled:opacity-30"
                           title={item.quantity >= maxStock ? `Only ${maxStock} remaining` : 'Increase quantity'}
                         >
-                          <Plus className="h-3 w-3" />
+                          <Plus className="h-3.5 w-3.5" />
                         </button>
                       </div>
 
@@ -1650,7 +1650,7 @@ export function POSScreen({
 
       {/* MOBILE FLOATING CART SUMMARY BAR (< lg screens) */}
       {cart.length > 0 && !isMobileCartOpen && (
-        <div className="lg:hidden fixed bottom-4 left-3 right-3 z-30 animate-fade-in">
+        <div className="lg:hidden fixed bottom-20 md:bottom-4 left-3 right-3 z-30 animate-fade-in">
           <div className="glass-panel p-2.5 rounded-2xl border border-emerald-500/40 bg-obsidian-950/95 shadow-2xl backdrop-blur-xl flex items-center justify-between gap-2">
             <button
               type="button"
@@ -1695,6 +1695,20 @@ export function POSScreen({
           </div>
         </div>
       )}
+
+      {/* FLOATING CAMERA BARCODE SCANNER FAB (< lg screens) */}
+      <button
+        type="button"
+        onClick={() => {
+          try { navigator.vibrate?.(40) } catch {}
+          setScanOpen(true)
+        }}
+        aria-label="Scan Barcode"
+        className="lg:hidden fixed bottom-28 right-3.5 z-30 h-12 w-12 rounded-2xl bg-gradient-to-br from-emerald-500 via-emerald-400 to-teal-500 text-obsidian-950 shadow-glow-emerald flex items-center justify-center active:scale-90 transition-all border border-emerald-300/40 shadow-xl"
+        title="Open Camera Barcode Scanner"
+      >
+        <ScanLine className="w-5 h-5 stroke-[2.5]" />
+      </button>
 
       {/* MOBILE SLIDE-UP CART BOTTOM SHEET (< lg screens) */}
       {isMobileCartOpen && (

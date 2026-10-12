@@ -469,3 +469,21 @@ body.theme-light .border-white\/20 {
   }
 }
 
+/* ── Mobile Safe Area & Touch Optimization ── */
+html, body {
+  touch-action: manipulation;
+}
+
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.pt-safe {
+  padding-top: max(0.5rem, env(safe-area-inset-top));
+}
+
+.bottom-safe-cart {
+  bottom: calc(4.75rem + env(safe-area-inset-bottom));
+}
+
+

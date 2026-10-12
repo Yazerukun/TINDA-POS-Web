@@ -290,8 +290,60 @@ export function TransactionsScreen({
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+          <div>
+            {/* Mobile Receipt Stream (<768px) */}
+            <div className="md:hidden space-y-3 p-3">
+              {displayedTransactions.map((tx) => {
+                const isVoided = (tx.status || 'COMPLETED') === 'VOIDED'
+                return (
+                  <div
+                    key={tx.id}
+                    className={`p-4 rounded-2xl bg-obsidian-950/80 border border-white/10 space-y-3 ${
+                      isVoided ? 'opacity-50 line-through' : ''
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono font-bold text-sm text-gold-light">{tx.invoice_number}</span>
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-bold uppercase ${
+                          tx.payment_method === 'CASH'
+                            ? 'bg-emerald-500/20 text-emerald-400'
+                            : tx.payment_method === 'GCASH'
+                            ? 'bg-blue-500/20 text-blue-400'
+                            : 'bg-amber-500/20 text-amber-400'
+                        }`}
+                      >
+                        {tx.payment_method}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs text-stone-400 font-mono">
+                      <span>{formatDateTime(tx.created_at)}</span>
+                      <span>{tx.items?.length || 0} item(s) · {tx.cashier_name || 'Admin'}</span>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2 border-t border-white/[0.06]">
+                      <div>
+                        <span className="text-[10px] text-stone-500 uppercase tracking-wider block font-sans">Total</span>
+                        <span className="text-lg font-black font-serif text-white">{money(tx.total_c)}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedTx(tx)}
+                        className="btn-press h-10 px-4 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] text-stone-100 text-xs font-bold flex items-center gap-2 active:scale-95"
+                      >
+                        <Eye className="h-4 w-4 text-emerald-400" />
+                        <span>View Receipt</span>
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Desktop Table View (hidden md:block) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs">
               <thead className="bg-black/50 border-b border-white/10 text-[0.75rem] font-sans font-semibold uppercase tracking-wider text-stone-400">
                 <tr>
                   <th className="py-3.5 px-4 font-semibold">Invoice #</th>
@@ -368,6 +420,7 @@ export function TransactionsScreen({
               </tbody>
             </table>
           </div>
+        </div>
         )}
       </div>
 

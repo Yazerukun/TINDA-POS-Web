@@ -546,53 +546,29 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         return Response.json({ ok: false, valid: false, error: 'Token is required' }, { status: 400, headers: cors })
       }
 
-      // Check if it is an official VIP License Key (VIP-XXXX-XXXX-XXXX-XXXX) or Master Rescue Key
+      // Check if it is an existing registered VIP license key in the D1 ledger
       const upper = String(token).trim().toUpperCase()
-      const isMasterKey = upper === 'VIP-PRO-LIFETIME-2026' ||
-        upper === 'VIP-2026-FRANCIS-MAYA' ||
-        upper === 'VIP-MASTER-TINDA-500' ||
-        upper === 'TINDA-VIP-500' ||
-        upper === 'VIP-500' ||
-        upper === 'MASTER-VIP-2026'
-      const isVipFormat = /^VIP-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/i.test(upper)
+      if (!upper.startsWith('TINDAVIP.')) {
+        if (env.TINDAPOS_DB) {
+          const existing = await env.TINDAPOS_DB.prepare(
+            `SELECT * FROM vip_licenses WHERE payment_intent_id = ? AND status = 'ACTIVE'`
+          ).bind(upper).first()
 
-      if (isMasterKey || isVipFormat) {
-        if (username) {
-          const now = new Date().toISOString()
-          const payload = {
-            v: 1,
-            un: username,
-            store: storeName,
-            tier: 'VIP_PRO_LIFETIME',
-            ref: upper,
-            iat: Math.floor(Date.now() / 1000)
+          if (existing) {
+            const now = new Date().toISOString()
+            const payload = {
+              v: 1,
+              un: username || (existing.username as string),
+              store: storeName || (existing.registered_store as string),
+              tier: 'VIP_PRO_LIFETIME',
+              ref: upper,
+              iat: Math.floor(Date.now() / 1000)
+            }
+            const serverToken = await signVipToken(payload, signingSecret)
+            return Response.json({ ok: true, valid: true, token: serverToken, payload }, { headers: cors })
           }
-          const serverToken = await signVipToken(payload, signingSecret)
-
-          // Persist directly into D1 anti-replay ledger & pro_access table
-          await env.TINDAPOS_DB.prepare(
-            `INSERT INTO vip_licenses (username, payment_intent_id, payment_method, amount_cents, currency, status, license_signature, registered_store, activated_at, created_at)
-             VALUES (?, ?, 'VIP_KEY_OFFICIAL', 50000, 'PHP', 'ACTIVE', ?, ?, ?, ?)
-             ON CONFLICT(username) DO UPDATE SET
-               payment_intent_id = excluded.payment_intent_id,
-               license_signature = excluded.license_signature,
-               registered_store = excluded.registered_store,
-               activated_at = excluded.activated_at`
-          )
-            .bind(username, upper, serverToken, storeName, now, now)
-            .run()
-
-          await env.TINDAPOS_DB.prepare(
-            `INSERT INTO pro_access (username, store_name, pro_expires_at, updated_at)
-             VALUES (?, ?, 2147483647, ?)
-             ON CONFLICT(username) DO UPDATE SET pro_expires_at = 2147483647, updated_at = excluded.updated_at`
-          )
-            .bind(username, storeName, now)
-            .run()
-
-          return Response.json({ ok: true, valid: true, token: serverToken, payload }, { headers: cors })
         }
-        return Response.json({ ok: true, valid: true }, { headers: cors })
+        return Response.json({ ok: false, valid: false, reason: 'Invalid or unregistered VIP License Key.' }, { status: 403, headers: cors })
       }
 
       // Standard TINDAVIP. cryptographic token verify

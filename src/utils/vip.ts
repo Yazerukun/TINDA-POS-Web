@@ -295,14 +295,13 @@ export async function verifyAccountVipKey(
     }
   }
 
-  // 2. Check Standard VIP License Key Format & Master Rescue Keys
+  // 2. Validate official VIP License Key against Cloudflare edge
   const isMasterKey = MASTER_RESCUE_KEYS.has(upper)
   const isVipFormat = VIP_KEY_FORMAT.test(upper)
 
   if (isMasterKey || isVipFormat) {
-    // Attempt background sync to Cloudflare D1 so server ledger records this license
     try {
-      void fetch('/api/vip', {
+      const res = await fetch('/api/vip', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -311,13 +310,20 @@ export async function verifyAccountVipKey(
           username: normUser,
           storeName: storeName || 'VIP Store'
         })
-      }).catch(() => {})
-    } catch {}
-
-    return { valid: true }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        if (data.ok && data.valid) {
+          return { valid: true }
+        }
+        return { valid: false, reason: data.reason || 'Invalid or unregistered VIP License Key.' }
+      }
+      return { valid: false, reason: 'Failed to authenticate VIP License Key with server.' }
+    } catch {
+      return { valid: false, reason: 'Internet connection required to verify new VIP License Key.' }
+    }
   }
 
-  // 3. Reject unauthenticated/unverifiable strings
   return {
     valid: false,
     reason: 'Invalid VIP License Key format. Key must look like VIP-XXXX-XXXX-XXXX-XXXX. Please check your payment confirmation from Dev Francis.'

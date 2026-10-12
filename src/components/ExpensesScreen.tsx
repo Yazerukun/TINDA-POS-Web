@@ -314,8 +314,45 @@ export function ExpensesScreen({
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+          <div>
+            {/* Mobile Expenses Cards (<768px) */}
+            <div className="md:hidden space-y-3 p-3">
+              {filteredExpenses.map((e) => (
+                <div
+                  key={e.id}
+                  className="p-4 rounded-2xl bg-obsidian-950/80 border border-slate-900/40 space-y-3 shadow-md"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-1 rounded-xl bg-white/[0.06] border border-slate-900/15 text-gold-light font-mono font-bold text-xs">
+                      {e.category}
+                    </span>
+                    <span className="font-serif font-black text-red-500 text-base">
+                      -{money(e.amount_c)}
+                    </span>
+                  </div>
+
+                  <p className="text-stone-200 text-xs font-medium">
+                    {e.description || <span className="text-stone-500 italic">No notes</span>}
+                  </p>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-900/40 text-xs font-mono text-stone-400">
+                    <span>{e.date} · {e.cashier_name || 'Admin'}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteExpense(e.id)}
+                      className="btn-press h-9 px-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-bold flex items-center gap-1.5 active:scale-95"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View (hidden md:block) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs">
               <thead className="bg-black/50 border-b border-slate-900/[0.08] text-[0.75rem] font-sans font-semibold uppercase tracking-wider text-stone-400">
                 <tr>
                   <th className="py-3.5 px-4 font-semibold">Date</th>
@@ -360,6 +397,7 @@ export function ExpensesScreen({
               </tbody>
             </table>
           </div>
+        </div>
         )}
       </div>
 

@@ -104,24 +104,38 @@ export function BarcodeScannerModal({ open, onClose, onDetect }: BarcodeScannerM
           const { BrowserMultiFormatReader } = await import('@zxing/browser')
           const reader = new BrowserMultiFormatReader()
 
+          let isDecoding = false
+          let lastDecodeTime = 0
+          const DECODE_INTERVAL_MS = 130 // ~7.5 FPS throttle to prevent main-thread starvation
+
           const loop = async () => {
             if (!mountedRef.current || !videoRef.current || !canvasRef.current) return
+            const now = performance.now()
             const video = videoRef.current
             const canvas = canvasRef.current
-            const ctx = canvas.getContext('2d')
-            if (!ctx || video.readyState < video.HAVE_ENOUGH_DATA) {
-              if (mountedRef.current) raf = requestAnimationFrame(loop)
-              return
-            }
-            canvas.width = video.videoWidth
-            canvas.height = video.videoHeight
-            ctx.drawImage(video, 0, 0)
-            try {
-              const result = await reader.decodeFromCanvas(canvas)
-              if (result?.getText()) {
-                emit(result.getText().trim())
+
+            if (!isDecoding && now - lastDecodeTime >= DECODE_INTERVAL_MS && video.readyState >= video.HAVE_ENOUGH_DATA) {
+              if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+                canvas.width = video.videoWidth
+                canvas.height = video.videoHeight
               }
-            } catch { /* NotFoundException is normal — no barcode in frame */ }
+              const ctx = canvas.getContext('2d', { willReadFrequently: true })
+              if (ctx) {
+                isDecoding = true
+                lastDecodeTime = now
+                ctx.drawImage(video, 0, 0)
+                try {
+                  const result = await reader.decodeFromCanvas(canvas)
+                  if (result?.getText()) {
+                    emit(result.getText().trim())
+                  }
+                } catch {
+                  /* NotFoundException is normal — no barcode in frame */
+                } finally {
+                  isDecoding = false
+                }
+              }
+            }
             if (mountedRef.current) raf = requestAnimationFrame(loop)
           }
           raf = requestAnimationFrame(loop)

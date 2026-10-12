@@ -355,6 +355,21 @@ export default function App(): React.JSX.Element {
         return
       }
 
+      if (!vaultSession) {
+        alert('Authentication Required: Please log in as an administrator to restore backup files.')
+        return
+      }
+
+      const isAdmin = vaultSession.isAdmin || vaultSession.isMasterAdmin || vaultSession.userRole === 'ADMIN' || vaultSession.cashierRole?.toLowerCase().includes('admin')
+      if (!isAdmin) {
+        alert('Permission Denied: Only store administrators can restore database backups.')
+        return
+      }
+
+      if (!window.confirm('⚠️ WARNING: Restoring a backup will overwrite existing database records. Do you wish to proceed?')) {
+        return
+      }
+
       setAutoImporting(true)
       try {
         const text = await file.text()

@@ -508,10 +508,10 @@ export function Navigation({
       </header>
 
       {/* ── MOBILE BOTTOM BAR (md:hidden) ── */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 grid grid-cols-5 items-center border-t border-slate-800/60 px-1 py-1.5 bg-obsidian-950/95 backdrop-blur-xl">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 grid grid-cols-5 items-center border-t border-slate-800/80 px-1 pt-1.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] bg-obsidian-950/95 backdrop-blur-xl">
         <button
           onClick={() => setActiveTab('dashboard')}
-          className={`flex flex-col items-center justify-center gap-1 py-1 text-center ${
+          className={`flex flex-col items-center justify-center gap-1 min-h-[44px] py-1 text-center active:scale-95 transition-transform ${
             activeTab === 'dashboard' ? 'text-emerald-400 font-bold' : 'text-stone-400'
           }`}
         >
@@ -521,7 +521,7 @@ export function Navigation({
 
         <button
           onClick={() => setActiveTab('pos')}
-          className={`flex flex-col items-center justify-center gap-1 py-1 text-center ${
+          className={`flex flex-col items-center justify-center gap-1 min-h-[44px] py-1 text-center active:scale-95 transition-transform ${
             activeTab === 'pos' ? 'text-emerald-400 font-bold' : 'text-stone-400'
           }`}
         >
@@ -538,7 +538,7 @@ export function Navigation({
 
         <button
           onClick={() => setActiveTab('transactions')}
-          className={`flex flex-col items-center justify-center gap-1 py-1 text-center ${
+          className={`flex flex-col items-center justify-center gap-1 min-h-[44px] py-1 text-center active:scale-95 transition-transform ${
             activeTab === 'transactions' ? 'text-emerald-400 font-bold' : 'text-stone-400'
           }`}
         >
@@ -548,7 +548,7 @@ export function Navigation({
 
         <button
           onClick={() => setActiveTab('inventory')}
-          className={`flex flex-col items-center justify-center gap-1 py-1 text-center ${
+          className={`flex flex-col items-center justify-center gap-1 min-h-[44px] py-1 text-center active:scale-95 transition-transform ${
             activeTab === 'inventory' ? 'text-emerald-400 font-bold' : 'text-stone-400'
           }`}
         >
@@ -558,7 +558,7 @@ export function Navigation({
 
         <button
           onClick={() => setMobileDrawerOpen(true)}
-          className={`flex flex-col items-center justify-center gap-1 py-1 text-center ${
+          className={`flex flex-col items-center justify-center gap-1 min-h-[44px] py-1 text-center active:scale-95 transition-transform ${
             mobileDrawerOpen ? 'text-emerald-400 font-bold' : 'text-stone-400'
           }`}
         >

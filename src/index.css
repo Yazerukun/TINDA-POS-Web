@@ -486,4 +486,110 @@ html, body {
   bottom: calc(4.75rem + env(safe-area-inset-bottom));
 }
 
+/* ══════════════════════════════════════════════════════════════════════════════
+   LANDING PAGE — Fluid Animations (Dr. Vex v2 Redesign)
+   CSS-only, GPU-accelerated via will-change. No JS animation libraries.
+   ══════════════════════════════════════════════════════════════════════════════ */
 
+/* ── Background Orb Morphing ──
+   Organic blob movement: translation + scale + subtle rotation.
+   Used for ambient floating gradient orbs on the landing page. */
+@keyframes morph {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  25% {
+    transform: translate(30px, -40px) scale(1.12) rotate(2deg);
+  }
+  50% {
+    transform: translate(-20px, 20px) scale(0.92) rotate(-1deg);
+  }
+  75% {
+    transform: translate(40px, 10px) scale(1.06) rotate(1.5deg);
+  }
+  100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+}
+
+.animate-morph {
+  animation: morph 18s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ── Staggered Fade-In (Mount Entrance) ──
+   Each `.animate-stagger-N` class delays the entrance by N * 120ms.
+   Uses a spring-like cubic-bezier for natural deceleration. */
+@keyframes stagger-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-stagger-1 {
+  animation: stagger-fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+  will-change: opacity, transform;
+}
+.animate-stagger-2 {
+  animation: stagger-fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.22s forwards;
+  will-change: opacity, transform;
+}
+.animate-stagger-3 {
+  animation: stagger-fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.34s forwards;
+  will-change: opacity, transform;
+}
+.animate-stagger-4 {
+  animation: stagger-fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.46s forwards;
+  will-change: opacity, transform;
+}
+.animate-stagger-5 {
+  animation: stagger-fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.58s forwards;
+  will-change: opacity, transform;
+}
+.animate-stagger-6 {
+  animation: stagger-fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.7s forwards;
+  will-change: opacity, transform;
+}
+
+/* ── Gradient Shift (Animated Gradient Text) ──
+   Slow horizontal background-position shift for gradient text shimmer. */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-shift {
+  animation: gradient-shift 6s ease-in-out infinite;
+  will-change: background-position;
+}
+
+/* ── Horizontal Float (Decorative Elements) ──
+   Gentle side-to-side drift for accent orbs inside banners. */
+@keyframes float-x {
+  0%, 100% {
+    transform: translateX(0) translateY(0);
+  }
+  33% {
+    transform: translateX(20px) translateY(-10px);
+  }
+  66% {
+    transform: translateX(-15px) translateY(8px);
+  }
+}
+
+.animate-float-x {
+  animation: float-x 14s ease-in-out infinite;
+  will-change: transform;
+}

@@ -111,7 +111,16 @@ export default {
         'fade-in': 'fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'slide-up': 'slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'pulse-subtle': 'pulseSubtle 3s ease-in-out infinite',
-        'shimmer': 'shimmer 2.5s infinite linear'
+        'shimmer': 'shimmer 2.5s infinite linear',
+        'morph': 'morph 18s ease-in-out infinite',
+        'gradient-shift': 'gradient-shift 6s ease-in-out infinite',
+        'float-x': 'float-x 14s ease-in-out infinite',
+        'stagger-1': 'stagger-fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards',
+        'stagger-2': 'stagger-fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.22s forwards',
+        'stagger-3': 'stagger-fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.34s forwards',
+        'stagger-4': 'stagger-fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.46s forwards',
+        'stagger-5': 'stagger-fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.58s forwards',
+        'stagger-6': 'stagger-fade-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.7s forwards'
       },
       keyframes: {
         fadeIn: {
@@ -129,6 +138,27 @@ export default {
         shimmer: {
           '0%': { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' }
+        },
+        morph: {
+          '0%': { transform: 'translate(0, 0) scale(1) rotate(0deg)' },
+          '25%': { transform: 'translate(30px, -40px) scale(1.12) rotate(2deg)' },
+          '50%': { transform: 'translate(-20px, 20px) scale(0.92) rotate(-1deg)' },
+          '75%': { transform: 'translate(40px, 10px) scale(1.06) rotate(1.5deg)' },
+          '100%': { transform: 'translate(0, 0) scale(1) rotate(0deg)' }
+        },
+        'gradient-shift': {
+          '0%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+          '100%': { backgroundPosition: '0% 50%' }
+        },
+        'float-x': {
+          '0%, 100%': { transform: 'translateX(0) translateY(0)' },
+          '33%': { transform: 'translateX(20px) translateY(-10px)' },
+          '66%': { transform: 'translateX(-15px) translateY(8px)' }
+        },
+        'stagger-fade-in': {
+          '0%': { opacity: '0', transform: 'translateY(24px) scale(0.98)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' }
         }
       }
     }

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "yuki",
+  "instructions": [
+    "AGENTS.md",
+    "GEMINI.md",
+    "MASTER_DOCUMENT.md"
+  ],
+  "agent": {
+    "yuki": {
+      "description": "Bossing's Sole Right-Hand in OpenCode - Yuki, Best Architectural Designer for TINDA POS Web with PhD/Doctoral in Programming, Master of Everything",
+      "mode": "primary",
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "read": true,
+        "changed-files": true
+      }
+    }
+  }
+}

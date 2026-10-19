@@ -97,82 +97,84 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
   const date = now.toLocaleDateString('en-PH', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
 
   return (
-    <aside className="hidden lg:flex flex-col justify-between p-8 xl:p-10 border-b lg:border-b-0 lg:border-r border-white/[0.08] bg-zinc-950/95 relative overflow-hidden backdrop-blur-2xl h-full lg:max-h-screen select-none">
-      {/* Tailark Subtle Ambient Glows */}
-      <div className="absolute top-0 -left-20 w-96 h-96 bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.12),_transparent_70%)] pointer-events-none" />
-      <div className="absolute bottom-10 right-0 w-80 h-80 bg-emerald-500/[0.04] rounded-full blur-[100px] pointer-events-none" />
-      {/* Tailark 24px Dot Matrix Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
+    <aside className="hidden lg:flex flex-col justify-between p-8 xl:p-12 border-b lg:border-b-0 lg:border-r border-white/[0.08] bg-obsidian-950/70 relative overflow-hidden backdrop-blur-3xl min-h-[400px] lg:min-h-screen select-none">
+      {/* ── Fluid Ambient Lighting Behind Hero ── */}
+      <div className="absolute top-0 -left-20 w-[450px] h-[450px] rounded-full bg-[radial-gradient(circle,_rgba(16,185,129,0.16),_transparent_70%)] blur-[80px] pointer-events-none will-change-transform animate-morph" />
+      <div className="absolute bottom-10 right-0 w-[400px] h-[400px] rounded-full bg-[radial-gradient(circle,_rgba(45,212,191,0.12),_transparent_70%)] blur-[90px] pointer-events-none will-change-transform animate-float-reverse" />
+      <div className="absolute inset-0 bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:24px_24px] opacity-30 pointer-events-none" />
 
       {/* Top Header: Brand Crest Logo & Live Edge Pill */}
       <div className="relative z-10 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <AppLogo size={44} animated={true} />
+        <div className="flex items-center gap-3.5">
+          <AppLogo size={46} animated={true} />
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-serif text-lg font-bold tracking-[0.16em] uppercase text-stone-100">
+              <span className="font-serif text-lg font-bold tracking-[0.18em] uppercase text-stone-100">
                 TINDA POS
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[0.625rem] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+              <span className="px-2.5 py-0.5 rounded-full text-[0.625rem] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.2)]">
                 Pro Terminal
               </span>
             </div>
-            <p className="text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mt-0.5">
+            <p className="text-[0.6875rem] font-sans font-semibold tracking-wider uppercase text-emerald-400/80 mt-0.5">
               Hybrid Retail Engine · Enterprise Edition
             </p>
           </div>
         </div>
 
-        {/* Live Beacon Pill */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-mono text-xs font-semibold">
+        {/* Live Edge Beacon Pill */}
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-semibold backdrop-blur-md shadow-sm">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
           </span>
-          <span>EDGE ONLINE</span>
+          <span className="tracking-wide">EDGE ONLINE</span>
         </div>
       </div>
 
       {/* Hero Headline & Bento Features */}
-      <div className="relative z-10 my-auto py-6 max-w-xl">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-stone-300 text-xs font-medium mb-4">
-          <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-          <span>Multi-Terminal Merchant Gateway</span>
+      <div className="relative z-10 my-auto py-8 max-w-xl">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-stone-300 text-xs font-medium mb-5 backdrop-blur-md">
+          <Sparkles className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+          <span className="font-mono text-[0.6875rem] uppercase tracking-wider text-emerald-300">Multi-Terminal Cloud Gateway</span>
         </div>
 
-        <h1 className="text-3xl xl:text-4xl font-semibold tracking-tight text-stone-100 leading-tight">
+        <h1 className="text-3xl xl:text-5xl font-serif font-black tracking-tight text-stone-100 leading-[1.15]">
           Smarter point of sale. <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200">
             Zero network downtime.
           </span>
         </h1>
 
-        <p className="mt-3 text-sm text-stone-400 leading-relaxed max-w-lg">
+        <p className="mt-4 text-sm text-stone-400 leading-relaxed font-sans max-w-lg">
           Fast, audited register sessions for Philippine retail and groceries. Operates seamlessly offline with automatic realtime edge synchronization.
         </p>
 
-        {/* 2x2 Tailark Bento Grid */}
-        <div className="mt-6 grid grid-cols-2 gap-3">
+        {/* 2x2 Modern Bento Grid */}
+        <div className="mt-8 grid grid-cols-2 gap-3.5">
           {BENTO_FEATURES.map((feat) => (
             <div
               key={feat.title}
-              className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-emerald-500/30 hover:bg-emerald-500/[0.03] transition-all duration-200 group"
+              className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-emerald-500/40 hover:bg-emerald-500/[0.04] transition-all duration-300 group backdrop-blur-sm"
             >
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-emerald-500/25 transition-all duration-300">
                 <feat.icon className="w-4 h-4" />
               </div>
-              <p className="text-xs font-semibold text-stone-200 tracking-wide">{feat.title}</p>
-              <p className="text-[0.6875rem] text-stone-500 mt-1 leading-snug line-clamp-2">{feat.desc}</p>
+              <p className="text-xs font-semibold text-stone-100 tracking-wide font-sans">{feat.title}</p>
+              <p className="text-[0.6875rem] text-stone-400 mt-1 leading-snug line-clamp-2 font-sans">{feat.desc}</p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Bottom Telemetry Bar */}
-      <div className="relative z-10 pt-4 border-t border-white/[0.06] flex items-center justify-between">
+      <div className="relative z-10 pt-5 border-t border-white/[0.06] flex items-center justify-between">
         <div>
           <p className="text-[0.6875rem] font-mono tracking-wider uppercase text-stone-500">Active Terminal ID</p>
-          <p className="text-sm font-mono font-bold text-emerald-400">{terminalId}</p>
+          <p className="text-sm font-mono font-bold text-emerald-400 flex items-center gap-1.5 mt-0.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span>{terminalId}</span>
+          </p>
         </div>
         <div className="text-right">
           <p className="font-mono text-base font-bold text-stone-100 tabular-nums">{clock}</p>
@@ -816,31 +818,53 @@ export function VaultAuthModal({
   }
 
   return (
-    <div className="fixed inset-0 z-[250] flex flex-col bg-zinc-950 overflow-y-auto">
-      {/* ── Background: Tailark Dark Grid & Ambient Glows (Clean Minimalist Aesthetics) ── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-        <div className="absolute top-0 right-1/4 w-[700px] h-[700px] rounded-full bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.14),_transparent_70%)] pointer-events-none" />
-        <div className="absolute -bottom-40 left-10 w-[550px] h-[550px] rounded-full bg-emerald-600/[0.04] blur-[140px] pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:24px_24px] opacity-35" />
+    <div className="fixed inset-0 z-[250] flex flex-col bg-obsidian-950 overflow-y-auto overscroll-contain supports-[height:100dvh]:h-[100dvh]">
+      {/* ── Background: Animated Morphing Gradient Orbs & Subtle Grid ── */}
+      <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden select-none">
+        {/* Primary Emerald Morphing Orb */}
+        <div
+          className="absolute -top-32 right-1/4 w-[750px] h-[750px] rounded-full opacity-30 will-change-transform animate-morph"
+          style={{
+            background: 'radial-gradient(circle, rgba(16,185,129,0.18) 0%, rgba(5,150,105,0.06) 50%, transparent 70%)',
+            filter: 'blur(75px)'
+          }}
+        />
+        {/* Secondary Teal Ambient Orb */}
+        <div
+          className="absolute -bottom-40 left-10 w-[650px] h-[650px] rounded-full opacity-20 will-change-transform animate-float-reverse"
+          style={{
+            background: 'radial-gradient(circle, rgba(45,212,191,0.14) 0%, transparent 70%)',
+            filter: 'blur(90px)'
+          }}
+        />
+        {/* Subtle Amber Glow Orb */}
+        <div
+          className="absolute top-1/3 left-1/3 w-[500px] h-[500px] rounded-full opacity-15 will-change-transform animate-float-slow"
+          style={{
+            background: 'radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 70%)',
+            filter: 'blur(90px)'
+          }}
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:24px_24px] opacity-25" />
       </div>
 
       {/* ── Two-Column Responsive Split Layout (Desktop: 2-Col | Mobile: Centered) ── */}
-      <div className="relative w-full flex flex-col lg:grid lg:grid-cols-2 min-h-full lg:h-screen lg:max-h-screen flex-1">
+      <div className="relative w-full flex flex-col lg:grid lg:grid-cols-2 min-h-[100svh] lg:min-h-[100dvh] flex-1">
         {/* Left Column (Hero Showcase Panel) */}
         <HeroPanel terminalId={TERMINAL_ID} />
 
         {/* Right Column (Tailark Auth Card) */}
-        <main className="flex flex-col items-center justify-center w-full flex-1 px-4 sm:px-6 py-6 sm:py-8 lg:p-8 relative z-10 lg:overflow-y-auto custom-scrollbar">
+        <main className="flex flex-col items-center justify-center w-full flex-1 min-h-0 px-4 sm:px-6 py-8 lg:p-10 relative z-10 overflow-y-auto custom-scrollbar">
 
-          {/* Tailark Dark Glassmorphic Card */}
-          <div className="w-full max-w-[420px] sm:max-w-[440px] rounded-3xl border border-white/[0.08] shadow-2xl bg-zinc-950/80 backdrop-blur-2xl text-stone-100 animate-fade-in relative overflow-hidden my-auto p-5 sm:p-7">
+          {/* Apple-Grade Dark Glassmorphic Card */}
+          <div className="w-full max-w-[430px] sm:max-w-[450px] shrink-0 rounded-[2.25rem] border border-white/[0.08] shadow-[0_30px_90px_-20px_rgba(0,0,0,0.85),0_0_50px_-10px_rgba(16,185,129,0.12)] bg-obsidian-950/85 backdrop-blur-3xl text-stone-100 animate-fade-in relative my-auto p-6 sm:p-8">
 
             {/* Back to Overview return button */}
             {onClose && (
               <button
                 type="button"
                 onClick={onClose}
-                className="absolute top-4 left-4 z-30 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono text-stone-400 hover:text-white bg-white/[0.05] hover:bg-emerald-500/15 border border-white/[0.08] hover:border-emerald-500/30 transition-all cursor-pointer backdrop-blur-md shadow-sm"
+                className="btn-press absolute top-5 left-5 z-30 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono text-stone-400 hover:text-white bg-white/[0.04] hover:bg-emerald-500/15 border border-white/[0.08] hover:border-emerald-500/30 transition-all cursor-pointer backdrop-blur-md shadow-sm"
                 title="Return to Overview"
               >
                 <ChevronLeft className="w-3.5 h-3.5 text-emerald-400" />
@@ -850,38 +874,38 @@ export function VaultAuthModal({
 
             {/* Verification Loading Overlay */}
             {isVerifying && (
-              <div className="absolute inset-0 z-40 bg-zinc-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-fade-in">
-                <div className="relative flex items-center justify-center mb-3">
-                  <AppLogo size={46} animated={true} />
+              <div className="absolute inset-0 z-40 bg-obsidian-950/95 backdrop-blur-xl rounded-[2.25rem] flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+                <div className="relative flex items-center justify-center mb-4">
+                  <AppLogo size={52} animated={true} />
                 </div>
-                <p className="text-sm font-semibold tracking-wider text-emerald-400 animate-pulse">
+                <p className="text-sm font-semibold tracking-wider text-emerald-400 animate-pulse font-sans">
                   Authenticating Session
                 </p>
-                <p className="text-xs text-stone-400 mt-1">
+                <p className="text-xs text-stone-400 mt-1 font-sans">
                   Verifying terminal credentials...
                 </p>
-                <div className="w-36 h-1 bg-zinc-800 rounded-full mt-3 overflow-hidden">
+                <div className="w-40 h-1 bg-zinc-800 rounded-full mt-4 overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-300 rounded-full w-2/3 animate-pulse" />
                 </div>
               </div>
             )}
 
             {/* Header: Crest Logo & Title */}
-            <div className="flex flex-col items-center justify-center text-center select-none mb-3">
-              <div className="relative mb-2.5 flex items-center justify-center">
-                <AppLogo size={50} animated={true} />
+            <div className="flex flex-col items-center justify-center text-center select-none mb-5">
+              <div className="relative mb-3 flex items-center justify-center">
+                <AppLogo size={52} animated={true} />
               </div>
 
-              <div className="flex items-center justify-center gap-2 mb-1">
-                <span className="font-serif text-lg sm:text-xl font-bold tracking-[0.16em] uppercase text-stone-100">
+              <div className="flex items-center justify-center gap-2 mb-1.5">
+                <span className="font-serif text-xl sm:text-2xl font-bold tracking-[0.16em] uppercase text-stone-100">
                   TINDA POS
                 </span>
-                <span className="text-[0.6875rem] font-mono font-semibold tracking-wider text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full uppercase bg-emerald-500/10 shrink-0">
+                <span className="text-[0.6875rem] font-mono font-semibold tracking-wider text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full uppercase bg-emerald-500/10 shrink-0 shadow-[0_0_10px_rgba(16,185,129,0.15)]">
                   {TERMINAL_ID}
                 </span>
               </div>
 
-              <p className="text-xs text-stone-400 font-medium">
+              <p className="text-xs text-stone-400 font-medium font-sans">
                 {step === 'FLOAT'
                   ? 'Shift Opening Cash Float'
                   : step === 'SIGNUP'
@@ -898,17 +922,17 @@ export function VaultAuthModal({
 
             {/* Segmented Switcher Tabs: "Sign In" vs "Register Store" vs "VIP Key" */}
             {step !== 'FLOAT' && step !== 'ROTATE' && step !== 'FORGOT_PIN' && (
-              <div className="mb-4">
-                <div className="grid grid-cols-3 p-1 rounded-xl bg-zinc-900/80 border border-white/[0.08] shadow-inner">
+              <div className="mb-5">
+                <div className="grid grid-cols-3 p-1 rounded-2xl bg-white/[0.03] border border-white/[0.08] shadow-inner backdrop-blur-md">
                   <button
                     type="button"
                     onClick={() => {
                       setStep('LOGIN')
                       setErrorMessage('')
                     }}
-                    className={`py-2 rounded-lg text-xs font-semibold tracking-wide transition-all flex items-center justify-center gap-1.5 ${
+                    className={`btn-press py-2 rounded-xl text-xs font-semibold tracking-wide transition-all flex items-center justify-center gap-1.5 ${
                       step === 'LOGIN'
-                        ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-sm'
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm font-bold'
                         : 'text-stone-400 hover:text-stone-200'
                     }`}
                   >
@@ -921,9 +945,9 @@ export function VaultAuthModal({
                       setStep('SIGNUP')
                       setErrorMessage('')
                     }}
-                    className={`py-2 rounded-lg text-xs font-semibold tracking-wide transition-all flex items-center justify-center gap-1.5 ${
+                    className={`btn-press py-2 rounded-xl text-xs font-semibold tracking-wide transition-all flex items-center justify-center gap-1.5 ${
                       step === 'SIGNUP'
-                        ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-sm'
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm font-bold'
                         : 'text-stone-400 hover:text-stone-200'
                     }`}
                   >
@@ -936,9 +960,9 @@ export function VaultAuthModal({
                       setStep('VIP_UNLOCK')
                       setErrorMessage('')
                     }}
-                    className={`py-2 rounded-lg text-xs font-semibold tracking-wide transition-all flex items-center justify-center gap-1.5 ${
+                    className={`btn-press py-2 rounded-xl text-xs font-semibold tracking-wide transition-all flex items-center justify-center gap-1.5 ${
                       step === 'VIP_UNLOCK'
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm ring-1 ring-amber-500/20'
+                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm ring-1 ring-amber-500/20 font-bold'
                         : 'text-amber-400/80 hover:text-amber-300'
                     }`}
                   >
@@ -953,7 +977,7 @@ export function VaultAuthModal({
             <div>
               {/* ────────────────── 1. SIGN IN VIEW ────────────────── */}
               {step === 'LOGIN' && (
-                <form onSubmit={handleLoginSubmit} className="space-y-3 animate-fade-in">
+                <form onSubmit={handleLoginSubmit} className="space-y-3.5 animate-fade-in font-sans">
 
                   {/* Fast Staff Switcher (If accounts exist in local IndexedDB) */}
                   {existingStaff.length > 0 && (
@@ -975,16 +999,16 @@ export function VaultAuthModal({
                                 if (authMode === 'PIN') pinInputRef.current?.focus()
                                 else passwordInputRef.current?.focus()
                               }}
-                              className={`flex items-center gap-2 px-2.5 py-1.5 rounded-xl border text-xs font-medium transition-all shrink-0 cursor-pointer ${
+                              className={`btn-press flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium transition-all shrink-0 cursor-pointer ${
                                 isSelected
-                                  ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 shadow-sm ring-1 ring-emerald-500/30'
+                                  ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 shadow-sm ring-1 ring-emerald-500/30 font-semibold'
                                   : 'bg-white/[0.03] border-white/[0.08] text-stone-300 hover:border-emerald-500/30 hover:bg-white/[0.06]'
                               }`}
                             >
-                              <div className="w-5 h-5 rounded-full bg-emerald-500/25 text-emerald-400 flex items-center justify-center text-[0.625rem] font-bold">
+                              <div className="w-5 h-5 rounded-full bg-emerald-500/25 text-emerald-300 flex items-center justify-center text-[0.625rem] font-bold">
                                 {u.name ? u.name.charAt(0).toUpperCase() : u.username.charAt(0).toUpperCase()}
                               </div>
-                              <span className="truncate max-w-[85px]">{u.name || u.username}</span>
+                              <span className="truncate max-w-[90px]">{u.name || u.username}</span>
                             </button>
                           )
                         })}
@@ -994,11 +1018,11 @@ export function VaultAuthModal({
 
                   {/* Username / Staff ID input */}
                   <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1.5">
+                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
                       Staff ID / Username
                     </label>
                     <div className="relative flex items-center">
-                      <User className="absolute left-3.5 w-4 h-4 text-stone-400 pointer-events-none" />
+                      <User className="absolute left-4 w-4 h-4 text-stone-500 pointer-events-none" />
                       <input
                         ref={usernameInputRef}
                         type="text"
@@ -1011,7 +1035,7 @@ export function VaultAuthModal({
                         autoCorrect="off"
                         spellCheck="false"
                         placeholder="Enter Staff ID or Username"
-                        className="w-full pl-10 pr-4 h-11 rounded-xl bg-zinc-900/80 border border-white/[0.08] focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40 text-stone-100 text-sm font-medium placeholder-stone-500 focus:outline-none transition-all"
+                        className="w-full pl-11 pr-4 h-12 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-stone-100 text-sm font-medium placeholder-stone-500 focus:outline-none transition-all duration-200"
                       />
                     </div>
                   </div>
@@ -1019,11 +1043,11 @@ export function VaultAuthModal({
                   {/* Credential Header: Mode Switcher (PIN vs Password) */}
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
-                      <label className="text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 flex items-center gap-1.5">
-                        <KeyRound className="w-3 h-3 text-emerald-400" />
+                      <label className="text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 flex items-center gap-1.5 font-medium">
+                        <KeyRound className="w-3.5 h-3.5 text-emerald-400" />
                         <span>{authMode === 'PIN' ? '4-Digit PIN' : 'Password'}</span>
                       </label>
-                      <div className="flex items-center p-0.5 rounded-lg bg-zinc-900 border border-white/[0.08]">
+                      <div className="flex items-center p-0.5 rounded-full bg-white/[0.04] border border-white/[0.08]">
                         <button
                           type="button"
                           onClick={() => {
@@ -1031,9 +1055,9 @@ export function VaultAuthModal({
                             setPin((p) => p.replace(/\D/g, '').slice(0, 4))
                             setErrorMessage('')
                           }}
-                          className={`px-2 py-0.5 rounded text-[0.6875rem] font-mono uppercase transition-all ${
+                          className={`btn-press px-2.5 py-0.5 rounded-full text-[0.6875rem] font-mono uppercase transition-all ${
                             authMode === 'PIN'
-                              ? 'bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30'
+                              ? 'bg-emerald-500/25 text-emerald-300 font-bold border border-emerald-500/35 shadow-sm'
                               : 'text-stone-400 hover:text-stone-200'
                           }`}
                         >
@@ -1046,9 +1070,9 @@ export function VaultAuthModal({
                             setErrorMessage('')
                             setTimeout(() => passwordInputRef.current?.focus(), 50)
                           }}
-                          className={`px-2 py-0.5 rounded text-[0.6875rem] font-mono uppercase transition-all ${
+                          className={`btn-press px-2.5 py-0.5 rounded-full text-[0.6875rem] font-mono uppercase transition-all ${
                             authMode === 'PASSWORD'
-                              ? 'bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30'
+                              ? 'bg-emerald-500/25 text-emerald-300 font-bold border border-emerald-500/35 shadow-sm'
                               : 'text-stone-400 hover:text-stone-200'
                           }`}
                         >
@@ -1058,20 +1082,20 @@ export function VaultAuthModal({
                     </div>
 
                     {authMode === 'PIN' ? (
-                      /* Tailark-Style 4-Dot Progress Display */
+                      /* Apple-Style 4-Dot Progress Display */
                       <div
                         onClick={() => pinInputRef.current?.focus()}
-                        className="cursor-pointer flex items-center justify-center gap-3.5 h-11 px-4 rounded-xl bg-zinc-900/80 border border-white/[0.08] focus-within:border-emerald-500/60 focus-within:ring-1 focus-within:ring-emerald-500/40 transition-all w-full"
+                        className="cursor-pointer flex items-center justify-center gap-4 h-12 px-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.15] focus-within:border-emerald-400/70 focus-within:bg-white/[0.05] focus-within:ring-2 focus-within:ring-emerald-400/20 transition-all duration-200 w-full"
                       >
                         {[0, 1, 2, 3].map((idx) => {
                           const isFilled = pin.length > idx
                           return (
                             <div
                               key={idx}
-                              className={`h-3 w-3 rounded-full transition-all duration-200 ${
+                              className={`h-3.5 w-3.5 rounded-full transition-all duration-200 ${
                                 isFilled
-                                  ? 'bg-emerald-400 scale-125 shadow-glow-emerald ring-2 ring-emerald-400/30'
-                                  : 'bg-zinc-800 border border-zinc-700'
+                                  ? 'bg-emerald-400 scale-125 shadow-[0_0_12px_rgba(52,211,153,0.7)] ring-4 ring-emerald-400/20'
+                                  : 'bg-white/[0.08] border border-white/[0.1]'
                               }`}
                             />
                           )
@@ -1095,7 +1119,7 @@ export function VaultAuthModal({
                     ) : (
                       /* Password Input */
                       <div className="relative flex items-center">
-                        <Lock className="absolute left-3.5 w-4 h-4 text-stone-400 pointer-events-none" />
+                        <Lock className="absolute left-4 w-4 h-4 text-stone-500 pointer-events-none" />
                         <input
                           ref={passwordInputRef}
                           type={showPassword ? 'text' : 'password'}
@@ -1105,12 +1129,12 @@ export function VaultAuthModal({
                             setErrorMessage('')
                           }}
                           placeholder="Enter account password"
-                          className="w-full pl-10 pr-10 h-11 rounded-xl bg-zinc-900/80 border border-white/[0.08] focus:border-emerald-500/60 text-stone-100 text-sm font-medium placeholder-stone-500 focus:outline-none transition-all"
+                          className="w-full pl-11 pr-11 h-12 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-stone-100 text-sm font-medium placeholder-stone-500 focus:outline-none transition-all duration-200"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 p-1 rounded-lg text-stone-400 hover:text-stone-200"
+                          className="absolute right-3.5 p-1 rounded-lg text-stone-400 hover:text-stone-200"
                         >
                           {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
@@ -1120,7 +1144,7 @@ export function VaultAuthModal({
 
                   {/* Error Alert Display */}
                   {errorMessage && (
-                    <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/25 text-xs font-mono text-red-400 text-center animate-fade-in">
+                    <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/25 text-xs font-mono text-red-300 text-center animate-fade-in shadow-sm">
                       {errorMessage}
                     </div>
                   )}
@@ -1128,35 +1152,52 @@ export function VaultAuthModal({
                   {/* Tactile Keypad for PIN Mode */}
                   {authMode === 'PIN' && (
                     <div className="pt-1">
-                      <div className="grid grid-cols-3 gap-1.5 w-full">
-                        {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((digit) => (
+                      <div className="grid grid-cols-3 gap-2 w-full">
+                        {[
+                          { num: '1', sub: '' },
+                          { num: '2', sub: 'ABC' },
+                          { num: '3', sub: 'DEF' },
+                          { num: '4', sub: 'GHI' },
+                          { num: '5', sub: 'JKL' },
+                          { num: '6', sub: 'MNO' },
+                          { num: '7', sub: 'PQRS' },
+                          { num: '8', sub: 'TUV' },
+                          { num: '9', sub: 'WXYZ' }
+                        ].map((item) => (
                           <button
                             type="button"
-                            key={digit}
-                            onClick={() => handleKeypadPress(digit)}
-                            className="h-11 rounded-xl bg-white/[0.03] hover:bg-emerald-500/10 border border-white/[0.06] hover:border-emerald-500/30 text-stone-100 font-mono font-bold text-lg transition-all active:scale-95 flex items-center justify-center cursor-pointer shadow-sm"
+                            key={item.num}
+                            onClick={() => handleKeypadPress(item.num)}
+                            className="btn-press h-12 rounded-2xl bg-white/[0.03] hover:bg-emerald-500/10 border border-white/[0.06] hover:border-emerald-500/30 text-stone-100 font-mono font-bold text-lg active:scale-95 flex flex-col items-center justify-center cursor-pointer shadow-sm transition-all duration-150 leading-none"
                           >
-                            {digit}
+                            <span>{item.num}</span>
+                            {item.sub && (
+                              <span className="text-[0.5625rem] text-stone-500 font-sans tracking-widest mt-0.5 font-normal">
+                                {item.sub}
+                              </span>
+                            )}
                           </button>
                         ))}
                         <button
                           type="button"
                           onClick={handleClearPin}
-                          className="h-11 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.06] text-stone-400 hover:text-stone-200 text-xs font-mono font-semibold uppercase transition-all active:scale-95 flex items-center justify-center cursor-pointer"
+                          className="btn-press h-12 rounded-2xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.06] text-stone-400 hover:text-stone-200 text-xs font-mono font-semibold uppercase active:scale-95 flex items-center justify-center cursor-pointer transition-all duration-150"
                         >
                           Clear
                         </button>
                         <button
                           type="button"
                           onClick={() => handleKeypadPress('0')}
-                          className="h-11 rounded-xl bg-white/[0.03] hover:bg-emerald-500/10 border border-white/[0.06] hover:border-emerald-500/30 text-stone-100 font-mono font-bold text-lg transition-all active:scale-95 flex items-center justify-center cursor-pointer shadow-sm"
+                          className="btn-press h-12 rounded-2xl bg-white/[0.03] hover:bg-emerald-500/10 border border-white/[0.06] hover:border-emerald-500/30 text-stone-100 font-mono font-bold text-lg active:scale-95 flex flex-col items-center justify-center cursor-pointer shadow-sm transition-all duration-150 leading-none"
                         >
-                          0
+                          <span>0</span>
+                          <span className="text-[0.5625rem] text-stone-500 font-sans tracking-widest mt-0.5 font-normal">+</span>
                         </button>
                         <button
                           type="button"
                           onClick={handleDeletePin}
-                          className="h-11 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.06] text-stone-400 hover:text-emerald-400 transition-all active:scale-95 flex items-center justify-center cursor-pointer"
+                          className="btn-press h-12 rounded-2xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.06] text-stone-400 hover:text-emerald-400 active:scale-95 flex items-center justify-center cursor-pointer transition-all duration-150"
+                          title="Delete last digit"
                         >
                           <Delete className="w-4 h-4" />
                         </button>
@@ -1192,10 +1233,10 @@ export function VaultAuthModal({
                         setStep('VIP_UNLOCK')
                         setErrorMessage('')
                       }}
-                      className="w-full p-2.5 rounded-xl bg-amber-500/[0.08] hover:bg-amber-500/[0.14] border border-amber-500/25 hover:border-amber-500/40 transition-all flex items-center justify-between text-left group cursor-pointer"
+                      className="btn-press w-full p-3 rounded-2xl bg-amber-500/[0.08] hover:bg-amber-500/[0.14] border border-amber-500/25 hover:border-amber-500/40 transition-all flex items-center justify-between text-left group cursor-pointer"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-6 h-6 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
+                        <div className="w-7 h-7 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
                           <Crown className="w-3.5 h-3.5" />
                         </div>
                         <div className="min-w-0">
@@ -1207,7 +1248,7 @@ export function VaultAuthModal({
                           </p>
                         </div>
                       </div>
-                      <ArrowRight className="w-3.5 h-3.5 text-amber-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
+                      <ArrowRight className="w-3.5 h-3.5 text-amber-400 group-hover:translate-x-1 transition-transform shrink-0" />
                     </button>
                   </div>
 
@@ -1215,7 +1256,7 @@ export function VaultAuthModal({
                   <button
                     type="submit"
                     disabled={isVerifying}
-                    className="w-full h-12 rounded-xl flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-zinc-950 shadow-glow-emerald transition-all mt-2 disabled:opacity-75 cursor-pointer"
+                    className="btn-press w-full h-12 rounded-full flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-emerald-500 via-brand-500 to-emerald-600 hover:from-emerald-400 hover:to-brand-400 text-obsidian-950 shadow-[0_0_24px_-4px_rgba(16,185,129,0.4)] transition-all duration-300 mt-2 disabled:opacity-75 cursor-pointer"
                   >
                     {isVerifying ? (
                       <>
@@ -1239,9 +1280,9 @@ export function VaultAuthModal({
 
               {/* ────────────────── 2. STORE SIGN UP VIEW ────────────────── */}
               {step === 'SIGNUP' && (
-                <form onSubmit={handleSignupSubmit} className="space-y-3 animate-fade-in">
+                <form onSubmit={handleSignupSubmit} className="space-y-3.5 animate-fade-in font-sans">
                   <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
                       Store / Business Name *
                     </label>
                     <input
@@ -1253,12 +1294,12 @@ export function VaultAuthModal({
                         setErrorMessage('')
                       }}
                       placeholder="e.g. Aling Nena's Sari-Sari Store"
-                      className="w-full h-10 px-3.5 rounded-xl bg-zinc-900/80 border border-white/[0.08] focus:border-emerald-500/60 text-stone-100 text-xs font-medium placeholder-stone-500 focus:outline-none transition-all"
+                      className="w-full h-11 px-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-stone-100 text-xs font-medium placeholder-stone-500 focus:outline-none transition-all duration-200"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
                       Owner Full Name *
                     </label>
                     <input
@@ -1269,13 +1310,13 @@ export function VaultAuthModal({
                         setErrorMessage('')
                       }}
                       placeholder="e.g. Maria Santos"
-                      className="w-full h-10 px-3.5 rounded-xl bg-zinc-900/80 border border-white/[0.08] focus:border-emerald-500/60 text-stone-100 text-xs font-medium placeholder-stone-500 focus:outline-none transition-all"
+                      className="w-full h-11 px-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-stone-100 text-xs font-medium placeholder-stone-500 focus:outline-none transition-all duration-200"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2.5">
                     <div>
-                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
                         Username (Staff ID) *
                       </label>
                       <input
@@ -1286,11 +1327,11 @@ export function VaultAuthModal({
                           setErrorMessage('')
                         }}
                         placeholder="e.g. mariasari"
-                        className="w-full h-10 px-3 rounded-xl bg-zinc-900/80 border border-white/[0.08] focus:border-emerald-500/60 text-stone-100 text-xs font-mono placeholder-stone-500 focus:outline-none transition-all"
+                        className="w-full h-11 px-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-stone-100 text-xs font-mono placeholder-stone-500 focus:outline-none transition-all duration-200"
                       />
                     </div>
                     <div>
-                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
                         Contact Number / Email
                       </label>
                       <input
@@ -1301,21 +1342,21 @@ export function VaultAuthModal({
                           setErrorMessage('')
                         }}
                         placeholder="e.g. 0917xxxxxxx"
-                        className="w-full h-10 px-3 rounded-xl bg-zinc-900/80 border border-white/[0.08] focus:border-emerald-500/60 text-stone-100 text-xs font-mono placeholder-stone-500 focus:outline-none transition-all"
+                        className="w-full h-11 px-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-stone-100 text-xs font-mono placeholder-stone-500 focus:outline-none transition-all duration-200"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2.5">
                     <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <label className="text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300">PIN *</label>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 font-medium">PIN *</label>
                         <button
                           type="button"
                           onClick={() => setShowSignupPin(!showSignupPin)}
                           className="text-stone-400 hover:text-stone-200"
                         >
-                          {showSignupPin ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                          {showSignupPin ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                         </button>
                       </div>
                       <input
@@ -1328,11 +1369,11 @@ export function VaultAuthModal({
                           setErrorMessage('')
                         }}
                         placeholder="4 digits"
-                        className="w-full h-10 text-center px-2 rounded-xl bg-zinc-900/80 border border-white/[0.08] focus:border-emerald-500/60 text-emerald-400 font-mono text-sm tracking-widest focus:outline-none"
+                        className="w-full h-11 text-center px-2 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-emerald-400 font-mono text-sm tracking-widest focus:outline-none transition-all duration-200"
                       />
                     </div>
                     <div>
-                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">Confirm PIN *</label>
+                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">Confirm PIN *</label>
                       <input
                         type={showSignupPin ? 'text' : 'password'}
                         inputMode="numeric"
@@ -1343,13 +1384,13 @@ export function VaultAuthModal({
                           setErrorMessage('')
                         }}
                         placeholder="Repeat PIN"
-                        className="w-full h-10 text-center px-2 rounded-xl bg-zinc-900/80 border border-white/[0.08] focus:border-emerald-500/60 text-emerald-400 font-mono text-sm tracking-widest focus:outline-none"
+                        className="w-full h-11 text-center px-2 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-emerald-400 font-mono text-sm tracking-widest focus:outline-none transition-all duration-200"
                       />
                     </div>
                   </div>
 
                   {errorMessage && (
-                    <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/25 text-xs font-mono text-red-400 text-center animate-fade-in">
+                    <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/25 text-xs font-mono text-red-300 text-center animate-fade-in shadow-sm">
                       {errorMessage}
                     </div>
                   )}
@@ -1357,7 +1398,7 @@ export function VaultAuthModal({
                   <button
                     type="submit"
                     disabled={isVerifying}
-                    className="w-full h-12 rounded-xl flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-zinc-950 shadow-glow-emerald transition-all mt-1 cursor-pointer disabled:opacity-75"
+                    className="btn-press w-full h-12 rounded-full flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-emerald-500 via-brand-500 to-emerald-600 hover:from-emerald-400 hover:to-brand-400 text-obsidian-950 shadow-[0_0_24px_-4px_rgba(16,185,129,0.4)] transition-all duration-300 mt-2 cursor-pointer disabled:opacity-75"
                   >
                     {isVerifying ? (
                       <>
@@ -1376,16 +1417,16 @@ export function VaultAuthModal({
 
               {/* ────────────────── 3. MANDATORY PIN ROTATION ────────────────── */}
               {step === 'ROTATE' && (
-                <form onSubmit={handleRotateSubmit} className="space-y-3 animate-fade-in">
-                  <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 flex items-start gap-2.5">
+                <form onSubmit={handleRotateSubmit} className="space-y-3.5 animate-fade-in font-sans">
+                  <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 flex items-start gap-3 backdrop-blur-md">
                     <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
-                    <p className="text-xs text-amber-200 leading-relaxed">
+                    <p className="text-xs text-amber-200 leading-relaxed font-sans">
                       Please set a private, secure PIN before opening your shift register.
                     </p>
                   </div>
 
                   <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
                       New Security PIN
                     </label>
                     <input
@@ -1395,13 +1436,13 @@ export function VaultAuthModal({
                       value={rotatePin}
                       onChange={(e) => setRotatePin(e.target.value.replace(/\D/g, ''))}
                       placeholder="4 to 6 digits"
-                      className="w-full h-11 bg-zinc-900 border border-white/[0.08] rounded-xl px-4 text-center font-mono tracking-[0.3em] text-emerald-400 focus:outline-none focus:border-emerald-500"
+                      className="w-full h-12 bg-white/[0.03] border border-white/[0.08] rounded-2xl px-4 text-center font-mono tracking-[0.3em] text-emerald-400 focus:outline-none focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 transition-all duration-200"
                       autoFocus
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
                       Confirm New PIN
                     </label>
                     <input
@@ -1411,12 +1452,12 @@ export function VaultAuthModal({
                       value={rotateConfirm}
                       onChange={(e) => setRotateConfirm(e.target.value.replace(/\D/g, ''))}
                       placeholder="Repeat new PIN"
-                      className="w-full h-11 bg-zinc-900 border border-white/[0.08] rounded-xl px-4 text-center font-mono tracking-[0.3em] text-emerald-400 focus:outline-none focus:border-emerald-500"
+                      className="w-full h-12 bg-white/[0.03] border border-white/[0.08] rounded-2xl px-4 text-center font-mono tracking-[0.3em] text-emerald-400 focus:outline-none focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 transition-all duration-200"
                     />
                   </div>
 
                   {errorMessage && (
-                    <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/25 text-xs font-mono text-red-400 text-center">
+                    <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/25 text-xs font-mono text-red-300 text-center animate-fade-in shadow-sm">
                       {errorMessage}
                     </div>
                   )}
@@ -1424,7 +1465,7 @@ export function VaultAuthModal({
                   <button
                     type="submit"
                     disabled={isVerifying}
-                    className="w-full h-12 rounded-xl flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-emerald-500 to-teal-500 text-zinc-950 shadow-glow-emerald transition-all mt-1"
+                    className="btn-press w-full h-12 rounded-full flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-emerald-500 via-brand-500 to-emerald-600 hover:from-emerald-400 hover:to-brand-400 text-obsidian-950 shadow-[0_0_24px_-4px_rgba(16,185,129,0.4)] transition-all duration-300 mt-2"
                   >
                     <KeyRound className="w-4 h-4" />
                     <span>Save New Security PIN</span>
@@ -1434,39 +1475,39 @@ export function VaultAuthModal({
 
               {/* ────────────────── 3b. FORGOT PIN RECOVERY VIEW ────────────────── */}
               {step === 'FORGOT_PIN' && (
-                <form onSubmit={handleForgotResetSubmit} className="space-y-3.5 animate-fade-in">
-                  <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 flex items-start gap-2.5">
+                <form onSubmit={handleForgotResetSubmit} className="space-y-3.5 animate-fade-in font-sans">
+                  <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 flex items-start gap-3 backdrop-blur-md">
                     <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-emerald-400" />
                     <div>
                       <p className="text-xs font-semibold text-emerald-200">
-                        Staff PIN & Password Recovery
+                        Staff PIN &amp; Password Recovery
                       </p>
-                      <p className="text-[0.6875rem] text-stone-400 mt-0.5">
+                      <p className="text-[0.6875rem] text-stone-400 mt-0.5 leading-relaxed">
                         Reset your 4-digit cashier or owner PIN using Store Admin authorization or Master Emergency Key.
                       </p>
                     </div>
                   </div>
 
                   {forgotSuccessMessage && (
-                    <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-xs font-semibold text-emerald-300 text-center flex items-center justify-center gap-2">
+                    <div className="p-3 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-xs font-semibold text-emerald-300 text-center flex items-center justify-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                       <span>{forgotSuccessMessage}</span>
                     </div>
                   )}
 
                   {errorMessage && (
-                    <div className="p-3 rounded-xl bg-red-500/15 border border-red-500/30 text-xs font-mono text-red-400 text-center">
+                    <div className="p-3 rounded-2xl bg-red-500/15 border border-red-500/30 text-xs font-mono text-red-300 text-center animate-fade-in shadow-sm">
                       {errorMessage}
                     </div>
                   )}
 
                   {/* Target Account Selection */}
                   <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
                       Staff ID / Username to Reset *
                     </label>
                     <div className="relative flex items-center">
-                      <User className="absolute left-3.5 w-4 h-4 text-stone-400 pointer-events-none" />
+                      <User className="absolute left-4 w-4 h-4 text-stone-500 pointer-events-none" />
                       <input
                         type="text"
                         value={forgotTargetUsername}
@@ -1475,7 +1516,7 @@ export function VaultAuthModal({
                           setErrorMessage('')
                         }}
                         placeholder="e.g. admin or cashier1"
-                        className="w-full h-11 bg-zinc-900 border border-white/[0.08] rounded-xl pl-10 pr-4 text-xs font-medium text-stone-100 placeholder-stone-500 focus:outline-none focus:border-emerald-500/60"
+                        className="w-full h-11 bg-white/[0.03] border border-white/[0.08] rounded-2xl pl-11 pr-4 text-xs font-medium text-stone-100 placeholder-stone-500 focus:outline-none focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 transition-all duration-200"
                         required
                       />
                     </div>
@@ -1489,7 +1530,7 @@ export function VaultAuthModal({
                               setForgotTargetUsername(u.username)
                               setErrorMessage('')
                             }}
-                            className={`px-2 py-1 rounded-lg text-[0.6875rem] font-medium border transition-all shrink-0 cursor-pointer ${
+                            className={`btn-press px-2.5 py-1 rounded-full text-[0.6875rem] font-medium border transition-all shrink-0 cursor-pointer ${
                               forgotTargetUsername.toLowerCase() === u.username.toLowerCase()
                                 ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300'
                                 : 'bg-white/[0.03] border-white/[0.08] text-stone-400 hover:text-stone-200'
@@ -1504,16 +1545,16 @@ export function VaultAuthModal({
 
                   {/* Recovery Authorization Method Tabs */}
                   <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
                       Authorization Method
                     </label>
-                    <div className="grid grid-cols-2 p-1 rounded-xl bg-zinc-900/80 border border-white/[0.08] text-xs font-semibold mb-2">
+                    <div className="grid grid-cols-2 p-1 rounded-2xl bg-white/[0.03] border border-white/[0.08] text-xs font-semibold mb-2">
                       <button
                         type="button"
                         onClick={() => setForgotRecoveryMethod('ADMIN_PIN')}
-                        className={`py-1.5 rounded-lg transition-all text-center cursor-pointer ${
+                        className={`btn-press py-2 rounded-xl transition-all text-center cursor-pointer ${
                           forgotRecoveryMethod === 'ADMIN_PIN'
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm font-bold'
                             : 'text-stone-400 hover:text-stone-200'
                         }`}
                       >
@@ -1522,9 +1563,9 @@ export function VaultAuthModal({
                       <button
                         type="button"
                         onClick={() => setForgotRecoveryMethod('MASTER_KEY')}
-                        className={`py-1.5 rounded-lg transition-all text-center cursor-pointer ${
+                        className={`btn-press py-2 rounded-xl transition-all text-center cursor-pointer ${
                           forgotRecoveryMethod === 'MASTER_KEY'
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm font-bold'
                             : 'text-stone-400 hover:text-stone-200'
                         }`}
                       >
@@ -1535,7 +1576,7 @@ export function VaultAuthModal({
                     {forgotRecoveryMethod === 'ADMIN_PIN' ? (
                       <div>
                         <div className="relative flex items-center">
-                          <Lock className="absolute left-3.5 w-4 h-4 text-stone-400 pointer-events-none" />
+                          <Lock className="absolute left-4 w-4 h-4 text-stone-500 pointer-events-none" />
                           <input
                             type="password"
                             inputMode="numeric"
@@ -1543,7 +1584,7 @@ export function VaultAuthModal({
                             value={forgotAdminPin}
                             onChange={(e) => setForgotAdminPin(e.target.value.replace(/\D/g, ''))}
                             placeholder="Enter Store Admin PIN (default: 1234)"
-                            className="w-full h-11 bg-zinc-900 border border-white/[0.08] rounded-xl pl-10 pr-4 text-xs font-mono font-bold tracking-widest text-emerald-400 placeholder-stone-500 focus:outline-none focus:border-emerald-500/60"
+                            className="w-full h-11 bg-white/[0.03] border border-white/[0.08] rounded-2xl pl-11 pr-4 text-xs font-mono font-bold tracking-widest text-emerald-400 placeholder-stone-500 focus:outline-none focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 transition-all duration-200"
                           />
                         </div>
                         <p className="text-[0.625rem] text-stone-500 mt-1 pl-1">
@@ -1553,13 +1594,13 @@ export function VaultAuthModal({
                     ) : (
                       <div>
                         <div className="relative flex items-center">
-                          <KeyRound className="absolute left-3.5 w-4 h-4 text-stone-400 pointer-events-none" />
+                          <KeyRound className="absolute left-4 w-4 h-4 text-stone-500 pointer-events-none" />
                           <input
                             type="text"
                             value={forgotRecoveryCode}
                             onChange={(e) => setForgotRecoveryCode(e.target.value.toUpperCase())}
                             placeholder="MASTER-RECOVERY-2026"
-                            className="w-full h-11 bg-zinc-900 border border-white/[0.08] rounded-xl pl-10 pr-4 text-xs font-mono font-bold tracking-wider uppercase text-amber-300 placeholder-stone-600 focus:outline-none focus:border-amber-500/60"
+                            className="w-full h-11 bg-white/[0.03] border border-white/[0.08] rounded-2xl pl-11 pr-4 text-xs font-mono font-bold tracking-wider uppercase text-amber-300 placeholder-stone-600 focus:outline-none focus:border-amber-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-amber-400/20 transition-all duration-200"
                           />
                         </div>
                         <p className="text-[0.625rem] text-stone-500 mt-1 pl-1">
@@ -1572,7 +1613,7 @@ export function VaultAuthModal({
                   {/* New PIN & Confirm PIN */}
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
                         New 4-Digit PIN *
                       </label>
                       <input
@@ -1582,12 +1623,12 @@ export function VaultAuthModal({
                         value={forgotNewPin}
                         onChange={(e) => setForgotNewPin(e.target.value.replace(/\D/g, ''))}
                         placeholder="••••"
-                        className="w-full h-11 bg-zinc-900 border border-white/[0.08] rounded-xl px-3 text-center font-mono font-bold text-base tracking-[0.3em] text-emerald-400 placeholder-stone-600 focus:outline-none focus:border-emerald-500"
+                        className="w-full h-11 bg-white/[0.03] border border-white/[0.08] rounded-2xl px-3 text-center font-mono font-bold text-base tracking-[0.3em] text-emerald-400 placeholder-stone-600 focus:outline-none focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 transition-all duration-200"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
                         Confirm PIN *
                       </label>
                       <input
@@ -1597,7 +1638,7 @@ export function VaultAuthModal({
                         value={forgotConfirmPin}
                         onChange={(e) => setForgotConfirmPin(e.target.value.replace(/\D/g, ''))}
                         placeholder="••••"
-                        className="w-full h-11 bg-zinc-900 border border-white/[0.08] rounded-xl px-3 text-center font-mono font-bold text-base tracking-[0.3em] text-emerald-400 placeholder-stone-600 focus:outline-none focus:border-emerald-500"
+                        className="w-full h-11 bg-white/[0.03] border border-white/[0.08] rounded-2xl px-3 text-center font-mono font-bold text-base tracking-[0.3em] text-emerald-400 placeholder-stone-600 focus:outline-none focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 transition-all duration-200"
                         required
                       />
                     </div>
@@ -1607,7 +1648,7 @@ export function VaultAuthModal({
                   <button
                     type="submit"
                     disabled={forgotIsResetting || forgotNewPin.length !== 4 || forgotConfirmPin.length !== 4}
-                    className="w-full h-12 rounded-xl flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-zinc-950 shadow-glow-emerald transition-all mt-2 disabled:opacity-60 cursor-pointer"
+                    className="btn-press w-full h-12 rounded-full flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-emerald-500 via-brand-500 to-emerald-600 hover:from-emerald-400 hover:to-brand-400 text-obsidian-950 shadow-[0_0_24px_-4px_rgba(16,185,129,0.4)] transition-all duration-300 mt-2 disabled:opacity-60 cursor-pointer"
                   >
                     {forgotIsResetting ? (
                       <>
@@ -1631,7 +1672,7 @@ export function VaultAuthModal({
                       setErrorMessage('')
                       setForgotSuccessMessage('')
                     }}
-                    className="w-full py-2.5 rounded-xl border border-white/[0.08] hover:bg-white/[0.05] text-stone-300 hover:text-stone-100 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
+                    className="btn-press w-full py-2.5 rounded-full border border-white/[0.08] hover:bg-white/[0.05] text-stone-300 hover:text-stone-100 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
                   >
                     <ChevronLeft className="w-4 h-4" />
                     <span>Back to Sign In</span>
@@ -1641,32 +1682,32 @@ export function VaultAuthModal({
 
               {/* ────────────────── 3c. VIP PRO LICENSE UNLOCK VIEW ────────────────── */}
               {step === 'VIP_UNLOCK' && (
-                <form onSubmit={handleVipUnlockSubmit} className="space-y-3.5 animate-fade-in">
-                  <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 flex items-start gap-2.5">
-                    <Crown className="w-5 h-5 shrink-0 mt-0.5 text-amber-400" />
+                <form onSubmit={handleVipUnlockSubmit} className="space-y-3.5 animate-fade-in font-sans">
+                  <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 flex items-start gap-3 backdrop-blur-md">
+                    <Crown className="w-5 h-5 shrink-0 mt-0.5 text-amber-400 animate-pulse" />
                     <div>
                       <p className="text-xs font-bold text-amber-200">
                         Restore &amp; Unlock VIP Pro Account
                       </p>
-                      <p className="text-[0.6875rem] text-stone-400 mt-0.5 leading-relaxed">
+                      <p className="text-[0.6875rem] text-stone-400 mt-1 leading-relaxed">
                         Paid ₱500 to Dev Francis (Maya 0991 225 5156)? Enter your VIP Key below to restore your lifetime Pro status and immediately unlock your terminal.
                       </p>
                     </div>
                   </div>
 
                   {errorMessage && (
-                    <div className="p-2.5 rounded-xl bg-red-500/15 border border-red-500/30 text-xs font-mono text-red-400 text-center animate-fade-in">
+                    <div className="p-3 rounded-2xl bg-red-500/15 border border-red-500/30 text-xs font-mono text-red-300 text-center animate-fade-in shadow-sm">
                       {errorMessage}
                     </div>
                   )}
 
                   {/* VIP License Key Input */}
                   <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-amber-300 font-bold mb-1">
+                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-amber-300 font-bold mb-1.5">
                       VIP License Key *
                     </label>
                     <div className="relative flex items-center">
-                      <KeyRound className="absolute left-3.5 w-4 h-4 text-amber-400 pointer-events-none" />
+                      <KeyRound className="absolute left-4 w-4 h-4 text-amber-400 pointer-events-none" />
                       <input
                         ref={vipKeyInputRef}
                         type="text"
@@ -1677,7 +1718,7 @@ export function VaultAuthModal({
                           setErrorMessage('')
                         }}
                         placeholder="VIP-XXXX-XXXX-XXXX-XXXX"
-                        className="w-full pl-10 pr-4 h-11 rounded-xl bg-zinc-900 border border-amber-500/30 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 text-amber-300 font-mono text-xs font-bold tracking-wider placeholder-stone-600 focus:outline-none transition-all"
+                        className="w-full pl-11 pr-4 h-12 rounded-2xl bg-white/[0.03] border border-amber-500/30 focus:border-amber-400 focus:bg-white/[0.05] focus:ring-2 focus:ring-amber-400/20 text-amber-300 font-mono text-xs font-bold tracking-wider placeholder-stone-600 focus:outline-none transition-all duration-200"
                       />
                     </div>
                     <p className="text-[0.625rem] text-stone-500 mt-1 pl-1">
@@ -1687,11 +1728,11 @@ export function VaultAuthModal({
 
                   {/* Store Name Input */}
                   <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
                       Store / Business Name
                     </label>
                     <div className="relative flex items-center">
-                      <Store className="absolute left-3.5 w-4 h-4 text-stone-400 pointer-events-none" />
+                      <Store className="absolute left-4 w-4 h-4 text-stone-500 pointer-events-none" />
                       <input
                         type="text"
                         value={vipStoreName}
@@ -1700,7 +1741,7 @@ export function VaultAuthModal({
                           setErrorMessage('')
                         }}
                         placeholder="e.g. Aling Nena's Sari-Sari Store"
-                        className="w-full pl-10 pr-4 h-10 rounded-xl bg-zinc-900 border border-white/[0.08] focus:border-emerald-500/60 text-stone-100 text-xs font-medium placeholder-stone-500 focus:outline-none transition-all"
+                        className="w-full pl-11 pr-4 h-11 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-stone-100 text-xs font-medium placeholder-stone-500 focus:outline-none transition-all duration-200"
                       />
                     </div>
                   </div>
@@ -1708,7 +1749,7 @@ export function VaultAuthModal({
                   {/* Username and PIN Grid */}
                   <div className="grid grid-cols-2 gap-2.5">
                     <div>
-                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
                         Username (Staff ID)
                       </label>
                       <input
@@ -1719,11 +1760,11 @@ export function VaultAuthModal({
                           setErrorMessage('')
                         }}
                         placeholder="owner"
-                        className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-white/[0.08] focus:border-emerald-500/60 text-stone-100 text-xs font-mono placeholder-stone-500 focus:outline-none transition-all"
+                        className="w-full h-11 px-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-stone-100 text-xs font-mono placeholder-stone-500 focus:outline-none transition-all duration-200"
                       />
                     </div>
                     <div>
-                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-300 mb-1">
+                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
                         4-Digit PIN
                       </label>
                       <input
@@ -1736,7 +1777,7 @@ export function VaultAuthModal({
                           setErrorMessage('')
                         }}
                         placeholder="1234"
-                        className="w-full h-10 text-center px-2 rounded-xl bg-zinc-900 border border-white/[0.08] focus:border-emerald-500/60 text-emerald-400 font-mono text-sm tracking-widest focus:outline-none transition-all"
+                        className="w-full h-11 text-center px-2 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-emerald-400 font-mono text-sm tracking-widest focus:outline-none transition-all duration-200"
                       />
                     </div>
                   </div>
@@ -1745,7 +1786,7 @@ export function VaultAuthModal({
                   <button
                     type="submit"
                     disabled={isVerifying || !vipKeyInput.trim()}
-                    className="w-full h-12 rounded-xl flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-amber-500 via-emerald-500 to-teal-500 hover:from-amber-400 hover:to-teal-400 text-zinc-950 shadow-glow-emerald transition-all mt-1 cursor-pointer disabled:opacity-60"
+                    className="btn-press w-full h-12 rounded-full flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-amber-500 via-emerald-500 to-teal-500 hover:brightness-110 text-obsidian-950 shadow-[0_0_24px_-4px_rgba(245,158,11,0.4)] transition-all duration-300 mt-2 cursor-pointer disabled:opacity-60"
                   >
                     {isVerifying ? (
                       <>
@@ -1768,7 +1809,7 @@ export function VaultAuthModal({
                       setStep('LOGIN')
                       setErrorMessage('')
                     }}
-                    className="w-full py-2.5 rounded-xl border border-white/[0.08] hover:bg-white/[0.05] text-stone-300 hover:text-stone-100 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
+                    className="btn-press w-full py-2.5 rounded-full border border-white/[0.08] hover:bg-white/[0.05] text-stone-300 hover:text-stone-100 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
                   >
                     <ChevronLeft className="w-4 h-4" />
                     <span>Back to Sign In</span>
@@ -1778,27 +1819,27 @@ export function VaultAuthModal({
 
               {/* ────────────────── 4. SHIFT OPENING FLOAT ────────────────── */}
               {step === 'FLOAT' && (
-                <div className="space-y-4 animate-fade-in">
-                  <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08]">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-sm">
+                <div className="space-y-4 animate-fade-in font-sans">
+                  <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md">
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-sm">
                       {authenticatedUser?.name?.substring(0, 2).toUpperCase() || 'AD'}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <p className="text-xs sm:text-sm font-semibold text-stone-100 truncate">{authenticatedUser?.name}</p>
-                        <span className="px-1.5 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-[0.625rem] font-mono text-emerald-400 font-semibold">
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[0.625rem] font-mono text-emerald-300 font-semibold">
                           {authenticatedUser?.role === 'ADMIN' ? 'OWNER / ADMIN' : authenticatedUser?.role}
                         </span>
                       </div>
-                      <p className="text-xs font-mono text-stone-400 mt-0.5 truncate flex items-center gap-1">
-                        <Store className="w-3 h-3 text-emerald-400/70" />
+                      <p className="text-xs font-mono text-stone-400 mt-0.5 truncate flex items-center gap-1.5">
+                        <Store className="w-3.5 h-3.5 text-emerald-400/80" />
                         <span>{authenticatedUser?.store_name || 'Independent Store'}</span>
                       </p>
                     </div>
                   </div>
 
                   {/* Currency Display */}
-                  <div className="text-center p-4 rounded-2xl bg-white/[0.02] border border-emerald-500/30 shadow-inner">
+                  <div className="text-center p-5 rounded-2xl bg-white/[0.02] border border-emerald-500/30 shadow-[0_0_24px_-6px_rgba(16,185,129,0.15)]">
                     <p className="text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1">
                       Opening Cash Register Float
                     </p>
@@ -1823,10 +1864,10 @@ export function VaultAuthModal({
                             key={amt}
                             type="button"
                             onClick={() => handlePresetFloat(amt)}
-                            className={`py-2 rounded-xl text-xs font-mono font-bold border transition-all cursor-pointer ${
+                            className={`btn-press py-2.5 rounded-2xl text-xs font-mono font-bold border transition-all cursor-pointer ${
                               isSelected
-                                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400 shadow-glow-emerald'
-                                : 'bg-white/[0.03] border-white/[0.08] text-stone-300 hover:border-emerald-500/30'
+                                ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.3)] ring-1 ring-emerald-400/40'
+                                : 'bg-white/[0.03] border-white/[0.08] text-stone-300 hover:border-emerald-500/40 hover:bg-white/[0.06]'
                             }`}
                           >
                             ₱{amt.toLocaleString()}
@@ -1835,7 +1876,7 @@ export function VaultAuthModal({
                       })}
                     </div>
 
-                    <div className="mt-2.5 flex items-center gap-2 px-3 py-2 rounded-xl bg-zinc-900 border border-white/[0.08] focus-within:border-emerald-500/50">
+                    <div className="mt-3 flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus-within:border-emerald-400/70 focus-within:bg-white/[0.05] focus-within:ring-2 focus-within:ring-emerald-400/20 transition-all duration-200">
                       <span className="text-xs font-mono text-emerald-400 font-bold">Custom ₱</span>
                       <input
                         type="text"
@@ -1853,7 +1894,7 @@ export function VaultAuthModal({
                     <button
                       type="button"
                       onClick={handleConfirmSession}
-                      className="w-full h-12 rounded-xl flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-zinc-950 shadow-glow-emerald transition-all cursor-pointer"
+                      className="btn-press w-full h-12 rounded-full flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-emerald-500 via-brand-500 to-emerald-600 hover:from-emerald-400 hover:to-brand-400 text-obsidian-950 shadow-[0_0_24px_-4px_rgba(16,185,129,0.4)] transition-all duration-300 cursor-pointer"
                     >
                       <Lock className="w-4 h-4" />
                       <span>Confirm &amp; Open Shift Register</span>
@@ -1863,7 +1904,7 @@ export function VaultAuthModal({
                     <button
                       type="button"
                       onClick={handleSwitchAccount}
-                      className="w-full py-1.5 text-xs text-stone-400 hover:text-stone-200 transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                      className="btn-press w-full py-2 text-xs text-stone-400 hover:text-stone-200 transition-colors flex items-center justify-center gap-1 cursor-pointer"
                     >
                       <ChevronLeft className="w-3.5 h-3.5" />
                       <span>Switch Staff Account</span>

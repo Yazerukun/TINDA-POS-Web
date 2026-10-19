@@ -61,7 +61,7 @@ import {
   setSoundMuted,
   playCheckoutChime
 } from '../lib/sound'
-import { importTindaBackup } from '../utils/backup'
+import { importTindaBackup, getAutoDetectedBackup, loadDtiStarterCatalog } from '../utils/backup'
 
 interface POSScreenProps {
   products: Product[]
@@ -212,24 +212,15 @@ export function POSScreen({
   const posFileInputRef = useRef<HTMLInputElement>(null)
 
   const handlePOSAutoImport = async () => {
-    if (typeof (window as any).showOpenFilePicker === 'function') {
-      try {
+    const detected = getAutoDetectedBackup()
+    if (detected.found && detected.data) {
+      const confirmAuto = window.confirm(
+        `⚡ Auto-Detect found an existing backup snapshot!\n\n• Source: ${detected.source}\n• Saved: ${detected.time}\n${detected.summary ? `• Details: ${detected.summary}\n` : ''}\nWould you like to auto-restore this backup now?\n\n(Click "Cancel" to select a new backup file from your device instead.)`
+      )
+      if (confirmAuto) {
         setIsAutoImporting(true)
-        const [handle] = await (window as any).showOpenFilePicker({
-          types: [
-            {
-              description: 'TINDA POS Backup Archives (*.tinda-backup, *.json)',
-              accept: {
-                'application/json': ['.json', '.tinda-backup'],
-                'application/octet-stream': ['.tinda-backup']
-              }
-            }
-          ],
-          multiple: false
-        })
-        const file = await handle.getFile()
-        const text = await file.text()
-        const res = await importTindaBackup(text, { targetStoreName: storeName })
+        const res = await importTindaBackup(detected.data, { targetStoreName: storeName })
+        setIsAutoImporting(false)
         if (res.success) {
           alert(res.message)
           if (onRefreshData) await onRefreshData()
@@ -237,14 +228,22 @@ export function POSScreen({
           alert('Import failed: ' + res.message)
         }
         return
-      } catch (err: any) {
-        setIsAutoImporting(false)
-        if (err.name === 'AbortError') return
-      } finally {
-        setIsAutoImporting(false)
       }
     }
     posFileInputRef.current?.click()
+  }
+
+  const handlePOSLoadDti = async () => {
+    setIsAutoImporting(true)
+    try {
+      const res = await loadDtiStarterCatalog(storeName)
+      alert(res.message)
+      if (res.success && onRefreshData) {
+        await onRefreshData()
+      }
+    } finally {
+      setIsAutoImporting(false)
+    }
   }
 
   const handlePOSFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -864,17 +863,26 @@ export function POSScreen({
               </button>
               <button
                 type="button"
+                onClick={handlePOSLoadDti}
+                disabled={isAutoImporting}
+                className="btn-press px-5 py-3 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/30 font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-all active:scale-[0.98]"
+              >
+                <Sparkles className="w-4 h-4 text-emerald-400" />
+                <span>⚡ Load DTI Catalog (67 Items)</span>
+              </button>
+              <button
+                type="button"
                 onClick={() => posFileInputRef.current?.click()}
                 disabled={isAutoImporting}
                 className="btn-press px-5 py-3 rounded-2xl bg-obsidian-900 border border-slate-700 text-stone-200 hover:text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-all"
               >
                 <Upload className="w-4 h-4 text-stone-400" />
-                <span>Manual File Picker (.tinda-backup)</span>
+                <span>Manual File Picker (.tinda-backup / .csv)</span>
               </button>
               <input
                 ref={posFileInputRef}
                 type="file"
-                accept=".tinda-backup,.json"
+                accept=".tinda-backup,.json,.csv"
                 onChange={handlePOSFileChange}
                 className="hidden"
               />

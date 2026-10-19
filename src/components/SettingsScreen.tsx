@@ -35,7 +35,7 @@ import {
   AlertCircle
 } from 'lucide-react'
 import type { StoreSettings, UserAccount, UserRole } from '../types'
-import { downloadBackupFile, importTindaBackup, rollbackRestoreCheckpoint } from '../utils/backup'
+import { downloadBackupFile, importTindaBackup, rollbackRestoreCheckpoint, getAutoDetectedBackup } from '../utils/backup'
 import { compressImageFile } from '../utils/image'
 import { db, initDatabase } from '../db'
 import { Receipt } from './Receipt'
@@ -249,25 +249,16 @@ export function SettingsScreen({
   }
 
   const handleAutoDetectAndImport = async () => {
-    if (typeof (window as any).showOpenFilePicker === 'function') {
-      try {
+    const detected = getAutoDetectedBackup()
+    if (detected.found && detected.data) {
+      const targetStore = currentSessionStoreName || form.store_name || settings.store_name
+      const confirmAuto = window.confirm(
+        `⚡ Auto-Detect found an existing backup snapshot!\n\n• Source: ${detected.source}\n• Saved: ${detected.time}\n${detected.summary ? `• Details: ${detected.summary}\n` : ''}\nWould you like to auto-restore this backup now?\n\n(Click "Cancel" to select a new backup file from your device instead.)`
+      )
+      if (confirmAuto) {
         setImporting(true)
-        const [handle] = await (window as any).showOpenFilePicker({
-          types: [
-            {
-              description: 'TINDA POS Backup Archives (*.tinda-backup, *.json)',
-              accept: {
-                'application/json': ['.json', '.tinda-backup'],
-                'application/octet-stream': ['.tinda-backup']
-              }
-            }
-          ],
-          multiple: false
-        })
-        const file = await handle.getFile()
-        const text = await file.text()
-        const targetStore = currentSessionStoreName || form.store_name || settings.store_name
-        const result = await importTindaBackup(text, { targetStoreName: targetStore })
+        const result = await importTindaBackup(detected.data, { targetStoreName: targetStore })
+        setImporting(false)
         if (result.success) {
           alert(result.message)
           const nowIso = new Date().toISOString()
@@ -278,11 +269,6 @@ export function SettingsScreen({
           alert('Restore failed: ' + result.message)
         }
         return
-      } catch (err: any) {
-        setImporting(false)
-        if (err.name === 'AbortError') return
-      } finally {
-        setImporting(false)
       }
     }
     fileInputRef.current?.click()
@@ -1699,7 +1685,7 @@ export function SettingsScreen({
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".tinda-backup,.json"
+                  accept=".tinda-backup,.json,.csv"
                   className="hidden"
                   onChange={handleFileChange}
                 />

@@ -21,6 +21,8 @@ import {
   importTindaBackup,
   downloadBackupFile,
   rollbackRestoreCheckpoint,
+  getAutoDetectedBackup,
+  loadDtiStarterCatalog,
   type BackupStats
 } from '../utils/backup'
 
@@ -120,35 +122,44 @@ export function BackupScreen({
 
   // 1-Click Auto-Detect & Import
   const handleAutoDetectAndImport = async () => {
-    // If browser supports File System Access API
-    if (typeof (window as any).showOpenFilePicker === 'function') {
-      try {
-        setIsImporting(true)
-        const [handle] = await (window as any).showOpenFilePicker({
-          types: [
-            {
-              description: 'TINDA POS Backup Archives (*.tinda-backup, *.json)',
-              accept: {
-                'application/json': ['.json', '.tinda-backup'],
-                'application/octet-stream': ['.tinda-backup']
-              }
-            }
-          ],
-          multiple: false
-        })
-        const file = await handle.getFile()
-        const text = await file.text()
-        await processBackupText(text)
+    // 1. Check if a local backup snapshot exists in storage
+    const detected = getAutoDetectedBackup()
+    if (detected.found && detected.data) {
+      const confirmAuto = window.confirm(
+        `⚡ Auto-Detect found an existing backup snapshot!\n\n• Source: ${detected.source}\n• Saved: ${detected.time}\n${detected.summary ? `• Details: ${detected.summary}\n` : ''}\nWould you like to auto-restore this backup now?\n\n(Click "Cancel" to choose a new backup file from your device instead.)`
+      )
+      if (confirmAuto) {
+        await processBackupText(detected.data)
         return
-      } catch (err: any) {
-        setIsImporting(false)
-        if (err.name === 'AbortError') return
-        console.warn('showOpenFilePicker failed, falling back to input:', err)
       }
     }
 
-    // Fallback: trigger file input directly
+    // 2. Direct, synchronous trigger of file picker without MIME type or async gesture drops
     fileInputRef.current?.click()
+  }
+
+  // 1-Click DTI BNPC Starter Catalog Loader
+  const handleLoadDtiCatalog = async () => {
+    setIsImporting(true)
+    setStatusMessage(null)
+    try {
+      const result = await loadDtiStarterCatalog(storeName)
+      if (result.success) {
+        playSuccessSound()
+        setStatusType('success')
+        setStatusMessage(result.message)
+        await loadCounts()
+        onRefreshAll?.()
+      } else {
+        setStatusType('error')
+        setStatusMessage(result.message)
+      }
+    } catch (err: any) {
+      setStatusType('error')
+      setStatusMessage('Error loading DTI catalog: ' + (err?.message || 'Unknown error'))
+    } finally {
+      setIsImporting(false)
+    }
   }
 
   // Manual File Selector Change
@@ -400,11 +411,21 @@ export function BackupScreen({
               <span>⚡ Auto-Detect &amp; 1-Click Import Backup</span>
             </button>
 
+            {/* 1-Click Official DTI BNPC Starter Pack */}
+            <button
+              onClick={handleLoadDtiCatalog}
+              disabled={isImporting}
+              className="w-full py-3 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+            >
+              <Sparkles className="w-4 h-4 text-emerald-400" />
+              <span>⚡ Load Official DTI BNPC Catalog (67 Items)</span>
+            </button>
+
             {/* Manual File Selector */}
             <input
               ref={fileInputRef}
               type="file"
-              accept=".tinda-backup,.json"
+              accept=".tinda-backup,.json,.csv"
               onChange={handleFileChange}
               disabled={isImporting}
               className="hidden"
@@ -415,7 +436,7 @@ export function BackupScreen({
               className="w-full py-3 rounded-2xl bg-obsidian-850 hover:bg-obsidian-800 border border-slate-700 text-stone-200 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
             >
               <Upload className="w-4 h-4 text-stone-400" />
-              <span>Manual File Picker (.tinda-backup / .json)</span>
+              <span>Manual File Picker (.tinda-backup / .json / .csv)</span>
             </button>
 
             {/* Export Backup File */}

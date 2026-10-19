@@ -1,0 +1,68 @@
+product_name,sku,barcode,category,selling_price,cost,stock,low_stock_level,supplier,base_unit
+Saba Phil Sardines 155g,SAB-SAR-155,4800016001012,Canned Goods,17.25,15.50,48,12,DTI BNPC,can
+King Cup Sardines 155g,KNG-SAR-155,4800016002019,Canned Goods,18.00,16.20,48,12,DTI BNPC,can
+555 Sardines in Tomato Sauce 155g,555-SAR-155,4800016641010,Canned Goods,19.50,17.50,72,12,Century Pacific,can
+Lucky 7 Sardines 155g,LKY-SAR-155,4800016003016,Canned Goods,19.65,17.70,48,12,DTI BNPC,can
+Atami Sardines 155g,ATM-SAR-155,4800016004013,Canned Goods,20.50,18.50,48,12,DTI BNPC,can
+Mega Sardines Tomato Sauce Green 155g,MGA-SAR-GRN-155,4800024501016,Canned Goods,22.50,20.25,100,24,Mega Prime Foods,can
+Mega Sardines Hot & Spicy Red 155g,MGA-SAR-RED-155,4800024501023,Canned Goods,25.50,23.00,100,24,Mega Prime Foods,can
+Ligo Sardines in Tomato Sauce 155g,LIG-SAR-155,4800038101011,Canned Goods,23.50,21.00,50,12,DTI BNPC,can
+Purefoods Condensada 200g,PFR-CND-200,4800040101018,Dairy & Milk,24.90,22.40,36,6,San Miguel Pure Foods,can
+Alaska Evaporada 370mL,ALA-EVP-370,4800052101013,Dairy & Milk,32.00,28.80,48,12,Alaska Milk Corp,can
+Angel Filled Evaporated Milk 370mL,ANG-EVP-370,4800016642017,Dairy & Milk,48.00,43.20,36,12,Century Pacific,can
+Alaska Sweetened Condensed Milk 300mL,ALA-CND-300,4800052102010,Dairy & Milk,62.00,55.80,36,6,Alaska Milk Corp,can
+Alaska Fortified Powdered Milk Drink 165g,ALA-PWD-165,4800052103017,Dairy & Milk,44.00,39.60,40,10,Alaska Milk Corp,pouch
+Bear Brand Fortified Powdered Milk 135g,BRB-PWD-135,4800361301014,Dairy & Milk,50.00,45.00,60,12,Nestle Philippines,pouch
+Bear Brand Fortified Powdered Milk 300g,BRB-PWD-300,4800361302011,Dairy & Milk,108.00,97.20,30,6,Nestle Philippines,pouch
+Birch Tree Full Cream Powdered Milk 150g,BRC-PWD-150,4800016643014,Dairy & Milk,70.75,63.60,30,6,Century Pacific,pouch
+Café Puro Instant Coffee 17g,CFP-COF-17,4800064101018,Coffee & Beverages,4.70,4.20,100,20,Commonwealth Foods,sachet
+Blend 45 3-in-1 Coffee 18g,BLD-COF-18,4800076101013,Coffee & Beverages,5.50,4.95,120,24,Universal Robina,sachet
+San Mig Coffee 3-in-1 Original 20g,SMC-COF-20,4800040102015,Coffee & Beverages,7.00,6.30,120,24,San Miguel Foods,sachet
+Nescafé Original 3-in-1 28g,NES-3IN1-28,4800361303018,Coffee & Beverages,7.75,6.95,200,50,Nestle Philippines,sachet
+Great Taste White 3-in-1 Coffee 30g,GTW-3IN1-30,4800076102010,Coffee & Beverages,8.50,7.65,200,50,Universal Robina,sachet
+Nescafé Classic Refill Pouch 25g,NES-CLS-25,4800361304015,Coffee & Beverages,23.50,21.15,50,10,Nestle Philippines,pouch
+Nescafé Classic Refill Pouch 50g,NES-CLS-50,4800361305012,Coffee & Beverages,45.00,40.50,40,10,Nestle Philippines,pouch
+Pinoy Tasty White Bread 450g,PNY-TST-450,4800088101018,Bread & Bakery,40.50,36.50,20,5,Philbaking,loaf
+Pinoy Pandesal 10s 250g,PNY-PND-250,4800088102015,Bread & Bakery,25.00,22.50,20,5,Philbaking,pack
+Payless Instant Mami Chicken 55g,PLS-MAM-55,4800076103017,Noodles,7.50,6.75,72,12,Universal Robina,pack
+Quickchow Instant Mami Chicken 55g,QCK-MAM-55,4800099101013,Noodles,7.75,6.95,72,12,DTI BNPC,pack
+Lucky Me Instant Mami Chicken 55g,LKM-MAM-CHK-55,4807770270014,Noodles,8.75,7.85,144,24,Monde Nissin,pack
+Lucky Me Instant Mami Beef 55g,LKM-MAM-BEF-55,4807770270021,Noodles,8.75,7.85,144,24,Monde Nissin,pack
+Lucky Me Pancit Canton Original 80g,LKM-PC-ORIG-80,4807770270038,Noodles,15.50,13.95,144,24,Monde Nissin,pack
+Lucky Me Pancit Canton Kalamansi 80g,LKM-PC-KLM-80,4807770270045,Noodles,15.50,13.95,144,24,Monde Nissin,pack
+Lucky Me Pancit Canton Chilimansi 80g,LKM-PC-CHL-80,4807770270052,Noodles,15.50,13.95,144,24,Monde Nissin,pack
+Fidel Iodized Refined Salt 250g,FDL-SLT-250,4800111101013,Cooking Essentials,12.50,11.00,50,10,Salinas Foods,pack
+Pride Detergent Bar Blue 380g,PRD-BAR-380,4800122101018,Laundry & Cleaning,21.00,18.90,48,12,ACS Mfg Corp,bar
+Champion Laundry Bar White 380g,CHP-BAR-380,4800133101013,Laundry & Cleaning,22.50,20.25,48,12,Peerless Mfg,bar
+Surf Laundry Bar Sun Fresh 360g,SRF-BAR-360,4800888147012,Laundry & Cleaning,24.00,21.60,72,12,Unilever Philippines,bar
+Tide Laundry Bar White 380g,TID-BAR-380,4800047101011,Laundry & Cleaning,26.00,23.40,48,12,Procter & Gamble,bar
+Surf Powder Cherry Blossom 55g,SRF-PWD-55,4800888147029,Laundry & Cleaning,8.50,7.65,144,24,Unilever Philippines,sachet
+Ariel Sunrise Fresh Powder 55g,ARL-PWD-55,4800047102018,Laundry & Cleaning,13.00,11.70,144,24,Procter & Gamble,sachet
+Nature Spring Purified Water 350mL,NTR-WTR-350,4806018301017,Beverages,6.50,5.50,48,12,Philippine Spring Water,bottle
+Nature Spring Purified Water 500mL,NTR-WTR-500,4806018301024,Beverages,9.50,8.00,48,12,Philippine Spring Water,bottle
+Nature Spring Purified Water 1L,NTR-WTR-1L,4806018301031,Beverages,16.00,13.50,24,6,Philippine Spring Water,bottle
+Nature Spring Purified Water 6L,NTR-WTR-6L,4806018301048,Beverages,55.00,48.00,10,2,Philippine Spring Water,bottle
+Wilkins Pure Purified Water 330mL,WLK-WTR-330,4801981101019,Beverages,12.00,10.20,36,6,Coca-Cola Beverages,bottle
+Wilkins Pure Purified Water 500mL,WLK-WTR-500,4801981101026,Beverages,16.50,14.00,36,6,Coca-Cola Beverages,bottle
+Liwanag Candle Esperma White #3,LWG-CND-3,4800144101018,Household Essentials,60.00,52.00,20,5,Liwanag Candle,pack
+Liwanag Candle Esperma White #5,LWG-CND-5,4800144101025,Household Essentials,50.00,43.00,20,5,Liwanag Candle,pack
+555 Meat Loaf 150g,555-MLF-150,4800016644011,Canned Goods,20.50,18.45,48,12,Century Pacific,can
+Argentina Meat Loaf 150g,ARG-MLF-150,4800016645018,Canned Goods,22.00,19.80,48,12,Century Pacific,can
+Argentina Beef Loaf 150g,ARG-BLF-150,4800016646015,Canned Goods,22.00,19.80,48,12,Century Pacific,can
+CDO Karne Norte 150g,CDO-KRN-150,4800155101013,Canned Goods,27.50,24.75,48,12,CDO Foodsphere,can
+Argentina Corned Beef 150g,ARG-CRN-150,4800016647012,Canned Goods,38.50,34.65,48,12,Century Pacific,can
+Purefoods Classic Corned Beef 150g,PFR-CRN-150,4800040103012,Canned Goods,64.00,57.60,36,6,San Miguel Pure Foods,can
+Purefoods Luncheon Meat 165g,PFR-LNC-165,4800040104019,Canned Goods,42.00,37.80,36,6,San Miguel Pure Foods,can
+Silver Swan White Vinegar 385mL,SSW-VNG-385,4800166101018,Condiments & Sauces,15.50,13.95,36,6,NutriAsia,bottle
+Datu Puti White Vinegar 350mL,DTP-VNG-350,4801888101013,Condiments & Sauces,16.00,14.40,36,6,NutriAsia,bottle
+Silver Swan Soy Sauce 385mL,SSW-TOY-385,4800166102015,Condiments & Sauces,18.50,16.65,36,6,NutriAsia,bottle
+Datu Puti Soy Sauce 385mL,DTP-TOY-385,4801888102010,Condiments & Sauces,19.50,17.55,36,6,NutriAsia,bottle
+Marca Piña Soy Sauce 385mL,MCP-TOY-385,4800177101013,Condiments & Sauces,19.00,17.10,36,6,Piña Brand,bottle
+Silver Swan Special Patis 385mL,SSW-PTS-385,4800166103012,Condiments & Sauces,27.00,24.30,24,6,NutriAsia,bottle
+Datu Puti Pure Patis 350mL,DTP-PTS-350,4801888103017,Condiments & Sauces,28.50,25.65,24,6,NutriAsia,bottle
+Palmolive Naturals Green Bar 55g,PLM-SOAP-55,4800188101018,Personal Care,18.00,16.00,72,12,Colgate-Palmolive,bar
+Safeguard Pure White Bar 60g,SFG-SOAP-60,4800047103015,Personal Care,22.50,19.80,72,12,Procter & Gamble,bar
+Safeguard Pure White Bar 135g,SFG-SOAP-135,4800047104012,Personal Care,48.00,42.00,36,6,Procter & Gamble,bar
+Eveready Heavy Duty AA 2s,EVR-BAT-AA2,4800199101013,Household & Electrical,38.00,32.00,40,10,Energizer Philippines,pack
+Eveready Heavy Duty AAA 2s,EVR-BAT-AAA2,4800199102010,Household & Electrical,40.00,34.00,40,10,Energizer Philippines,pack
+Eveready Heavy Duty Size D 2s,EVR-BAT-D2,4800199103017,Household & Electrical,82.00,70.00,20,5,Energizer Philippines,pack

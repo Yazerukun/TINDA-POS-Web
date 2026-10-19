@@ -24,6 +24,190 @@ export interface BackupStats {
   sourcePlatform?: string
 }
 
+export async function sha256Hex(str: string): Promise<string> {
+  try {
+    const buf = new TextEncoder().encode(str)
+    const digest = await crypto.subtle.digest('SHA-256', buf)
+    return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('')
+  } catch {
+    return 'web-unhashed'
+  }
+}
+
+export function parseCsvProducts(csvText: string, storeName?: string): Product[] {
+  const lines = csvText.replace(/^\uFEFF/, '').split(/\r?\n/).filter((l) => l.trim().length > 0)
+  if (lines.length < 2) return []
+
+  const header = lines[0].split(',').map((h) => h.trim().toLowerCase().replace(/['"]/g, ''))
+  const nameIdx = header.indexOf('product_name') !== -1 ? header.indexOf('product_name') : header.indexOf('name')
+  const skuIdx = header.indexOf('sku')
+  const barcodeIdx = header.indexOf('barcode')
+  const priceIdx = header.indexOf('selling_price') !== -1 ? header.indexOf('selling_price') : header.indexOf('price')
+  const costIdx = header.indexOf('cost') !== -1 ? header.indexOf('cost') : header.indexOf('purchase_cost')
+  const stockIdx = header.indexOf('stock')
+  const unitIdx = header.indexOf('base_unit') !== -1 ? header.indexOf('base_unit') : header.indexOf('unit')
+
+  const products: Product[] = []
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split(',').map((c) => c.trim().replace(/^["']|["']$/g, ''))
+    const name = nameIdx !== -1 ? cols[nameIdx] : cols[0]
+    if (!name) continue
+
+    const priceRaw = parseFloat(priceIdx !== -1 ? cols[priceIdx] : '0') || 0
+    const costRaw = parseFloat(costIdx !== -1 ? cols[costIdx] : '0') || 0
+    const stockRaw = parseInt(stockIdx !== -1 ? cols[stockIdx] : '0', 10) || 0
+    const sku = skuIdx !== -1 ? cols[skuIdx] : null
+    const barcode = barcodeIdx !== -1 ? cols[barcodeIdx] : null
+    const unit = unitIdx !== -1 ? cols[unitIdx] : 'pc'
+
+    products.push({
+      id: i,
+      name,
+      sku: sku || null,
+      barcode: barcode || null,
+      category_id: null,
+      subcategory_id: null,
+      base_unit: unit || 'pc',
+      cost_c: Math.round(costRaw * 100),
+      default_price_c: Math.round(priceRaw * 100),
+      suggested_price_c: Math.round(priceRaw * 100),
+      stock: stockRaw,
+      low_stock_threshold: 5,
+      expiration_date: null,
+      supplier_id: null,
+      image_path: null,
+      status: 'ACTIVE',
+      store_name: storeName || undefined,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    })
+  }
+  return products
+}
+
+/**
+ * Checks browser storage for an auto-saved backup or pre-restore safety checkpoint.
+ */
+export function getAutoDetectedBackup(): {
+  found: boolean
+  time?: string
+  source?: string
+  data?: string
+  summary?: string
+} {
+  const lastBackup = localStorage.getItem('tinda_last_backup')
+  const checkpoint = localStorage.getItem('tinda_pre_restore_checkpoint')
+  const time = localStorage.getItem('tinda_checkpoint_time') || new Date().toLocaleDateString()
+
+  if (lastBackup) {
+    try {
+      const p = JSON.parse(lastBackup)
+      const count = p?.data?.products?.length || p?.products?.length || 0
+      return {
+        found: true,
+        time,
+        source: 'Auto-Saved Browser Backup',
+        data: lastBackup,
+        summary: `${count} products ready to restore`
+      }
+    } catch {
+      return { found: true, time, source: 'Auto-Saved Browser Backup', data: lastBackup }
+    }
+  }
+
+  if (checkpoint) {
+    try {
+      const p = JSON.parse(checkpoint)
+      const count = p?.data?.products?.length || p?.products?.length || 0
+      return {
+        found: true,
+        time,
+        source: 'Pre-Restore Safety Checkpoint',
+        data: checkpoint,
+        summary: `${count} products ready to restore`
+      }
+    } catch {
+      return { found: true, time, source: 'Pre-Restore Safety Checkpoint', data: checkpoint }
+    }
+  }
+
+  return { found: false }
+}
+
+/**
+ * 1-Click Starter: Auto-loads the 67 official DTI BNPC products into Dexie.
+ */
+export async function loadDtiStarterCatalog(
+  storeName?: string
+): Promise<{ success: boolean; count: number; message: string }> {
+  try {
+    let items: any[] = []
+    try {
+      const res = await fetch('/dti_srp_products.json')
+      if (res.ok) {
+        const json = await res.json()
+        items = json.products || []
+      }
+    } catch {}
+
+    if (!items || items.length === 0) {
+      const resDocs = await fetch('/docs/dti_srp_products.json')
+      if (resDocs.ok) {
+        const json = await resDocs.json()
+        items = json.products || []
+      }
+    }
+
+    if (!items || items.length === 0) {
+      return { success: false, count: 0, message: 'Could not fetch DTI starter catalog.' }
+    }
+
+    const productsToInsert: Product[] = items.map((p, idx) => ({
+      id: idx + 1,
+      name: p.product_name || p.name,
+      sku: p.sku || null,
+      barcode: p.barcode || null,
+      category_id: null,
+      subcategory_id: null,
+      base_unit: p.base_unit || 'pc',
+      cost_c: Math.round((p.dti_srp_c || p.dti_srp * 100 || 2000) * 0.9),
+      default_price_c: p.dti_srp_c || Math.round(p.dti_srp * 100),
+      suggested_price_c: p.dti_srp_c || Math.round(p.dti_srp * 100),
+      stock: 50,
+      low_stock_threshold: 10,
+      expiration_date: null,
+      supplier_id: null,
+      image_path: null,
+      status: 'ACTIVE',
+      store_name: storeName || undefined,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }))
+
+    await db.transaction('rw', [db.products], async () => {
+      await db.products.clear()
+      await db.products.bulkAdd(productsToInsert)
+    })
+
+    try {
+      localStorage.setItem('tinda_last_backup', JSON.stringify({ data: { products: productsToInsert } }))
+      localStorage.setItem('tinda_checkpoint_time', new Date().toISOString())
+    } catch {}
+
+    return {
+      success: true,
+      count: productsToInsert.length,
+      message: `Successfully auto-detected and loaded ${productsToInsert.length} official DTI SRP products!`
+    }
+  } catch (err: any) {
+    return {
+      success: false,
+      count: 0,
+      message: 'Failed to load DTI starter catalog: ' + (err?.message || String(err))
+    }
+  }
+}
+
 export async function exportTindaBackup(): Promise<string> {
   const [
     products,
@@ -51,6 +235,46 @@ export async function exportTindaBackup(): Promise<string> {
     db.users.toArray()
   ])
 
+  const cleanedSettings = settings.map((s) => {
+    if (s && s.value && typeof s.value === 'object') {
+      const cleanVal = { ...s.value }
+      delete cleanVal.paymongo_secret_key
+      return { ...s, value: cleanVal }
+    }
+    return s
+  })
+
+  // Format canonical tables array so Desktop & Android SQLite engines can restore it directly
+  const tables = [
+    { name: 'categories', rows: categories },
+    { name: 'products', rows: products },
+    { name: 'sales', rows: transactions.map((t) => ({ ...t, invoice_no: t.invoice_number })) },
+    { name: 'customers', rows: customers },
+    { name: 'expenses', rows: expenses },
+    { name: 'expense_categories', rows: expense_categories },
+    { name: 'suppliers', rows: suppliers },
+    { name: 'cash_counts', rows: cash_counts },
+    { name: 'z_reads', rows: z_reads },
+    { name: 'users', rows: users }
+  ]
+
+  const dataPayload = {
+    products,
+    categories,
+    transactions,
+    customers,
+    settings: cleanedSettings,
+    expenses,
+    expense_categories,
+    suppliers,
+    cash_counts,
+    z_reads,
+    users,
+    tables
+  }
+
+  const checksum = await sha256Hex(JSON.stringify(dataPayload))
+
   const backupData = {
     manifest: {
       format: 'tinda-pos-backup',
@@ -65,29 +289,16 @@ export async function exportTindaBackup(): Promise<string> {
     version: '1.2.0',
     platform: 'web',
     exported_at: new Date().toISOString(),
-    data: {
-      products,
-      categories,
-      transactions,
-      customers,
-      settings: settings.map((s) => {
-        if (s && s.value && typeof s.value === 'object') {
-          const cleanVal = { ...s.value }
-          delete cleanVal.paymongo_secret_key
-          return { ...s, value: cleanVal }
-        }
-        return s
-      }),
-      expenses,
-      expense_categories,
-      suppliers,
-      cash_counts,
-      z_reads,
-      users
-    }
+    checksum,
+    data: dataPayload
   }
 
-  return JSON.stringify(backupData, null, 2)
+  const jsonStr = JSON.stringify(backupData, null, 2)
+  try {
+    localStorage.setItem('tinda_last_backup', jsonStr)
+    localStorage.setItem('tinda_checkpoint_time', new Date().toISOString())
+  } catch {}
+  return jsonStr
 }
 
 export async function downloadBackupFile(): Promise<void> {
@@ -132,6 +343,7 @@ export async function rollbackRestoreCheckpoint(): Promise<{ success: boolean; m
  * Robust importer supporting both:
  * 1. Desktop Offline TINDA POS `.tinda-backup` files (Windows/Android SQLite with manifest & data.tables)
  * 2. Web Dexie JSON backups (flat data object)
+ * 3. CSV Product Catalogs (*.csv)
  */
 export async function importTindaBackup(
   jsonString: string,
@@ -142,11 +354,16 @@ export async function importTindaBackup(
       await createRestoreCheckpoint()
     }
 
-    const parsed = JSON.parse(jsonString)
-    const isDesktopFormat =
-      parsed?.manifest?.format === 'tinda-pos-backup' ||
-      (parsed?.data && Array.isArray(parsed.data.tables)) ||
-      Array.isArray(parsed?.tables)
+    const trimmed = jsonString.trim()
+    let isCsv = false
+    let isDesktopFormat = false
+
+    if (
+      trimmed.startsWith('product_name') ||
+      (!trimmed.startsWith('{') && !trimmed.startsWith('[') && trimmed.includes(',') && trimmed.includes('\n'))
+    ) {
+      isCsv = true
+    }
 
     const stats: BackupStats = {
       products: 0,
@@ -156,7 +373,7 @@ export async function importTindaBackup(
       suppliers: 0,
       expenses: 0,
       users: 0,
-      sourcePlatform: parsed?.manifest?.source?.platform || (isDesktopFormat ? 'desktop-offline' : 'web')
+      sourcePlatform: isCsv ? 'csv-catalog' : 'web'
     }
 
     let productsToInsert: Product[] = []
@@ -172,6 +389,35 @@ export async function importTindaBackup(
     let zReadsToInsert: ZReadRecord[] = []
 
     const assignedStoreName = options?.targetStoreName || undefined
+
+    if (isCsv) {
+      productsToInsert = parseCsvProducts(trimmed, assignedStoreName)
+      stats.products = productsToInsert.length
+      if (productsToInsert.length === 0) {
+        return { success: false, message: 'No valid product rows found in CSV.' }
+      }
+      await db.transaction('rw', [db.products], async () => {
+        await db.products.clear()
+        await db.products.bulkAdd(productsToInsert)
+      })
+      try {
+        localStorage.setItem('tinda_last_backup', JSON.stringify({ data: { products: productsToInsert } }))
+        localStorage.setItem('tinda_checkpoint_time', new Date().toISOString())
+      } catch {}
+      return {
+        success: true,
+        message: `Successfully auto-detected and imported CSV catalog with ${productsToInsert.length} products!`,
+        stats
+      }
+    }
+
+    const parsed = JSON.parse(jsonString)
+    isDesktopFormat =
+      parsed?.manifest?.format === 'tinda-pos-backup' ||
+      (parsed?.data && Array.isArray(parsed.data.tables)) ||
+      Array.isArray(parsed?.tables)
+
+    stats.sourcePlatform = parsed?.manifest?.source?.platform || (isDesktopFormat ? 'desktop-offline' : 'web')
 
     if (isDesktopFormat) {
       // Extract tables array from desktop structure
@@ -210,8 +456,8 @@ export async function importTindaBackup(
       // 3. Products: Map SQLite columns (price_cents, stock_quantity, cost_cents)
       const prodRows = tablesMap.get('products') || []
       productsToInsert = prodRows.map((row, idx) => {
-        const costVal = row.cost_cents ?? row.cost_c ?? 0
-        const priceVal = row.price_cents ?? row.default_price_c ?? 0
+        const costVal = row.cost_cents ?? row.cost_c ?? row.purchase_cost_c ?? 0
+        const priceVal = row.price_cents ?? row.default_price_c ?? row.price_c ?? 0
         const stockVal = row.stock_quantity ?? row.stock ?? 0
         const minAlert = row.min_stock_alert ?? row.low_stock_threshold ?? 5
 
@@ -281,7 +527,7 @@ export async function importTindaBackup(
 
         return {
           id: sId,
-          invoice_number: String(s.receipt_number || s.invoice_number || `INV-${sId}`),
+          invoice_number: String(s.invoice_no || s.receipt_number || s.invoice_number || `INV-${sId}`),
           created_at: String(s.created_at || new Date().toISOString()),
           items: itemsBySale.get(sId) || [],
           subtotal_c: subtotal,

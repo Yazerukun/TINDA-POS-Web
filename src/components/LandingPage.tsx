@@ -382,7 +382,7 @@ export function LandingPage({
                   TINDA POS
                 </span>
                 <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[0.625rem] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                  Web v1.1.0
+                  Web v1.1.1
                 </span>
               </div>
               <span className="hidden md:block text-[0.6875rem] font-sans font-semibold tracking-[0.16em] uppercase text-emerald-400/80 mt-0.5">
@@ -963,7 +963,6 @@ export function LandingPage({
                   <div className="inline-block bg-stone-900 text-stone-100 px-3 py-1 text-[0.5625rem] font-bold tracking-widest">
                     ||||| |||| ||||| ||||
                   </div>
-                  <p className="text-[0.5625rem] text-stone-600 mt-1">SALAMAT SA PAGPALIT!</p>
                 </div>
               </div>
 

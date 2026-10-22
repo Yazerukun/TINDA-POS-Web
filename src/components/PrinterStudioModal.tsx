@@ -36,7 +36,7 @@ export function PrinterStudioModal({
   const [receiptWidth, setReceiptWidth] = useState<'58mm' | '80mm'>('58mm')
   const [receiptFeedLines, setReceiptFeedLines] = useState(3)
   const [receiptCustomHeader, setReceiptCustomHeader] = useState('')
-  const [receiptCustomFooter, setReceiptCustomFooter] = useState('Salamat sa inyong pagtangkilik!')
+  const [receiptCustomFooter, setReceiptCustomFooter] = useState('Thank you for your business!')
   const [receiptShowCashier, setReceiptShowCashier] = useState(true)
   const [receiptShowChange, setReceiptShowChange] = useState(true)
 
@@ -209,7 +209,7 @@ export function PrinterStudioModal({
                       type="text"
                       value={receiptCustomFooter}
                       onChange={(e) => setReceiptCustomFooter(e.target.value)}
-                      placeholder="e.g. Salamat sa pagtangkilik! Balik po kayo muli!"
+                      placeholder="e.g. Thank you for your business! Please come again."
                       className="w-full px-3.5 py-2.5 rounded-xl bg-obsidian-900 border border-slate-800 text-stone-100 text-xs outline-none focus:border-indigo-500"
                     />
                   </div>

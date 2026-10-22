@@ -18,7 +18,7 @@
 ---
 
 ## Current Release Status (TINDA POS Web)
-- **Version**: `v1.1.0` (Production Live)
+- **Version**: `v1.1.1` (Production Live)
 - **Primary Live Short URL (Cloudflare Pages)**: [https://tindapos-web.pages.dev/](https://tindapos-web.pages.dev/)
 - **Secondary Edge Mirror (Cloudflare Workers)**: [https://tindaposweb.yomikaze-md.workers.dev/](https://tindaposweb.yomikaze-md.workers.dev/)
 - **GitHub Repository**: [https://github.com/Yazerukun/TINDA-POS-Web](https://github.com/Yazerukun/TINDA-POS-Web)
@@ -36,7 +36,7 @@
 
 ---
 
-## Key Features in v1.1.0
+## Key Features in v1.1.1
 0. ✈️ 🏘️ **Living Philippine Barangay Street Scene (CyberStreetScene)**:
    - **High-Altitude Commercial Airliner**: Smooth cruising aircraft with active white vapor contrail, red/green wingtip navigation strobe lights (`navLight`), and interactive cloud telemetry inspector.
    - **Authentic Philippine Neighborhood ("Balay-Balay")**: Full panoramic skyline featuring corrugated galvanized iron roofs, wooden stilts, TV antennas, utility poles with criss-crossing power cables, glowing street lamps, Barangay 01 Hall, and 24/7 convenience mart.

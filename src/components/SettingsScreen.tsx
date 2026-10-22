@@ -786,7 +786,7 @@ export function SettingsScreen({
                   type="text"
                   value={form.receipt_footer}
                   onChange={(e) => setForm({ ...form, receipt_footer: e.target.value })}
-                  placeholder="e.g. Salamat sa pagpalit! Balik-balik kamo!"
+                  placeholder="e.g. Thank you for your business! Please come again."
                   className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-white/[0.08] text-xs font-medium text-stone-100 focus:outline-none focus:border-emerald-500"
                 />
               </div>

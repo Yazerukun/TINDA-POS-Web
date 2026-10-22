@@ -1,6 +1,6 @@
 <div align="center">
 
-# 💎 TINDA POS Web v1.1.0
+# 💎 TINDA POS Web v1.1.1
 ### "Millionaire-Grade" Offline-First Retail POS & Cloudflare Edge Web Platform
 
 **Fast, 100% offline, sign-language & touch-friendly Point of Sale and Inventory System designed for Philippine sari-sari stores, retail counters, and minimarts on any browser (Desktop, iPad, Tablet, Mobile).**
@@ -20,7 +20,7 @@
 
 ## 🏪 The Private Reserve & Executive Counter
 
-**TINDA POS Web v1.1.0** transforms retail checkout into an ultra-luxury, "Quiet Luxury / Stealth Wealth" private terminal interface inspired by high-end private client desks (Audemars Piguet, Amex Centurion). Engineered with the **Apple Design Standard**, it features deep obsidian aesthetics (`#050608`), Champagne Gold accents (`#D4AF37`), editorial serif typography (Cinzel & Cormorant Garamond), and sub-16ms tactile responsiveness. It now includes the **Living Philippine Barangay Street Scene Engine (CyberStreetScene)** with real-time airliner flight path and contrail, neighborhood panoramic skyline ("balay-balay"), bobbing suspension Jeepney, and 4-phase daylight/monsoon simulation.
+**TINDA POS Web v1.1.1** transforms retail checkout into an ultra-luxury, "Quiet Luxury / Stealth Wealth" private terminal interface inspired by high-end private client desks (Audemars Piguet, Amex Centurion). Engineered with the **Apple Design Standard**, it features deep obsidian aesthetics (`#050608`), Champagne Gold accents (`#D4AF37`), editorial serif typography (Cinzel & Cormorant Garamond), and sub-16ms tactile responsiveness. It now includes the **Living Philippine Barangay Street Scene Engine (CyberStreetScene)** with real-time airliner flight path and contrail, neighborhood panoramic skyline ("balay-balay"), bobbing suspension Jeepney, and 4-phase daylight/monsoon simulation.
 
 ### 🌟 Key Highlights:
 * 🏛️ **The Private Vault (Cashier Authentication & Shift Float)**: Floating obsidian glass vault card, gold monogram, cashier profile selector, 4-digit hairline PIN pad with masked feedback, and Opening Register Balance float stepper (₱1,000, ₱2,000, ₱5,000, Custom).

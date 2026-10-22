@@ -43,7 +43,7 @@ export const DEFAULT_RECEIPT_CONFIG: PrinterCustomizationSettings = {
   receipt_line_spacing: 'balanced',
   receipt_ultra_black: true,
   receipt_custom_header: 'Sari-Sari Store & General Merchandise',
-  receipt_custom_footer: 'Salamat sa inyong pagtangkilik! Balik po kayo muli!',
+  receipt_custom_footer: 'Thank you for your business! Please come again.',
   receipt_show_cashier: true,
   receipt_show_customer: true,
   receipt_show_change_breakdown: true,
@@ -100,7 +100,7 @@ export function Receipt({
   )
   const [editHeader, setEditHeader] = useState(config.receipt_custom_header || '')
   const [editFooter, setEditFooter] = useState(
-    config.receipt_custom_footer || receiptFooter || storeSettings?.receipt_footer || 'Salamat sa inyong pagtangkilik! Balik po kayo muli!'
+    config.receipt_custom_footer || receiptFooter || storeSettings?.receipt_footer || 'Thank you for your business! Please come again.'
   )
   const [editWidth, setEditWidth] = useState<'58mm' | '80mm'>(
     (propPaperWidth === '80mm' || propPaperWidth === '58mm')
@@ -330,7 +330,7 @@ export function Receipt({
                   type="text"
                   value={editFooter}
                   onChange={(e) => setEditFooter(e.target.value)}
-                  placeholder="e.g. Salamat sa pagtangkilik! Balik po muli!"
+                  placeholder="e.g. Thank you for your business! Please come again."
                   className="w-full px-2.5 py-1.5 rounded-lg bg-obsidian-900 border border-slate-800 text-stone-100 text-xs focus:border-indigo-500 outline-none"
                 />
               </div>

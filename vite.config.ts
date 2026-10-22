@@ -34,8 +34,10 @@ function localSentryPlugin(): Plugin {
               const header = lines[0] ? JSON.parse(lines[0]) : {}
               const itemHeader = lines[1] ? JSON.parse(lines[1]) : {}
               const payload = lines[2] ? JSON.parse(lines[2]) : {}
+              const eventId = (header.event_id as string) || ''
               const record = {
-                id: (header.event_id as string) || `sentry-${Date.now()}`,
+                id: `ingest-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                eventId: eventId || `sentry-${Date.now()}`,
                 receivedAt: new Date().toISOString(),
                 header,
                 itemHeader,
@@ -43,7 +45,7 @@ function localSentryPlugin(): Plugin {
               }
               events.unshift(record)
               if (events.length > 50) events.pop()
-              console.log(`\x1b[32m[Sentry Live Ingest]\x1b[0m Ingested ${(itemHeader.type as string) || 'event'}: ${record.id}`)
+              console.log(`\x1b[32m[Sentry Live Ingest]\x1b[0m Ingested ${(itemHeader.type as string) || 'event'}: ${record.eventId}`)
             } catch (err) {
               console.error('[Sentry Live Ingest] Error parsing envelope:', err)
             }
@@ -61,6 +63,15 @@ function localSentryPlugin(): Plugin {
           res.setHeader('Access-Control-Allow-Origin', '*')
           res.writeHead(200)
           res.end(JSON.stringify(events))
+          return
+        }
+
+        // Handle local dev heartbeat mock
+        if (url === '/api/heartbeat') {
+          res.setHeader('Content-Type', 'application/json')
+          res.setHeader('Access-Control-Allow-Origin', '*')
+          res.writeHead(200)
+          res.end(JSON.stringify({ ok: true, devMock: true }))
           return
         }
 

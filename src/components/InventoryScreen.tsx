@@ -2443,9 +2443,10 @@ export function InventoryScreen({
         <StoreUseModal
           open={isStoreUseOpen}
           onClose={() => setIsStoreUseOpen(false)}
-          onDone={loadProducts}
-          cashierName={currentCashierName}
+          onDone={onRefresh}
+          cashierName={cashierName || 'Cashier'}
           storeName={storeName}
+          allProducts={products}
         />
       )}
     </div>

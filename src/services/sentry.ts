@@ -11,16 +11,21 @@ export function getActiveDsn(): string | null {
   if (import.meta.env.VITE_SENTRY_DSN) {
     return import.meta.env.VITE_SENTRY_DSN
   }
-  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+  // Automatically route through the /api/telemetry/stream tunnel on the current origin
+  if (typeof window !== 'undefined' && window.location.host) {
     return `${window.location.protocol}//tinda_key@${window.location.host}/1`
   }
   return null
 }
 
 /**
- * Indicates whether Sentry has been actively initialized.
+ * Indicates whether Sentry has an active client initialized.
  */
-export let isSentryEnabled = false
+export function isSentryActive(): boolean {
+  return Boolean(Sentry.getClient())
+}
+
+export let isSentryEnabled = true
 
 /**
  * Initializes Sentry for TINDA-POS-Web.
@@ -81,7 +86,7 @@ export function initSentry(): void {
  * Captures an exception with optional extra debug context.
  */
 export function logException(error: unknown, context?: Record<string, unknown>): void {
-  if (isSentryEnabled) {
+  if (Sentry.getClient()) {
     Sentry.captureException(error, {
       extra: context
     })
@@ -98,7 +103,7 @@ export function logMessage(
   level: Sentry.SeverityLevel = 'info',
   context?: Record<string, unknown>
 ): void {
-  if (isSentryEnabled) {
+  if (Sentry.getClient()) {
     Sentry.captureMessage(message, {
       level,
       extra: context
@@ -142,6 +147,7 @@ export function addSentryBreadcrumb(category: string, message: string, data?: Re
  */
 export async function fetchRecentSentryEvents(): Promise<Array<{
   id: string
+  eventId?: string
   receivedAt: string
   header: Record<string, unknown>
   itemHeader: Record<string, unknown>

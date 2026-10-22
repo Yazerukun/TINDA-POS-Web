@@ -843,7 +843,12 @@ export function POSScreen({
         {/* Speed Keys / Fast Buttons Strip (Yelo, Candy, Yosi, Sando Bag, etc.) */}
         <FastButtonsBar
           products={products}
-          onAddToCart={(p, qty) => addToCart(p, qty || 1)}
+          onAddToCart={(p, qty) => {
+            const count = qty && qty > 0 ? qty : 1
+            for (let i = 0; i < count; i++) {
+              addToCart(p)
+            }
+          }}
           onProductsChanged={onRefreshData}
         />
 

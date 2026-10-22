@@ -25,6 +25,7 @@ import { AppLogo } from './AppLogo'
 import { playSuccessSound } from '../lib/sound'
 import {
   isSentryEnabled,
+  isSentryActive,
   logMessage,
   logException,
   fetchRecentSentryEvents,
@@ -350,12 +351,12 @@ export function TerminalToolsModal({
                     className={`text-[0.6875rem] font-mono font-bold px-2 py-0.5 rounded-full border ${
                       sentryTestStatus
                         ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
-                        : isSentryEnabled
+                        : isSentryActive() || isSentryEnabled
                         ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
                         : 'bg-stone-800 text-stone-500 border-stone-700'
                     }`}
                   >
-                    {sentryTestStatus ? sentryTestStatus : isSentryEnabled ? 'INGEST ACTIVE' : 'DISABLED'}
+                    {sentryTestStatus ? sentryTestStatus : (isSentryActive() || isSentryEnabled) ? 'INGEST ACTIVE' : 'DISABLED'}
                   </span>
                 </div>
 
@@ -408,9 +409,9 @@ export function TerminalToolsModal({
                       </p>
                     ) : (
                       <div className="max-h-40 overflow-y-auto space-y-1.5 pr-1 custom-scrollbar">
-                        {sentryEvents.map((evt) => (
+                        {sentryEvents.map((evt, idx) => (
                           <div
-                            key={evt.id}
+                            key={evt.id ? `${evt.id}-${idx}` : `sentry-row-${idx}`}
                             className="p-2 rounded-lg bg-black/40 border border-white/[0.04] text-[0.6875rem] font-mono flex items-center justify-between"
                           >
                             <div className="min-w-0 pr-2">
@@ -422,7 +423,7 @@ export function TerminalToolsModal({
                                   ? String(evt.payload.message)
                                   : evt.payload?.exception
                                   ? 'Captured Exception'
-                                  : evt.id}
+                                  : (evt as any).eventId || evt.id}
                               </span>
                             </div>
                             <span className="text-stone-500 shrink-0">

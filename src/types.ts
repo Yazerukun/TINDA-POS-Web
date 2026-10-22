@@ -85,6 +85,7 @@ export interface Transaction {
   customer_id: number | null
   cashier_name: string
   store_name?: string
+  notes?: string
   status?: 'COMPLETED' | 'VOIDED' | 'REFUNDED'
   void_reason?: string
   voided_at?: string

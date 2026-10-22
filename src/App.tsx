@@ -977,14 +977,16 @@ export default function App(): React.JSX.Element {
         )}
 
         {activeTab === 'inventory' && (
-          <InventoryScreen
-            products={products}
-            categories={categories}
-            onRefresh={loadData}
-            cashierName={vaultSession?.cashierName}
-            storeName={activeStoreName}
-            onOpenVipUpgrade={() => setIsVipUpgradeOpen(true)}
-          />
+          <ErrorBoundary fallbackTitle="Inventory Console Error">
+            <InventoryScreen
+              products={products}
+              categories={categories}
+              onRefresh={loadData}
+              cashierName={vaultSession?.cashierName}
+              storeName={activeStoreName}
+              onOpenVipUpgrade={() => setIsVipUpgradeOpen(true)}
+            />
+          </ErrorBoundary>
         )}
 
         {activeTab === 'customers' && (

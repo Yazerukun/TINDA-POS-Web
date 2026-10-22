@@ -93,7 +93,7 @@ export function FastButtonsBar({
         image_path: key.image_path || null,
         created_at: now,
         updated_at: now
-      })
+      } as unknown as Product)
 
       const created = await db.products.get(newProductId)
       if (created) {

@@ -13,7 +13,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   if (!isAllowedOrigin(request)) return unauthorized()
 
   const session = await requireSession(request, env)
-  if (!session) return unauthorized()
+  if (!session) {
+    return Response.json({ ok: false, reason: 'unauthenticated' }, { headers: CORS })
+  }
 
   try {
     const now = new Date().toISOString()

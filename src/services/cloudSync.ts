@@ -172,12 +172,15 @@ export async function fetchCloudProState(username: string): Promise<CloudProPayl
 /** Send lightweight heartbeat to update last_active_at in Cloudflare D1 */
 export async function sendHeartbeat(username: string): Promise<boolean> {
   if (!username) return false
+  const token = localStorage.getItem(TOKEN_KEY)
+  if (!token) return false // Do not ping heartbeat if not logged into a Cloudflare session
   try {
     const res = await fetch(`${API_BASE}/api/heartbeat`, {
       method: 'POST',
       headers: authHeaders(true),
       body: JSON.stringify({ username })
     })
+    if (!res.ok) return false
     const data = (await res.json()) as { ok: boolean }
     return data.ok === true
   } catch {

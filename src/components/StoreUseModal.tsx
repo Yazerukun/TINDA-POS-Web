@@ -27,6 +27,7 @@ interface StoreUseModalProps {
   onDone?: () => void
   cashierName?: string
   storeName?: string
+  allProducts?: Product[]
 }
 
 export interface StoreUseRecord {
@@ -62,7 +63,16 @@ export function getStoredStoreUseRecords(): StoreUseRecord[] {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return []
     const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed : []
+    if (!Array.isArray(parsed)) return []
+    return parsed
+      .filter((r) => r && typeof r === 'object')
+      .map((r) => ({
+        ...r,
+        items: Array.isArray(r.items) ? r.items : [],
+        total_cost_c: typeof r.total_cost_c === 'number' ? r.total_cost_c : 0,
+        purpose: r.purpose || 'Store Use',
+        created_at: r.created_at || new Date().toISOString()
+      }))
   } catch {
     return []
   }
@@ -80,12 +90,13 @@ export function StoreUseModal({
   onClose,
   onDone,
   cashierName = 'Cashier',
-  storeName = 'Store Station'
+  storeName = 'Store Station',
+  allProducts: propProducts
 }: StoreUseModalProps): React.JSX.Element | null {
   const [tab, setTab] = useState<'CREATE' | 'HISTORY'>('CREATE')
   const [purpose, setPurpose] = useState<string>(COMMON_PURPOSES[0]!)
   const [notes, setNotes] = useState<string>('')
-  const [allProducts, setAllProducts] = useState<Product[]>([])
+  const [allProducts, setAllProducts] = useState<Product[]>(() => propProducts || [])
   const [records, setRecords] = useState<StoreUseRecord[]>(() => getStoredStoreUseRecords())
 
   // Product selection & items in voucher
@@ -100,10 +111,19 @@ export function StoreUseModal({
 
   useEffect(() => {
     if (open) {
-      db.products.where('status').equals('ACTIVE').toArray().then(setAllProducts).catch(() => {})
+      if (propProducts && propProducts.length > 0) {
+        setAllProducts(propProducts)
+      } else {
+        db.products
+          .toArray()
+          .then((items) => {
+            setAllProducts(items.filter((p) => p.status !== 'ARCHIVED'))
+          })
+          .catch(() => {})
+      }
       setRecords(getStoredStoreUseRecords())
     }
-  }, [open])
+  }, [open, propProducts])
 
   const filteredProducts = useMemo(() => {
     if (!searchQuery.trim()) return []
@@ -222,6 +242,7 @@ export function StoreUseModal({
       onClose={onClose}
       title="Store Use & Spoilage Write-Off"
       maxWidth="max-w-2xl"
+      zIndex="z-[60]"
       footer={
         <div className="flex w-full items-center justify-between">
           <div className="text-stone-400 text-xs">
@@ -438,7 +459,7 @@ export function StoreUseModal({
                     {rec.notes && <p className="text-[11px] text-stone-400 mt-0.5">{rec.notes}</p>}
                   </div>
                   <div className="text-[11px] text-stone-400 space-y-0.5">
-                    {rec.items.map((it, idx) => (
+                    {(rec.items || []).map((it, idx) => (
                       <div key={idx} className="flex justify-between">
                         <span>{it.quantity}x {it.product_name}</span>
                         <span className="font-mono text-stone-500">{money(it.subtotal_c)}</span>

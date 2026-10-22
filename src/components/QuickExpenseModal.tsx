@@ -79,7 +79,8 @@ export function QuickExpenseModal({
         description: desc,
         date: today,
         cashier_name: cashierName,
-        store_name: storeName
+        store_name: storeName,
+        created_at: new Date().toISOString()
       })
 
       try {

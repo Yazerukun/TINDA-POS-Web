@@ -13,6 +13,7 @@ import {
   Store,
   Delete,
   ChevronLeft,
+  ChevronRight,
   ArrowRight,
   Eye,
   EyeOff,

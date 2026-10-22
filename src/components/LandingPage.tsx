@@ -33,9 +33,15 @@ import {
   Crown,
   Layers,
   ChevronDown,
-  Volume2
+  Volume2,
+  BookOpen,
+  MessageSquare,
+  AlertTriangle,
+  FileText,
+  Copy
 } from 'lucide-react'
 import { AppLogo } from './AppLogo'
+import { CyberStreetScene } from './CyberStreetScene'
 import { playScanSuccess } from '../lib/sound'
 
 interface LandingPageProps {
@@ -216,6 +222,10 @@ const FAQ_ITEMS = [
     a: 'Yes. TINDA POS is built with an Offline-First Dexie (IndexedDB) engine. All products, sales, customers, and inventory operate entirely locally on your device. When your connection returns, it silently synchronizes transactions to Cloudflare D1 and Supabase in the background.'
   },
   {
+    q: 'How does TINDA POS compare to subscription apps like MyTindahan?',
+    a: 'MyTindahan charges ₱1,500 to ₱15,000 every single year, and locks vital hardware features like barcode scanning and receipt printing behind their ₱15,000 plan. TINDA POS includes unlimited barcode scanning, 58mm/80mm thermal receipt printing, and official DTI SRP Radar 100% free with zero monthly fees, or an optional ₱500 one-time lifetime VIP key!'
+  },
+  {
     q: 'Do I need to buy expensive proprietary POS hardware?',
     a: 'Not at all! You can run TINDA POS on any laptop, desktop PC, Android tablet, iPad, or even smartphone. You can connect standard affordable ₱1,200 thermal printers and ₱800 USB barcode scanners out of the box.'
   },
@@ -225,7 +235,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Can I track customer utang (credit) and print statements?',
-    a: 'Yes! The Utang Ledger allows you to set credit limits per customer, record partial payments, view full ledger histories, and print audited credit slips directly to your 58mm/80mm thermal printer.'
+    a: 'Yes! The Utang Ledger allows you to set credit limits per customer, record partial payments, view full ledger histories, copy polite SMS reminders in one tap, and print audited credit slips directly to your 58mm/80mm thermal printer.'
   },
   {
     q: 'Is there a monthly subscription fee?',
@@ -259,6 +269,9 @@ export function LandingPage({
   // ── FAQ Toggle State ──
   const [openFaq, setOpenFaq] = useState<number | null>(0)
 
+  // ── Interactive Utang Demo State ──
+  const [copiedSms, setCopiedSms] = useState(false)
+
   // ── Calculations for Simulator ──
   const simSubtotal = useMemo(
     () => simCart.reduce((sum, item) => sum + item.price * item.qty, 0),
@@ -271,9 +284,7 @@ export function LandingPage({
   const handleSimAddProduct = (item: DtiItem) => {
     try {
       playScanSuccess()
-    } catch {
-      // Audio context policy
-    }
+    } catch {}
     setLastScannedItem(item.name)
     setSimCart((prev) => {
       const existing = prev.find((p) => p.barcode === item.barcode)
@@ -318,14 +329,19 @@ export function LandingPage({
   const monthlyUtangRecovered = Math.round(dailyCustomers * 42.0)
   const totalMonthlyGain = monthlySpoilageSaved + monthlyUtangRecovered
 
+  const handleCopySms = () => {
+    const text =
+      'Magandang araw po Mang Boy! Paalala lang po mula sa tindahan, may remaining utang balance po kayong ₱450.00. Maraming salamat po sa inyong suporta!'
+    navigator.clipboard.writeText(text).catch(() => {})
+    setCopiedSms(true)
+    setTimeout(() => setCopiedSms(false), 2500)
+  }
+
   return (
     <div className="min-h-[100svh] bg-obsidian-950 text-stone-100 flex flex-col selection:bg-emerald-500/30 selection:text-white relative overflow-x-hidden">
       {/* ── AMBIENT BACKGROUND GLOW EFFECTS ── */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none" aria-hidden="true">
-        {/* Top ambient radial spotlight */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[550px] bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.18),_transparent_70%)]" />
-
-        {/* Morphing emerald orb 1 — top-left */}
         <div
           className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-60 will-change-transform animate-morph"
           style={{
@@ -334,8 +350,6 @@ export function LandingPage({
             filter: 'blur(90px)'
           }}
         />
-
-        {/* Morphing teal orb 2 — top-right */}
         <div
           className="absolute top-1/4 -right-40 w-[550px] h-[550px] rounded-full opacity-45 will-change-transform animate-morph"
           style={{
@@ -346,8 +360,6 @@ export function LandingPage({
             animationDuration: '24s'
           }}
         />
-
-        {/* Subtle engineering grid overlay */}
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -370,7 +382,7 @@ export function LandingPage({
                   TINDA POS
                 </span>
                 <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[0.625rem] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                  Web v1.0.3
+                  Web v1.0.8
                 </span>
               </div>
               <span className="hidden md:block text-[0.6875rem] font-sans font-semibold tracking-[0.16em] uppercase text-emerald-400/80 mt-0.5">
@@ -382,6 +394,18 @@ export function LandingPage({
           {/* Desktop Nav Anchors */}
           <nav className="hidden lg:flex items-center gap-7">
             <a
+              href="#street-scene"
+              className="text-xs font-sans font-medium uppercase tracking-[0.14em] text-stone-400 hover:text-emerald-400 transition-colors"
+            >
+              Cyber Street
+            </a>
+            <a
+              href="#utang-ledger"
+              className="text-xs font-sans font-medium uppercase tracking-[0.14em] text-stone-400 hover:text-emerald-400 transition-colors"
+            >
+              Utang Ledger
+            </a>
+            <a
               href="#simulator"
               className="text-xs font-sans font-medium uppercase tracking-[0.14em] text-stone-400 hover:text-emerald-400 transition-colors"
             >
@@ -391,25 +415,13 @@ export function LandingPage({
               href="#dti-radar"
               className="text-xs font-sans font-medium uppercase tracking-[0.14em] text-stone-400 hover:text-emerald-400 transition-colors"
             >
-              DTI SRP Radar
+              DTI Radar
             </a>
             <a
-              href="#pillars"
+              href="#compare"
               className="text-xs font-sans font-medium uppercase tracking-[0.14em] text-stone-400 hover:text-emerald-400 transition-colors"
             >
-              Capabilities
-            </a>
-            <a
-              href="#hardware"
-              className="text-xs font-sans font-medium uppercase tracking-[0.14em] text-stone-400 hover:text-emerald-400 transition-colors"
-            >
-              Hardware
-            </a>
-            <a
-              href="#roi"
-              className="text-xs font-sans font-medium uppercase tracking-[0.14em] text-stone-400 hover:text-emerald-400 transition-colors"
-            >
-              Savings
+              Compare
             </a>
             <a
               href="#faq"
@@ -423,7 +435,7 @@ export function LandingPage({
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={onQuickDemo}
-              className="btn-press hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 transition-all"
+              className="btn-press hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 transition-all cursor-pointer"
               title="1-Click Sandbox Demo"
             >
               <Zap className="w-3.5 h-3.5 text-amber-400" />
@@ -432,7 +444,7 @@ export function LandingPage({
 
             <button
               onClick={onOpenLogin}
-              className="btn-press px-4 py-2 rounded-full text-xs font-semibold text-stone-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-emerald-500/30 transition-all flex items-center gap-1.5"
+              className="btn-press px-4 py-2 rounded-full text-xs font-semibold text-stone-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-emerald-500/30 transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <LogIn className="w-3.5 h-3.5 text-emerald-400" />
               <span>Sign In</span>
@@ -440,7 +452,7 @@ export function LandingPage({
 
             <button
               onClick={onOpenSignup}
-              className="btn-press px-4 sm:px-5 py-2 rounded-full text-xs font-bold text-obsidian-950 bg-gradient-to-r from-emerald-400 via-brand-400 to-emerald-500 hover:from-emerald-300 hover:to-brand-300 shadow-[0_0_20px_-4px_rgba(16,185,129,0.5)] transition-all flex items-center gap-1.5"
+              className="btn-press px-4 sm:px-5 py-2 rounded-full text-xs font-bold text-obsidian-950 bg-gradient-to-r from-emerald-400 via-brand-400 to-emerald-500 hover:from-emerald-300 hover:to-brand-300 shadow-[0_0_20px_-4px_rgba(16,185,129,0.5)] transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <UserPlus className="w-3.5 h-3.5" />
               <span>Register Free</span>
@@ -450,37 +462,36 @@ export function LandingPage({
       </header>
 
       {/* ── HERO BANNER SECTION ── */}
-      <section className="relative z-10 pt-16 sm:pt-24 lg:pt-28 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto text-center">
+      <section className="relative z-10 pt-12 sm:pt-20 lg:pt-24 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto text-center">
         {/* Shimmer Pill Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-400 text-xs font-mono font-medium tracking-wide mb-6 sm:mb-8 backdrop-blur-md shadow-sm">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-400 text-xs font-mono font-medium tracking-wide mb-6 backdrop-blur-md shadow-sm">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
           </span>
-          <span>PHILIPPINE RETAIL STANDARD · 100% OFFLINE READY</span>
+          <span>PHILIPPINE SARI-SARI &amp; GROCERY STANDARD · 100% OFFLINE</span>
         </div>
 
-        {/* Hero Headline */}
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-black tracking-tight leading-[1.1] max-w-4xl mx-auto">
-          <span className="text-stone-100">The Executive Counter </span>
-          <br className="hidden sm:block" />
+        {/* Hero Headline — The Iconic Pinoy Hook */}
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-black tracking-tight leading-[1.15] max-w-4xl mx-auto">
+          <span className="text-stone-100">Alam mo ang benta, utang at stock. </span>
+          <br />
           <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500 bg-clip-text text-transparent">
-            Engineered for Philippine Retail.
+            Kahit mag-brownout pa.
           </span>
         </h1>
 
         {/* Subtitle */}
-        <p className="mt-5 sm:mt-7 text-sm sm:text-base lg:text-lg text-stone-400 max-w-2xl mx-auto font-sans leading-relaxed">
-          High-speed barcode scanning, official DTI SRP price ceilings, automated perishable
-          expiration radar, and customer credit ledger. Operates 100% offline with zero cloud
-          dependency during power cuts.
+        <p className="mt-5 sm:mt-6 text-sm sm:text-base lg:text-lg text-stone-400 max-w-2xl mx-auto font-sans leading-relaxed">
+          The high-performance retail counter built for Filipino sari-sari stores, minimarts, and groceries.
+          Sub-millisecond barcode scanning, official DTI SRP price ceilings, audited utang ledger, and thermal receipts — with <span className="text-emerald-400 font-bold">zero monthly subscription</span>.
         </p>
 
         {/* CTA Button Group */}
-        <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
           <button
             onClick={onOpenSignup}
-            className="btn-press group px-7 sm:px-8 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 font-sans font-bold text-sm tracking-wide shadow-[0_0_30px_-6px_rgba(16,185,129,0.5)] hover:shadow-[0_0_40px_-6px_rgba(16,185,129,0.7)] transition-all flex items-center gap-2.5"
+            className="btn-press group px-7 sm:px-8 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 font-sans font-bold text-sm tracking-wide shadow-[0_0_30px_-6px_rgba(16,185,129,0.5)] hover:shadow-[0_0_40px_-6px_rgba(16,185,129,0.7)] transition-all flex items-center gap-2.5 cursor-pointer"
           >
             <span>Register Store Free</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -488,7 +499,7 @@ export function LandingPage({
 
           <button
             onClick={onOpenLogin}
-            className="btn-press px-7 sm:px-8 py-3.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-stone-200 font-sans font-semibold text-sm tracking-wide border border-white/10 hover:border-emerald-500/30 transition-all flex items-center gap-2.5"
+            className="btn-press px-7 sm:px-8 py-3.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-stone-200 font-sans font-semibold text-sm tracking-wide border border-white/10 hover:border-emerald-500/30 transition-all flex items-center gap-2.5 cursor-pointer"
           >
             <LogIn className="w-4 h-4 text-emerald-400" />
             <span>Open Cashier Counter</span>
@@ -496,7 +507,7 @@ export function LandingPage({
 
           <button
             onClick={onQuickDemo}
-            className="btn-press px-6 py-3.5 rounded-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 font-sans font-bold text-sm tracking-wide border border-amber-500/30 transition-all flex items-center gap-2"
+            className="btn-press px-6 py-3.5 rounded-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 font-sans font-bold text-sm tracking-wide border border-amber-500/30 transition-all flex items-center gap-2 cursor-pointer"
           >
             <Zap className="w-4 h-4 text-amber-400" />
             <span>Instant Sandbox Demo</span>
@@ -504,28 +515,177 @@ export function LandingPage({
           </button>
         </div>
 
-        {/* Trust Telemetry Ticker */}
-        <div className="mt-12 sm:mt-16 pt-8 border-t border-white/[0.06] flex flex-wrap items-center justify-center gap-6 sm:gap-12">
-          {[
-            { label: '< 20ms Latency', sub: 'Instant Barcode Search' },
-            { label: '100% Offline', sub: 'Dexie Local Storage' },
-            { label: '172+ DTI Ceilings', sub: 'Pre-loaded E-Presyo' },
-            { label: 'ESC/POS Driver', sub: '58mm / 80mm Printers' },
-            { label: 'Dual-Cloud Edge', sub: 'Cloudflare + Supabase' }
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <p className="font-mono text-sm sm:text-base font-bold text-emerald-400">
-                {stat.label}
-              </p>
-              <p className="text-[0.6875rem] font-sans font-medium text-stone-500 uppercase tracking-wider mt-0.5">
-                {stat.sub}
-              </p>
-            </div>
-          ))}
+        {/* ── INTERACTIVE CYBER-TINDAHAN STREET SCENE ── */}
+        <div id="street-scene" className="mt-12 sm:mt-16 text-left">
+          <div className="flex items-center justify-between mb-3 px-1">
+            <span className="text-xs font-mono font-bold tracking-wider uppercase text-emerald-400 flex items-center gap-1.5">
+              <Store className="w-4 h-4" />
+              <span>Interactive Philippine Barangay Street Engine</span>
+            </span>
+            <span className="text-[0.6875rem] font-mono text-stone-400 hidden sm:inline">
+              Simulating Real Sari-Sari Store Life &amp; Edge Hardware
+            </span>
+          </div>
+
+          <CyberStreetScene onQuickDemo={onQuickDemo} onOpenLogin={onOpenLogin} />
         </div>
       </section>
 
-      {/* ── 1. LIVE INTERACTIVE POS TERMINAL SIMULATOR ── */}
+      {/* ── 1. KWADERNO VS TINDA DIGITAL UTANG LEDGER SHOWCASE ── */}
+      <section id="utang-ledger" className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono font-semibold mb-3">
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Kwaderno vs Digital Utang Ledger</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-stone-100">
+            Wala Nang Nawawalang Pera sa Listahan
+          </h2>
+          <p className="text-sm text-stone-400 mt-3 font-sans">
+            Goodbye punit-punit na papel at hulaang singilan. TINDA POS tracks exact customer credit limits, date-stamped balance histories, and generates polite SMS &amp; 58mm thermal statements.
+          </p>
+        </div>
+
+        {/* Side-by-Side Comparison: Tattered Paper vs High-Tech Ledger */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          {/* Old Way: Kwaderno / Listahan ng Utang */}
+          <div className="p-6 sm:p-7 rounded-3xl bg-amber-950/20 border border-amber-800/30 text-stone-300 font-sans relative overflow-hidden flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-amber-800/30">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-400/90 flex items-center gap-1.5">
+                  <AlertTriangle className="w-4 h-4 text-amber-500" />
+                  <span>Karanasan sa Lumang Kwaderno</span>
+                </span>
+                <span className="text-[0.625rem] font-mono px-2 py-0.5 rounded bg-amber-900/40 text-amber-300">
+                  Manual &amp; High Risk
+                </span>
+              </div>
+
+              {/* Simulated Tattered Notebook Lines */}
+              <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-900/40 space-y-3 font-mono text-xs text-stone-400">
+                <div className="flex justify-between line-through decoration-red-500 opacity-60">
+                  <span>Mang Boy - 2 bigas, 1 canton</span>
+                  <span>₱145 (bura na?)</span>
+                </div>
+                <div className="flex justify-between border-b border-dashed border-amber-900/60 pb-2">
+                  <span className="text-amber-200">Aling Nena - Gin bilog + yosi</span>
+                  <span className="text-amber-300 font-bold">₱450.00 (walang petsa)</span>
+                </div>
+                <div className="flex justify-between text-stone-500 text-[0.6875rem]">
+                  <span>Kompanya ni Pareng Jun</span>
+                  <span>₱1,200.00 (saan napunta?)</span>
+                </div>
+              </div>
+
+              <div className="mt-4 space-y-2 text-xs text-stone-400">
+                <div className="flex items-start gap-2">
+                  <span className="text-red-400 font-bold shrink-0">✕</span>
+                  <span>Nababasa ng kape o ulan, nawawala inig makalimutan sa counter.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-red-400 font-bold shrink-0">✕</span>
+                  <span>Nahihiyang maningil dahil walang resibo o patunay ng petsa.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-red-400 font-bold shrink-0">✕</span>
+                  <span>Average ₱3,500 – ₱8,000 na nawawalang utang bawat buwan.</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-3 border-t border-amber-900/30 text-[0.6875rem] font-mono text-amber-400/70">
+              ❌ Zero backup kapag napunit o nasunog ang tindahan
+            </div>
+          </div>
+
+          {/* New Way: TINDA Digital Utang Engine */}
+          <div className="p-6 sm:p-7 rounded-3xl bg-zinc-950/80 border border-emerald-500/30 text-stone-100 font-sans shadow-[0_15px_40px_-10px_rgba(16,185,129,0.2)] flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/[0.08]">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>TINDA Executive Utang Engine</span>
+                </span>
+                <span className="text-[0.625rem] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                  Audited &amp; Offline-1st
+                </span>
+              </div>
+
+              {/* Digital Customer Profile Widget */}
+              <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold text-xs">
+                      MB
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-stone-100">Mang Boy (Suki)</p>
+                      <p className="text-[0.625rem] font-mono text-stone-400">ID: CUST-0042 · Limit: ₱1,000</p>
+                    </div>
+                  </div>
+                  <span className="text-sm font-mono font-bold text-amber-300">₱450.00</span>
+                </div>
+
+                {/* Credit Limit Progress */}
+                <div>
+                  <div className="flex justify-between text-[0.625rem] font-mono text-stone-400 mb-1">
+                    <span>Credit Used: 45%</span>
+                    <span className="text-emerald-400">₱550.00 Remaining</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="h-full bg-amber-400 rounded-full w-[45%]" />
+                  </div>
+                </div>
+
+                {/* 1-Tap Quick Action Buttons */}
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={handleCopySms}
+                    className="py-1.5 px-2.5 rounded-xl bg-white/[0.04] hover:bg-emerald-500/15 border border-white/[0.08] text-[0.6875rem] font-mono text-emerald-300 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <MessageSquare className="w-3 h-3 text-emerald-400" />
+                    <span>{copiedSms ? 'Copied SMS!' : 'Copy Polite SMS'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      try { playScanSuccess() } catch {}
+                    }}
+                    className="py-1.5 px-2.5 rounded-xl bg-white/[0.04] hover:bg-emerald-500/15 border border-white/[0.08] text-[0.6875rem] font-mono text-emerald-300 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <Printer className="w-3 h-3 text-emerald-400" />
+                    <span>Print 58mm Statement</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-4 space-y-2 text-xs text-stone-300">
+                <div className="flex items-start gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                  <span>Exact integer centavo math — zero rounding errors at zero lito.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                  <span>Prints clear 58mm thermal breakdown na may petsa, item, at pirmahan.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                  <span>Gumagana 100% offline kahit walang kuryente o internet sa tindahan.</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-3 border-t border-white/[0.08] text-[0.6875rem] font-mono text-emerald-400 flex items-center justify-between">
+              <span>✅ Safe sa Dexie + Cloudflare D1 Sync</span>
+              <span className="text-stone-400">Reclaims ~₱3,200/mo uncollected credit</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 2. LIVE INTERACTIVE POS TERMINAL SIMULATOR ── */}
       <section
         id="simulator"
         className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
@@ -563,7 +723,7 @@ export function LandingPage({
               </span>
               <button
                 onClick={handleSimClearCart}
-                className="text-[0.6875rem] font-mono text-stone-400 hover:text-stone-200 flex items-center gap-1 px-2 py-1 rounded bg-white/[0.04]"
+                className="text-[0.6875rem] font-mono text-stone-400 hover:text-stone-200 flex items-center gap-1 px-2 py-1 rounded bg-white/[0.04] cursor-pointer"
               >
                 <RotateCcw className="w-3 h-3" />
                 <span>Reset</span>
@@ -622,7 +782,7 @@ export function LandingPage({
               <div className="pt-2">
                 <button
                   onClick={onQuickDemo}
-                  className="btn-press w-full py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-mono text-xs font-semibold flex items-center justify-center gap-2"
+                  className="btn-press w-full py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-mono text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Zap className="w-3.5 h-3.5 text-amber-400" />
                   <span>Launch Full Working Demo Counter</span>
@@ -677,7 +837,7 @@ export function LandingPage({
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setSimDiscount('NONE')}
-                      className={`btn-press py-1.5 px-3 rounded-xl text-xs font-mono transition-all ${
+                      className={`btn-press py-1.5 px-3 rounded-xl text-xs font-mono transition-all cursor-pointer ${
                         simDiscount === 'NONE'
                           ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold'
                           : 'bg-white/[0.02] text-stone-400 border border-white/[0.06]'
@@ -687,7 +847,7 @@ export function LandingPage({
                     </button>
                     <button
                       onClick={() => setSimDiscount('SENIOR')}
-                      className={`btn-press py-1.5 px-3 rounded-xl text-xs font-mono transition-all flex items-center justify-center gap-1 ${
+                      className={`btn-press py-1.5 px-3 rounded-xl text-xs font-mono transition-all flex items-center justify-center gap-1 cursor-pointer ${
                         simDiscount === 'SENIOR'
                           ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold'
                           : 'bg-white/[0.02] text-stone-400 border border-white/[0.06]'
@@ -709,7 +869,7 @@ export function LandingPage({
                       <button
                         key={amt}
                         onClick={() => setSimTender(amt)}
-                        className={`btn-press py-1.5 rounded-lg text-xs font-mono transition-all ${
+                        className={`btn-press py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer ${
                           simTender === amt
                             ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 font-bold'
                             : 'bg-white/[0.02] text-stone-400 border border-white/[0.06]'
@@ -750,7 +910,7 @@ export function LandingPage({
             {/* Right: Realistic Simulated 58mm Thermal Receipt (4 cols) */}
             <div className="lg:col-span-4 p-5 sm:p-6 bg-obsidian-900/60 flex flex-col items-center justify-center">
               <div className="w-full max-w-[270px] bg-stone-100 text-stone-900 p-4 rounded shadow-2xl font-mono text-[0.6875rem] leading-tight select-none relative">
-                {/* Perforated Top Edge SVG */}
+                {/* Perforated Top Edge */}
                 <div className="text-center border-b border-dashed border-stone-400 pb-2 mb-2">
                   <p className="font-bold text-sm tracking-widest uppercase">TINDA STORE #01</p>
                   <p className="text-[0.625rem] text-stone-600">BRGY. POBLACION, CEBU CITY</p>
@@ -818,7 +978,7 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* ── 2. DTI SRP PRICE CEILING RADAR (Official E-Presyo) ── */}
+      {/* ── 3. DTI SRP PRICE CEILING RADAR (Official E-Presyo) ── */}
       <section
         id="dti-radar"
         className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
@@ -857,7 +1017,7 @@ export function LandingPage({
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`btn-press px-3.5 py-1.5 rounded-full text-xs font-mono transition-all whitespace-nowrap ${
+                  className={`btn-press px-3.5 py-1.5 rounded-full text-xs font-mono transition-all whitespace-nowrap cursor-pointer ${
                     selectedCategory === cat
                       ? 'bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 font-bold'
                       : 'bg-white/[0.02] text-stone-400 border border-white/[0.06] hover:text-stone-200'
@@ -924,7 +1084,7 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* ── 3. SIX CORE ARCHITECTURAL CAPABILITIES (BENTO GRID) ── */}
+      {/* ── 4. SIX CORE ARCHITECTURAL CAPABILITIES (BENTO GRID) ── */}
       <section
         id="pillars"
         className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
@@ -976,14 +1136,14 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* ── 4. HARDWARE ECOSYSTEM COMPATIBILITY ── */}
+      {/* ── 5. HARDWARE ECOSYSTEM COMPATIBILITY ── */}
       <section
         id="hardware"
         className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
       >
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
           <span className="text-xs font-mono font-semibold uppercase tracking-[0.25em] text-emerald-400 mb-2 block">
-            Plug & Play Peripherals
+            Plug &amp; Play Peripherals
           </span>
           <h2 className="text-2xl sm:text-4xl font-serif font-bold text-stone-100">
             Works with the Hardware You Already Own
@@ -1017,160 +1177,86 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* ── 5. INTERACTIVE ROI & DAILY SAVINGS CALCULATOR ── */}
-      <section
-        id="roi"
-        className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto"
-      >
-        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-emerald-500/[0.08] via-obsidian-900/90 to-obsidian-950 border border-emerald-500/30 backdrop-blur-2xl">
-          <div className="text-center max-w-2xl mx-auto mb-8">
-            <span className="text-xs font-mono font-semibold uppercase tracking-[0.25em] text-emerald-400 mb-2 block">
-              Merchant Value Calculator
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-100">
-              Calculate Your Store's Monthly Savings
-            </h2>
-            <p className="text-xs sm:text-sm text-stone-400 mt-2 font-sans">
-              Drag the slider to your average daily transaction count and see how much time and
-              revenue TINDA POS recovers.
-            </p>
-          </div>
-
-          {/* Slider */}
-          <div className="max-w-md mx-auto mb-10 text-center">
-            <div className="flex items-center justify-between text-xs font-mono text-stone-400 mb-2">
-              <span>Low Volume (30)</span>
-              <span className="text-sm font-bold text-emerald-400">{dailyCustomers} Customers / Day</span>
-              <span>High Traffic (500)</span>
-            </div>
-            <input
-              type="range"
-              min={30}
-              max={500}
-              step={10}
-              value={dailyCustomers}
-              onChange={(e) => setDailyCustomers(Number(e.target.value))}
-              className="w-full accent-emerald-500 cursor-pointer h-2 bg-zinc-800 rounded-lg"
-            />
-          </div>
-
-          {/* 3 Metrics Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-            <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08]">
-              <Clock className="w-5 h-5 text-emerald-400 mx-auto mb-2" />
-              <p className="text-xl sm:text-2xl font-mono font-bold text-stone-100">
-                {(timeSavedMinutes / 60).toFixed(1)} hrs
-              </p>
-              <p className="text-[0.6875rem] font-sans text-stone-400 mt-1 uppercase tracking-wider">
-                Cashier Time Saved Daily
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08]">
-              <CalendarClock className="w-5 h-5 text-rose-400 mx-auto mb-2" />
-              <p className="text-xl sm:text-2xl font-mono font-bold text-stone-100">
-                ₱{monthlySpoilageSaved.toLocaleString()}
-              </p>
-              <p className="text-[0.6875rem] font-sans text-stone-400 mt-1 uppercase tracking-wider">
-                Expired Goods Saved / Mo
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08]">
-              <Users className="w-5 h-5 text-amber-400 mx-auto mb-2" />
-              <p className="text-xl sm:text-2xl font-mono font-bold text-stone-100">
-                ₱{monthlyUtangRecovered.toLocaleString()}
-              </p>
-              <p className="text-[0.6875rem] font-sans text-stone-400 mt-1 uppercase tracking-wider">
-                Uncollected Utang Recovered / Mo
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-8 text-center pt-6 border-t border-white/[0.08]">
-            <p className="text-xs text-stone-400 font-sans">
-              Estimated Net Value Recovered:{' '}
-              <span className="font-mono font-bold text-emerald-400 text-sm">
-                ₱{totalMonthlyGain.toLocaleString()} per month
-              </span>
-            </p>
-            <div className="mt-4">
-              <button
-                onClick={onOpenSignup}
-                className="btn-press px-6 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 font-sans font-bold text-xs tracking-wider uppercase transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)]"
-              >
-                Claim Free Store Account
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 6. COMPARISON MATRIX (TINDA POS vs OTHERS) ── */}
-      <section className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+      {/* ── 6. DIRECT HEAD-TO-HEAD COMPARISON: TINDA POS VS MYTINDAHAN VS KWADERNO ── */}
+      <section id="compare" className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="text-xs font-mono font-semibold uppercase tracking-[0.25em] text-emerald-400 mb-2 block">
-            Head-to-Head Comparison
+            Direct Value Comparison
           </span>
           <h2 className="text-2xl sm:text-3xl font-serif font-bold text-stone-100">
-            Why Modern Merchants Choose TINDA POS
+            Bakit Mas Sulit ang TINDA POS?
           </h2>
+          <p className="text-xs sm:text-sm text-stone-400 mt-2 font-sans">
+            Direct comparison against MyTindahan App and traditional paper record-keeping.
+          </p>
         </div>
 
-        <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] overflow-x-auto custom-scrollbar">
-          <table className="w-full text-left border-collapse min-w-[550px]">
+        <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] overflow-x-auto custom-scrollbar shadow-2xl">
+          <table className="w-full text-left border-collapse min-w-[620px]">
             <thead>
               <tr className="border-b border-white/[0.08] text-xs font-mono uppercase text-stone-400">
                 <th className="p-4 sm:p-5">Feature Capability</th>
-                <th className="p-4 sm:p-5 text-emerald-400 font-bold bg-emerald-500/[0.05]">
+                <th className="p-4 sm:p-5 text-emerald-400 font-bold bg-emerald-500/[0.08] border-x border-emerald-500/20">
                   TINDA POS Web
                 </th>
-                <th className="p-4 sm:p-5">Traditional Cloud POS</th>
-                <th className="p-4 sm:p-5">Manual Ledger / Notebook</th>
+                <th className="p-4 sm:p-5">MyTindahan App</th>
+                <th className="p-4 sm:p-5">Kwaderno / Papel</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.06] text-xs font-sans">
               {[
                 {
-                  f: 'Monthly Cost',
-                  t: '₱0 Free Tier / ₱500 Lifetime',
-                  c: '₱1,500 – ₱3,500 / month',
-                  m: 'Paper & ink costs'
+                  f: 'Cost & Subscription',
+                  t: '₱0 Free / ₱500 Lifetime VIP (Zero Monthly Fees)',
+                  c: '₱1,500 – ₱15,000 / year recurring',
+                  m: '₱50 bawat notebook'
                 },
                 {
-                  f: '100% Offline Resilience',
-                  t: '✅ Yes (Dexie IndexedDB)',
-                  c: '❌ Freezes during brownout',
-                  m: '✅ Yes (Manual math)'
+                  f: 'Barcode Scanning',
+                  t: '✅ Included Free (USB Gun + Device Camera)',
+                  c: '❌ Locked to ₱15,000/yr Business Plan',
+                  m: '❌ Walang scanner'
                 },
                 {
-                  f: 'Official DTI SRP Ceilings',
-                  t: '✅ 172+ Pre-loaded Items',
-                  c: '❌ Manual entry required',
-                  m: '❌ Guesswork'
+                  f: 'Thermal Receipt Printing',
+                  t: '✅ Included Free (58mm & 80mm ESC/POS)',
+                  c: '❌ Locked to ₱15,000/yr Business Plan',
+                  m: '❌ Mano-mano sulat kamay'
                 },
                 {
-                  f: 'Perishable Expiration Radar',
-                  t: '✅ 7, 14, 30-Day Auto Alerts',
-                  c: '❌ Expensive add-on',
-                  m: '❌ Spoiled inventory lost'
+                  f: 'Offline Capability',
+                  t: '✅ 100% Offline (Dexie IndexedDB Engine)',
+                  c: '⚠️ Needs regular cloud connection',
+                  m: '✅ Yes (Manual compute)'
                 },
                 {
-                  f: 'Utang / Credit Statements',
-                  t: '✅ Thermal Statement Slips',
-                  c: '⚠️ Partial or non-compliant',
-                  m: '❌ Misplaced / torn pages'
+                  f: 'Official DTI SRP Radar',
+                  t: '✅ 172+ Pre-loaded Price Ceilings',
+                  c: '❌ Walang DTI government watchdog',
+                  m: '❌ Hula-hula presyo'
                 },
                 {
-                  f: 'Hardware Flexibility',
-                  t: '✅ Any Phone, PC, Tablet',
-                  c: '❌ Proprietary terminal lock-in',
-                  m: 'N/A'
+                  f: 'Senior / PWD 20% Math',
+                  t: '✅ 1-Tap Statutory Math Precision',
+                  c: '❌ Manual computation needed',
+                  m: '❌ Madalas magkamali sa sukli'
+                },
+                {
+                  f: 'Digital Utang Tracker',
+                  t: '✅ With 1-Tap SMS & Thermal Statement',
+                  c: '⚠️ Basic ledger only',
+                  m: '❌ Madalas mabura / mapunit'
+                },
+                {
+                  f: 'Cloud Failover Resilience',
+                  t: '✅ Cloudflare D1 + Supabase Dual-Edge',
+                  c: '⚠️ Single cloud provider',
+                  m: '❌ Walang backup sa sunog'
                 }
               ].map((row) => (
                 <tr key={row.f} className="hover:bg-white/[0.02]">
                   <td className="p-4 sm:p-5 font-medium text-stone-300">{row.f}</td>
-                  <td className="p-4 sm:p-5 font-semibold text-emerald-300 bg-emerald-500/[0.03]">
+                  <td className="p-4 sm:p-5 font-semibold text-emerald-300 bg-emerald-500/[0.04] border-x border-emerald-500/20">
                     {row.t}
                   </td>
                   <td className="p-4 sm:p-5 text-stone-400">{row.c}</td>
@@ -1234,17 +1320,16 @@ export function LandingPage({
         <div className="p-8 sm:p-14 rounded-3xl bg-gradient-to-r from-emerald-500/[0.12] via-teal-500/[0.08] to-emerald-500/[0.12] border border-emerald-500/30 backdrop-blur-2xl">
           <AppLogo size={52} animated={true} className="mx-auto mb-4" />
           <h2 className="text-2xl sm:text-4xl font-serif font-bold text-stone-100 max-w-xl mx-auto">
-            Ready to Upgrade Your Retail Counter?
+            Handa Ka Na Bang I-Upgrade ang Tindahan Mo?
           </h2>
           <p className="text-xs sm:text-sm text-stone-400 mt-3 max-w-lg mx-auto font-sans leading-relaxed">
-            Create your free store in 30 seconds. No credit card required. Works completely offline on
-            any device.
+            Create your free store in 30 seconds. No credit card required. Works completely offline on any phone, laptop, or tablet.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={onOpenSignup}
-              className="btn-press px-8 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 font-sans font-bold text-sm tracking-wide shadow-[0_0_30px_rgba(16,185,129,0.5)] transition-all flex items-center gap-2"
+              className="btn-press px-8 py-3.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 font-sans font-bold text-sm tracking-wide shadow-[0_0_30px_rgba(16,185,129,0.5)] transition-all flex items-center gap-2 cursor-pointer"
             >
               <span>Register Free Store</span>
               <ArrowRight className="w-4 h-4" />
@@ -1252,7 +1337,7 @@ export function LandingPage({
 
             <button
               onClick={onQuickDemo}
-              className="btn-press px-7 py-3.5 rounded-full bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 font-sans font-bold text-sm tracking-wide border border-amber-500/35 transition-all flex items-center gap-2"
+              className="btn-press px-7 py-3.5 rounded-full bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 font-sans font-bold text-sm tracking-wide border border-amber-500/35 transition-all flex items-center gap-2 cursor-pointer"
             >
               <Zap className="w-4 h-4 text-amber-400" />
               <span>Launch Sandbox Demo</span>
@@ -1277,8 +1362,7 @@ export function LandingPage({
           </div>
 
           <p className="text-xs text-stone-500 font-sans text-center">
-            © {new Date().getFullYear()} TINDA Business POS. Edge-persisted with Dexie, Cloudflare D1
-            & Supabase.
+            © {new Date().getFullYear()} TINDA Business POS. Edge-persisted with Dexie, Cloudflare D1 &amp; Supabase.
           </p>
 
           <div className="flex items-center gap-6 text-xs text-stone-400 font-sans">

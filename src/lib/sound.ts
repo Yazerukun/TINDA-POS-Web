@@ -158,3 +158,69 @@ export function playCheckoutChime(): void {
     // Ignore audio error
   }
 }
+
+
+/**
+ * Authentic Pinoy Jeepney dual-tone horn ("Beep-beep! Para po!")
+ */
+export function playJeepneyHorn(): void {
+  if (isSoundMuted()) return
+  const ctx = getAudioContext()
+  if (!ctx) return
+
+  try {
+    const now = ctx.currentTime
+    ;[0, 0.14].forEach((delay) => {
+      const osc1 = ctx.createOscillator()
+      const osc2 = ctx.createOscillator()
+      const gain = ctx.createGain()
+      const t = now + delay
+
+      osc1.type = 'sawtooth'
+      osc2.type = 'sawtooth'
+      osc1.frequency.setValueAtTime(435, t)
+      osc2.frequency.setValueAtTime(540, t)
+
+      gain.gain.setValueAtTime(0.12, t)
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.11)
+
+      osc1.connect(gain)
+      osc2.connect(gain)
+      gain.connect(ctx.destination)
+
+      osc1.start(t)
+      osc2.start(t)
+      osc1.stop(t + 0.11)
+      osc2.stop(t + 0.11)
+    })
+  } catch {}
+}
+
+/**
+ * Cheerful Sari-Sari Store counter entrance bell ("Ting-ting! Suki!")
+ */
+export function playStoreChime(): void {
+  if (isSoundMuted()) return
+  const ctx = getAudioContext()
+  if (!ctx) return
+
+  try {
+    const now = ctx.currentTime
+    ;[1760, 2637].forEach((freq, idx) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      const t = now + idx * 0.08
+
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(freq, t)
+      gain.gain.setValueAtTime(0.15, t)
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25)
+
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+
+      osc.start(t)
+      osc.stop(t + 0.25)
+    })
+  } catch {}
+}

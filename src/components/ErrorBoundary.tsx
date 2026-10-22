@@ -1,5 +1,6 @@
 import React, { Component, type ErrorInfo, type ReactNode } from 'react'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
+import { logException } from '../services/sentry'
 
 interface Props {
   children: ReactNode
@@ -26,6 +27,10 @@ export class ErrorBoundary extends Component<Props, State> {
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an unhandled error:', error, errorInfo)
     this.setState({ errorInfo })
+    logException(error, {
+      componentStack: errorInfo.componentStack,
+      fallbackTitle: this.props.fallbackTitle
+    })
   }
 
   public handleReset = () => {

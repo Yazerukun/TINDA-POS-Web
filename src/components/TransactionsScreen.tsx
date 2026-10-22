@@ -14,13 +14,16 @@ import {
   CreditCard,
   Banknote,
   Wallet,
-  Crown
+  Crown,
+  ArrowLeftRight
 } from 'lucide-react'
-import type { Transaction, StoreSettings, Product } from '../types'
+import type { Transaction, TransactionItem, StoreSettings, Product } from '../types'
 import { db } from '../db'
 import { money, formatDateTime } from '../utils/format'
 import { Receipt as ReceiptComponent } from './Receipt'
 import { isVipActive, FREE_TIER_LIMITS } from '../utils/vip'
+import { SingleItemVoidModal } from './SingleItemVoidModal'
+import { ItemExchangeModal } from './ItemExchangeModal'
 
 interface TransactionsScreenProps {
   transactions: Transaction[]
@@ -54,6 +57,8 @@ export function TransactionsScreen({
   )
   const [voidTargetTx, setVoidTargetTx] = useState<Transaction | null>(null)
   const [voidReason, setVoidReason] = useState('Customer return / wrong item')
+  const [singleVoidItem, setSingleVoidItem] = useState<{ transaction: Transaction; item: TransactionItem } | null>(null)
+  const [exchangeItem, setExchangeItem] = useState<{ transaction: Transaction; item: TransactionItem } | null>(null)
 
   // Filtered transactions
   const filteredTransactions = useMemo(() => {
@@ -476,15 +481,37 @@ export function TransactionsScreen({
               <div className="divide-y divide-white/5 bg-obsidian-900 rounded-2xl p-3 border border-white/10 max-h-48 overflow-y-auto">
                 {selectedTx.items.map((item, idx) => (
                   <div key={idx} className="py-2 flex items-center justify-between text-xs">
-                    <div>
-                      <p className="font-semibold text-stone-100">{item.name}</p>
+                    <div className="min-w-0 pr-2">
+                      <p className="font-semibold text-stone-100 truncate">{item.name}</p>
                       <p className="text-[0.75rem] text-stone-400 font-mono">
                         {item.quantity} {item.unit_name} × {money(item.unit_price_c)}
                       </p>
                     </div>
-                    <p className="font-serif font-bold text-stone-200">
-                      {money(item.total_c)}
-                    </p>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <p className="font-serif font-bold text-stone-200">
+                        {money(item.total_c)}
+                      </p>
+                      {selectedTx.status !== 'VOIDED' && (
+                        <div className="flex items-center gap-1 ml-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setExchangeItem({ transaction: selectedTx, item })}
+                            className="p-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 transition cursor-pointer"
+                            title="Exchange this item"
+                          >
+                            <ArrowLeftRight className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSingleVoidItem({ transaction: selectedTx, item })}
+                            className="p-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition cursor-pointer"
+                            title="Void / Return this item"
+                          >
+                            <RotateCcw className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -666,6 +693,40 @@ export function TransactionsScreen({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Single-Item Void & Proportional Refund Modal */}
+      {singleVoidItem && (
+        <SingleItemVoidModal
+          transaction={singleVoidItem.transaction}
+          item={singleVoidItem.item}
+          onClose={() => setSingleVoidItem(null)}
+          onDone={async () => {
+            setSingleVoidItem(null)
+            if (selectedTx) {
+              const fresh = await db.transactions.get(selectedTx.id)
+              setSelectedTx(fresh || null)
+            }
+            onTransactionVoided?.()
+          }}
+        />
+      )}
+
+      {/* Item Exchange & Return Modal */}
+      {exchangeItem && (
+        <ItemExchangeModal
+          transaction={exchangeItem.transaction}
+          item={exchangeItem.item}
+          onClose={() => setExchangeItem(null)}
+          onDone={async () => {
+            setExchangeItem(null)
+            if (selectedTx) {
+              const fresh = await db.transactions.get(selectedTx.id)
+              setSelectedTx(fresh || null)
+            }
+            onTransactionVoided?.()
+          }}
+        />
       )}
     </div>
   )

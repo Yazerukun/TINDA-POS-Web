@@ -1,0 +1,169 @@
+{
+  "activePrototypes": {},
+  "awaitingApproval": false,
+  "basePath": "specs/_epics/pos-competitive-parity",
+  "commitSpec": false,
+  "discoveredSkills": [
+    {
+      "activeSource": "/home/ian/.agents/skills/interview-framework-codex/SKILL.md",
+      "name": "interview-framework-codex",
+      "outcome": "selected",
+      "pass": 1,
+      "reason": "core interview contract",
+      "revision": 1,
+      "shadowedSources": []
+    },
+    {
+      "activeSource": "/home/ian/.agents/skills/planning-and-task-breakdown/SKILL.md",
+      "name": "planning-and-task-breakdown",
+      "outcome": "selected",
+      "pass": 1,
+      "reason": "decomposition into per-feature specs is its core territory",
+      "revision": 1,
+      "shadowedSources": []
+    },
+    {
+      "activeSource": "/home/ian/.agents/skills/api-and-interface-design/SKILL.md",
+      "name": "api-and-interface-design",
+      "outcome": "selected",
+      "pass": 1,
+      "reason": "cross-spec stable contracts (schema, APIs, sync)",
+      "revision": 1,
+      "shadowedSources": []
+    },
+    {
+      "activeSource": "/home/ian/.agents/skills/frontend-ui-engineering/SKILL.md",
+      "name": "frontend-ui-engineering",
+      "outcome": "selected",
+      "pass": 1,
+      "reason": "shared design language across child specs",
+      "revision": 1,
+      "shadowedSources": []
+    }
+  ],
+  "discoveryRevision": 1,
+  "globalIteration": 1,
+  "goal": "Reverse engineer competitor POS apps (Aronium, Loyverse, Vertex) and implement superior, better-featured equivalents into TINDA POS Web, adopting similar UX design patterns where they improve the product.",
+  "maxGlobalIterations": 100,
+  "maxTaskIterations": 5,
+  "name": "pos-competitive-parity",
+  "phase": "triage",
+  "phaseInterview": {
+    "answeredDecisionIds": [
+      "T1-spec-granularity",
+      "T2-order-schema-owner",
+      "T3-sequencing"
+    ],
+    "askedDecisionIds": [
+      "T1-spec-granularity",
+      "T2-order-schema-owner",
+      "T3-sequencing",
+      "final-approach"
+    ],
+    "assumptionsRecorded": [],
+    "bypassReason": null,
+    "confirmationSource": null,
+    "interviewId": "iv-tr-7c857919-fe5e-44f0-94d8-fa0972601133",
+    "pendingDecisionIds": [
+      "final-approach"
+    ],
+    "phase": "triage",
+    "round": 1,
+    "selectedApproach": "Triage produces epic.md (decomposition plan: 6 specs, dependencies, stable cross-spec contracts) plus generated plan.md skeletons for each spec; then approval before any per-spec execution via ralph-specum-start.",
+    "status": "awaiting_confirmation"
+  },
+  "phaseSkillLoad": {
+    "artifactAgentLoads": [],
+    "conflicts": [],
+    "context": {
+      "artifacts": [],
+      "goal": "Reverse engineer competitor POS apps (Aronium, Loyverse, Vertex) and implement superior, better-featured equivalents into TINDA POS Web, adopting similar UX design patterns where they improve the product."
+    },
+    "contextDigest": "a1b2f9e7acab529d42588696800cda0411393ef74a299bd3019589f502141366",
+    "discoveryRevision": 1,
+    "failures": [],
+    "interviewId": "iv-tr-7c857919-fe5e-44f0-94d8-fa0972601133",
+    "noDomainMatches": false,
+    "phase": "triage",
+    "selected": [
+      {
+        "body": {
+          "errors": [],
+          "loadStatus": "loaded",
+          "sha256": "4313be70122970994c9f2cb10f9ff33c8bab1f419f223b1aaa7270c2aaf13047"
+        },
+        "core": true,
+        "name": "interview-framework-codex",
+        "reason": "core interview contract",
+        "requiredResourceSources": [
+          "/home/ian/.agents/skills/interview-framework-codex/references/algorithm.md",
+          "/home/ian/.agents/skills/interview-framework-codex/references/domain-modeling.md"
+        ],
+        "requiredResources": [
+          {
+            "errors": [],
+            "loadStatus": "loaded",
+            "sha256": "6b9fced8807bf4348bcc95b7f79ae593b90532a30299012ba6d2e16568687647",
+            "source": "/home/ian/.agents/skills/interview-framework-codex/references/algorithm.md"
+          },
+          {
+            "errors": [],
+            "loadStatus": "loaded",
+            "sha256": "c9c326c952c74cfbe992fafd682b7c5660308c1863e3e0dbedefca72c28cdc19",
+            "source": "/home/ian/.agents/skills/interview-framework-codex/references/domain-modeling.md"
+          }
+        ],
+        "source": "/home/ian/.agents/skills/interview-framework-codex/SKILL.md"
+      },
+      {
+        "body": {
+          "errors": [],
+          "loadStatus": "loaded",
+          "sha256": "ed0f90cc5951ddd4bcab7f871f64efec93a49af9279ef93bc470da77ad8da3f7"
+        },
+        "core": false,
+        "name": "planning-and-task-breakdown",
+        "reason": "decomposition into per-feature specs is its core territory",
+        "requiredResourceSources": [],
+        "requiredResources": [],
+        "source": "/home/ian/.agents/skills/planning-and-task-breakdown/SKILL.md"
+      },
+      {
+        "body": {
+          "errors": [],
+          "loadStatus": "loaded",
+          "sha256": "e83d34f52ff12dd8a7c5134cd7e8140ea4541ec65e204f8a1e4cd366e30c4192"
+        },
+        "core": false,
+        "name": "api-and-interface-design",
+        "reason": "cross-spec stable contracts (schema, APIs, sync)",
+        "requiredResourceSources": [],
+        "requiredResources": [],
+        "source": "/home/ian/.agents/skills/api-and-interface-design/SKILL.md"
+      },
+      {
+        "body": {
+          "errors": [],
+          "loadStatus": "loaded",
+          "sha256": "549044e9bd8d7fe993ce8e5c0d2b0f5465650676dc15805329973f936179eb1e"
+        },
+        "core": false,
+        "name": "frontend-ui-engineering",
+        "reason": "shared design language across child specs",
+        "requiredResourceSources": [],
+        "requiredResources": [],
+        "source": "/home/ian/.agents/skills/frontend-ui-engineering/SKILL.md"
+      }
+    ],
+    "status": "complete",
+    "warnings": []
+  },
+  "quickMode": false,
+  "relatedSpecs": [],
+  "source": "epic",
+  "specs": [],
+  "status": "active",
+  "taskIndex": 0,
+  "taskIteration": 1,
+  "totalTasks": 0
+}

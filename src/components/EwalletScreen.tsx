@@ -30,6 +30,8 @@ import {
 } from 'lucide-react'
 import { formatCurrency, formatDateTime } from '../utils/format'
 import { playScanSuccess, playCheckoutChime, playScanError } from '../lib/sound'
+import { ManageBillersModal } from './ManageBillersModal'
+import { loadBillerPresets, BILLERS_CHANGED_EVENT, type BillerPreset } from '../utils/billerCustomization'
 
 // ─── TYPES & INTERFACES ──────────────────────────────────────────
 
@@ -214,15 +216,26 @@ export function EwalletScreen({
   const [notes, setNotes] = useState('')
 
   // ─── 2. BILLS & E-LOAD FORM STATE ────────────────────────────────
+  const [billerPresets, setBillerPresets] = useState<BillerPreset[]>(() => loadBillerPresets())
+  const [isManageBillersOpen, setIsManageBillersOpen] = useState(false)
+
+  useEffect(() => {
+    const handleBillersUpdated = () => {
+      setBillerPresets(loadBillerPresets())
+    }
+    window.addEventListener(BILLERS_CHANGED_EVENT, handleBillersUpdated)
+    return () => window.removeEventListener(BILLERS_CHANGED_EVENT, handleBillersUpdated)
+  }, [])
+
   const [selectedBillerCat, setSelectedBillerCat] = useState<string>('ALL')
   const [billerSearch, setBillerSearch] = useState('')
-  const [selectedBiller, setSelectedBiller] = useState(BILLER_PRESETS[0]!.name)
+  const [selectedBiller, setSelectedBiller] = useState(() => billerPresets[0]?.name || 'Meralco')
   const [customBiller, setCustomBiller] = useState('')
   const [billAccountNo, setBillAccountNo] = useState('')
   const [billCustomerName, setBillCustomerName] = useState('')
   const [billCustomerPhone, setBillCustomerPhone] = useState('')
   const [billAmountStr, setBillAmountStr] = useState('')
-  const [billFeeStr, setBillFeeStr] = useState(String(BILLER_PRESETS[0]?.defaultFee || 15))
+  const [billFeeStr, setBillFeeStr] = useState(() => String(billerPresets[0]?.defaultFee || 15))
   const [billFeeMode, setBillFeeMode] = useState<'ADD' | 'DEDUCT'>('ADD')
   const [billCashReceivedStr, setBillCashReceivedStr] = useState('')
   const [billSourceWallet, setBillSourceWallet] = useState<EwalletChannel>('GCASH')
@@ -526,7 +539,7 @@ export function EwalletScreen({
     const changeAmt = cashRec !== undefined && cashRec >= totalDue ? cashRec - totalDue : undefined
 
     const finalBillerName = selectedBiller === 'OTHER' ? (customBiller.trim() || 'Custom Biller') : selectedBiller
-    const presetMatch = BILLER_PRESETS.find((p) => p.name === selectedBiller)
+    const presetMatch = billerPresets.find((p) => p.name === selectedBiller) || BILLER_PRESETS.find((p) => p.name === selectedBiller)
 
     const newBill: BillTransaction = {
       id: 'BL-' + Date.now().toString(36).toUpperCase() + '-' + Math.floor(100 + Math.random() * 900),
@@ -1601,9 +1614,22 @@ export function EwalletScreen({
                   )}
                 </div>
 
+                {/* Biller Header with Customization Trigger */}
+                <div className="flex items-center justify-between mb-1.5 px-0.5">
+                  <span className="text-[11px] font-bold text-stone-400">Available Billers & Coops:</span>
+                  <button
+                    type="button"
+                    onClick={() => setIsManageBillersOpen(true)}
+                    className="flex items-center gap-1 text-[11px] font-bold text-emerald-400 hover:text-emerald-300 transition cursor-pointer"
+                  >
+                    <Sliders className="h-3 w-3" />
+                    <span>Manage / Add Custom Biller</span>
+                  </button>
+                </div>
+
                 {/* Biller Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-1">
-                  {BILLER_PRESETS.filter((p) => {
+                  {billerPresets.filter((p) => {
                     const matchesCat = selectedBillerCat === 'ALL' || p.category === selectedBillerCat
                     const matchesSearch = !billerSearch.trim() ||
                       p.name.toLowerCase().includes(billerSearch.toLowerCase()) ||
@@ -3162,6 +3188,15 @@ export function EwalletScreen({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Manage / Custom Billers Modal */}
+      {isManageBillersOpen && (
+        <ManageBillersModal
+          open={isManageBillersOpen}
+          onClose={() => setIsManageBillersOpen(false)}
+          onSaved={() => setBillerPresets(loadBillerPresets())}
+        />
       )}
     </div>
   )

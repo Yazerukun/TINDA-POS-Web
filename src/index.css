@@ -459,14 +459,41 @@ body.theme-light .border-white\/20 {
   .btn-danger {
     @apply btn bg-danger-600 text-white hover:bg-danger-500 active:scale-[.98];
   }
-  .card-dark {
+  .card-dark, .card {
     @apply rounded-xl bg-ink-900 border border-ink-line shadow-sm;
   }
-  .input-dark {
+  .input-dark, .input {
     @apply w-full rounded-lg border border-ink-line bg-ink-950 px-3 py-2 text-sm text-slate-100
       placeholder-slate-500 focus:border-brand-500/70 focus:ring-2 focus:ring-brand-500/25
       focus:outline-none disabled:opacity-50;
   }
+  .modal-overlay {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-fade-in;
+  }
+  .modal-panel {
+    @apply card max-h-[90vh] w-full overflow-y-auto p-6 shadow-2xl;
+  }
+}
+
+/* Mobile & iOS Safari Hardening */
+@media screen and (max-width: 768px) {
+  /* Prevent iOS Safari from auto-zooming on input focus */
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Touch momentum scrolling for iOS & touch screens */
+.scrollbar-thin,
+.overflow-x-auto,
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ── Mobile Safe Area & Touch Optimization ── */

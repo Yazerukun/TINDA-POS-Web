@@ -62,6 +62,8 @@ import {
   playCheckoutChime
 } from '../lib/sound'
 import { importTindaBackup, getAutoDetectedBackup, loadDtiStarterCatalog } from '../utils/backup'
+import { FastButtonsBar } from './FastButtonsBar'
+import { PromoBundlesModal } from './PromoBundlesModal'
 
 interface POSScreenProps {
   products: Product[]
@@ -202,6 +204,7 @@ export function POSScreen({
   const [isHeldModalOpen, setIsHeldModalOpen] = useState(false)
   const [isCalcModalOpen, setIsCalcModalOpen] = useState(false)
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false)
+  const [isPromoModalOpen, setIsPromoModalOpen] = useState(false)
   const [isAutoImporting, setIsAutoImporting] = useState(false)
   const [isMobileCartOpen, setIsMobileCartOpen] = useState(false)
 
@@ -837,6 +840,13 @@ export function POSScreen({
           </div>
         </div>
 
+        {/* Speed Keys / Fast Buttons Strip (Yelo, Candy, Yosi, Sando Bag, etc.) */}
+        <FastButtonsBar
+          products={products}
+          onAddToCart={(p, qty) => addToCart(p, qty || 1)}
+          onProductsChanged={onRefreshData}
+        />
+
         {/* Product Cards Display: Grid or List */}
         {products.length === 0 ? (
           <div className="glass-card rounded-3xl p-10 text-center flex flex-col items-center justify-center border border-dashed border-amber-500/30 bg-amber-500/[0.03] space-y-4">
@@ -1459,12 +1469,22 @@ export function POSScreen({
             <button
               type="button"
               onClick={() => setIsExpenseModalOpen(true)}
-              className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl border border-white/[0.08] bg-obsidian-950/80 text-xs text-stone-300 hover:border-rose-500/50 hover:text-rose-400 transition-all"
+              className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl border border-white/[0.08] bg-obsidian-950/80 text-xs text-stone-300 hover:border-rose-500/50 hover:text-rose-400 transition-all cursor-pointer"
               title="Record Store Petty Cash Out (F7)"
             >
               <ReceiptIcon className="h-3.5 w-3.5 text-rose-400" />
               <span className="hidden sm:inline">Expense</span>
               <span className="text-[10px] font-mono font-bold text-rose-300 bg-rose-400/10 px-1 py-0.2 rounded border border-rose-400/20">F7</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsPromoModalOpen(true)}
+              className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl border border-white/[0.08] bg-obsidian-950/80 text-xs text-stone-300 hover:border-amber-500/50 hover:text-amber-300 transition-all cursor-pointer"
+              title="Manage Promo Bundles & Combos"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+              <span className="hidden sm:inline">Combos</span>
             </button>
 
             <button
@@ -1653,6 +1673,15 @@ export function POSScreen({
             setIsExpenseModalOpen(false)
           }}
           onClose={() => setIsExpenseModalOpen(false)}
+        />
+      )}
+
+      {/* MODAL 7: Promo Bundles & Combos Modal */}
+      {isPromoModalOpen && (
+        <PromoBundlesModal
+          open={isPromoModalOpen}
+          onClose={() => setIsPromoModalOpen(false)}
+          products={products}
         />
       )}
 

@@ -1,0 +1,219 @@
+{
+  "activePrototypes": {},
+  "awaitingApproval": false,
+  "basePath": "specs/pos-competitive-parity",
+  "commitSpec": true,
+  "discoveredSkills": [
+    {
+      "activeSource": "/home/ian/.agents/skills/interview-framework-codex/SKILL.md",
+      "name": "interview-framework-codex",
+      "outcome": "selected",
+      "pass": 1,
+      "reason": "core interview contract per ralph-specum-start",
+      "revision": 1,
+      "shadowedSources": []
+    },
+    {
+      "activeSource": "/home/ian/.agents/skills/frontend-ui-engineering/SKILL.md",
+      "name": "frontend-ui-engineering",
+      "outcome": "selected",
+      "pass": 1,
+      "reason": "design-parity territory",
+      "revision": 1,
+      "shadowedSources": []
+    },
+    {
+      "activeSource": "/home/ian/.agents/skills/api-and-interface-design/SKILL.md",
+      "name": "api-and-interface-design",
+      "outcome": "selected",
+      "pass": 1,
+      "reason": "feature/API contract territory",
+      "revision": 1,
+      "shadowedSources": []
+    },
+    {
+      "activeSource": "/home/ian/.agents/skills/interview-framework-codex/SKILL.md",
+      "name": "interview-framework-codex",
+      "outcome": "selected",
+      "pass": 2,
+      "reason": "core interview contract (retained)",
+      "revision": 2,
+      "shadowedSources": []
+    },
+    {
+      "activeSource": "/home/ian/.agents/skills/frontend-ui-engineering/SKILL.md",
+      "name": "frontend-ui-engineering",
+      "outcome": "selected",
+      "pass": 2,
+      "reason": "retained: UI parity territory per research design-pattern section",
+      "revision": 2,
+      "shadowedSources": []
+    },
+    {
+      "activeSource": "/home/ian/.agents/skills/api-and-interface-design/SKILL.md",
+      "name": "api-and-interface-design",
+      "outcome": "selected",
+      "pass": 2,
+      "reason": "retained: feature API contracts",
+      "revision": 2,
+      "shadowedSources": []
+    }
+  ],
+  "discoveryRevision": 2,
+  "globalIteration": 1,
+  "goal": "Reverse engineer competitor POS apps (Aronium, Loyverse, Vertex) and implement superior, better-featured equivalents into TINDA POS Web, adopting similar UX design patterns where they improve the product.",
+  "maxGlobalIterations": 100,
+  "maxTaskIterations": 5,
+  "name": "pos-competitive-parity",
+  "phase": "requirements",
+  "phaseInterview": {
+    "answeredDecisionIds": [
+      "D4-scope-cut",
+      "D5-structure",
+      "D6-loyalty-model",
+      "final-approach"
+    ],
+    "askedDecisionIds": [
+      "D4-scope-cut",
+      "D5-structure",
+      "D6-loyalty-model",
+      "final-approach"
+    ],
+    "assumptionsRecorded": [],
+    "bypassReason": null,
+    "confirmationSource": "approve-and-delegate",
+    "interviewId": "iv-req-4ea90fc1-e28f-481c-988d-31c0db046067",
+    "pendingDecisionIds": [],
+    "phase": "requirements",
+    "round": 1,
+    "selectedApproach": "Requirements phase produces an epic charter (requirements.md): epic-scope goals, phase sequence (KDS -> storefront/QR -> loyalty/promotions -> receipts -> customer display -> multi-outlet -> offline UX), epic-level acceptance criteria, and the unified points+promotions loyalty model; then a triage phase splits the epic into per-feature specs.",
+    "status": "complete"
+  },
+  "phaseSkillLoad": {
+    "artifactAgentLoads": [
+      {
+        "agent": "ra-req-dispatch-20261018-001",
+        "errors": [],
+        "loadStatus": "loaded",
+        "sha256": "4313be70122970994c9f2cb10f9ff33c8bab1f419f223b1aaa7270c2aaf13047",
+        "source": "/home/ian/.agents/skills/interview-framework-codex/SKILL.md"
+      },
+      {
+        "agent": "ra-req-dispatch-20261018-001",
+        "errors": [],
+        "loadStatus": "loaded",
+        "sha256": "6b9fced8807bf4348bcc95b7f79ae593b90532a30299012ba6d2e16568687647",
+        "source": "/home/ian/.agents/skills/interview-framework-codex/references/algorithm.md"
+      },
+      {
+        "agent": "ra-req-dispatch-20261018-001",
+        "errors": [],
+        "loadStatus": "loaded",
+        "sha256": "c9c326c952c74cfbe992fafd682b7c5660308c1863e3e0dbedefca72c28cdc19",
+        "source": "/home/ian/.agents/skills/interview-framework-codex/references/domain-modeling.md"
+      },
+      {
+        "agent": "ra-req-dispatch-20261018-001",
+        "errors": [],
+        "loadStatus": "loaded",
+        "sha256": "549044e9bd8d7fe993ce8e5c0d2b0f5465650676dc15805329973f936179eb1e",
+        "source": "/home/ian/.agents/skills/frontend-ui-engineering/SKILL.md"
+      },
+      {
+        "agent": "ra-req-dispatch-20261018-001",
+        "errors": [],
+        "loadStatus": "loaded",
+        "sha256": "e83d34f52ff12dd8a7c5134cd7e8140ea4541ec65e204f8a1e4cd366e30c4192",
+        "source": "/home/ian/.agents/skills/api-and-interface-design/SKILL.md"
+      },
+      {
+        "agent": "ra-req-dispatch-20261018-001",
+        "errors": [],
+        "loadStatus": "loaded",
+        "sha256": "9d5c6bc719acb9ea23e6928acf8373c03a5e1a8caecaa67f54aadd07890ef442",
+        "source": "/home/ian/Projects/TINDA-POS-Web/specs/pos-competitive-parity/research.md"
+      }
+    ],
+    "conflicts": [],
+    "context": {
+      "artifacts": [
+        {
+          "sha256": "9d5c6bc719acb9ea23e6928acf8373c03a5e1a8caecaa67f54aadd07890ef442",
+          "source": "/home/ian/Projects/TINDA-POS-Web/specs/pos-competitive-parity/research.md"
+        }
+      ],
+      "goal": "Reverse engineer competitor POS apps (Aronium, Loyverse, Vertex) and implement superior, better-featured equivalents into TINDA POS Web, adopting similar UX design patterns where they improve the product."
+    },
+    "contextDigest": "0d5ab8666beb25eddf9041e5ea7d04ce11e7bef17e99460dbb2b56834abe46f7",
+    "discoveryRevision": 2,
+    "failures": [],
+    "interviewId": "iv-req-4ea90fc1-e28f-481c-988d-31c0db046067",
+    "noDomainMatches": false,
+    "phase": "requirements",
+    "selected": [
+      {
+        "body": {
+          "errors": [],
+          "loadStatus": "loaded",
+          "sha256": "4313be70122970994c9f2cb10f9ff33c8bab1f419f223b1aaa7270c2aaf13047"
+        },
+        "core": true,
+        "name": "interview-framework-codex",
+        "reason": "core interview contract",
+        "requiredResourceSources": [
+          "/home/ian/.agents/skills/interview-framework-codex/references/algorithm.md",
+          "/home/ian/.agents/skills/interview-framework-codex/references/domain-modeling.md"
+        ],
+        "requiredResources": [
+          {
+            "errors": [],
+            "loadStatus": "loaded",
+            "sha256": "6b9fced8807bf4348bcc95b7f79ae593b90532a30299012ba6d2e16568687647",
+            "source": "/home/ian/.agents/skills/interview-framework-codex/references/algorithm.md"
+          },
+          {
+            "errors": [],
+            "loadStatus": "loaded",
+            "sha256": "c9c326c952c74cfbe992fafd682b7c5660308c1863e3e0dbedefca72c28cdc19",
+            "source": "/home/ian/.agents/skills/interview-framework-codex/references/domain-modeling.md"
+          }
+        ],
+        "source": "/home/ian/.agents/skills/interview-framework-codex/SKILL.md"
+      },
+      {
+        "body": {
+          "errors": [],
+          "loadStatus": "loaded",
+          "sha256": "549044e9bd8d7fe993ce8e5c0d2b0f5465650676dc15805329973f936179eb1e"
+        },
+        "core": false,
+        "name": "frontend-ui-engineering",
+        "reason": "pass-1 selection retained: UI parity territory",
+        "requiredResourceSources": [],
+        "requiredResources": [],
+        "source": "/home/ian/.agents/skills/frontend-ui-engineering/SKILL.md"
+      },
+      {
+        "body": {
+          "errors": [],
+          "loadStatus": "loaded",
+          "sha256": "e83d34f52ff12dd8a7c5134cd7e8140ea4541ec65e204f8a1e4cd366e30c4192"
+        },
+        "core": false,
+        "name": "api-and-interface-design",
+        "reason": "pass-1 selection retained: feature API contracts",
+        "requiredResourceSources": [],
+        "requiredResources": [],
+        "source": "/home/ian/.agents/skills/api-and-interface-design/SKILL.md"
+      }
+    ],
+    "status": "complete",
+    "warnings": []
+  },
+  "quickMode": false,
+  "relatedSpecs": [],
+  "source": "spec",
+  "taskIndex": 0,
+  "taskIteration": 1,
+  "totalTasks": 0
+}

@@ -40,6 +40,7 @@ import { sendHeartbeat } from './services/cloudSync'
 import { importTindaBackup } from './utils/backup'
 import { Upload, HardDriveDownload } from 'lucide-react'
 import { isVipActive, subscribeVipStatus, syncCloudVipStatus } from './utils/vip'
+import { ToastHost } from './components/ui/ToastHost'
 
 export default function App(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard')
@@ -799,6 +800,7 @@ export default function App(): React.JSX.Element {
 
   return (
     <div className="min-h-screen bg-obsidian-950 text-stone-100 flex flex-col md:flex-row selection:bg-amber-400 selection:text-stone-100 font-sans relative">
+      <ToastHost />
       {/* Global Drag-and-Drop Auto-Detection Overlay */}
       {isDraggingFile && (
         <div className="fixed inset-0 z-50 bg-obsidian-950/90 backdrop-blur-xl border-4 border-dashed border-emerald-400 flex flex-col items-center justify-center p-6 text-center animate-in fade-in select-none">

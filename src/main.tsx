@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
 import { initDatabase } from './db'
+import { initSentry } from './services/sentry'
+
+// Initialize Sentry error & performance monitoring before app mount
+initSentry()
 
 // Initialize Dexie database (categories + default settings only — no demo data) on startup
 initDatabase().catch(console.error)

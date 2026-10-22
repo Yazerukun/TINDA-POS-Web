@@ -33,7 +33,8 @@ import {
   ShieldAlert,
   Archive,
   BarChart2,
-  Crown
+  Crown,
+  Store
 } from 'lucide-react'
 import type { Product, Category, RestockLog, RestockType, PriceReference, Supplier } from '../types'
 import { money, formatDateTime, formatShortDate } from '../utils/format'
@@ -42,6 +43,7 @@ import { findSuggestedPrice, getSrpComparison } from '../utils/srp'
 import { syncOnlinePriceCatalog } from '../services/onlinePriceSync'
 import { db } from '../db'
 import { PriceTagPrintModal } from './PriceTagPrintModal'
+import { StoreUseModal } from './StoreUseModal'
 import { canAddProduct, isVipActive, FREE_TIER_LIMITS } from '../utils/vip'
 
 type InventoryTab = 'CATALOG' | 'REORDER' | 'BATCH_IN' | 'EXPIRATION' | 'HISTORY'
@@ -98,6 +100,9 @@ export function InventoryScreen({
   // CT-221B Label Studio Modal
   const [priceTagModalOpen, setPriceTagModalOpen] = useState(false)
   const [productToPrint, setProductToPrint] = useState<Product | null>(null)
+
+  // Store Use & Spoilage Write-Off Modal
+  const [isStoreUseOpen, setIsStoreUseOpen] = useState(false)
 
   // Batch Receiving (Quick Stock-In) State
   const [batchItems, setBatchItems] = useState<BatchInItem[]>([])
@@ -698,6 +703,17 @@ export function InventoryScreen({
           >
             <Printer className="h-4 w-4 text-emerald-400" />
             <span>CT-221B Studio</span>
+          </button>
+
+          {/* Store Use & Spoilage Write-Off Button */}
+          <button
+            type="button"
+            onClick={() => setIsStoreUseOpen(true)}
+            className="btn-press flex items-center gap-2 px-3 py-2 rounded-xl bg-obsidian-900 hover:bg-obsidian-850 border border-rose-500/30 text-rose-300 font-bold text-xs shadow-sm transition-all cursor-pointer"
+            title="Record Store Use, Staff Consumption, or Spoilage / Damage Write-Offs"
+          >
+            <Store className="h-4 w-4 text-rose-400" />
+            <span>Store Use / Write-Off</span>
           </button>
 
           {/* Add New Product Button */}
@@ -2419,6 +2435,19 @@ export function InventoryScreen({
         allProducts={products}
         storeName={storeName}
       />
+
+      {/* ──────────────────────────────────────────────────────────────────────────
+          STORE USE & SPOILAGE WRITE-OFF MODAL
+      ────────────────────────────────────────────────────────────────────────── */}
+      {isStoreUseOpen && (
+        <StoreUseModal
+          open={isStoreUseOpen}
+          onClose={() => setIsStoreUseOpen(false)}
+          onDone={loadProducts}
+          cashierName={currentCashierName}
+          storeName={storeName}
+        />
+      )}
     </div>
   )
 }

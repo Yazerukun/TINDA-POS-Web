@@ -14,10 +14,22 @@ import {
   Cpu,
   ShieldCheck,
   RefreshCw,
-  Coins
+  Coins,
+  Activity,
+  Bug,
+  Radio,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react'
 import { AppLogo } from './AppLogo'
 import { playSuccessSound } from '../lib/sound'
+import {
+  isSentryEnabled,
+  logMessage,
+  logException,
+  fetchRecentSentryEvents,
+  getActiveDsn
+} from '../services/sentry'
 
 interface TerminalToolsModalProps {
   isOpen: boolean
@@ -45,6 +57,46 @@ export function TerminalToolsModal({
   })
   const [testPrintActive, setTestPrintActive] = useState(false)
   const [testPrintSuccess, setTestPrintSuccess] = useState(false)
+  const [sentryTestStatus, setSentryTestStatus] = useState<string | null>(null)
+  const [sentryEventsOpen, setSentryEventsOpen] = useState(false)
+  const [sentryEvents, setSentryEvents] = useState<Array<{
+    id: string
+    receivedAt: string
+    header: Record<string, unknown>
+    itemHeader: Record<string, unknown>
+    payload: Record<string, unknown>
+  }>>([])
+  const [sentryLoading, setSentryLoading] = useState(false)
+
+  const refreshSentryEvents = async () => {
+    setSentryLoading(true)
+    const list = await fetchRecentSentryEvents()
+    setSentryEvents(list)
+    setSentryLoading(false)
+  }
+
+  const handleSentryPing = () => {
+    logMessage('Terminal Tools Diagnostic Ping: Cashier initiated manual telemetry test', 'info', {
+      cashier: currentCashierName,
+      store: storeName,
+      timestamp: new Date().toISOString()
+    })
+    setSentryTestStatus('PONG SENT!')
+    setTimeout(() => setSentryTestStatus(null), 3000)
+    setTimeout(refreshSentryEvents, 600)
+  }
+
+  const handleSentryException = () => {
+    logException(new Error(`Simulated Cashier Terminal Exception [${new Date().toLocaleTimeString()}]`), {
+      cashier: currentCashierName,
+      store: storeName,
+      source: 'TerminalToolsModal',
+      simulated: true
+    })
+    setSentryTestStatus('EXCEPTION SENT!')
+    setTimeout(() => setSentryTestStatus(null), 3000)
+    setTimeout(refreshSentryEvents, 600)
+  }
 
   // Quick Calculator state
   const [calcOpen, setCalcOpen] = useState(false)
@@ -281,6 +333,108 @@ export function TerminalToolsModal({
                 <h5 className="text-xs font-bold text-stone-200">Cashier Chimes</h5>
                 <p className="text-[0.6875rem] text-stone-500 mt-0.5">Scan & beep feedback</p>
               </button>
+
+              {/* Sentry Telemetry Diagnostic */}
+              <div className="p-3.5 rounded-2xl bg-obsidian-850 border border-slate-800 flex flex-col justify-between col-span-1 sm:col-span-2">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-amber-400" />
+                    <div>
+                      <h5 className="text-xs font-bold text-stone-200">Sentry Crash &amp; Telemetry Radar</h5>
+                      <p className="text-[0.6875rem] font-mono text-stone-500">
+                        Target: {getActiveDsn()?.includes('sentry.io') ? 'Sentry Cloud' : 'Local Envelope Ingest'}
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    className={`text-[0.6875rem] font-mono font-bold px-2 py-0.5 rounded-full border ${
+                      sentryTestStatus
+                        ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                        : isSentryEnabled
+                        ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                        : 'bg-stone-800 text-stone-500 border-stone-700'
+                    }`}
+                  >
+                    {sentryTestStatus ? sentryTestStatus : isSentryEnabled ? 'INGEST ACTIVE' : 'DISABLED'}
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 mt-2 pt-2 border-t border-white/[0.06]">
+                  <button
+                    onClick={handleSentryPing}
+                    className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[0.6875rem] font-mono font-bold flex items-center gap-1.5 transition-all"
+                  >
+                    <Radio className="w-3.5 h-3.5" />
+                    <span>Send Ping</span>
+                  </button>
+
+                  <button
+                    onClick={handleSentryException}
+                    className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[0.6875rem] font-mono font-bold flex items-center gap-1.5 transition-all"
+                  >
+                    <Bug className="w-3.5 h-3.5" />
+                    <span>Simulate Error</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setSentryEventsOpen(!sentryEventsOpen)
+                      if (!sentryEventsOpen) refreshSentryEvents()
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-stone-300 border border-white/[0.08] text-[0.6875rem] font-mono font-bold flex items-center gap-1.5 ml-auto transition-all"
+                  >
+                    <span>Inspect Envelopes ({sentryEvents.length})</span>
+                    {sentryEventsOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+
+                {sentryEventsOpen && (
+                  <div className="mt-3 p-3 rounded-xl bg-obsidian-950 border border-white/[0.08] space-y-2">
+                    <div className="flex items-center justify-between text-[0.6875rem] font-mono text-stone-400">
+                      <span>Live Ingest Feed ({sentryEvents.length} Captured)</span>
+                      <button
+                        onClick={refreshSentryEvents}
+                        disabled={sentryLoading}
+                        className="text-amber-400 hover:underline flex items-center gap-1"
+                      >
+                        <RefreshCw className={`w-3 h-3 ${sentryLoading ? 'animate-spin' : ''}`} />
+                        <span>Refresh</span>
+                      </button>
+                    </div>
+
+                    {sentryEvents.length === 0 ? (
+                      <p className="text-[0.6875rem] font-mono text-stone-500 py-2 text-center">
+                        No envelopes ingested yet. Click 'Send Ping' or 'Simulate Error' above.
+                      </p>
+                    ) : (
+                      <div className="max-h-40 overflow-y-auto space-y-1.5 pr-1 custom-scrollbar">
+                        {sentryEvents.map((evt) => (
+                          <div
+                            key={evt.id}
+                            className="p-2 rounded-lg bg-black/40 border border-white/[0.04] text-[0.6875rem] font-mono flex items-center justify-between"
+                          >
+                            <div className="min-w-0 pr-2">
+                              <span className="text-amber-400 font-bold uppercase mr-2">
+                                {(evt.itemHeader.type as string) || 'event'}
+                              </span>
+                              <span className="text-stone-300 truncate">
+                                {evt.payload?.message
+                                  ? String(evt.payload.message)
+                                  : evt.payload?.exception
+                                  ? 'Captured Exception'
+                                  : evt.id}
+                              </span>
+                            </div>
+                            <span className="text-stone-500 shrink-0">
+                              {new Date(evt.receivedAt).toLocaleTimeString()}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

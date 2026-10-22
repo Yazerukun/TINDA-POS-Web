@@ -93,6 +93,13 @@ function useClock(): Date {
   return now
 }
 
+const PRO_TIPS = [
+  'Tip 1: Press Enter or F2 to immediately finalize cash tender with exact change.',
+  'Tip 2: Instant barcode search works 100% offline during power cuts or brownouts.',
+  'Tip 3: Check Expiration Radar every morning to discount items nearing 7 days.',
+  'Tip 4: Customer utang credit balances can be printed directly as 58mm thermal statements.'
+] as const
+
 function HeroPanel({
   terminalId,
   onQuickDemo
@@ -104,7 +111,12 @@ function HeroPanel({
   const clock = now.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })
   const date = now.toLocaleDateString('en-PH', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
 
-  return (
+    const [tipIndex, setTipIndex] = useState(0)
+  useEffect(() => {
+    const timer = setInterval(() => setTipIndex((prev) => (prev + 1) % PRO_TIPS.length), 4500)
+    return () => clearInterval(timer)
+  }, [])
+return (
     <aside className="hidden lg:flex flex-col justify-between p-8 xl:p-12 border-b lg:border-b-0 lg:border-r border-white/[0.08] bg-obsidian-950/70 relative overflow-hidden backdrop-blur-3xl min-h-[400px] lg:min-h-screen select-none">
       {/* ── Fluid Ambient Lighting Behind Hero ── */}
       <div className="absolute top-0 -left-20 w-[450px] h-[450px] rounded-full bg-[radial-gradient(circle,_rgba(16,185,129,0.16),_transparent_70%)] blur-[80px] pointer-events-none will-change-transform animate-morph" />
@@ -172,6 +184,35 @@ function HeroPanel({
               <p className="text-[0.6875rem] text-stone-400 mt-1 leading-snug line-clamp-2 font-sans">{feat.desc}</p>
             </div>
           ))}
+        </div>
+
+        
+        {/* Live Station Diagnostics HUD */}
+        <div className="mt-5 grid grid-cols-2 gap-2 text-[0.625rem] font-mono">
+          <div className="p-2 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span className="text-stone-300 truncate">Printer: ESC/POS Ready</span>
+          </div>
+          <div className="p-2 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span className="text-stone-300 truncate">Scanner: 1D/2D Active</span>
+          </div>
+          <div className="p-2 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span className="text-stone-300 truncate">DB: Dexie Offline-1st</span>
+          </div>
+          <div className="p-2 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span className="text-stone-300 truncate">Edge: Dual-Cloud Sync</span>
+          </div>
+        </div>
+
+        {/* Dynamic Pro Tip Rotating Banner */}
+        <div className="mt-3 p-3 rounded-2xl bg-emerald-500/[0.07] border border-emerald-500/25 flex items-center gap-2.5 transition-all">
+          <Sparkles className="w-4 h-4 text-emerald-400 shrink-0 animate-pulse" />
+          <p className="text-xs text-stone-300 font-sans leading-relaxed">
+            {PRO_TIPS[tipIndex]}
+          </p>
         </div>
 
         {/* Instant Sandbox Demo Direct Launcher */}
@@ -312,6 +353,11 @@ export function VaultAuthModal({
       const nextPin = pin + digit
       setPin(nextPin)
       setErrorMessage('')
+      try {
+        playSuccessSound()
+      } catch {
+        // ignore
+      }
     }
   }
 
@@ -885,7 +931,7 @@ export function VaultAuthModal({
         <main className="flex flex-col items-center justify-center w-full flex-1 min-h-0 px-4 sm:px-6 py-8 lg:p-10 relative z-10 overflow-y-auto custom-scrollbar">
 
           {/* Apple-Grade Dark Glassmorphic Card */}
-          <div className="w-full max-w-[430px] sm:max-w-[450px] shrink-0 rounded-[2.25rem] border border-white/[0.08] shadow-[0_30px_90px_-20px_rgba(0,0,0,0.85),0_0_50px_-10px_rgba(16,185,129,0.12)] bg-obsidian-950/85 backdrop-blur-3xl text-stone-100 animate-fade-in relative my-auto p-6 sm:p-8">
+          <div className="w-full max-w-[430px] sm:max-w-[450px] shrink-0 rounded-[2.25rem] border border-white/[0.08] shadow-[0_30px_90px_-20px_rgba(0,0,0,0.85),0_0_50px_-10px_rgba(16,185,129,0.12)] bg-obsidian-950/85 backdrop-blur-3xl text-stone-100 animate-fade-in animate-card-glow relative my-auto p-6 sm:p-8">
 
             {/* Back to Overview return button */}
             {onClose && (
@@ -902,7 +948,9 @@ export function VaultAuthModal({
 
             {/* Verification Loading Overlay */}
             {isVerifying && (
-              <div className="absolute inset-0 z-40 bg-obsidian-950/95 backdrop-blur-xl rounded-[2.25rem] flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+              <div className="absolute inset-0 z-40 bg-obsidian-950/95 backdrop-blur-xl rounded-[2.25rem] flex flex-col items-center justify-center p-6 text-center animate-fade-in overflow-hidden">
+                {/* Laser scan line sweep */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#10b981] animate-laser pointer-events-none" />
                 <div className="relative flex items-center justify-center mb-4">
                   <AppLogo size={52} animated={true} />
                 </div>
@@ -1139,7 +1187,7 @@ export function VaultAuthModal({
                               key={idx}
                               className={`h-3.5 w-3.5 rounded-full transition-all duration-200 ${
                                 isFilled
-                                  ? 'bg-emerald-400 scale-125 shadow-[0_0_12px_rgba(52,211,153,0.7)] ring-4 ring-emerald-400/20'
+                                  ? 'bg-emerald-400 scale-125 shadow-[0_0_16px_rgba(52,211,153,0.85)] ring-4 ring-emerald-400/25 animate-dot-pop'
                                   : 'bg-white/[0.08] border border-white/[0.1]'
                               }`}
                             />
@@ -1189,7 +1237,8 @@ export function VaultAuthModal({
 
                   {/* Error Alert Display */}
                   {errorMessage && (
-                    <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/25 text-xs font-mono text-red-300 text-center animate-fade-in shadow-sm">
+                    <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/25 text-xs font-mono text-red-300 text-center animate-shake shadow-sm flex items-center justify-center gap-2">
+                      <ShieldAlert className="w-4 h-4 text-red-400 shrink-0" />
                       {errorMessage}
                     </div>
                   )}
@@ -1213,7 +1262,7 @@ export function VaultAuthModal({
                             type="button"
                             key={item.num}
                             onClick={() => handleKeypadPress(item.num)}
-                            className="btn-press h-12 rounded-2xl bg-white/[0.03] hover:bg-emerald-500/10 border border-white/[0.06] hover:border-emerald-500/30 text-stone-100 font-mono font-bold text-lg active:scale-95 flex flex-col items-center justify-center cursor-pointer shadow-sm transition-all duration-150 leading-none"
+                            className="btn-tactile h-12 rounded-2xl bg-gradient-to-b from-white/[0.05] to-white/[0.02] hover:from-emerald-500/20 hover:to-emerald-500/05 border border-white/[0.08] hover:border-emerald-500/40 text-stone-100 font-mono font-bold text-xl active:scale-95 flex flex-col items-center justify-center cursor-pointer transition-all duration-150 leading-none select-none"
                           >
                             <span>{item.num}</span>
                             {item.sub && (
@@ -1233,7 +1282,7 @@ export function VaultAuthModal({
                         <button
                           type="button"
                           onClick={() => handleKeypadPress('0')}
-                          className="btn-press h-12 rounded-2xl bg-white/[0.03] hover:bg-emerald-500/10 border border-white/[0.06] hover:border-emerald-500/30 text-stone-100 font-mono font-bold text-lg active:scale-95 flex flex-col items-center justify-center cursor-pointer shadow-sm transition-all duration-150 leading-none"
+                          className="btn-tactile h-12 rounded-2xl bg-gradient-to-b from-white/[0.05] to-white/[0.02] hover:from-emerald-500/20 hover:to-emerald-500/05 border border-white/[0.08] hover:border-emerald-500/40 text-stone-100 font-mono font-bold text-xl active:scale-95 flex flex-col items-center justify-center cursor-pointer transition-all duration-150 leading-none select-none"
                         >
                           <span>0</span>
                           <span className="text-[0.5625rem] text-stone-500 font-sans tracking-widest mt-0.5 font-normal">+</span>

@@ -55,6 +55,7 @@ interface VaultAuthModalProps {
   currentCashier?: string
   initialStep?: 'LOGIN' | 'SIGNUP'
   onClose?: () => void
+  onQuickDemo?: () => void
 }
 
 const TERMINAL_ID = 'TRM-8891'
@@ -91,7 +92,13 @@ function useClock(): Date {
   return now
 }
 
-function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
+function HeroPanel({
+  terminalId,
+  onQuickDemo
+}: {
+  terminalId: string
+  onQuickDemo?: () => void
+}): React.JSX.Element {
   const now = useClock()
   const clock = now.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })
   const date = now.toLocaleDateString('en-PH', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
@@ -165,6 +172,24 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
             </div>
           ))}
         </div>
+
+        {/* Instant Sandbox Demo Direct Launcher */}
+        {onQuickDemo && (
+          <div className="mt-6 pt-5 border-t border-white/[0.08]">
+            <button
+              type="button"
+              onClick={onQuickDemo}
+              className="btn-press w-full py-3 px-4 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 text-amber-300 font-sans font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm group"
+            >
+              <Zap className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
+              <span>Launch 1-Click Instant Demo Counter</span>
+              <ArrowRight className="w-3.5 h-3.5 text-amber-400 group-hover:translate-x-1 transition-transform" />
+            </button>
+            <p className="text-[0.625rem] font-mono text-stone-500 text-center mt-1.5">
+              Zero registration · Pre-loaded sari-sari store test sandbox
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Bottom Telemetry Bar */}
@@ -188,8 +213,10 @@ function HeroPanel({ terminalId }: { terminalId: string }): React.JSX.Element {
 export function VaultAuthModal({
   isOpen,
   onAuthenticated,
+  currentCashier,
   initialStep = 'LOGIN',
-  onClose
+  onClose,
+  onQuickDemo
 }: VaultAuthModalProps): React.JSX.Element | null {
   const [step, setStep] = useState<'LOGIN' | 'SIGNUP' | 'ROTATE' | 'FLOAT' | 'FORGOT_PIN' | 'VIP_UNLOCK'>(initialStep)
 
@@ -851,7 +878,7 @@ export function VaultAuthModal({
       {/* ── Two-Column Responsive Split Layout (Desktop: 2-Col | Mobile: Centered) ── */}
       <div className="relative w-full flex flex-col lg:grid lg:grid-cols-2 min-h-[100svh] lg:min-h-[100dvh] flex-1">
         {/* Left Column (Hero Showcase Panel) */}
-        <HeroPanel terminalId={TERMINAL_ID} />
+        <HeroPanel terminalId={TERMINAL_ID} onQuickDemo={onQuickDemo} />
 
         {/* Right Column (Tailark Auth Card) */}
         <main className="flex flex-col items-center justify-center w-full flex-1 min-h-0 px-4 sm:px-6 py-8 lg:p-10 relative z-10 overflow-y-auto custom-scrollbar">
@@ -919,6 +946,23 @@ export function VaultAuthModal({
                   : 'Counter Terminal Authentication'}
               </p>
             </div>
+
+            {/* Quick Guest Demo Direct Jump Banner */}
+            {onQuickDemo && step === 'LOGIN' && (
+              <div className="mb-4">
+                <button
+                  type="button"
+                  onClick={onQuickDemo}
+                  className="btn-press w-full py-2.5 px-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-emerald-500/10 to-amber-500/15 hover:from-amber-500/25 hover:to-amber-500/25 border border-amber-500/30 text-amber-300 font-sans font-semibold text-xs flex items-center justify-between transition-all cursor-pointer group shadow-sm"
+                >
+                  <div className="flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span className="text-stone-200">First time here? <span className="text-amber-300 font-bold">1-Click Sandbox Demo</span></span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-amber-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
+                </button>
+              </div>
+            )}
 
             {/* Segmented Switcher Tabs: "Sign In" vs "Register Store" vs "VIP Key" */}
             {step !== 'FLOAT' && step !== 'ROTATE' && step !== 'FORGOT_PIN' && (

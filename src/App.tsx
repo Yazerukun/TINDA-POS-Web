@@ -754,6 +754,7 @@ export default function App(): React.JSX.Element {
           onAuthenticated={handleAuthenticated}
           initialStep={authModalInitialStep}
           onClose={() => setIsAuthModalOpen(false)}
+          onQuickDemo={handleQuickDemo}
         />
       </div>
     )

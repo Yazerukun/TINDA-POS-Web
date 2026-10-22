@@ -18,7 +18,7 @@
 ---
 
 ## Current Release Status (TINDA POS Web)
-- **Version**: `v1.1.1` (Production Live)
+- **Version**: `v1.2.0` (Production Live)
 - **Primary Live Short URL (Cloudflare Pages)**: [https://tindapos-web.pages.dev/](https://tindapos-web.pages.dev/)
 - **Secondary Edge Mirror (Cloudflare Workers)**: [https://tindaposweb.yomikaze-md.workers.dev/](https://tindaposweb.yomikaze-md.workers.dev/)
 - **GitHub Repository**: [https://github.com/Yazerukun/TINDA-POS-Web](https://github.com/Yazerukun/TINDA-POS-Web)
@@ -36,7 +36,13 @@
 
 ---
 
-## Key Features in v1.1.1
+## Key Features in v1.2.0
+0. 🏛️ **Professional World-Class Landing Page Overhaul (Anti-AI Standard)**:
+   - **Architectural Dark Mode UI**: Replaced generic AI purple/neon blobs with high-precision engineering slate (`#070a0f`), micro-dot matrix pattern, and 1px hairline dividers.
+   - **100% Professional English Standard**: Fully standardized all headlines, descriptions, bento cards, and comparison matrices to authoritative institutional English.
+   - **Tactile POS Terminal & 58mm Thermal Print Showcase**: Live interactive 3-column cashier station with EAN-13 barcode lookups, statutory 20% discount math, and real-time thermal receipt generation.
+   - **Apple/Linear-Grade Bento Grid 2.0**: Data-dense architectural capability cards featuring sub-20ms barcode engine, official DTI price ceiling radar, audited customer credit risk ledger, and dual-cloud failover topology.
+   - **Interactive Ground-Level Retail Environment (CyberStreetScene)**: Seamlessly integrated simulation showing live high-altitude airliner flight path with vapor contrail, full neighborhood skyline ("balay-balay"), driving jeepney, and 4-phase daylight/rain engine.
 0. ✈️ 🏘️ **Living Philippine Barangay Street Scene (CyberStreetScene)**:
    - **High-Altitude Commercial Airliner**: Smooth cruising aircraft with active white vapor contrail, red/green wingtip navigation strobe lights (`navLight`), and interactive cloud telemetry inspector.
    - **Authentic Philippine Neighborhood ("Balay-Balay")**: Full panoramic skyline featuring corrugated galvanized iron roofs, wooden stilts, TV antennas, utility poles with criss-crossing power cables, glowing street lamps, Barangay 01 Hall, and 24/7 convenience mart.

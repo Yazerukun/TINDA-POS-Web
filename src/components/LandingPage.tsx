@@ -305,54 +305,71 @@ export function LandingPage({
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[500px] bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.12),_transparent_75%)]" />
       </div>
 
-      {/* ── 1. GLOBAL EXECUTIVE HEADER (FIXED GLASS BLUR) ── */}
-      <header className="sticky top-0 z-50 w-full border-b border-slate-800/80 bg-[#070a0f]/85 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      {/* ── 1. GLOBAL FLOATING DYNAMIC CAPSULE HEADER (LINEAR / APPLE STANDARD) ── */}
+      <header className="sticky top-3 sm:top-5 z-50 w-full px-3 sm:px-6 max-w-6xl mx-auto transition-all">
+        <div className="flex items-center justify-between px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#070a0f]/85 backdrop-blur-2xl border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.7),0_0_20px_rgba(16,185,129,0.06)]">
           {/* Logo & Brand Identity */}
-          <div className="flex items-center gap-3">
-            <AppLogo size={34} animated={true} />
-            <div className="leading-none">
-              <div className="flex items-center gap-2">
-                <span className="font-sans text-base font-bold tracking-tight text-white uppercase">
-                  TINDA POS
-                </span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-[0.625rem] font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                  v1.2.0
-                </span>
-              </div>
-              <span className="text-[0.625rem] font-mono text-slate-400 uppercase tracking-wider block mt-1">
-                Offline-First Retail Operating System
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <AppLogo size={30} animated={false} showBadge={false} />
+            <div className="flex items-baseline gap-1.5 select-none">
+              <span className="font-sans text-sm sm:text-base font-bold tracking-tight text-white uppercase">
+                TINDA
+              </span>
+              <span className="text-[0.6875rem] font-mono font-bold text-emerald-400">
+                OS
+              </span>
+              <span className="hidden md:inline-flex items-center px-1.5 py-0.5 rounded text-[0.5625rem] font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 ml-1">
+                v1.2.0
               </span>
             </div>
           </div>
 
-          {/* Desktop Navigation Anchors */}
-          <nav className="hidden lg:flex items-center gap-6 text-xs font-medium text-slate-400">
-            <a href="#simulator" className="hover:text-emerald-400 transition-colors">
-              Interactive Terminal
+          {/* Centered Segmented Navigation Pills */}
+          <nav className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-white/[0.02] border border-white/[0.04]">
+            <a
+              href="#simulator"
+              className="px-3 py-1 rounded-full text-xs font-medium text-slate-400 hover:text-white hover:bg-white/[0.06] transition-all"
+            >
+              Terminal
             </a>
-            <a href="#architecture" className="hover:text-emerald-400 transition-colors">
-              Core Architecture
+            <a
+              href="#architecture"
+              className="px-3 py-1 rounded-full text-xs font-medium text-slate-400 hover:text-white hover:bg-white/[0.06] transition-all"
+            >
+              Platform
             </a>
-            <a href="#dti-radar" className="hover:text-emerald-400 transition-colors">
-              DTI Price Radar
+            <a
+              href="#dti-radar"
+              className="px-3 py-1 rounded-full text-xs font-medium text-slate-400 hover:text-white hover:bg-white/[0.06] transition-all"
+            >
+              DTI Radar
             </a>
-            <a href="#utang-ledger" className="hover:text-emerald-400 transition-colors">
-              Credit Risk Ledger
+            <a
+              href="#utang-ledger"
+              className="px-3 py-1 rounded-full text-xs font-medium text-slate-400 hover:text-white hover:bg-white/[0.06] transition-all"
+            >
+              Credit Risk
             </a>
-            <a href="#hardware" className="hover:text-emerald-400 transition-colors">
-              Hardware Deck
+            <a
+              href="#hardware"
+              className="px-3 py-1 rounded-full text-xs font-medium text-slate-400 hover:text-white hover:bg-white/[0.06] transition-all"
+            >
+              Hardware
             </a>
-            <a href="#compare" className="hover:text-emerald-400 transition-colors">
+            <a
+              href="#compare"
+              className="px-3 py-1 rounded-full text-xs font-medium text-slate-400 hover:text-white hover:bg-white/[0.06] transition-all"
+            >
               Comparison
             </a>
           </nav>
 
-          {/* Action CTAs */}
-          <div className="flex items-center gap-2.5">
+          {/* Unified Action Hierarchy */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
             <button
               onClick={onQuickDemo}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-semibold text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all cursor-pointer"
+              className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono font-medium text-amber-300/90 hover:text-amber-200 hover:bg-amber-500/10 border border-amber-500/20 transition-all cursor-pointer"
+              title="Instant Sandbox Mode"
             >
               <Zap className="w-3.5 h-3.5 text-amber-400" />
               <span>1-Click Demo</span>
@@ -360,7 +377,7 @@ export function LandingPage({
 
             <button
               onClick={onOpenLogin}
-              className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-200 hover:text-white bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+              className="px-3 sm:px-4 py-1.5 rounded-full text-xs font-medium text-slate-300 hover:text-white hover:bg-white/[0.08] transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <LogIn className="w-3.5 h-3.5 text-emerald-400" />
               <span>Sign In</span>
@@ -368,10 +385,12 @@ export function LandingPage({
 
             <button
               onClick={onOpenSignup}
-              className="px-4 py-1.5 rounded-lg text-xs font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition-all flex items-center gap-1.5 cursor-pointer shadow-[0_0_15px_-3px_rgba(52,211,153,0.5)]"
+              className="px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition-all flex items-center gap-1.5 cursor-pointer shadow-[0_0_16px_rgba(52,211,153,0.35)] active:scale-[0.98]"
             >
               <UserPlus className="w-3.5 h-3.5" />
-              <span>Register Free</span>
+              <span className="hidden sm:inline">Launch Counter</span>
+              <span className="sm:hidden">Register</span>
+              <ArrowRight className="w-3 h-3 hidden sm:inline ml-0.5 opacity-80" />
             </button>
           </div>
         </div>

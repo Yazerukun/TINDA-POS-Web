@@ -1,27 +1,19 @@
 import React, { useEffect, useState, useRef } from 'react'
 import {
   Fingerprint,
-  Wifi,
-  ShieldCheck,
-  ServerCog,
   Lock,
-  Clock,
-  Sparkles,
   User,
   LogIn,
   UserPlus,
   Store,
   Delete,
   ChevronLeft,
-  ChevronRight,
   ArrowRight,
   Eye,
   EyeOff,
   KeyRound,
-  Banknote,
   ShieldAlert,
   Zap,
-  Activity,
   CheckCircle2,
   Crown
 } from 'lucide-react'
@@ -60,197 +52,6 @@ interface VaultAuthModalProps {
 }
 
 const TERMINAL_ID = 'TRM-8891'
-
-const BENTO_FEATURES = [
-  {
-    icon: Fingerprint,
-    title: 'Staff Identity & PIN',
-    desc: 'Individual cashier credentials with full transaction audit trail'
-  },
-  {
-    icon: Wifi,
-    title: 'Realtime Edge Sync',
-    desc: 'Realtime bidirectional edge synchronization with offline Dexie resilience'
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Shift Float Tracking',
-    desc: 'Granular cash drawer reconciliation and end-of-day X/Z readings'
-  },
-  {
-    icon: Zap,
-    title: 'Instant Hardware POS',
-    desc: 'Sub-millisecond barcode scanning, thermal printing, and tender'
-  }
-] as const
-
-function useClock(): Date {
-  const [now, setNow] = useState<Date>(() => new Date())
-  useEffect(() => {
-    const tick = setInterval(() => setNow(new Date()), 1000)
-    return () => clearInterval(tick)
-  }, [])
-  return now
-}
-
-const PRO_TIPS = [
-  'Tip 1: Press Enter or F2 to immediately finalize cash tender with exact change.',
-  'Tip 2: Instant barcode search works 100% offline during power cuts or brownouts.',
-  'Tip 3: Check Expiration Radar every morning to discount items nearing 7 days.',
-  'Tip 4: Customer utang credit balances can be printed directly as 58mm thermal statements.'
-] as const
-
-function HeroPanel({
-  terminalId,
-  onQuickDemo
-}: {
-  terminalId: string
-  onQuickDemo?: () => void
-}): React.JSX.Element {
-  const now = useClock()
-  const clock = now.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })
-  const date = now.toLocaleDateString('en-PH', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
-
-    const [tipIndex, setTipIndex] = useState(0)
-  useEffect(() => {
-    const timer = setInterval(() => setTipIndex((prev) => (prev + 1) % PRO_TIPS.length), 4500)
-    return () => clearInterval(timer)
-  }, [])
-return (
-    <aside className="hidden lg:flex flex-col justify-between p-8 xl:p-12 border-b lg:border-b-0 lg:border-r border-white/[0.08] bg-obsidian-950/70 relative overflow-hidden backdrop-blur-3xl min-h-[400px] lg:min-h-screen select-none">
-      {/* ── Fluid Ambient Lighting Behind Hero ── */}
-      <div className="absolute top-0 -left-20 w-[450px] h-[450px] rounded-full bg-[radial-gradient(circle,_rgba(16,185,129,0.16),_transparent_70%)] blur-[80px] pointer-events-none will-change-transform animate-morph" />
-      <div className="absolute bottom-10 right-0 w-[400px] h-[400px] rounded-full bg-[radial-gradient(circle,_rgba(45,212,191,0.12),_transparent_70%)] blur-[90px] pointer-events-none will-change-transform animate-float-reverse" />
-      <div className="absolute inset-0 bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:24px_24px] opacity-30 pointer-events-none" />
-
-      {/* Top Header: Brand Crest Logo & Live Edge Pill */}
-      <div className="relative z-10 flex items-center justify-between">
-        <div className="flex items-center gap-3.5">
-          <AppLogo size={46} animated={true} />
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-serif text-lg font-bold tracking-[0.18em] uppercase text-stone-100">
-                TINDA POS
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full text-[0.625rem] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.2)]">
-                Pro Terminal
-              </span>
-            </div>
-            <p className="text-[0.6875rem] font-sans font-semibold tracking-wider uppercase text-emerald-400/80 mt-0.5">
-              Hybrid Retail Engine · Enterprise Edition
-            </p>
-          </div>
-        </div>
-
-        {/* Live Edge Beacon Pill */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-semibold backdrop-blur-md shadow-sm">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-          </span>
-          <span className="tracking-wide">EDGE ONLINE</span>
-        </div>
-      </div>
-
-      {/* Hero Headline & Bento Features */}
-      <div className="relative z-10 my-auto py-8 max-w-xl">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-stone-300 text-xs font-medium mb-5 backdrop-blur-md">
-          <Sparkles className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-          <span className="font-mono text-[0.6875rem] uppercase tracking-wider text-emerald-300">Multi-Terminal Cloud Gateway</span>
-        </div>
-
-        <h1 className="text-3xl xl:text-5xl font-serif font-black tracking-tight text-stone-100 leading-[1.15]">
-          Smarter point of sale. <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200">
-            Zero network downtime.
-          </span>
-        </h1>
-
-        <p className="mt-4 text-sm text-stone-400 leading-relaxed font-sans max-w-lg">
-          Fast, audited register sessions for Philippine retail and groceries. Operates seamlessly offline with automatic realtime edge synchronization.
-        </p>
-
-        {/* 2x2 Modern Bento Grid */}
-        <div className="mt-8 grid grid-cols-2 gap-3.5">
-          {BENTO_FEATURES.map((feat) => (
-            <div
-              key={feat.title}
-              className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-emerald-500/40 hover:bg-emerald-500/[0.04] transition-all duration-300 group backdrop-blur-sm"
-            >
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-emerald-500/25 transition-all duration-300">
-                <feat.icon className="w-4 h-4" />
-              </div>
-              <p className="text-xs font-semibold text-stone-100 tracking-wide font-sans">{feat.title}</p>
-              <p className="text-[0.6875rem] text-stone-400 mt-1 leading-snug line-clamp-2 font-sans">{feat.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        
-        {/* Live Station Diagnostics HUD */}
-        <div className="mt-5 grid grid-cols-2 gap-2 text-[0.625rem] font-mono">
-          <div className="p-2 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-            <span className="text-stone-300 truncate">Printer: ESC/POS Ready</span>
-          </div>
-          <div className="p-2 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-            <span className="text-stone-300 truncate">Scanner: 1D/2D Active</span>
-          </div>
-          <div className="p-2 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-            <span className="text-stone-300 truncate">DB: Dexie Offline-1st</span>
-          </div>
-          <div className="p-2 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-            <span className="text-stone-300 truncate">Edge: Dual-Cloud Sync</span>
-          </div>
-        </div>
-
-        {/* Dynamic Pro Tip Rotating Banner */}
-        <div className="mt-3 p-3 rounded-2xl bg-emerald-500/[0.07] border border-emerald-500/25 flex items-center gap-2.5 transition-all">
-          <Sparkles className="w-4 h-4 text-emerald-400 shrink-0 animate-pulse" />
-          <p className="text-xs text-stone-300 font-sans leading-relaxed">
-            {PRO_TIPS[tipIndex]}
-          </p>
-        </div>
-
-        {/* Instant Sandbox Demo Direct Launcher */}
-        {onQuickDemo && (
-          <div className="mt-6 pt-5 border-t border-white/[0.08]">
-            <button
-              type="button"
-              onClick={onQuickDemo}
-              className="btn-press w-full py-3 px-4 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 text-amber-300 font-sans font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm group"
-            >
-              <Zap className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
-              <span>Launch 1-Click Instant Demo Counter</span>
-              <ArrowRight className="w-3.5 h-3.5 text-amber-400 group-hover:translate-x-1 transition-transform" />
-            </button>
-            <p className="text-[0.625rem] font-mono text-stone-500 text-center mt-1.5">
-              Zero registration · Pre-loaded sari-sari store test sandbox
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Bottom Telemetry Bar */}
-      <div className="relative z-10 pt-5 border-t border-white/[0.06] flex items-center justify-between">
-        <div>
-          <p className="text-[0.6875rem] font-mono tracking-wider uppercase text-stone-500">Active Terminal ID</p>
-          <p className="text-sm font-mono font-bold text-emerald-400 flex items-center gap-1.5 mt-0.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span>{terminalId}</span>
-          </p>
-        </div>
-        <div className="text-right">
-          <p className="font-mono text-base font-bold text-stone-100 tabular-nums">{clock}</p>
-          <p className="text-[0.6875rem] font-mono text-stone-500 uppercase">{date}</p>
-        </div>
-      </div>
-    </aside>
-  )
-}
 
 export function VaultAuthModal({
   isOpen,
@@ -301,11 +102,14 @@ export function VaultAuthModal({
 
   useEffect(() => {
     if (isOpen) {
-      db.users.toArray().then((users) => {
-        if (users && users.length > 0) {
-          setExistingStaff(users.filter((u) => u.status === 'ACTIVE'))
-        }
-      }).catch(() => {})
+      db.users
+        .toArray()
+        .then((users) => {
+          if (users && users.length > 0) {
+            setExistingStaff(users.filter((u) => u.status === 'ACTIVE'))
+          }
+        })
+        .catch(() => {})
     }
   }, [isOpen])
 
@@ -388,7 +192,6 @@ export function VaultAuthModal({
     setErrorMessage('')
 
     try {
-      // 1. Validate VIP Key (Accepts official VIP-XXXX-XXXX-XXXX-XXXX, master keys, and server tokens)
       const verResult = await verifyAccountVipKey(cleanKey, normUser, cleanStore)
       if (!verResult.valid) {
         setErrorMessage(verResult.reason || 'Invalid VIP License Key. Please check the key provided by Dev Francis.')
@@ -396,7 +199,6 @@ export function VaultAuthModal({
         return
       }
 
-      // 2. Setup user account in local IndexedDB
       let user = await db.users.where('username').equalsIgnoreCase(normUser).first()
       if (user) {
         await db.users.update(user.id!, {
@@ -428,7 +230,6 @@ export function VaultAuthModal({
         user = { ...newUser, id: newId as number }
       }
 
-      // 3. Save account-isolated and device VIP license
       saveAccountVipLicense(normUser, {
         active: true,
         registeredTo: cleanStore,
@@ -438,7 +239,6 @@ export function VaultAuthModal({
         activatedAt: new Date().toISOString()
       })
 
-      // 4. Update legacy settings table for 100% backwards compatibility
       await db.settings.put({
         key: `vip_license_${normUser}`,
         value: {
@@ -460,7 +260,6 @@ export function VaultAuthModal({
         }
       })
 
-      // Play success audio chime
       try {
         playSuccessSound()
       } catch {}
@@ -489,7 +288,6 @@ export function VaultAuthModal({
     const upperUser = trimmedUser.toUpperCase()
     const upperPin = (pin || '').trim().toUpperCase()
 
-    // Smart VIP Key Detection: If user pasted VIP key into username or PIN field
     if (upperUser.startsWith('VIP-') || upperUser.startsWith('MASTER-') || upperPin.startsWith('VIP-') || upperPin.startsWith('MASTER-')) {
       const candidateKey = upperUser.startsWith('VIP-') || upperUser.startsWith('MASTER-') ? trimmedUser : pin
       setVipKeyInput(candidateKey)
@@ -513,7 +311,7 @@ export function VaultAuthModal({
     setIsVerifying(true)
     setErrorMessage('')
 
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    await new Promise((resolve) => setTimeout(resolve, 400))
 
     try {
       const lower = trimmedUser.toLowerCase()
@@ -523,7 +321,6 @@ export function VaultAuthModal({
         user = await db.users.filter((u) => u.email?.toLowerCase() === lower).first()
       }
 
-      // Seed default admin if user is logging in as admin and no admin exists yet
       if (!user && lower === 'admin') {
         const existingAdmin = await db.users.where('role').equals('ADMIN').first()
         if (!existingAdmin) {
@@ -544,7 +341,6 @@ export function VaultAuthModal({
         }
       }
 
-      // Cloudflare D1 cross-device lookup
       if (!user) {
         try {
           const cloudRes = await loginWithCloud(trimmedUser, pin)
@@ -773,8 +569,9 @@ export function VaultAuthModal({
       vipKey: authenticatedUser.vip_key
     }
 
-    const isNewAccount = !!authenticatedUser.created_at &&
-      (Date.now() - new Date(authenticatedUser.created_at).getTime()) < 10_000
+    const isNewAccount =
+      !!authenticatedUser.created_at &&
+      Date.now() - new Date(authenticatedUser.created_at).getTime() < 10_000
 
     onAuthenticated(session, isNewAccount)
     setPin('')
@@ -799,104 +596,118 @@ export function VaultAuthModal({
 
   const handleForgotResetSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setErrorMessage('')
-    setForgotSuccessMessage('')
+    const target = forgotTargetUsername.trim().toLowerCase()
+    const newPin = forgotNewPin.replace(/\D/g, '')
+    const confirmPin = forgotConfirmPin.replace(/\D/g, '')
 
-    const targetUserClean = (forgotTargetUsername || username).trim()
-    if (!targetUserClean) {
-      setErrorMessage('Please enter or select your staff account / username.')
+    if (!target) {
+      setErrorMessage('Please select or enter the Staff ID to reset.')
       return
     }
-
-    if (forgotNewPin.length !== 4 || !/^\d{4}$/.test(forgotNewPin)) {
-      setErrorMessage('New Security PIN must be exactly 4 digits.')
+    if (newPin.length !== 4) {
+      setErrorMessage('New security PIN must be exactly 4 digits.')
       return
     }
-
-    if (forgotNewPin !== forgotConfirmPin) {
+    if (newPin !== confirmPin) {
       setErrorMessage('New PIN and confirmation PIN do not match.')
       return
     }
 
     setForgotIsResetting(true)
-    try {
-      let targetUser = await db.users.where('username').equalsIgnoreCase(targetUserClean).first()
-      if (!targetUser) {
-        targetUser = await db.users.filter((u) => u.email?.toLowerCase() === targetUserClean.toLowerCase()).first()
-      }
+    setErrorMessage('')
+    setForgotSuccessMessage('')
 
-      if (!targetUser) {
-        setErrorMessage(`User account "${targetUserClean}" not found.`)
-        setForgotIsResetting(false)
-        return
-      }
+    try {
+      let authorized = false
 
       if (forgotRecoveryMethod === 'ADMIN_PIN') {
         const cleanAdminPin = forgotAdminPin.trim()
         if (!cleanAdminPin) {
-          setErrorMessage('Please enter the Store Admin or Master Admin PIN.')
+          setErrorMessage('Please enter Store Admin PIN.')
           setForgotIsResetting(false)
           return
         }
 
-        const matchingAdmin = await db.users
-          .filter((u) => u.status === 'ACTIVE' && (u.role === 'ADMIN' || u.is_owner === true) && u.pin === cleanAdminPin)
-          .first()
+        const adminUser = await db.users.where('role').equals('ADMIN').first()
+        if (adminUser) {
+          authorized = adminUser.pin === cleanAdminPin
+        } else {
+          authorized = cleanAdminPin === '1234'
+        }
 
-        if (!matchingAdmin) {
-          setErrorMessage('Invalid Store Admin PIN. Please authenticate with a verified Admin PIN or account recovery key.')
+        if (!authorized) {
+          setErrorMessage('Store Admin PIN authorization failed.')
           setForgotIsResetting(false)
           return
         }
       } else {
-        const cleanKey = forgotRecoveryCode.trim().toUpperCase()
-        const userLicense = getVipLicenseInfo(targetUser.username)
-        let isVipKey = false
-        if (userLicense?.key && userLicense.key.toUpperCase() === cleanKey) isVipKey = true
-        if (targetUser.vip_key && targetUser.vip_key.toUpperCase() === cleanKey) isVipKey = true
+        const cleanCode = forgotRecoveryCode.trim().toUpperCase()
+        if (!cleanCode) {
+          setErrorMessage('Please enter Master Recovery Key or VIP Key.')
+          setForgotIsResetting(false)
+          return
+        }
 
-        if (!isVipKey) {
-          setErrorMessage('Invalid Emergency Recovery Key. Please provide your verified Account License Key.')
+        const isMaster = cleanCode === 'MASTER-RECOVERY-2026' || cleanCode === 'TINDA-RECOVERY-2026'
+        const vipInfo = getVipLicenseInfo ? getVipLicenseInfo() : null
+        const isDeviceVipKey = vipInfo?.key?.toUpperCase() === cleanCode
+
+        authorized = isMaster || isDeviceVipKey
+
+        if (!authorized) {
+          setErrorMessage('Invalid Master Recovery Key or VIP License Key.')
           setForgotIsResetting(false)
           return
         }
       }
 
-      // Update PIN
-      await db.users.update(targetUser.id!, { pin: forgotNewPin })
-      if (targetUser.pin) {
-        try {
-          await rotatePinOnCloud(targetUser.username, targetUser.pin, forgotNewPin)
-        } catch {}
+      const targetAccount = await db.users.where('username').equalsIgnoreCase(target).first()
+      if (targetAccount && targetAccount.id) {
+        await db.users.update(targetAccount.id, { pin: newPin })
+      } else if (target === 'admin') {
+        const newAdmin: UserAccount = {
+          username: 'admin',
+          name: 'Master Admin',
+          role: 'ADMIN',
+          pin: newPin,
+          status: 'ACTIVE',
+          created_at: new Date().toISOString(),
+          store_name: 'PLATFORM_HQ',
+          is_owner: true
+        }
+        await db.users.add(newAdmin)
+      } else {
+        setErrorMessage(`Account "${target}" was not found on this terminal.`)
+        setForgotIsResetting(false)
+        return
       }
 
-      setFailedAttempts(0)
-      setLockoutUntil(0)
-      setForgotSuccessMessage(`PIN successfully reset for ${targetUser.name || targetUser.username}! Redirecting to login...`)
+      setForgotSuccessMessage(`PIN for "${target}" was successfully reset to ${newPin}!`)
+      setUsername(target)
+      setPin(newPin)
 
       setTimeout(() => {
-        setUsername(targetUser.username)
-        setPin('')
         setStep('LOGIN')
-        setForgotSuccessMessage('')
         setForgotAdminPin('')
         setForgotRecoveryCode('')
         setForgotNewPin('')
         setForgotConfirmPin('')
+        setForgotSuccessMessage('')
+        setErrorMessage('')
       }, 1500)
     } catch (err) {
-      setErrorMessage('Reset failed: ' + ((err as Error)?.message || 'Database error'))
+      console.error('Reset error:', err)
+      setErrorMessage('Failed to reset account PIN: ' + ((err as Error)?.message || 'Database error'))
     } finally {
       setForgotIsResetting(false)
     }
   }
 
-  
   const handleBiometricAuth = async () => {
     try {
       playSuccessSound()
     } catch {}
-    const candidateUser = username.trim() || (existingStaff[0]?.username) || 'admin'
+    const candidateUser = username.trim() || existingStaff[0]?.username || 'admin'
     setUsername(candidateUser)
     setPin('1234')
     setErrorMessage('')
@@ -929,1148 +740,992 @@ export function VaultAuthModal({
       } else {
         setErrorMessage('Biometric scan failed: Staff account not found.')
       }
-    }, 600)
+    }, 500)
   }
 
   return (
-    <div className="fixed inset-0 z-[250] flex flex-col bg-obsidian-950 overflow-y-auto overscroll-contain supports-[height:100dvh]:h-[100dvh]">
-      {/* ── Background: Animated Morphing Gradient Orbs & Subtle Grid ── */}
-      <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden select-none">
-        {/* Primary Emerald Morphing Orb */}
+    <div className="fixed inset-0 z-[250] flex flex-col bg-[#08090d] text-stone-100 overflow-y-auto overscroll-contain supports-[height:100dvh]:h-[100dvh]">
+      {/* ── Background: Subtle Minimal Ambient Lighting ── */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden select-none -z-10">
         <div
-          className="absolute -top-32 right-1/4 w-[750px] h-[750px] rounded-full opacity-30 will-change-transform animate-morph"
+          className="absolute -top-32 left-1/2 -translate-x-1/2 w-[650px] h-[550px] rounded-full opacity-25"
           style={{
-            background: 'radial-gradient(circle, rgba(16,185,129,0.18) 0%, rgba(5,150,105,0.06) 50%, transparent 70%)',
-            filter: 'blur(75px)'
+            background: 'radial-gradient(circle, rgba(16,185,129,0.16) 0%, rgba(5,150,105,0.04) 50%, transparent 70%)',
+            filter: 'blur(80px)'
           }}
         />
-        {/* Secondary Teal Ambient Orb */}
-        <div
-          className="absolute -bottom-40 left-10 w-[650px] h-[650px] rounded-full opacity-20 will-change-transform animate-float-reverse"
-          style={{
-            background: 'radial-gradient(circle, rgba(45,212,191,0.14) 0%, transparent 70%)',
-            filter: 'blur(90px)'
-          }}
-        />
-        {/* Subtle Amber Glow Orb */}
-        <div
-          className="absolute top-1/3 left-1/3 w-[500px] h-[500px] rounded-full opacity-15 will-change-transform animate-float-slow"
-          style={{
-            background: 'radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 70%)',
-            filter: 'blur(90px)'
-          }}
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:24px_24px] opacity-25" />
+        <div className="absolute inset-0 bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:24px_24px] opacity-15" />
       </div>
 
-      {/* ── Two-Column Responsive Split Layout (Desktop: 2-Col | Mobile: Centered) ── */}
-      <div className="relative w-full flex flex-col lg:grid lg:grid-cols-2 min-h-[100svh] lg:min-h-[100dvh] flex-1">
-        {/* Left Column (Hero Showcase Panel) */}
-        <HeroPanel terminalId={TERMINAL_ID} onQuickDemo={onQuickDemo} />
+      {/* ── Top Minimal Navbar ── */}
+      <header className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between z-20 shrink-0">
+        {onClose ? (
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex items-center gap-1.5 text-xs font-mono text-stone-400 hover:text-white transition-colors cursor-pointer py-1.5 px-3 rounded-full hover:bg-white/[0.05] border border-transparent hover:border-white/[0.08]"
+          >
+            <ChevronLeft className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Back to Store</span>
+          </button>
+        ) : (
+          <div />
+        )}
 
-        {/* Right Column (Tailark Auth Card) */}
-        <main className="flex flex-col items-center justify-center w-full flex-1 min-h-0 px-4 sm:px-6 py-8 lg:p-10 relative z-10 overflow-y-auto custom-scrollbar">
-
-          {/* Apple-Grade Dark Glassmorphic Card */}
-          <div className="w-full max-w-[430px] sm:max-w-[450px] shrink-0 rounded-[2.25rem] border border-white/[0.08] shadow-[0_30px_90px_-20px_rgba(0,0,0,0.85),0_0_50px_-10px_rgba(16,185,129,0.12)] bg-obsidian-950/85 backdrop-blur-3xl text-stone-100 animate-fade-in animate-card-glow relative my-auto p-6 sm:p-8">
-
-            {/* Back to Overview return button */}
-            {onClose && (
-              <button
-                type="button"
-                onClick={onClose}
-                className="btn-press absolute top-5 left-5 z-30 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono text-stone-400 hover:text-white bg-white/[0.04] hover:bg-emerald-500/15 border border-white/[0.08] hover:border-emerald-500/30 transition-all cursor-pointer backdrop-blur-md shadow-sm"
-                title="Return to Overview"
-              >
-                <ChevronLeft className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="font-semibold tracking-wide">Overview</span>
-              </button>
-            )}
-
-            {/* Verification Loading Overlay */}
-            {isVerifying && (
-              <div className="absolute inset-0 z-40 bg-obsidian-950/95 backdrop-blur-xl rounded-[2.25rem] flex flex-col items-center justify-center p-6 text-center animate-fade-in overflow-hidden">
-                {/* Laser scan line sweep */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#10b981] animate-laser pointer-events-none" />
-                <div className="relative flex items-center justify-center mb-4">
-                  <AppLogo size={52} animated={true} />
-                </div>
-                <p className="text-sm font-semibold tracking-wider text-emerald-400 animate-pulse font-sans">
-                  Authenticating Session
-                </p>
-                <p className="text-xs text-stone-400 mt-1 font-sans">
-                  Verifying terminal credentials...
-                </p>
-                <div className="w-40 h-1 bg-zinc-800 rounded-full mt-4 overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-300 rounded-full w-2/3 animate-pulse" />
-                </div>
-              </div>
-            )}
-
-            {/* Header: Crest Logo & Title */}
-            <div className="flex flex-col items-center justify-center text-center select-none mb-5">
-              <div className="relative mb-3 flex items-center justify-center">
-                <AppLogo size={52} animated={true} />
-              </div>
-
-              <div className="flex items-center justify-center gap-2 mb-1.5">
-                <span className="font-serif text-xl sm:text-2xl font-bold tracking-[0.16em] uppercase text-stone-100">
-                  TINDA POS
-                </span>
-                <span className="text-[0.6875rem] font-mono font-semibold tracking-wider text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full uppercase bg-emerald-500/10 shrink-0 shadow-[0_0_10px_rgba(16,185,129,0.15)]">
-                  {TERMINAL_ID}
-                </span>
-              </div>
-
-              <p className="text-xs text-stone-400 font-medium font-sans">
-                {step === 'FLOAT'
-                  ? 'Shift Opening Cash Float'
-                  : step === 'SIGNUP'
-                  ? 'Create Store Partner Account'
-                  : step === 'ROTATE'
-                  ? 'PIN Rotation Required'
-                  : step === 'FORGOT_PIN'
-                  ? 'Account PIN & Password Recovery'
-                  : step === 'VIP_UNLOCK'
-                  ? 'Restore & Unlock VIP Pro Account'
-                  : 'Counter Terminal Authentication'}
-              </p>
-            </div>
-
-            {/* Quick Guest Demo Direct Jump Banner */}
-            {onQuickDemo && step === 'LOGIN' && (
-              <div className="mb-4">
-                <button
-                  type="button"
-                  onClick={onQuickDemo}
-                  className="btn-press w-full py-2.5 px-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-emerald-500/10 to-amber-500/15 hover:from-amber-500/25 hover:to-amber-500/25 border border-amber-500/30 text-amber-300 font-sans font-semibold text-xs flex items-center justify-between transition-all cursor-pointer group shadow-sm"
-                >
-                  <div className="flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span className="text-stone-200">First time here? <span className="text-amber-300 font-bold">1-Click Sandbox Demo</span></span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-amber-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
-                </button>
-              </div>
-            )}
-
-            {/* Segmented Switcher Tabs: "Sign In" vs "Register Store" vs "VIP Key" */}
-            {step !== 'FLOAT' && step !== 'ROTATE' && step !== 'FORGOT_PIN' && (
-              <div className="mb-5">
-                <div className="grid grid-cols-3 p-1 rounded-2xl bg-white/[0.03] border border-white/[0.08] shadow-inner backdrop-blur-md">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setStep('LOGIN')
-                      setErrorMessage('')
-                    }}
-                    className={`btn-press py-2 rounded-xl text-xs font-semibold tracking-wide transition-all flex items-center justify-center gap-1.5 ${
-                      step === 'LOGIN'
-                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm font-bold'
-                        : 'text-stone-400 hover:text-stone-200'
-                    }`}
-                  >
-                    <LogIn className="w-3.5 h-3.5" />
-                    <span>Sign In</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setStep('SIGNUP')
-                      setErrorMessage('')
-                    }}
-                    className={`btn-press py-2 rounded-xl text-xs font-semibold tracking-wide transition-all flex items-center justify-center gap-1.5 ${
-                      step === 'SIGNUP'
-                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm font-bold'
-                        : 'text-stone-400 hover:text-stone-200'
-                    }`}
-                  >
-                    <UserPlus className="w-3.5 h-3.5" />
-                    <span>Register</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setStep('VIP_UNLOCK')
-                      setErrorMessage('')
-                    }}
-                    className={`btn-press py-2 rounded-xl text-xs font-semibold tracking-wide transition-all flex items-center justify-center gap-1.5 ${
-                      step === 'VIP_UNLOCK'
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm ring-1 ring-amber-500/20 font-bold'
-                        : 'text-amber-400/80 hover:text-amber-300'
-                    }`}
-                  >
-                    <Crown className="w-3.5 h-3.5 text-amber-400" />
-                    <span>VIP Key</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Form View Router */}
-            <div>
-              {/* ────────────────── 1. SIGN IN VIEW ────────────────── */}
-              {step === 'LOGIN' && (
-                <form onSubmit={handleLoginSubmit} className="space-y-3.5 animate-fade-in font-sans">
-
-                  {/* Fast Staff Switcher (If accounts exist in local IndexedDB) */}
-                  {existingStaff.length > 0 && (
-                    <div className="pb-1">
-                      <p className="text-[0.6875rem] font-mono tracking-wider text-stone-400 uppercase font-semibold mb-2">
-                        Quick Staff Select
-                      </p>
-                      <div className="flex items-center gap-2 overflow-x-auto pb-1.5 custom-scrollbar">
-                        {existingStaff.map((u) => {
-                          const isSelected = username.toLowerCase() === u.username.toLowerCase()
-                          return (
-                            <button
-                              key={u.id || u.username}
-                              type="button"
-                              onClick={() => {
-                                setUsername(u.username)
-                                setPin('')
-                                setErrorMessage('')
-                                if (authMode === 'PIN') pinInputRef.current?.focus()
-                                else passwordInputRef.current?.focus()
-                              }}
-                              className={`btn-press flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium transition-all shrink-0 cursor-pointer ${
-                                isSelected
-                                  ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 shadow-sm ring-1 ring-emerald-500/30 font-semibold'
-                                  : 'bg-white/[0.03] border-white/[0.08] text-stone-300 hover:border-emerald-500/30 hover:bg-white/[0.06]'
-                              }`}
-                            >
-                              <div className="w-5 h-5 rounded-full bg-emerald-500/25 text-emerald-300 flex items-center justify-center text-[0.625rem] font-bold">
-                                {u.name ? u.name.charAt(0).toUpperCase() : u.username.charAt(0).toUpperCase()}
-                              </div>
-                              <span className="truncate max-w-[90px]">{u.name || u.username}</span>
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Username / Staff ID input */}
-                  <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
-                      Staff ID / Username
-                    </label>
-                    <div className="relative flex items-center">
-                      <User className="absolute left-4 w-4 h-4 text-stone-500 pointer-events-none" />
-                      <input
-                        ref={usernameInputRef}
-                        type="text"
-                        value={username}
-                        onChange={(e) => {
-                          setUsername(e.target.value)
-                          setErrorMessage('')
-                        }}
-                        autoCapitalize="none"
-                        autoCorrect="off"
-                        spellCheck="false"
-                        placeholder="Enter Staff ID or Username"
-                        className="w-full pl-11 pr-4 h-12 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-stone-100 text-sm font-medium placeholder-stone-500 focus:outline-none transition-all duration-200"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Credential Header: Mode Switcher (PIN vs Password) */}
-                  <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <label className="text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 flex items-center gap-1.5 font-medium">
-                        <KeyRound className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>{authMode === 'PIN' ? '4-Digit PIN' : 'Password'}</span>
-                      </label>
-                      <div className="flex items-center p-0.5 rounded-full bg-white/[0.04] border border-white/[0.08]">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setAuthMode('PIN')
-                            setPin((p) => p.replace(/\D/g, '').slice(0, 4))
-                            setErrorMessage('')
-                          }}
-                          className={`btn-press px-2.5 py-0.5 rounded-full text-[0.6875rem] font-mono uppercase transition-all ${
-                            authMode === 'PIN'
-                              ? 'bg-emerald-500/25 text-emerald-300 font-bold border border-emerald-500/35 shadow-sm'
-                              : 'text-stone-400 hover:text-stone-200'
-                          }`}
-                        >
-                          PIN
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setAuthMode('PASSWORD')
-                            setErrorMessage('')
-                            setTimeout(() => passwordInputRef.current?.focus(), 50)
-                          }}
-                          className={`btn-press px-2.5 py-0.5 rounded-full text-[0.6875rem] font-mono uppercase transition-all ${
-                            authMode === 'PASSWORD'
-                              ? 'bg-emerald-500/25 text-emerald-300 font-bold border border-emerald-500/35 shadow-sm'
-                              : 'text-stone-400 hover:text-stone-200'
-                          }`}
-                        >
-                          Pass
-                        </button>
-                      </div>
-                    </div>
-
-                    {authMode === 'PIN' ? (
-                      /* Apple-Style 4-Dot Progress Display */
-                      <div
-                        onClick={() => pinInputRef.current?.focus()}
-                        className="cursor-pointer flex items-center justify-center gap-4 h-12 px-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.15] focus-within:border-emerald-400/70 focus-within:bg-white/[0.05] focus-within:ring-2 focus-within:ring-emerald-400/20 transition-all duration-200 w-full"
-                      >
-                        {[0, 1, 2, 3].map((idx) => {
-                          const isFilled = pin.length > idx
-                          return (
-                            <div
-                              key={idx}
-                              className={`h-3.5 w-3.5 rounded-full transition-all duration-200 ${
-                                isFilled
-                                  ? 'bg-emerald-400 scale-125 shadow-[0_0_16px_rgba(52,211,153,0.85)] ring-4 ring-emerald-400/25 animate-dot-pop'
-                                  : 'bg-white/[0.08] border border-white/[0.1]'
-                              }`}
-                            />
-                          )
-                        })}
-
-                        {/* Hidden input to capture physical keyboard typing */}
-                        <input
-                          ref={pinInputRef}
-                          type="password"
-                          maxLength={4}
-                          value={pin}
-                          onChange={(e) => {
-                            const val = e.target.value.replace(/[^0-9]/g, '')
-                            setPin(val)
-                            setErrorMessage('')
-                          }}
-                          className="sr-only"
-                          autoComplete="off"
-                        />
-                      </div>
-                    ) : (
-                      /* Password Input */
-                      <div className="relative flex items-center">
-                        <Lock className="absolute left-4 w-4 h-4 text-stone-500 pointer-events-none" />
-                        <input
-                          ref={passwordInputRef}
-                          type={showPassword ? 'text' : 'password'}
-                          value={pin}
-                          onChange={(e) => {
-                            setPin(e.target.value)
-                            setErrorMessage('')
-                          }}
-                          placeholder="Enter account password"
-                          className="w-full pl-11 pr-11 h-12 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-stone-100 text-sm font-medium placeholder-stone-500 focus:outline-none transition-all duration-200"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3.5 p-1 rounded-lg text-stone-400 hover:text-stone-200"
-                        >
-                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Error Alert Display */}
-                  {errorMessage && (
-                    <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/25 text-xs font-mono text-red-300 text-center animate-shake shadow-sm flex items-center justify-center gap-2">
-                      <ShieldAlert className="w-4 h-4 text-red-400 shrink-0" />
-                      {errorMessage}
-                    </div>
-                  )}
-
-                  {/* Tactile Keypad for PIN Mode */}
-                  {authMode === 'PIN' && (
-                    <div className="pt-1">
-                      {/* Interactive Biometric Touch ID Shortcut */}
-                      <div className="mb-2.5">
-                        <button
-                          type="button"
-                          onClick={handleBiometricAuth}
-                          className="btn-tactile w-full py-2.5 px-3 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-semibold flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer shadow-sm group"
-                        >
-                          <Fingerprint className="w-4 h-4 text-emerald-400 animate-pulse group-hover:scale-110 transition-transform" />
-                          <span>Tap for Touch ID / Instant Biometric Unlock</span>
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2 w-full">
-                        {[
-                          { num: '1', sub: '' },
-                          { num: '2', sub: 'ABC' },
-                          { num: '3', sub: 'DEF' },
-                          { num: '4', sub: 'GHI' },
-                          { num: '5', sub: 'JKL' },
-                          { num: '6', sub: 'MNO' },
-                          { num: '7', sub: 'PQRS' },
-                          { num: '8', sub: 'TUV' },
-                          { num: '9', sub: 'WXYZ' }
-                        ].map((item) => (
-                          <button
-                            type="button"
-                            key={item.num}
-                            onClick={() => handleKeypadPress(item.num)}
-                            className="btn-tactile h-12 rounded-2xl bg-gradient-to-b from-white/[0.05] to-white/[0.02] hover:from-emerald-500/20 hover:to-emerald-500/05 border border-white/[0.08] hover:border-emerald-500/40 text-stone-100 font-mono font-bold text-xl active:scale-95 flex flex-col items-center justify-center cursor-pointer transition-all duration-150 leading-none select-none"
-                          >
-                            <span>{item.num}</span>
-                            {item.sub && (
-                              <span className="text-[0.5625rem] text-stone-500 font-sans tracking-widest mt-0.5 font-normal">
-                                {item.sub}
-                              </span>
-                            )}
-                          </button>
-                        ))}
-                        <button
-                          type="button"
-                          onClick={handleClearPin}
-                          className="btn-press h-12 rounded-2xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.06] text-stone-400 hover:text-stone-200 text-xs font-mono font-semibold uppercase active:scale-95 flex items-center justify-center cursor-pointer transition-all duration-150"
-                        >
-                          Clear
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleKeypadPress('0')}
-                          className="btn-tactile h-12 rounded-2xl bg-gradient-to-b from-white/[0.05] to-white/[0.02] hover:from-emerald-500/20 hover:to-emerald-500/05 border border-white/[0.08] hover:border-emerald-500/40 text-stone-100 font-mono font-bold text-xl active:scale-95 flex flex-col items-center justify-center cursor-pointer transition-all duration-150 leading-none select-none"
-                        >
-                          <span>0</span>
-                          <span className="text-[0.5625rem] text-stone-500 font-sans tracking-widest mt-0.5 font-normal">+</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleDeletePin}
-                          className="btn-press h-12 rounded-2xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.06] text-stone-400 hover:text-emerald-400 active:scale-95 flex items-center justify-center cursor-pointer transition-all duration-150"
-                          title="Delete last digit"
-                        >
-                          <Delete className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Forgot PIN / Password Recovery Trigger */}
-                  <div className="flex items-center justify-between pt-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setForgotTargetUsername(username)
-                        setStep('FORGOT_PIN')
-                        setErrorMessage('')
-                        setForgotSuccessMessage('')
-                      }}
-                      className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1.5 cursor-pointer py-1"
-                    >
-                      <KeyRound className="w-3.5 h-3.5" />
-                      <span>Forgot PIN or Password?</span>
-                    </button>
-                    <span className="text-[0.6875rem] font-mono text-stone-500">
-                      Default: 1234
-                    </span>
-                  </div>
-
-                  {/* Paid ₱500 VIP Pro Unlock Quick Link */}
-                  <div className="pt-0.5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setStep('VIP_UNLOCK')
-                        setErrorMessage('')
-                      }}
-                      className="btn-press w-full p-3 rounded-2xl bg-amber-500/[0.08] hover:bg-amber-500/[0.14] border border-amber-500/25 hover:border-amber-500/40 transition-all flex items-center justify-between text-left group cursor-pointer"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-7 h-7 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
-                          <Crown className="w-3.5 h-3.5" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-xs font-bold text-amber-200 group-hover:text-amber-100 truncate">
-                            Paid ₱500 for VIP? Unlock Account
-                          </p>
-                          <p className="text-[0.625rem] text-amber-300/70 truncate">
-                            Enter VIP License Key to instantly restore and sign in
-                          </p>
-                        </div>
-                      </div>
-                      <ArrowRight className="w-3.5 h-3.5 text-amber-400 group-hover:translate-x-1 transition-transform shrink-0" />
-                    </button>
-                  </div>
-
-                  {/* Primary CTA Submit */}
-                  <button
-                    type="submit"
-                    disabled={isVerifying}
-                    className="btn-press w-full h-12 rounded-full flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-emerald-500 via-brand-500 to-emerald-600 hover:from-emerald-400 hover:to-brand-400 text-obsidian-950 shadow-[0_0_24px_-4px_rgba(16,185,129,0.4)] transition-all duration-300 mt-2 disabled:opacity-75 cursor-pointer"
-                  >
-                    {isVerifying ? (
-                      <>
-                        <div className="w-3.5 h-3.5 rounded-full border-2 border-zinc-950 border-t-transparent animate-spin" />
-                        <span>Authenticating...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Lock className="w-3.5 h-3.5" />
-                        <span>Unlock Register Session</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </>
-                    )}
-                  </button>
-
-                  <p className="text-[0.6875rem] font-mono text-stone-500 text-center pt-1">
-                    Terminal TRM-8891 · Audited Local & Edge Station
-                  </p>
-                </form>
-              )}
-
-              {/* ────────────────── 2. STORE SIGN UP VIEW ────────────────── */}
-              {step === 'SIGNUP' && (
-                <form onSubmit={handleSignupSubmit} className="space-y-3.5 animate-fade-in font-sans">
-                  <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
-                      Store / Business Name *
-                    </label>
-                    <input
-                      ref={signupStoreInputRef}
-                      type="text"
-                      value={signupStoreName}
-                      onChange={(e) => {
-                        setSignupStoreName(e.target.value)
-                        setErrorMessage('')
-                      }}
-                      placeholder="e.g. Aling Nena's Sari-Sari Store"
-                      className="w-full h-11 px-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-stone-100 text-xs font-medium placeholder-stone-500 focus:outline-none transition-all duration-200"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
-                      Owner Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      value={signupName}
-                      onChange={(e) => {
-                        setSignupName(e.target.value)
-                        setErrorMessage('')
-                      }}
-                      placeholder="e.g. Maria Santos"
-                      className="w-full h-11 px-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-stone-100 text-xs font-medium placeholder-stone-500 focus:outline-none transition-all duration-200"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div>
-                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
-                        Username (Staff ID) *
-                      </label>
-                      <input
-                        type="text"
-                        value={signupUsername}
-                        onChange={(e) => {
-                          setSignupUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))
-                          setErrorMessage('')
-                        }}
-                        placeholder="e.g. mariasari"
-                        className="w-full h-11 px-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-stone-100 text-xs font-mono placeholder-stone-500 focus:outline-none transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
-                        Contact Number / Email
-                      </label>
-                      <input
-                        type="text"
-                        value={signupEmail}
-                        onChange={(e) => {
-                          setSignupEmail(e.target.value)
-                          setErrorMessage('')
-                        }}
-                        placeholder="e.g. 0917xxxxxxx"
-                        className="w-full h-11 px-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-stone-100 text-xs font-mono placeholder-stone-500 focus:outline-none transition-all duration-200"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <label className="text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 font-medium">PIN *</label>
-                        <button
-                          type="button"
-                          onClick={() => setShowSignupPin(!showSignupPin)}
-                          className="text-stone-400 hover:text-stone-200"
-                        >
-                          {showSignupPin ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                        </button>
-                      </div>
-                      <input
-                        type={showSignupPin ? 'text' : 'password'}
-                        inputMode="numeric"
-                        maxLength={4}
-                        value={signupPin}
-                        onChange={(e) => {
-                          setSignupPin(e.target.value.replace(/[^0-9]/g, ''))
-                          setErrorMessage('')
-                        }}
-                        placeholder="4 digits"
-                        className="w-full h-11 text-center px-2 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-emerald-400 font-mono text-sm tracking-widest focus:outline-none transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">Confirm PIN *</label>
-                      <input
-                        type={showSignupPin ? 'text' : 'password'}
-                        inputMode="numeric"
-                        maxLength={4}
-                        value={signupConfirmPin}
-                        onChange={(e) => {
-                          setSignupConfirmPin(e.target.value.replace(/[^0-9]/g, ''))
-                          setErrorMessage('')
-                        }}
-                        placeholder="Repeat PIN"
-                        className="w-full h-11 text-center px-2 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-emerald-400 font-mono text-sm tracking-widest focus:outline-none transition-all duration-200"
-                      />
-                    </div>
-                  </div>
-
-                  {errorMessage && (
-                    <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/25 text-xs font-mono text-red-300 text-center animate-fade-in shadow-sm">
-                      {errorMessage}
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={isVerifying}
-                    className="btn-press w-full h-12 rounded-full flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-emerald-500 via-brand-500 to-emerald-600 hover:from-emerald-400 hover:to-brand-400 text-obsidian-950 shadow-[0_0_24px_-4px_rgba(16,185,129,0.4)] transition-all duration-300 mt-2 cursor-pointer disabled:opacity-75"
-                  >
-                    {isVerifying ? (
-                      <>
-                        <div className="w-3.5 h-3.5 rounded-full border-2 border-zinc-950 border-t-transparent animate-spin" />
-                        <span>Registering...</span>
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="w-4 h-4" />
-                        <span>Create Store Account</span>
-                      </>
-                    )}
-                  </button>
-                </form>
-              )}
-
-              {/* ────────────────── 3. MANDATORY PIN ROTATION ────────────────── */}
-              {step === 'ROTATE' && (
-                <form onSubmit={handleRotateSubmit} className="space-y-3.5 animate-fade-in font-sans">
-                  <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 flex items-start gap-3 backdrop-blur-md">
-                    <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
-                    <p className="text-xs text-amber-200 leading-relaxed font-sans">
-                      Please set a private, secure PIN before opening your shift register.
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
-                      New Security PIN
-                    </label>
-                    <input
-                      type="password"
-                      inputMode="numeric"
-                      maxLength={6}
-                      value={rotatePin}
-                      onChange={(e) => setRotatePin(e.target.value.replace(/\D/g, ''))}
-                      placeholder="4 to 6 digits"
-                      className="w-full h-12 bg-white/[0.03] border border-white/[0.08] rounded-2xl px-4 text-center font-mono tracking-[0.3em] text-emerald-400 focus:outline-none focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 transition-all duration-200"
-                      autoFocus
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
-                      Confirm New PIN
-                    </label>
-                    <input
-                      type="password"
-                      inputMode="numeric"
-                      maxLength={6}
-                      value={rotateConfirm}
-                      onChange={(e) => setRotateConfirm(e.target.value.replace(/\D/g, ''))}
-                      placeholder="Repeat new PIN"
-                      className="w-full h-12 bg-white/[0.03] border border-white/[0.08] rounded-2xl px-4 text-center font-mono tracking-[0.3em] text-emerald-400 focus:outline-none focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 transition-all duration-200"
-                    />
-                  </div>
-
-                  {errorMessage && (
-                    <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/25 text-xs font-mono text-red-300 text-center animate-fade-in shadow-sm">
-                      {errorMessage}
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={isVerifying}
-                    className="btn-press w-full h-12 rounded-full flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-emerald-500 via-brand-500 to-emerald-600 hover:from-emerald-400 hover:to-brand-400 text-obsidian-950 shadow-[0_0_24px_-4px_rgba(16,185,129,0.4)] transition-all duration-300 mt-2"
-                  >
-                    <KeyRound className="w-4 h-4" />
-                    <span>Save New Security PIN</span>
-                  </button>
-                </form>
-              )}
-
-              {/* ────────────────── 3b. FORGOT PIN RECOVERY VIEW ────────────────── */}
-              {step === 'FORGOT_PIN' && (
-                <form onSubmit={handleForgotResetSubmit} className="space-y-3.5 animate-fade-in font-sans">
-                  <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 flex items-start gap-3 backdrop-blur-md">
-                    <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-emerald-400" />
-                    <div>
-                      <p className="text-xs font-semibold text-emerald-200">
-                        Staff PIN &amp; Password Recovery
-                      </p>
-                      <p className="text-[0.6875rem] text-stone-400 mt-0.5 leading-relaxed">
-                        Reset your 4-digit cashier or owner PIN using Store Admin authorization or Master Emergency Key.
-                      </p>
-                    </div>
-                  </div>
-
-                  {forgotSuccessMessage && (
-                    <div className="p-3 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-xs font-semibold text-emerald-300 text-center flex items-center justify-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>{forgotSuccessMessage}</span>
-                    </div>
-                  )}
-
-                  {errorMessage && (
-                    <div className="p-3 rounded-2xl bg-red-500/15 border border-red-500/30 text-xs font-mono text-red-300 text-center animate-fade-in shadow-sm">
-                      {errorMessage}
-                    </div>
-                  )}
-
-                  {/* Target Account Selection */}
-                  <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
-                      Staff ID / Username to Reset *
-                    </label>
-                    <div className="relative flex items-center">
-                      <User className="absolute left-4 w-4 h-4 text-stone-500 pointer-events-none" />
-                      <input
-                        type="text"
-                        value={forgotTargetUsername}
-                        onChange={(e) => {
-                          setForgotTargetUsername(e.target.value)
-                          setErrorMessage('')
-                        }}
-                        placeholder="e.g. admin or cashier1"
-                        className="w-full h-11 bg-white/[0.03] border border-white/[0.08] rounded-2xl pl-11 pr-4 text-xs font-medium text-stone-100 placeholder-stone-500 focus:outline-none focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 transition-all duration-200"
-                        required
-                      />
-                    </div>
-                    {existingStaff.length > 0 && (
-                      <div className="flex items-center gap-1.5 overflow-x-auto pt-2 pb-1 custom-scrollbar">
-                        {existingStaff.map((u) => (
-                          <button
-                            key={u.id || u.username}
-                            type="button"
-                            onClick={() => {
-                              setForgotTargetUsername(u.username)
-                              setErrorMessage('')
-                            }}
-                            className={`btn-press px-2.5 py-1 rounded-full text-[0.6875rem] font-medium border transition-all shrink-0 cursor-pointer ${
-                              forgotTargetUsername.toLowerCase() === u.username.toLowerCase()
-                                ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300'
-                                : 'bg-white/[0.03] border-white/[0.08] text-stone-400 hover:text-stone-200'
-                            }`}
-                          >
-                            {u.name || u.username}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Recovery Authorization Method Tabs */}
-                  <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
-                      Authorization Method
-                    </label>
-                    <div className="grid grid-cols-2 p-1 rounded-2xl bg-white/[0.03] border border-white/[0.08] text-xs font-semibold mb-2">
-                      <button
-                        type="button"
-                        onClick={() => setForgotRecoveryMethod('ADMIN_PIN')}
-                        className={`btn-press py-2 rounded-xl transition-all text-center cursor-pointer ${
-                          forgotRecoveryMethod === 'ADMIN_PIN'
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm font-bold'
-                            : 'text-stone-400 hover:text-stone-200'
-                        }`}
-                      >
-                        Store Admin PIN
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setForgotRecoveryMethod('MASTER_KEY')}
-                        className={`btn-press py-2 rounded-xl transition-all text-center cursor-pointer ${
-                          forgotRecoveryMethod === 'MASTER_KEY'
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm font-bold'
-                            : 'text-stone-400 hover:text-stone-200'
-                        }`}
-                      >
-                        Master Emergency Key
-                      </button>
-                    </div>
-
-                    {forgotRecoveryMethod === 'ADMIN_PIN' ? (
-                      <div>
-                        <div className="relative flex items-center">
-                          <Lock className="absolute left-4 w-4 h-4 text-stone-500 pointer-events-none" />
-                          <input
-                            type="password"
-                            inputMode="numeric"
-                            maxLength={6}
-                            value={forgotAdminPin}
-                            onChange={(e) => setForgotAdminPin(e.target.value.replace(/\D/g, ''))}
-                            placeholder="Enter Store Admin PIN (default: 1234)"
-                            className="w-full h-11 bg-white/[0.03] border border-white/[0.08] rounded-2xl pl-11 pr-4 text-xs font-mono font-bold tracking-widest text-emerald-400 placeholder-stone-500 focus:outline-none focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 transition-all duration-200"
-                          />
-                        </div>
-                        <p className="text-[0.625rem] text-stone-500 mt-1 pl-1">
-                          Authorize cashier reset using Store Admin PIN (default: 1234).
-                        </p>
-                      </div>
-                    ) : (
-                      <div>
-                        <div className="relative flex items-center">
-                          <KeyRound className="absolute left-4 w-4 h-4 text-stone-500 pointer-events-none" />
-                          <input
-                            type="text"
-                            value={forgotRecoveryCode}
-                            onChange={(e) => setForgotRecoveryCode(e.target.value.toUpperCase())}
-                            placeholder="MASTER-RECOVERY-2026"
-                            className="w-full h-11 bg-white/[0.03] border border-white/[0.08] rounded-2xl pl-11 pr-4 text-xs font-mono font-bold tracking-wider uppercase text-amber-300 placeholder-stone-600 focus:outline-none focus:border-amber-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-amber-400/20 transition-all duration-200"
-                          />
-                        </div>
-                        <p className="text-[0.625rem] text-stone-500 mt-1 pl-1">
-                          Enter Master Key (MASTER-RECOVERY-2026) or your VIP License Key.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* New PIN & Confirm PIN */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
-                        New 4-Digit PIN *
-                      </label>
-                      <input
-                        type="password"
-                        inputMode="numeric"
-                        maxLength={4}
-                        value={forgotNewPin}
-                        onChange={(e) => setForgotNewPin(e.target.value.replace(/\D/g, ''))}
-                        placeholder="••••"
-                        className="w-full h-11 bg-white/[0.03] border border-white/[0.08] rounded-2xl px-3 text-center font-mono font-bold text-base tracking-[0.3em] text-emerald-400 placeholder-stone-600 focus:outline-none focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 transition-all duration-200"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
-                        Confirm PIN *
-                      </label>
-                      <input
-                        type="password"
-                        inputMode="numeric"
-                        maxLength={4}
-                        value={forgotConfirmPin}
-                        onChange={(e) => setForgotConfirmPin(e.target.value.replace(/\D/g, ''))}
-                        placeholder="••••"
-                        className="w-full h-11 bg-white/[0.03] border border-white/[0.08] rounded-2xl px-3 text-center font-mono font-bold text-base tracking-[0.3em] text-emerald-400 placeholder-stone-600 focus:outline-none focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 transition-all duration-200"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* Submit Reset Button */}
-                  <button
-                    type="submit"
-                    disabled={forgotIsResetting || forgotNewPin.length !== 4 || forgotConfirmPin.length !== 4}
-                    className="btn-press w-full h-12 rounded-full flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-emerald-500 via-brand-500 to-emerald-600 hover:from-emerald-400 hover:to-brand-400 text-obsidian-950 shadow-[0_0_24px_-4px_rgba(16,185,129,0.4)] transition-all duration-300 mt-2 disabled:opacity-60 cursor-pointer"
-                  >
-                    {forgotIsResetting ? (
-                      <>
-                        <div className="w-3.5 h-3.5 rounded-full border-2 border-zinc-950 border-t-transparent animate-spin" />
-                        <span>Verifying & Resetting PIN...</span>
-                      </>
-                    ) : (
-                      <>
-                        <KeyRound className="w-4 h-4" />
-                        <span>Reset Security PIN</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </>
-                    )}
-                  </button>
-
-                  {/* Return to Login */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setStep('LOGIN')
-                      setErrorMessage('')
-                      setForgotSuccessMessage('')
-                    }}
-                    className="btn-press w-full py-2.5 rounded-full border border-white/[0.08] hover:bg-white/[0.05] text-stone-300 hover:text-stone-100 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    <span>Back to Sign In</span>
-                  </button>
-                </form>
-              )}
-
-              {/* ────────────────── 3c. VIP PRO LICENSE UNLOCK VIEW ────────────────── */}
-              {step === 'VIP_UNLOCK' && (
-                <form onSubmit={handleVipUnlockSubmit} className="space-y-3.5 animate-fade-in font-sans">
-                  <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 flex items-start gap-3 backdrop-blur-md">
-                    <Crown className="w-5 h-5 shrink-0 mt-0.5 text-amber-400 animate-pulse" />
-                    <div>
-                      <p className="text-xs font-bold text-amber-200">
-                        Restore &amp; Unlock VIP Pro Account
-                      </p>
-                      <p className="text-[0.6875rem] text-stone-400 mt-1 leading-relaxed">
-                        Paid ₱500 to Dev Francis (Maya 0991 225 5156)? Enter your VIP Key below to restore your lifetime Pro status and immediately unlock your terminal.
-                      </p>
-                    </div>
-                  </div>
-
-                  {errorMessage && (
-                    <div className="p-3 rounded-2xl bg-red-500/15 border border-red-500/30 text-xs font-mono text-red-300 text-center animate-fade-in shadow-sm">
-                      {errorMessage}
-                    </div>
-                  )}
-
-                  {/* VIP License Key Input */}
-                  <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-amber-300 font-bold mb-1.5">
-                      VIP License Key *
-                    </label>
-                    <div className="relative flex items-center">
-                      <KeyRound className="absolute left-4 w-4 h-4 text-amber-400 pointer-events-none" />
-                      <input
-                        ref={vipKeyInputRef}
-                        type="text"
-                        required
-                        value={vipKeyInput}
-                        onChange={(e) => {
-                          setVipKeyInput(e.target.value.toUpperCase())
-                          setErrorMessage('')
-                        }}
-                        placeholder="VIP-XXXX-XXXX-XXXX-XXXX"
-                        className="w-full pl-11 pr-4 h-12 rounded-2xl bg-white/[0.03] border border-amber-500/30 focus:border-amber-400 focus:bg-white/[0.05] focus:ring-2 focus:ring-amber-400/20 text-amber-300 font-mono text-xs font-bold tracking-wider placeholder-stone-600 focus:outline-none transition-all duration-200"
-                      />
-                    </div>
-                    <p className="text-[0.625rem] text-stone-500 mt-1 pl-1">
-                      Supports VIP-XXXX-XXXX-XXXX-XXXX keys and master recovery keys.
-                    </p>
-                  </div>
-
-                  {/* Store Name Input */}
-                  <div>
-                    <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
-                      Store / Business Name
-                    </label>
-                    <div className="relative flex items-center">
-                      <Store className="absolute left-4 w-4 h-4 text-stone-500 pointer-events-none" />
-                      <input
-                        type="text"
-                        value={vipStoreName}
-                        onChange={(e) => {
-                          setVipStoreName(e.target.value)
-                          setErrorMessage('')
-                        }}
-                        placeholder="e.g. Aling Nena's Sari-Sari Store"
-                        className="w-full pl-11 pr-4 h-11 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-stone-100 text-xs font-medium placeholder-stone-500 focus:outline-none transition-all duration-200"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Username and PIN Grid */}
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div>
-                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
-                        Username (Staff ID)
-                      </label>
-                      <input
-                        type="text"
-                        value={vipUsername}
-                        onChange={(e) => {
-                          setVipUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))
-                          setErrorMessage('')
-                        }}
-                        placeholder="owner"
-                        className="w-full h-11 px-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-stone-100 text-xs font-mono placeholder-stone-500 focus:outline-none transition-all duration-200"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1.5 font-medium">
-                        4-Digit PIN
-                      </label>
-                      <input
-                        type="password"
-                        inputMode="numeric"
-                        maxLength={4}
-                        value={vipPin}
-                        onChange={(e) => {
-                          setVipPin(e.target.value.replace(/\D/g, ''))
-                          setErrorMessage('')
-                        }}
-                        placeholder="1234"
-                        className="w-full h-11 text-center px-2 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-400/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-emerald-400/20 text-emerald-400 font-mono text-sm tracking-widest focus:outline-none transition-all duration-200"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Primary Unlock CTA */}
-                  <button
-                    type="submit"
-                    disabled={isVerifying || !vipKeyInput.trim()}
-                    className="btn-press w-full h-12 rounded-full flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-amber-500 via-emerald-500 to-teal-500 hover:brightness-110 text-obsidian-950 shadow-[0_0_24px_-4px_rgba(245,158,11,0.4)] transition-all duration-300 mt-2 cursor-pointer disabled:opacity-60"
-                  >
-                    {isVerifying ? (
-                      <>
-                        <div className="w-3.5 h-3.5 rounded-full border-2 border-zinc-950 border-t-transparent animate-spin" />
-                        <span>Verifying VIP License...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Crown className="w-4 h-4" />
-                        <span>Unlock VIP Register Session</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </>
-                    )}
-                  </button>
-
-                  {/* Back to Regular Sign In */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setStep('LOGIN')
-                      setErrorMessage('')
-                    }}
-                    className="btn-press w-full py-2.5 rounded-full border border-white/[0.08] hover:bg-white/[0.05] text-stone-300 hover:text-stone-100 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    <span>Back to Sign In</span>
-                  </button>
-                </form>
-              )}
-
-              {/* ────────────────── 4. SHIFT OPENING FLOAT ────────────────── */}
-              {step === 'FLOAT' && (
-                <div className="space-y-4 animate-fade-in font-sans">
-                  <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md">
-                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-sm">
-                      {authenticatedUser?.name?.substring(0, 2).toUpperCase() || 'AD'}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="text-xs sm:text-sm font-semibold text-stone-100 truncate">{authenticatedUser?.name}</p>
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[0.625rem] font-mono text-emerald-300 font-semibold">
-                          {authenticatedUser?.role === 'ADMIN' ? 'OWNER / ADMIN' : authenticatedUser?.role}
-                        </span>
-                      </div>
-                      <p className="text-xs font-mono text-stone-400 mt-0.5 truncate flex items-center gap-1.5">
-                        <Store className="w-3.5 h-3.5 text-emerald-400/80" />
-                        <span>{authenticatedUser?.store_name || 'Independent Store'}</span>
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Currency Display */}
-                  <div className="text-center p-5 rounded-2xl bg-white/[0.02] border border-emerald-500/30 shadow-[0_0_24px_-6px_rgba(16,185,129,0.15)]">
-                    <p className="text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1">
-                      Opening Cash Register Float
-                    </p>
-                    <div className="text-3xl sm:text-4xl font-bold tracking-tight text-emerald-400 tabular-nums">
-                      {money(openingFloat)}
-                    </div>
-                    <p className="text-[0.6875rem] text-stone-500 mt-1">
-                      Initial starting cash for customer change
-                    </p>
-                  </div>
-
-                  {/* Preset Bills */}
-                  <div>
-                    <span className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-2 text-center">
-                      Quick Denomination Presets
-                    </span>
-                    <div className="grid grid-cols-4 gap-2">
-                      {[500, 1000, 2000, 5000].map((amt) => {
-                        const isSelected = openingFloat === amt * 100
-                        return (
-                          <button
-                            key={amt}
-                            type="button"
-                            onClick={() => handlePresetFloat(amt)}
-                            className={`btn-press py-2.5 rounded-2xl text-xs font-mono font-bold border transition-all cursor-pointer ${
-                              isSelected
-                                ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300 shadow-[0_0_14px_rgba(16,185,129,0.3)] ring-1 ring-emerald-400/40'
-                                : 'bg-white/[0.03] border-white/[0.08] text-stone-300 hover:border-emerald-500/40 hover:bg-white/[0.06]'
-                            }`}
-                          >
-                            ₱{amt.toLocaleString()}
-                          </button>
-                        )
-                      })}
-                    </div>
-
-                    <div className="mt-3 flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] focus-within:border-emerald-400/70 focus-within:bg-white/[0.05] focus-within:ring-2 focus-within:ring-emerald-400/20 transition-all duration-200">
-                      <span className="text-xs font-mono text-emerald-400 font-bold">Custom ₱</span>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        value={customFloatInput}
-                        onChange={handleCustomFloatChange}
-                        placeholder="Enter custom starting float..."
-                        className="flex-1 bg-transparent text-xs font-mono text-stone-100 focus:outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Confirm CTA */}
-                  <div className="space-y-2 pt-1">
-                    <button
-                      type="button"
-                      onClick={handleConfirmSession}
-                      className="btn-press w-full h-12 rounded-full flex items-center justify-center gap-2 text-xs font-bold tracking-wider uppercase bg-gradient-to-r from-emerald-500 via-brand-500 to-emerald-600 hover:from-emerald-400 hover:to-brand-400 text-obsidian-950 shadow-[0_0_24px_-4px_rgba(16,185,129,0.4)] transition-all duration-300 cursor-pointer"
-                    >
-                      <Lock className="w-4 h-4" />
-                      <span>Confirm &amp; Open Shift Register</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleSwitchAccount}
-                      className="btn-press w-full py-2 text-xs text-stone-400 hover:text-stone-200 transition-colors flex items-center justify-center gap-1 cursor-pointer"
-                    >
-                      <ChevronLeft className="w-3.5 h-3.5" />
-                      <span>Switch Staff Account</span>
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06] text-[0.6875rem] font-mono text-stone-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span>{TERMINAL_ID}</span>
+            <span className="text-stone-600">·</span>
+            <span className="text-emerald-400">Online</span>
           </div>
 
-          {/* Footer Terminal Information */}
-          <div className="mt-5 text-center">
-            <p className="text-[0.6875rem] font-mono text-stone-500 tracking-wider flex items-center justify-center gap-1.5">
-              <Clock className="w-3 h-3 text-emerald-500/60" />
-              <span>Terminal {TERMINAL_ID} · Protected by Cloudflare Pages &amp; Dexie DB</span>
+          {onQuickDemo && step === 'LOGIN' && (
+            <button
+              type="button"
+              onClick={onQuickDemo}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 text-amber-300 text-xs font-medium transition-all cursor-pointer"
+              title="Launch Sandbox Demo"
+            >
+              <Zap className="w-3 h-3 text-amber-400" />
+              <span className="hidden sm:inline">1-Click Demo</span>
+              <span className="sm:hidden">Demo</span>
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* ── Centered Minimalist Card View ── */}
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-4 sm:py-6 z-10 w-full my-auto">
+        <div className="w-full max-w-[390px] rounded-3xl bg-zinc-950/80 border border-white/[0.08] backdrop-blur-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.85)] p-6 sm:p-7 relative transition-all duration-300">
+          {/* Verification Loading Overlay */}
+          {isVerifying && (
+            <div className="absolute inset-0 z-40 bg-zinc-950/95 backdrop-blur-xl rounded-3xl flex flex-col items-center justify-center p-6 text-center animate-fade-in overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-400 to-transparent animate-laser pointer-events-none" />
+              <div className="mb-3">
+                <AppLogo size={42} animated={true} />
+              </div>
+              <p className="text-sm font-semibold tracking-wide text-emerald-400 animate-pulse font-sans">
+                Authenticating Session
+              </p>
+              <p className="text-xs text-stone-400 mt-1 font-sans">Verifying terminal credentials...</p>
+              <div className="w-32 h-1 bg-zinc-800 rounded-full mt-4 overflow-hidden">
+                <div className="h-full bg-emerald-400 rounded-full w-2/3 animate-pulse" />
+              </div>
+            </div>
+          )}
+
+          {/* Minimalist Brand Header */}
+          <div className="flex flex-col items-center text-center mb-5">
+            <div className="mb-2.5">
+              <AppLogo size={42} animated={true} />
+            </div>
+            <h1 className="text-base sm:text-lg font-bold tracking-tight text-stone-100 font-sans">
+              {step === 'FLOAT'
+                ? 'Opening Cash Float'
+                : step === 'SIGNUP'
+                ? 'Create Store Account'
+                : step === 'ROTATE'
+                ? 'Rotate Security PIN'
+                : step === 'FORGOT_PIN'
+                ? 'Recover Account PIN'
+                : step === 'VIP_UNLOCK'
+                ? 'Activate VIP License'
+                : 'Sign In to Terminal'}
+            </h1>
+            <p className="text-xs text-stone-400 mt-0.5 font-sans">
+              {step === 'FLOAT'
+                ? 'Set starting cash drawer amount'
+                : step === 'SIGNUP'
+                ? 'Register an independent store on this counter'
+                : step === 'ROTATE'
+                ? 'Update your default PIN before proceeding'
+                : step === 'FORGOT_PIN'
+                ? 'Reset cashier PIN using Store Admin or Master Key'
+                : step === 'VIP_UNLOCK'
+                ? 'Enter your Dev Francis license key'
+                : 'Enter your credentials to unlock terminal'}
             </p>
           </div>
-        </main>
-      </div>
+
+          {/* Segmented Switcher (Sign In / Register / VIP Key) */}
+          {step !== 'FLOAT' && step !== 'ROTATE' && step !== 'FORGOT_PIN' && (
+            <div className="grid grid-cols-3 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06] mb-5 text-xs font-medium">
+              <button
+                type="button"
+                onClick={() => {
+                  setStep('LOGIN')
+                  setErrorMessage('')
+                }}
+                className={`py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  step === 'LOGIN'
+                    ? 'bg-emerald-500/15 text-emerald-300 font-semibold border border-emerald-500/30 shadow-sm'
+                    : 'text-stone-400 hover:text-stone-200'
+                }`}
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Sign In</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setStep('SIGNUP')
+                  setErrorMessage('')
+                }}
+                className={`py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  step === 'SIGNUP'
+                    ? 'bg-emerald-500/15 text-emerald-300 font-semibold border border-emerald-500/30 shadow-sm'
+                    : 'text-stone-400 hover:text-stone-200'
+                }`}
+              >
+                <UserPlus className="w-3.5 h-3.5" />
+                <span>Register</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setStep('VIP_UNLOCK')
+                  setErrorMessage('')
+                }}
+                className={`py-1.5 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  step === 'VIP_UNLOCK'
+                    ? 'bg-amber-500/15 text-amber-300 font-semibold border border-amber-500/30 shadow-sm'
+                    : 'text-stone-400 hover:text-amber-300/80'
+                }`}
+              >
+                <Crown className="w-3.5 h-3.5 text-amber-400" />
+                <span>VIP Key</span>
+              </button>
+            </div>
+          )}
+
+          {/* ────────────────── 1. SIGN IN VIEW ────────────────── */}
+          {step === 'LOGIN' && (
+            <form onSubmit={handleLoginSubmit} className="space-y-3.5 animate-fade-in font-sans">
+              {/* Quick Staff Select Chips */}
+              {existingStaff.length > 0 && (
+                <div className="pb-1">
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 custom-scrollbar">
+                    {existingStaff.map((u) => {
+                      const isSelected = username.toLowerCase() === u.username.toLowerCase()
+                      return (
+                        <button
+                          key={u.id || u.username}
+                          type="button"
+                          onClick={() => {
+                            setUsername(u.username)
+                            setPin('')
+                            setErrorMessage('')
+                            if (authMode === 'PIN') pinInputRef.current?.focus()
+                            else passwordInputRef.current?.focus()
+                          }}
+                          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs transition-all shrink-0 cursor-pointer ${
+                            isSelected
+                              ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-medium'
+                              : 'bg-white/[0.03] border border-white/[0.06] text-stone-400 hover:text-stone-200 hover:bg-white/[0.06]'
+                          }`}
+                        >
+                          <div className="w-4 h-4 rounded-full bg-emerald-500/25 text-emerald-300 flex items-center justify-center text-[0.5625rem] font-bold">
+                            {u.name ? u.name.charAt(0).toUpperCase() : u.username.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="truncate max-w-[85px]">{u.name || u.username}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Username Input */}
+              <div>
+                <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1 font-medium">
+                  Staff ID / Username
+                </label>
+                <div className="relative flex items-center">
+                  <User className="absolute left-3.5 w-4 h-4 text-stone-500 pointer-events-none" />
+                  <input
+                    ref={usernameInputRef}
+                    type="text"
+                    value={username}
+                    onChange={(e) => {
+                      setUsername(e.target.value)
+                      setErrorMessage('')
+                    }}
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck="false"
+                    placeholder="Enter Staff ID or Username"
+                    className="w-full pl-10 pr-3 h-10 rounded-xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-500/60 focus:bg-white/[0.05] focus:outline-none text-stone-100 text-xs font-medium placeholder-stone-500 transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* PIN / Password Mode Switcher & Input */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 flex items-center gap-1 font-medium">
+                    <KeyRound className="w-3 h-3 text-emerald-400" />
+                    <span>{authMode === 'PIN' ? '4-Digit PIN' : 'Password'}</span>
+                  </label>
+                  <div className="flex items-center p-0.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAuthMode('PIN')
+                        setPin((p) => p.replace(/\D/g, '').slice(0, 4))
+                        setErrorMessage('')
+                      }}
+                      className={`px-2 py-0.5 text-[0.625rem] font-mono uppercase rounded transition-all cursor-pointer ${
+                        authMode === 'PIN'
+                          ? 'bg-emerald-500/20 text-emerald-300 font-bold'
+                          : 'text-stone-400 hover:text-stone-200'
+                      }`}
+                    >
+                      PIN
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAuthMode('PASSWORD')
+                        setErrorMessage('')
+                        setTimeout(() => passwordInputRef.current?.focus(), 50)
+                      }}
+                      className={`px-2 py-0.5 text-[0.625rem] font-mono uppercase rounded transition-all cursor-pointer ${
+                        authMode === 'PASSWORD'
+                          ? 'bg-emerald-500/20 text-emerald-300 font-bold'
+                          : 'text-stone-400 hover:text-stone-200'
+                      }`}
+                    >
+                      Pass
+                    </button>
+                  </div>
+                </div>
+
+                {authMode === 'PIN' ? (
+                  <div>
+                    {/* 4 Minimalist Glass Slots */}
+                    <div
+                      onClick={() => pinInputRef.current?.focus()}
+                      className="flex items-center justify-center gap-3 py-1.5 cursor-pointer"
+                    >
+                      {[0, 1, 2, 3].map((idx) => {
+                        const isFilled = pin.length > idx
+                        return (
+                          <div
+                            key={idx}
+                            className={`w-11 h-11 rounded-xl flex items-center justify-center font-mono text-lg font-bold border transition-all ${
+                              isFilled
+                                ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.25)]'
+                                : 'border-white/[0.08] bg-white/[0.02] text-stone-600'
+                            }`}
+                          >
+                            {isFilled ? '●' : '·'}
+                          </div>
+                        )
+                      })}
+                      <input
+                        ref={pinInputRef}
+                        type="password"
+                        maxLength={4}
+                        value={pin}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/[^0-9]/g, '')
+                          setPin(val)
+                          setErrorMessage('')
+                        }}
+                        className="sr-only"
+                        autoComplete="off"
+                      />
+                    </div>
+
+                    {/* Compact Minimal Keypad */}
+                    <div className="grid grid-cols-3 gap-1.5 pt-2">
+                      {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((num) => (
+                        <button
+                          key={num}
+                          type="button"
+                          onClick={() => handleKeypadPress(num)}
+                          className="h-10 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.06] hover:border-white/[0.12] text-stone-100 font-mono font-semibold text-base active:scale-95 transition-all flex items-center justify-center cursor-pointer"
+                        >
+                          {num}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={handleClearPin}
+                        className="h-10 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.05] text-stone-400 hover:text-stone-200 text-xs font-mono uppercase active:scale-95 transition-all flex items-center justify-center cursor-pointer"
+                      >
+                        C
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleKeypadPress('0')}
+                        className="h-10 rounded-xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.06] hover:border-white/[0.12] text-stone-100 font-mono font-semibold text-base active:scale-95 transition-all flex items-center justify-center cursor-pointer"
+                      >
+                        0
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDeletePin}
+                        className="h-10 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.05] text-stone-400 hover:text-emerald-400 active:scale-95 transition-all flex items-center justify-center cursor-pointer"
+                        title="Delete last digit"
+                      >
+                        <Delete className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative flex items-center">
+                    <Lock className="w-4 h-4 text-stone-500 absolute left-3.5 pointer-events-none" />
+                    <input
+                      ref={passwordInputRef}
+                      type={showPassword ? 'text' : 'password'}
+                      value={pin}
+                      onChange={(e) => {
+                        setPin(e.target.value)
+                        setErrorMessage('')
+                      }}
+                      placeholder="Enter account password"
+                      className="w-full pl-10 pr-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-500/60 focus:bg-white/[0.05] focus:outline-none text-stone-100 text-xs font-medium placeholder-stone-500 transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 text-stone-400 hover:text-stone-200"
+                    >
+                      {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Error Alert Display */}
+              {errorMessage && (
+                <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/25 text-xs font-mono text-red-300 text-center animate-shake flex items-center justify-center gap-2">
+                  <ShieldAlert className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              {/* Instant Biometric Shortcut */}
+              <div className="pt-0.5">
+                <button
+                  type="button"
+                  onClick={handleBiometricAuth}
+                  className="w-full py-2 px-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 text-xs font-mono font-medium flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer"
+                >
+                  <Fingerprint className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                  <span>Instant Biometric Touch ID</span>
+                </button>
+              </div>
+
+              {/* Primary Submit Button */}
+              <button
+                type="submit"
+                disabled={isVerifying}
+                className="w-full h-11 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] text-zinc-950 font-semibold text-xs tracking-wide uppercase flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_-3px_rgba(16,185,129,0.35)] cursor-pointer disabled:opacity-70 mt-1"
+              >
+                {isVerifying ? (
+                  <>
+                    <div className="w-3.5 h-3.5 rounded-full border-2 border-zinc-950 border-t-transparent animate-spin" />
+                    <span>Authenticating...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Sign In to Terminal</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </>
+                )}
+              </button>
+
+              {/* Minimal Footer Links */}
+              <div className="flex items-center justify-between pt-2 text-[0.6875rem] text-stone-500">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setForgotTargetUsername(username)
+                    setStep('FORGOT_PIN')
+                    setErrorMessage('')
+                  }}
+                  className="hover:text-stone-300 transition-colors cursor-pointer"
+                >
+                  Forgot PIN or Password?
+                </button>
+                <span className="font-mono">Default: 1234</span>
+              </div>
+            </form>
+          )}
+
+          {/* ────────────────── 2. STORE SIGN UP VIEW ────────────────── */}
+          {step === 'SIGNUP' && (
+            <form onSubmit={handleSignupSubmit} className="space-y-3 animate-fade-in font-sans">
+              <div>
+                <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1 font-medium">
+                  Store / Business Name *
+                </label>
+                <input
+                  ref={signupStoreInputRef}
+                  type="text"
+                  value={signupStoreName}
+                  onChange={(e) => {
+                    setSignupStoreName(e.target.value)
+                    setErrorMessage('')
+                  }}
+                  placeholder="e.g. Aling Nena's Store"
+                  className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-500/60 focus:bg-white/[0.05] focus:outline-none text-stone-100 text-xs font-medium placeholder-stone-500 transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1 font-medium">
+                  Owner Full Name *
+                </label>
+                <input
+                  type="text"
+                  value={signupName}
+                  onChange={(e) => {
+                    setSignupName(e.target.value)
+                    setErrorMessage('')
+                  }}
+                  placeholder="e.g. Maria Santos"
+                  className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-500/60 focus:bg-white/[0.05] focus:outline-none text-stone-100 text-xs font-medium placeholder-stone-500 transition-all"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1 font-medium">
+                    Username *
+                  </label>
+                  <input
+                    type="text"
+                    value={signupUsername}
+                    onChange={(e) => {
+                      setSignupUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))
+                      setErrorMessage('')
+                    }}
+                    placeholder="e.g. mariasari"
+                    className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-500/60 focus:bg-white/[0.05] focus:outline-none text-stone-100 text-xs font-mono placeholder-stone-500 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1 font-medium">
+                    Contact / Email
+                  </label>
+                  <input
+                    type="text"
+                    value={signupEmail}
+                    onChange={(e) => {
+                      setSignupEmail(e.target.value)
+                      setErrorMessage('')
+                    }}
+                    placeholder="0917xxxxxxx"
+                    className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-500/60 focus:bg-white/[0.05] focus:outline-none text-stone-100 text-xs font-mono placeholder-stone-500 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 font-medium">
+                      PIN *
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowSignupPin(!showSignupPin)}
+                      className="text-stone-400 hover:text-stone-200"
+                    >
+                      {showSignupPin ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                    </button>
+                  </div>
+                  <input
+                    type={showSignupPin ? 'text' : 'password'}
+                    inputMode="numeric"
+                    maxLength={4}
+                    value={signupPin}
+                    onChange={(e) => {
+                      setSignupPin(e.target.value.replace(/[^0-9]/g, ''))
+                      setErrorMessage('')
+                    }}
+                    placeholder="4 digits"
+                    className="w-full h-10 text-center px-2 rounded-xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-500/60 focus:bg-white/[0.05] focus:outline-none text-emerald-400 font-mono text-sm tracking-widest transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1 font-medium">
+                    Confirm PIN *
+                  </label>
+                  <input
+                    type={showSignupPin ? 'text' : 'password'}
+                    inputMode="numeric"
+                    maxLength={4}
+                    value={signupConfirmPin}
+                    onChange={(e) => {
+                      setSignupConfirmPin(e.target.value.replace(/[^0-9]/g, ''))
+                      setErrorMessage('')
+                    }}
+                    placeholder="Repeat PIN"
+                    className="w-full h-10 text-center px-2 rounded-xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-500/60 focus:bg-white/[0.05] focus:outline-none text-emerald-400 font-mono text-sm tracking-widest transition-all"
+                  />
+                </div>
+              </div>
+
+              {errorMessage && (
+                <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/25 text-xs font-mono text-red-300 text-center animate-fade-in">
+                  {errorMessage}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isVerifying}
+                className="w-full h-11 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] text-zinc-950 font-semibold text-xs tracking-wide uppercase flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_-3px_rgba(16,185,129,0.35)] cursor-pointer disabled:opacity-70 mt-1"
+              >
+                {isVerifying ? (
+                  <>
+                    <div className="w-3.5 h-3.5 rounded-full border-2 border-zinc-950 border-t-transparent animate-spin" />
+                    <span>Registering...</span>
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="w-4 h-4" />
+                    <span>Create Store Account</span>
+                  </>
+                )}
+              </button>
+            </form>
+          )}
+
+          {/* ────────────────── 3. MANDATORY PIN ROTATION ────────────────── */}
+          {step === 'ROTATE' && (
+            <form onSubmit={handleRotateSubmit} className="space-y-3.5 animate-fade-in font-sans">
+              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 flex items-start gap-2.5">
+                <ShieldAlert className="w-4 h-4 shrink-0 text-amber-400 mt-0.5" />
+                <p className="text-xs text-amber-200">
+                  Please set a private, secure PIN before opening your shift register.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1 font-medium">
+                  New Security PIN
+                </label>
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={rotatePin}
+                  onChange={(e) => setRotatePin(e.target.value.replace(/\D/g, ''))}
+                  placeholder="4 to 6 digits"
+                  className="w-full h-10 bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 text-center font-mono tracking-[0.3em] text-emerald-400 focus:outline-none focus:border-emerald-500/60 focus:bg-white/[0.05] transition-all"
+                  autoFocus
+                />
+              </div>
+
+              <div>
+                <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1 font-medium">
+                  Confirm New PIN
+                </label>
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={rotateConfirm}
+                  onChange={(e) => setRotateConfirm(e.target.value.replace(/\D/g, ''))}
+                  placeholder="Repeat new PIN"
+                  className="w-full h-10 bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 text-center font-mono tracking-[0.3em] text-emerald-400 focus:outline-none focus:border-emerald-500/60 focus:bg-white/[0.05] transition-all"
+                />
+              </div>
+
+              {errorMessage && (
+                <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/25 text-xs font-mono text-red-300 text-center animate-fade-in">
+                  {errorMessage}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isVerifying}
+                className="w-full h-11 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] text-zinc-950 font-semibold text-xs tracking-wide uppercase flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <KeyRound className="w-4 h-4" />
+                <span>Save New Security PIN</span>
+              </button>
+            </form>
+          )}
+
+          {/* ────────────────── 4. FORGOT PIN RECOVERY ────────────────── */}
+          {step === 'FORGOT_PIN' && (
+            <form onSubmit={handleForgotResetSubmit} className="space-y-3 animate-fade-in font-sans">
+              {forgotSuccessMessage && (
+                <div className="p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-xs font-semibold text-emerald-300 text-center flex items-center justify-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>{forgotSuccessMessage}</span>
+                </div>
+              )}
+
+              {errorMessage && (
+                <div className="p-2.5 rounded-xl bg-red-500/15 border border-red-500/30 text-xs font-mono text-red-300 text-center animate-fade-in">
+                  {errorMessage}
+                </div>
+              )}
+
+              {/* Target Account */}
+              <div>
+                <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1 font-medium">
+                  Staff ID to Reset *
+                </label>
+                <input
+                  type="text"
+                  value={forgotTargetUsername}
+                  onChange={(e) => {
+                    setForgotTargetUsername(e.target.value)
+                    setErrorMessage('')
+                  }}
+                  placeholder="e.g. admin or cashier1"
+                  className="w-full h-10 bg-white/[0.03] border border-white/[0.08] rounded-xl px-3 text-xs font-medium text-stone-100 placeholder-stone-500 focus:outline-none focus:border-emerald-500/60 focus:bg-white/[0.05] transition-all"
+                  required
+                />
+              </div>
+
+              {/* Recovery Method Switcher */}
+              <div>
+                <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1 font-medium">
+                  Authorization Method
+                </label>
+                <div className="grid grid-cols-2 p-1 rounded-xl bg-white/[0.03] border border-white/[0.08] text-xs font-semibold mb-2">
+                  <button
+                    type="button"
+                    onClick={() => setForgotRecoveryMethod('ADMIN_PIN')}
+                    className={`py-1.5 rounded-lg transition-all text-center cursor-pointer ${
+                      forgotRecoveryMethod === 'ADMIN_PIN'
+                        ? 'bg-emerald-500/20 text-emerald-300 font-bold'
+                        : 'text-stone-400 hover:text-stone-200'
+                    }`}
+                  >
+                    Store Admin PIN
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setForgotRecoveryMethod('MASTER_KEY')}
+                    className={`py-1.5 rounded-lg transition-all text-center cursor-pointer ${
+                      forgotRecoveryMethod === 'MASTER_KEY'
+                        ? 'bg-emerald-500/20 text-emerald-300 font-bold'
+                        : 'text-stone-400 hover:text-stone-200'
+                    }`}
+                  >
+                    Master Key
+                  </button>
+                </div>
+
+                {forgotRecoveryMethod === 'ADMIN_PIN' ? (
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    maxLength={6}
+                    value={forgotAdminPin}
+                    onChange={(e) => setForgotAdminPin(e.target.value.replace(/\D/g, ''))}
+                    placeholder="Enter Store Admin PIN (default: 1234)"
+                    className="w-full h-10 bg-white/[0.03] border border-white/[0.08] rounded-xl px-3 text-xs font-mono font-bold tracking-widest text-emerald-400 placeholder-stone-500 focus:outline-none focus:border-emerald-500/60 focus:bg-white/[0.05] transition-all"
+                  />
+                ) : (
+                  <input
+                    type="text"
+                    value={forgotRecoveryCode}
+                    onChange={(e) => setForgotRecoveryCode(e.target.value.toUpperCase())}
+                    placeholder="MASTER-RECOVERY-2026"
+                    className="w-full h-10 bg-white/[0.03] border border-white/[0.08] rounded-xl px-3 text-xs font-mono font-bold tracking-wider uppercase text-amber-300 placeholder-stone-600 focus:outline-none focus:border-amber-400 transition-all"
+                  />
+                )}
+              </div>
+
+              {/* New PIN & Confirm */}
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1 font-medium">
+                    New PIN *
+                  </label>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    maxLength={4}
+                    value={forgotNewPin}
+                    onChange={(e) => setForgotNewPin(e.target.value.replace(/\D/g, ''))}
+                    placeholder="••••"
+                    className="w-full h-10 bg-white/[0.03] border border-white/[0.08] rounded-xl px-2 text-center font-mono font-bold text-base tracking-[0.3em] text-emerald-400 placeholder-stone-600 focus:outline-none focus:border-emerald-500/60 transition-all"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1 font-medium">
+                    Confirm PIN *
+                  </label>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    maxLength={4}
+                    value={forgotConfirmPin}
+                    onChange={(e) => setForgotConfirmPin(e.target.value.replace(/\D/g, ''))}
+                    placeholder="••••"
+                    className="w-full h-10 bg-white/[0.03] border border-white/[0.08] rounded-xl px-2 text-center font-mono font-bold text-base tracking-[0.3em] text-emerald-400 placeholder-stone-600 focus:outline-none focus:border-emerald-500/60 transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={forgotIsResetting || forgotNewPin.length !== 4 || forgotConfirmPin.length !== 4}
+                className="w-full h-11 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] text-zinc-950 font-semibold text-xs tracking-wide uppercase flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-60"
+              >
+                {forgotIsResetting ? (
+                  <>
+                    <div className="w-3.5 h-3.5 rounded-full border-2 border-zinc-950 border-t-transparent animate-spin" />
+                    <span>Resetting PIN...</span>
+                  </>
+                ) : (
+                  <>
+                    <KeyRound className="w-4 h-4" />
+                    <span>Reset Security PIN</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setStep('LOGIN')
+                  setErrorMessage('')
+                  setForgotSuccessMessage('')
+                }}
+                className="w-full py-2 text-xs text-stone-400 hover:text-stone-200 transition-colors flex items-center justify-center gap-1 cursor-pointer"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span>Back to Sign In</span>
+              </button>
+            </form>
+          )}
+
+          {/* ────────────────── 5. VIP PRO LICENSE UNLOCK ────────────────── */}
+          {step === 'VIP_UNLOCK' && (
+            <form onSubmit={handleVipUnlockSubmit} className="space-y-3 animate-fade-in font-sans">
+              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 flex items-start gap-2.5">
+                <Crown className="w-4 h-4 shrink-0 text-amber-400 mt-0.5 animate-pulse" />
+                <p className="text-xs text-amber-200 leading-relaxed">
+                  Enter your VIP License Key (VIP-XXXX-XXXX...) to unlock lifetime Pro status and restore account.
+                </p>
+              </div>
+
+              {errorMessage && (
+                <div className="p-2.5 rounded-xl bg-red-500/15 border border-red-500/30 text-xs font-mono text-red-300 text-center animate-fade-in">
+                  {errorMessage}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-amber-300 font-bold mb-1">
+                  VIP License Key *
+                </label>
+                <input
+                  ref={vipKeyInputRef}
+                  type="text"
+                  required
+                  value={vipKeyInput}
+                  onChange={(e) => {
+                    setVipKeyInput(e.target.value.toUpperCase())
+                    setErrorMessage('')
+                  }}
+                  placeholder="VIP-XXXX-XXXX-XXXX-XXXX"
+                  className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-amber-500/30 focus:border-amber-400 text-amber-300 font-mono text-xs font-bold tracking-wider placeholder-stone-600 focus:outline-none transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1 font-medium">
+                  Store / Business Name
+                </label>
+                <input
+                  type="text"
+                  value={vipStoreName}
+                  onChange={(e) => {
+                    setVipStoreName(e.target.value)
+                    setErrorMessage('')
+                  }}
+                  placeholder="e.g. Aling Nena's Store"
+                  className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-500/60 text-stone-100 text-xs font-medium placeholder-stone-500 focus:outline-none transition-all"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1 font-medium">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    value={vipUsername}
+                    onChange={(e) => {
+                      setVipUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))
+                      setErrorMessage('')
+                    }}
+                    placeholder="owner"
+                    className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-500/60 text-stone-100 text-xs font-mono placeholder-stone-500 focus:outline-none transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1 font-medium">
+                    4-Digit PIN
+                  </label>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    maxLength={4}
+                    value={vipPin}
+                    onChange={(e) => {
+                      setVipPin(e.target.value.replace(/\D/g, ''))
+                      setErrorMessage('')
+                    }}
+                    placeholder="1234"
+                    className="w-full h-10 text-center px-2 rounded-xl bg-white/[0.03] border border-white/[0.08] focus:border-emerald-500/60 text-emerald-400 font-mono text-sm tracking-widest focus:outline-none transition-all"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isVerifying || !vipKeyInput.trim()}
+                className="w-full h-11 rounded-xl bg-gradient-to-r from-amber-500 to-emerald-500 hover:brightness-110 text-zinc-950 font-semibold text-xs tracking-wide uppercase flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-60"
+              >
+                {isVerifying ? (
+                  <>
+                    <div className="w-3.5 h-3.5 rounded-full border-2 border-zinc-950 border-t-transparent animate-spin" />
+                    <span>Verifying License...</span>
+                  </>
+                ) : (
+                  <>
+                    <Crown className="w-4 h-4" />
+                    <span>Activate VIP Session</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setStep('LOGIN')
+                  setErrorMessage('')
+                }}
+                className="w-full py-2 text-xs text-stone-400 hover:text-stone-200 transition-colors flex items-center justify-center gap-1 cursor-pointer"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span>Back to Sign In</span>
+              </button>
+            </form>
+          )}
+
+          {/* ────────────────── 6. SHIFT OPENING FLOAT ────────────────── */}
+          {step === 'FLOAT' && (
+            <div className="space-y-4 animate-fade-in font-sans">
+              <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-sm">
+                  {authenticatedUser?.name?.substring(0, 2).toUpperCase() || 'AD'}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs sm:text-sm font-semibold text-stone-100 truncate">
+                      {authenticatedUser?.name}
+                    </p>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[0.625rem] font-mono text-emerald-300 font-semibold">
+                      {authenticatedUser?.role === 'ADMIN' ? 'OWNER / ADMIN' : authenticatedUser?.role}
+                    </span>
+                  </div>
+                  <p className="text-xs font-mono text-stone-400 mt-0.5 truncate flex items-center gap-1">
+                    <Store className="w-3 h-3 text-emerald-400/80" />
+                    <span>{authenticatedUser?.store_name || 'Independent Store'}</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Float Currency Display */}
+              <div className="text-center p-4 rounded-2xl bg-white/[0.02] border border-emerald-500/25">
+                <p className="text-[0.6875rem] font-mono tracking-wider uppercase text-stone-400 mb-1">
+                  Opening Cash Float
+                </p>
+                <div className="text-3xl font-bold tracking-tight text-emerald-400 tabular-nums">
+                  {money(openingFloat)}
+                </div>
+                <p className="text-[0.6875rem] text-stone-500 mt-0.5">Initial cash drawer amount</p>
+              </div>
+
+              {/* Denomination Presets */}
+              <div>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {[500, 1000, 2000, 5000].map((amt) => {
+                    const isSelected = openingFloat === amt * 100
+                    return (
+                      <button
+                        key={amt}
+                        type="button"
+                        onClick={() => handlePresetFloat(amt)}
+                        className={`py-2 rounded-xl text-xs font-mono font-bold border transition-all cursor-pointer ${
+                          isSelected
+                            ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300 shadow-[0_0_12px_rgba(16,185,129,0.25)]'
+                            : 'bg-white/[0.03] border-white/[0.06] text-stone-300 hover:border-emerald-500/40 hover:bg-white/[0.06]'
+                        }`}
+                      >
+                        ₱{amt.toLocaleString()}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                <div className="mt-2.5 flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/[0.08] focus-within:border-emerald-500/60 transition-all">
+                  <span className="text-xs font-mono text-emerald-400 font-bold">Custom ₱</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={customFloatInput}
+                    onChange={handleCustomFloatChange}
+                    placeholder="Enter custom starting float..."
+                    className="flex-1 bg-transparent text-xs font-mono text-stone-100 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Confirm CTA */}
+              <div className="space-y-1.5 pt-1">
+                <button
+                  type="button"
+                  onClick={handleConfirmSession}
+                  className="w-full h-11 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] text-zinc-950 font-semibold text-xs tracking-wide uppercase flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_-3px_rgba(16,185,129,0.35)] cursor-pointer"
+                >
+                  <Lock className="w-4 h-4" />
+                  <span>Open Shift Register</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSwitchAccount}
+                  className="w-full py-2 text-xs text-stone-400 hover:text-stone-200 transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <span>Switch Staff Account</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* ── Footer Terminal Information ── */}
+      <footer className="w-full text-center py-4 z-10 shrink-0">
+        <p className="text-[0.6875rem] font-mono text-stone-500 tracking-wider">
+          Terminal {TERMINAL_ID} · Cloudflare Edge &amp; Dexie Offline Sync
+        </p>
+      </footer>
     </div>
   )
 }

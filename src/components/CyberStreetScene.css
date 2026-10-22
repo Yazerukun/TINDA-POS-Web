@@ -73,7 +73,7 @@
 .tinda-street-gcashLed{animation:1.6s ease-in-out infinite tinda-street-gcashLed}
 .tinda-street-blink{transform-box:fill-box;transform-origin:50%;animation:5s infinite tinda-street-blink}
 .tinda-street-sway{transform-box:view-box;animation:4s ease-in-out infinite alternate tinda-street-sway}
-.tinda-street-jeep,.tinda-street-car{animation:24s linear -5s infinite tinda-street-jeepDrive}
+.tinda-street-jeep{animation:14s linear infinite tinda-street-jeepDrive;transform-box:view-box;will-change:transform}
 .tinda-street-car{animation-name:tinda-street-carDrive}
 .tinda-street-stepBob{animation:.45s ease-in-out infinite alternate tinda-street-stepBob}
 .tinda-street-ballerMove,.tinda-street-ballerWalk,.tinda-street-ballerShoot,.tinda-street-pumpFake{animation-duration:40s;animation-timing-function:linear;animation-iteration-count:infinite;animation-delay:-6s}
@@ -114,11 +114,11 @@
 .tinda-street-snatcherMove{animation-name:tinda-street-snatcherMove}
 .tinda-street-snatchedBag{animation-name:tinda-street-snatchedBag}
 .tinda-street-policeMove{animation-name:tinda-street-policeMove}
-.tinda-street-plane{animation:60s linear -12s infinite tinda-street-planeFly;position:absolute;top:78px;left:0}
+.tinda-street-plane{animation:15s linear infinite tinda-street-planeFly;position:absolute;top:38px;left:0;will-change:transform}
 .tinda-street-planeBody{width:78px;display:block;position:relative}
 .tinda-street-planeBody{width:104px}
-.tinda-street-contrail{opacity:0;background:linear-gradient(270deg,#ffffffbf,#0000);border-radius:9999px;width:280px;height:2px;transition:opacity 1.2s;position:absolute;top:52%;right:92%}
-.tinda-street-hero[data-phase=morning] .tinda-street-contrail,.tinda-street-hero[data-phase=noon] .tinda-street-contrail,.tinda-street-hero[data-phase=afternoon] .tinda-street-contrail{opacity:1}
+.tinda-street-contrail{opacity:0.85;background:linear-gradient(270deg,rgba(255,255,255,0.9),rgba(56,189,248,0.4),transparent);border-radius:9999px;width:260px;height:2.5px;position:absolute;top:52%;right:92%;box-shadow:0 0 6px rgba(255,255,255,0.4);display:block}
+.tinda-street-hero[data-phase=morning] .tinda-street-contrail,.tinda-street-hero[data-phase=noon] .tinda-street-contrail,.tinda-street-hero[data-phase=afternoon] .tinda-street-contrail{opacity:0.85;background:linear-gradient(270deg,rgba(255,255,255,0.9),rgba(56,189,248,0.4),transparent);border-radius:9999px;width:260px;height:2.5px;position:absolute;top:52%;right:92%;box-shadow:0 0 6px rgba(255,255,255,0.4);display:block}
 .tinda-street-navLight{animation:1.2s step-end infinite tinda-street-navBlink}
 .tinda-street-birds{opacity:0;transition:opacity 1.2s;position:absolute;inset:0}
 .tinda-street-hero[data-phase=morning] .tinda-street-birds,.tinda-street-hero[data-phase=noon] .tinda-street-birds,.tinda-street-hero[data-phase=afternoon] .tinda-street-birds{opacity:.85}
@@ -135,8 +135,8 @@
 .tinda-street-frontStepB{animation-name:tinda-street-frontStepB}
 .tinda-street-frontArmA{animation-name:tinda-street-frontArmA}
 .tinda-street-frontArmB{animation-name:tinda-street-frontArmB}
-.tinda-street-wheel{transform-box:fill-box;transform-origin:50%;animation:.5s linear infinite tinda-street-spin}
-.tinda-street-bob{animation:.4s ease-in-out infinite alternate tinda-street-bob}
+.tinda-street-wheel{transform-box:fill-box;transform-origin:center;animation:0.4s linear infinite tinda-street-spin;will-change:transform}
+.tinda-street-bob{animation:0.35s ease-in-out infinite alternate tinda-street-bob;will-change:transform}
 .tinda-street-stars{translate:calc(var(--px,0) * -6px) calc(var(--py,0) * -4px)}
 .tinda-street-sun,.tinda-street-moon{translate:calc(var(--px,0) * -10px) calc(var(--py,0) * -6px)}
 .tinda-street-clouds{translate:calc(var(--px,0) * -18px) calc(var(--py,0) * -8px)}
@@ -144,9 +144,7 @@
 .tinda-street-street{transition:opacity .8s,translate 1.1s cubic-bezier(.16,1,.3,1);translate:0 36px}
 .tinda-street-hero[data-phase] .tinda-street-street{translate:0}
 .tinda-street-content{animation:linear both tinda-street-copyLift;animation-timeline:scroll(root);animation-range:0 60vh}
-.tinda-street-stars,.tinda-street-sun,.tinda-street-moon,.tinda-street-clouds,.tinda-street-mountains,.tinda-street-street{translate:none!important}
-.tinda-street-content{animation:none!important}
-.tinda-street-backdrop *,.tinda-street-backdrop :before,.tinda-street-backdrop :after{animation-play-state:paused!important}
+/* Reduced motion lockup removed to enable 60fps animations */
 
 @keyframes tinda-street-twinkle{0%{opacity:.25}to{opacity:1}}
 @keyframes tinda-street-sunPulse{0%{transform:scale(1)}to{transform:scale(1.06)}}
@@ -170,7 +168,7 @@
 @keyframes tinda-street-gcashLed{0%,to{opacity:1}50%{opacity:.25}}
 @keyframes tinda-street-blink{0%,94%,to{transform:scaleY(1)}97%{transform:scaleY(.1)}}
 @keyframes tinda-street-sway{0%{transform:rotate(-1.5deg)}to{transform:rotate(1.5deg)}}
-@keyframes tinda-street-jeepDrive{0%{transform:translate(-260px)}50%,to{transform:translate(1700px)}}
+@keyframes tinda-street-jeepDrive{0%{transform:translateX(-260px)}100%{transform:translateX(1650px)}}
 @keyframes tinda-street-carDrive{0%,50%{transform:translate(-200px)}92%,to{transform:translate(1700px)}}
 @keyframes tinda-street-stepBob{0%{transform:translateY(0)}to{transform:translateY(-.9px)}}
 @keyframes tinda-street-ballerMove{0%{transform:translate(-120px)}52%,64%{transform:translate(880px)}to{transform:translate(1560px)}}
@@ -202,7 +200,7 @@
 @keyframes tinda-street-snatcherMove{0%,24%{transform:translate(-120px)}36%{transform:translate(556px)}50%,to{transform:translate(1600px)}}
 @keyframes tinda-street-snatchedBag{0%,35.9%{opacity:0}36%,to{opacity:1}}
 @keyframes tinda-street-policeMove{0%,38%{transform:translate(-120px)}58%,to{transform:translate(1600px)}}
-@keyframes tinda-street-planeFly{0%{transform:translate(-220px)}55%,to{transform:translate(calc(100vw + 280px))}}
+@keyframes tinda-street-planeFly{0%{transform:translateX(-180px)}100%{transform:translateX(calc(100vw + 180px))}}
 @keyframes tinda-street-navBlink{0%,60%{opacity:1}61%,to{opacity:.15}}
 @keyframes tinda-street-birdFly{0%{transform:translate(-60px)}50%{transform:translate(50vw,-14px)}to{transform:translate(calc(100vw + 60px),6px)}}
 @keyframes tinda-street-birdFlap{0%{transform:scaleY(1)}to{transform:scaleY(-.5)}}

@@ -1,7 +1,7 @@
 {
   "name": "tinda-pos-web",
   "private": true,
-  "version": "1.0.9",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",

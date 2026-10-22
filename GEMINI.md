@@ -18,7 +18,7 @@
 ---
 
 ## Current Release Status (TINDA POS Web)
-- **Version**: `v1.0.1` (Production Live)
+- **Version**: `v1.1.0` (Production Live)
 - **Primary Live Short URL (Cloudflare Pages)**: [https://tindapos-web.pages.dev/](https://tindapos-web.pages.dev/)
 - **Secondary Edge Mirror (Cloudflare Workers)**: [https://tindaposweb.yomikaze-md.workers.dev/](https://tindaposweb.yomikaze-md.workers.dev/)
 - **GitHub Repository**: [https://github.com/Yazerukun/TINDA-POS-Web](https://github.com/Yazerukun/TINDA-POS-Web)
@@ -36,7 +36,14 @@
 
 ---
 
-## Key Features in v1.0.1
+## Key Features in v1.1.0
+0. ✈️ 🏘️ **Living Philippine Barangay Street Scene (CyberStreetScene)**:
+   - **High-Altitude Commercial Airliner**: Smooth cruising aircraft with active white vapor contrail, red/green wingtip navigation strobe lights (`navLight`), and interactive cloud telemetry inspector.
+   - **Authentic Philippine Neighborhood ("Balay-Balay")**: Full panoramic skyline featuring corrugated galvanized iron roofs, wooden stilts, TV antennas, utility poles with criss-crossing power cables, glowing street lamps, Barangay 01 Hall, and 24/7 convenience mart.
+   - **The Iconic Philippine Jeepney**: "TINDA POS EXPRESS" with authentic chrome front hood, classic horse mascot, route signboard, bobbing suspension (`tinda-street-bob`), spinning chrome wheels (`tinda-street-wheel`), and interactive horn audio (`playJeepneyHorn`).
+   - **4-Phase Daylight Engine**: Seamless dynamic transitions across Dawn (Arawan 6AM), Noon (Tanghali 12PM), Sunset (Hapon 5PM), and Cyber-Night (Gabi 8PM) with auto-lighting window illumination (`--lights: 1`).
+   - **Monsoon Rain & Lightning Storm Engine**: Real-time atmospheric rain overlay with realistic randomized rain drops and dual-strike lightning flash sequences.
+   - **Interactive Audio Feedback & Pinoy Speech Bubbles**: Clickable hotspots triggering authentic sound effects for the Jeepney horn, Sari-Sari Store chime, QR scan, and high-altitude flight status.
 1. 🏛️ **Ultra-Luxury "Quiet Luxury" Redesign**:
    - **The Private Vault (Authentication & Shift Onboarding)**: Floating obsidian glass vault card, gold monogram, cashier selection, 4-digit hairline PIN pad with masked dot feedback, and Opening Register Balance float stepper (₱1,000, ₱2,000, ₱5,000, Custom).
    - **The Executive POS Counter**: Private Reserve v1.0 header with live metallic status pulse, active Concierge avatar, Quick Search with `[ ⌘K ]` shortcut listener, horizontal sliding gold category indicator line, razor-thin catalog product cards with soft inner shadows, client assignment selector (VIP / Utang accounts), editorial grand total centerpiece, quick tender gold chips (`[ Exact ]`, `[ ₱500 ]`, `[ ₱1,000 ]`, `[ Custom ]`), and brushed gold checkout authorization with champagne confetti.

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   Sun,
   Moon,
@@ -7,13 +7,12 @@ import {
   Volume2,
   Sparkles,
   Zap,
-  Tag,
-  Radio,
-  QrCode,
-  Store,
-  ChevronDown
+  Plane,
+  Store
 } from 'lucide-react'
 import { playJeepneyHorn, playStoreChime, playScanSuccess } from '../lib/sound'
+import { StreetPanoramicSvg } from './StreetPanoramicSvg'
+import './CyberStreetScene.css'
 
 export type TimeOfDay = 'DAWN' | 'NOON' | 'SUNSET' | 'NIGHT'
 
@@ -29,46 +28,56 @@ export function CyberStreetScene({
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>('NIGHT')
   const [isRaining, setIsRaining] = useState(false)
   const [activeBubble, setActiveBubble] = useState<string | null>(null)
-  const [jeepneyHonked, setJeepneyHonked] = useState(false)
-  const [storeInteracted, setStoreInteracted] = useState(false)
+  const [soundEnabled, setSoundEnabled] = useState(true)
+
+  // Map to data-phase for CSS engine
+  const phaseMap: Record<TimeOfDay, string> = {
+    DAWN: 'morning',
+    NOON: 'noon',
+    SUNSET: 'afternoon',
+    NIGHT: 'night'
+  }
+  const currentPhase = phaseMap[timeOfDay]
 
   // Trigger speech bubbles with auto-dismiss
   const showBubble = (text: string) => {
     setActiveBubble(text)
     setTimeout(() => {
       setActiveBubble((curr) => (curr === text ? null : curr))
-    }, 3800)
+    }, 4500)
   }
 
   const handleJeepneyClick = () => {
-    try {
-      playJeepneyHorn()
-    } catch {}
-    setJeepneyHonked(true)
-    showBubble('Beep-beep! Para po sa kanto! 100% Offline POS onboard!')
-    setTimeout(() => setJeepneyHonked(false), 800)
+    if (soundEnabled) {
+      try {
+        playJeepneyHorn()
+      } catch {}
+    }
+    showBubble('Beep-beep! 📯 Para po sa kanto! TINDA POS 100% Offline Engine onboard!')
   }
 
   const handleStoreClick = () => {
-    try {
-      playStoreChime()
-    } catch {}
-    setStoreInteracted(true)
-    showBubble('Suki! Bili na! May malamig na softdrinks, GCash Cash-In, at sariwang tinapay!')
-    setTimeout(() => setStoreInteracted(false), 800)
+    if (soundEnabled) {
+      try {
+        playStoreChime()
+      } catch {}
+    }
+    showBubble('Suki! Bili na! 🏪 Malamig na softdrinks, GCash Cash-In/Out, at 172 DTI SRP price ceilings active!')
   }
 
-  const handleGcashClick = () => {
-    try {
-      playScanSuccess()
-    } catch {}
-    showBubble('GCash & Maya Express: Cash-in/Out recorded with ₱15 convenience fee in digital ledger!')
+  const handlePlaneClick = () => {
+    if (soundEnabled) {
+      try {
+        playScanSuccess()
+      } catch {}
+    }
+    showBubble('✈️ PAL Flight 8891: TINDA Dual-Cloud Sync streaming at 35,000 ft (D1 + Supabase auto-failover)!')
   }
 
   return (
     <div className="relative w-full overflow-hidden rounded-3xl border border-white/[0.1] bg-obsidian-950 shadow-[0_25px_80px_-15px_rgba(0,0,0,0.9),0_0_50px_-10px_rgba(16,185,129,0.18)] select-none">
       {/* ── 1. Top Scene Control HUD ── */}
-      <div className="relative z-30 flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-3.5 bg-obsidian-950/80 backdrop-blur-xl border-b border-white/[0.08]">
+      <div className="relative z-30 flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-3.5 bg-obsidian-950/85 backdrop-blur-xl border-b border-white/[0.08]">
         {/* Time-of-Day Switcher Pills */}
         <div className="flex items-center gap-1 sm:gap-1.5 p-1 rounded-2xl bg-white/[0.04] border border-white/[0.06] text-xs font-mono">
           <button
@@ -148,356 +157,195 @@ export function CyberStreetScene({
             <span>{isRaining ? 'Ulan: Active' : 'Ulan: Off'}</span>
           </button>
 
-          <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-mono">
-            <Volume2 className="w-3.5 h-3.5 animate-pulse" />
-            <span>Interactive: Click Jeepney or Store!</span>
+          <div
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-mono cursor-pointer hover:bg-emerald-500/20 transition-all"
+            title="Toggle audio effects"
+          >
+            <Volume2 className={`w-3.5 h-3.5 ${soundEnabled ? 'animate-pulse' : 'opacity-40'}`} />
+            <span>Interactive: Click Jeep, Store, or Plane!</span>
           </div>
         </div>
       </div>
 
       {/* ── 2. The Living Philippine Canvas ── */}
-      <div
-        className={`relative w-full h-[340px] sm:h-[400px] lg:h-[430px] overflow-hidden transition-all duration-1000 ${
-          timeOfDay === 'DAWN'
-            ? 'bg-gradient-to-b from-indigo-950 via-rose-950/80 to-amber-900/60'
-            : timeOfDay === 'NOON'
-            ? 'bg-gradient-to-b from-sky-900 via-teal-900/40 to-emerald-950/70'
-            : timeOfDay === 'SUNSET'
-            ? 'bg-gradient-to-b from-purple-950 via-pink-950/70 to-orange-900/60'
-            : 'bg-gradient-to-b from-[#03060a] via-[#061210] to-[#071713]'
-        }`}
-      >
-        {/* Sky Elements: Stars for Night */}
-        {timeOfDay === 'NIGHT' && (
-          <div className="absolute inset-0 pointer-events-none">
-            {[...Array(24)].map((_, i) => (
-              <div
+      <section className="tinda-street-hero" data-phase={currentPhase}>
+        {/* Sky Backdrop & Color Phases */}
+        <div className="tinda-street-backdrop" aria-hidden="true">
+          <div className="tinda-street-sky tinda-street-skyMorning" />
+          <div className="tinda-street-sky tinda-street-skyNoon" />
+          <div className="tinda-street-sky tinda-street-skyAfternoon" />
+          <div className="tinda-street-sky tinda-street-skyNight" />
+
+          {/* Twinkling Stars (Active during Night) */}
+          <div className="tinda-street-stars">
+            {[
+              { left: '2%', top: '22%', delay: '0.2s', size: '1.5px' },
+              { left: '12%', top: '15%', delay: '1.8s', size: '2px' },
+              { left: '24%', top: '35%', delay: '0.9s', size: '1.2px' },
+              { left: '38%', top: '10%', delay: '2.5s', size: '1.8px' },
+              { left: '49%', top: '28%', delay: '1.4s', size: '1.6px' },
+              { left: '61%', top: '8%', delay: '3.1s', size: '2.2px' },
+              { left: '72%', top: '32%', delay: '0.7s', size: '1.4px' },
+              { left: '85%', top: '18%', delay: '2.0s', size: '1.9px' },
+              { left: '94%', top: '25%', delay: '1.1s', size: '1.5px' }
+            ].map((star, i) => (
+              <span
                 key={i}
-                className="absolute w-1 h-1 bg-white rounded-full animate-ping opacity-60"
+                className="tinda-street-star"
                 style={{
-                  top: `${(i * 17) % 65}%`,
-                  left: `${(i * 23) % 96}%`,
-                  animationDuration: `${2 + (i % 3)}s`,
-                  animationDelay: `${(i * 0.4) % 3}s`
+                  left: star.left,
+                  top: star.top,
+                  width: star.size,
+                  height: star.size,
+                  animationDelay: star.delay
                 }}
               />
             ))}
-            {/* Glowing Moon */}
-            <div className="absolute top-6 right-16 w-14 h-14 rounded-full bg-emerald-100 shadow-[0_0_40px_rgba(52,211,153,0.5)] flex items-center justify-center opacity-90 pointer-events-none">
-              <div className="w-11 h-11 rounded-full bg-[#03060a] translate-x-2.5 -translate-y-1.5" />
+          </div>
+
+          {/* Sun & Glowing Moon */}
+          <div className="tinda-street-sun" />
+          <div className="tinda-street-moon" />
+
+          {/* Drifting Clouds */}
+          <div className="tinda-street-clouds">
+            <div className="tinda-street-cloud" style={{ top: '8%', animationDuration: '110s', animationDelay: '-20s' }}>
+              <svg width="150" viewBox="0 0 120 50" fill="currentColor">
+                <path d="M20 40 Q25 20 45 22 Q55 8 75 16 Q92 10 102 26 Q115 32 110 42 Q95 48 20 40Z" opacity="0.8" />
+              </svg>
+            </div>
+            <div className="tinda-street-cloud" style={{ top: '22%', animationDuration: '140s', animationDelay: '-75s' }}>
+              <svg width="120" viewBox="0 0 120 50" fill="currentColor">
+                <path d="M15 38 Q22 18 42 20 Q50 6 70 14 Q88 8 98 24 Q110 30 105 40 Q90 46 15 38Z" opacity="0.65" />
+              </svg>
             </div>
           </div>
-        )}
 
-        {/* Sun for Noon / Dawn */}
-        {(timeOfDay === 'NOON' || timeOfDay === 'DAWN') && (
+          {/* Flight of Birds */}
+          <div className="tinda-street-birds">
+            <div className="tinda-street-bird" style={{ top: '14%', animationDuration: '38s', animationDelay: '-6s' }}>
+              <svg width="22" viewBox="0 0 24 12" className="tinda-street-birdFlap">
+                <path d="M2 10 Q7 2 12 7 Q17 2 22 10 Q17 6 12 9 Q7 6 2 10Z" fill="currentColor" opacity="0.75" />
+              </svg>
+            </div>
+            <div className="tinda-street-bird" style={{ top: '18%', animationDuration: '38s', animationDelay: '-7.5s' }}>
+              <svg width="16" viewBox="0 0 24 12" className="tinda-street-birdFlap" style={{ animationDelay: '-0.2s' }}>
+                <path d="M2 10 Q7 2 12 7 Q17 2 22 10 Q17 6 12 9 Q7 6 2 10Z" fill="currentColor" opacity="0.7" />
+              </svg>
+            </div>
+          </div>
+
+          {/* ── 3. High-Altitude Passenger Airliner (Airplane with Contrail & Nav Lights) ── */}
           <div
-            className={`absolute rounded-full pointer-events-none transition-all duration-1000 ${
-              timeOfDay === 'NOON'
-                ? 'top-8 right-24 w-16 h-16 bg-yellow-100 shadow-[0_0_80px_rgba(250,204,21,0.8)] opacity-95'
-                : 'top-16 right-36 w-14 h-14 bg-amber-200 shadow-[0_0_60px_rgba(251,191,36,0.7)] opacity-85'
-            }`}
-          />
-        )}
+            className="tinda-street-plane"
+            onClick={handlePlaneClick}
+            title="Click to inspect PAL Flight 8891 Cloud Telemetry"
+          >
+            {/* White Vapor Contrail Trail */}
+            <div className="tinda-street-contrail" />
 
-        {/* Drifting Clouds */}
-        <div className="absolute inset-x-0 top-6 pointer-events-none animate-cloud-drift opacity-40">
-          <svg className="w-full h-24" viewBox="0 0 1200 120" fill="none">
-            <path
-              d="M100 60 Q130 30 180 40 Q220 20 270 45 Q310 30 340 60 Z"
-              fill={timeOfDay === 'NIGHT' ? '#0f2922' : '#ffffff'}
-              opacity={timeOfDay === 'NIGHT' ? 0.3 : 0.4}
-            />
-            <path
-              d="M700 70 Q740 35 800 45 Q840 25 890 50 Q930 35 970 70 Z"
-              fill={timeOfDay === 'NIGHT' ? '#0f2922' : '#ffffff'}
-              opacity={timeOfDay === 'NIGHT' ? 0.25 : 0.35}
-            />
-          </svg>
-        </div>
-
-        {/* Monsoon Rain Overlay */}
-        {isRaining && (
-          <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
-            {[...Array(30)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute w-0.5 bg-gradient-to-b from-transparent via-teal-300 to-emerald-400 animate-rain-fall"
-                style={{
-                  height: `${24 + (i % 18)}px`,
-                  left: `${(i * 3.4) % 100}%`,
-                  top: `-${(i * 12) % 40}px`,
-                  animationDuration: `${0.6 + (i % 4) * 0.1}s`,
-                  animationDelay: `${(i * 0.05) % 0.8}s`
-                }}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Distant Silhouette: Philippine Mountain Ranges & Coconut Palms */}
-        <div className="absolute bottom-28 inset-x-0 h-32 pointer-events-none opacity-40">
-          <svg className="w-full h-full" viewBox="0 0 1200 120" preserveAspectRatio="none">
-            <path
-              d="M0 120 L0 80 Q150 40 300 75 T600 60 T900 70 T1200 50 L1200 120 Z"
-              fill={timeOfDay === 'NIGHT' ? '#020d09' : '#062d21'}
-            />
-            {/* Coconut Palm Silhouettes */}
-            <path
-              d="M180 85 Q185 50 190 20 M190 20 Q170 15 155 25 M190 20 Q190 5 200 10 M190 20 Q210 20 220 30 M190 20 Q175 30 165 40"
-              stroke={timeOfDay === 'NIGHT' ? '#031710' : '#0a3f2f'}
-              strokeWidth="2.5"
-              fill="none"
-            />
-            <path
-              d="M840 80 Q845 45 850 15 M850 15 Q830 10 815 20 M850 15 Q850 0 860 5 M850 15 Q870 15 880 25 M850 15 Q835 25 825 35"
-              stroke={timeOfDay === 'NIGHT' ? '#031710' : '#0a3f2f'}
-              strokeWidth="2.5"
-              fill="none"
-            />
-          </svg>
-        </div>
-
-        {/* ── 3. The Authentic Sari-Sari Store Front ("TIENDA DE ORO") ── */}
-        <div
-          onClick={handleStoreClick}
-          className={`absolute bottom-20 left-4 sm:left-10 lg:left-16 z-15 w-[210px] sm:w-[260px] cursor-pointer group transition-transform ${
-            storeInteracted ? 'scale-105' : 'hover:scale-[1.02]'
-          }`}
-          title="Click to interact with Sari-Sari Store counter!"
-        >
-          {/* Corrugated Tin Awning / Roof (Yero) with Tires on top */}
-          <div className="relative">
-            <div className="h-6 sm:h-7 bg-gradient-to-r from-zinc-700 via-stone-600 to-zinc-700 rounded-t-lg border-b-2 border-stone-800 shadow-lg relative overflow-hidden">
-              {/* Tin corrugation lines */}
-              <div className="absolute inset-0 bg-[repeating-linear-gradient(90deg,rgba(0,0,0,0.3)_0px,rgba(0,0,0,0.3)_6px,transparent_6px,transparent_12px)] opacity-60" />
-            </div>
-            {/* Rubber tires on roof (Authentic Pinoy Sari-Sari Detail!) */}
-            <div className="absolute -top-2 left-6 w-5 h-3.5 rounded-full border-2 border-zinc-900 bg-zinc-800 shadow-sm" />
-            <div className="absolute -top-2 right-10 w-5 h-3.5 rounded-full border-2 border-zinc-900 bg-zinc-800 shadow-sm" />
-          </div>
-
-          {/* Store Marquee & Brand Sign */}
-          <div className="px-3 py-1.5 bg-zinc-900 border-x border-zinc-700 text-center relative overflow-hidden">
-            <p className="text-[0.625rem] sm:text-xs font-serif font-black tracking-[0.2em] text-emerald-300 uppercase animate-neon-flicker">
-              TINDA POS · TIENDA DE ORO
-            </p>
-            <p className="text-[0.5625rem] font-mono text-amber-300 tracking-wider uppercase">
-              BARANGAY EXPRESS COUNTER
-            </p>
-          </div>
-
-          {/* Wooden Counter Frame with Security Wire Grille (Rehas) */}
-          <div className="h-28 sm:h-32 bg-stone-900 border-x border-b border-zinc-700 p-2.5 flex flex-col justify-between relative shadow-2xl">
-            {/* Metal Grille Texture */}
-            <div className="absolute inset-0 bg-[radial-gradient(#3f3f46_1px,transparent_1px)] [background-size:8px_8px] opacity-40 pointer-events-none" />
-
-            {/* Hanging Sachets (Chips, Shampoo, 3-in-1 Coffee) */}
-            <div className="relative z-10 flex items-start justify-between px-1">
-              <div className="flex gap-1.5 animate-sachet-sway">
-                <div className="w-3.5 h-10 rounded-sm bg-gradient-to-b from-yellow-500 to-red-500 shadow-sm border border-yellow-300/40" title="Chichirya" />
-                <div className="w-3.5 h-9 rounded-sm bg-gradient-to-b from-emerald-500 to-teal-600 shadow-sm border border-emerald-300/40" title="Shampoo" />
-                <div className="w-3.5 h-8 rounded-sm bg-gradient-to-b from-amber-600 to-orange-700 shadow-sm border border-amber-300/40" title="3-in-1 Coffee" />
-              </div>
-
-              {/* Munin the Store Cat lounging on shelf */}
-              <div className="relative" title="Munin the Store Cat">
-                <div className="w-6 h-4 bg-orange-400 rounded-full shadow-sm relative">
-                  <div className="absolute -top-1 left-0.5 w-1.5 h-1.5 bg-orange-500 rotate-45" />
-                  <div className="absolute -top-1 left-3.5 w-1.5 h-1.5 bg-orange-500 rotate-45" />
-                  {/* Swishing Tail */}
-                  <div className="absolute bottom-0 right-0 w-3 h-1 bg-orange-500 rounded-full animate-cat-tail" />
-                </div>
-              </div>
-            </div>
-
-            {/* Counter Surface with Thermal Printer & GCash QR */}
-            <div className="relative z-10 pt-2 border-t border-zinc-700 flex items-center justify-between">
-              {/* Thermal Printer with Receipt Out */}
-              <div className="flex items-center gap-1.5">
-                <div className="w-6 h-5 rounded bg-zinc-800 border border-zinc-600 relative flex items-center justify-center">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  {/* Receipt Paper coming out */}
-                  <div className="absolute -top-2 left-1 right-1 h-2 bg-stone-100 rounded-t-sm shadow-sm" />
-                </div>
-                <span className="text-[0.5625rem] font-mono text-emerald-400">58mm ESC</span>
-              </div>
-
-              {/* GCash / Maya QR Stand */}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleGcashClick()
-                }}
-                className="px-1.5 py-0.5 rounded bg-sky-500/20 border border-sky-400/40 text-[0.5625rem] font-mono font-bold text-sky-300 flex items-center gap-1 hover:bg-sky-500/30 transition-all cursor-pointer"
-              >
-                <QrCode className="w-3 h-3 text-sky-400" />
-                <span>GCash QR</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Beverage Crates Outside (Coke / San Miguel) */}
-          <div className="absolute -bottom-4 right-2 flex gap-1 pointer-events-none">
-            <div className="w-8 h-4 rounded-sm bg-red-700 border border-red-500/50 shadow-md flex items-center justify-center">
-              <span className="text-[0.45rem] font-black text-white uppercase">COKE</span>
-            </div>
-            <div className="w-7 h-4 rounded-sm bg-amber-700 border border-amber-500/50 shadow-md flex items-center justify-center">
-              <span className="text-[0.45rem] font-black text-white uppercase">SMB</span>
-            </div>
-          </div>
-        </div>
-
-        {/* ── 4. The Iconic Philippine Jeepney (Cruising smoothly on highway) ── */}
-        <div
-          onClick={handleJeepneyClick}
-          className={`absolute bottom-6 z-25 cursor-pointer animate-jeepney-drive group ${
-            jeepneyHonked ? 'scale-110' : 'hover:scale-105'
-          } transition-transform`}
-          title="Click the Jeepney to beep horn!"
-        >
-          <div className="relative w-[180px] sm:w-[220px]">
-            {/* Speech bubble indicator when honked */}
-            {jeepneyHonked && (
-              <div className="absolute -top-10 left-6 px-2.5 py-1 rounded-full bg-amber-400 text-obsidian-950 font-mono text-xs font-black shadow-lg animate-bounce whitespace-nowrap z-30">
-                BEEP-BEEP! 📯
-              </div>
-            )}
-
-            {/* Jeepney Body Vector Frame */}
-            <svg viewBox="0 0 240 100" className="w-full h-auto drop-shadow-[0_15px_25px_rgba(0,0,0,0.8)]">
-              {/* Night Headlight Beams */}
-              {timeOfDay === 'NIGHT' && (
-                <polygon
-                  points="225,60 340,30 340,95 225,75"
-                  fill="url(#headlightBeam)"
-                  opacity="0.35"
-                />
-              )}
-
-              <defs>
-                <linearGradient id="jeepneyChrome" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#e2e8f0" />
-                  <stop offset="25%" stopColor="#94a3b8" />
-                  <stop offset="50%" stopColor="#f8fafc" />
-                  <stop offset="75%" stopColor="#64748b" />
-                  <stop offset="100%" stopColor="#e2e8f0" />
-                </linearGradient>
-                <linearGradient id="jeepneyEmerald" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#34d399" />
-                  <stop offset="50%" stopColor="#10b981" />
-                  <stop offset="100%" stopColor="#065f46" />
-                </linearGradient>
-                <linearGradient id="headlightBeam" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#fef08a" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="#fef08a" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-
-              {/* Jeepney Roof and Stainless Luggage Rack */}
-              <rect x="25" y="15" width="160" height="7" rx="3" fill="url(#jeepneyChrome)" />
-              <line x1="35" y1="13" x2="175" y2="13" stroke="#cbd5e1" strokeWidth="2.5" />
-              <line x1="45" y1="13" x2="45" y2="16" stroke="#94a3b8" strokeWidth="2" />
-              <line x1="90" y1="13" x2="90" y2="16" stroke="#94a3b8" strokeWidth="2" />
-              <line x1="140" y1="13" x2="140" y2="16" stroke="#94a3b8" strokeWidth="2" />
-
-              {/* Main Cabin & Windows */}
-              <rect x="20" y="22" width="170" height="42" rx="4" fill="url(#jeepneyEmerald)" />
-
-              {/* Open Air Passenger Windows */}
-              <rect x="28" y="27" width="120" height="18" rx="2" fill="#0f172a" />
-              {/* Passengers inside silhouette */}
-              <circle cx="45" cy="36" r="4.5" fill="#f87171" opacity="0.8" />
-              <circle cx="75" cy="36" r="4.5" fill="#38bdf8" opacity="0.8" />
-              <circle cx="105" cy="36" r="4.5" fill="#facc15" opacity="0.8" />
-              <circle cx="130" cy="36" r="4.5" fill="#a7f3d0" opacity="0.8" />
-
-              {/* Front Windshield with Driver */}
-              <polygon points="152,27 185,27 195,45 152,45" fill="#1e293b" />
-              <circle cx="168" cy="36" r="5" fill="#fbbf24" />
-
-              {/* Front Chrome Hood & Grille */}
-              <path d="M185 38 L220 45 L225 66 L185 66 Z" fill="url(#jeepneyChrome)" />
-              {/* Classic Chrome Horse Mascot on Hood */}
-              <circle cx="218" cy="42" r="2" fill="#ffffff" />
-
-              {/* Route Signboard Banner */}
-              <rect x="50" y="47" width="85" height="11" rx="2" fill="#ffffff" stroke="#e2e8f0" strokeWidth="0.8" />
-              <text x="53" y="55" fontSize="6.5" fontWeight="bold" fill="#dc2626" fontFamily="sans-serif">
-                DIVISORIA · TINDA
-              </text>
-
-              {/* Front Heavy Duty Bumper & Headlight */}
-              <rect x="218" y="60" width="10" height="12" rx="2" fill="#e2e8f0" />
-              <circle cx="223" cy="66" r="4.5" fill="#fef08a" stroke="#ca8a04" strokeWidth="1" />
-
-              {/* Spinning Front Wheel */}
-              <g className="animate-wheel-spin" style={{ transformOrigin: '190px 72px' }}>
-                <circle cx="190" cy="72" r="14" fill="#09090b" stroke="#3f3f46" strokeWidth="2" />
-                <circle cx="190" cy="72" r="7" fill="url(#jeepneyChrome)" />
-                <line x1="190" y1="58" x2="190" y2="86" stroke="#e2e8f0" strokeWidth="1.5" />
-                <line x1="176" y1="72" x2="204" y2="72" stroke="#e2e8f0" strokeWidth="1.5" />
-              </g>
-
-              {/* Spinning Rear Wheel */}
-              <g className="animate-wheel-spin" style={{ transformOrigin: '65px 72px' }}>
-                <circle cx="65" cy="72" r="14" fill="#09090b" stroke="#3f3f46" strokeWidth="2" />
-                <circle cx="65" cy="72" r="7" fill="url(#jeepneyChrome)" />
-                <line x1="65" y1="58" x2="65" y2="86" stroke="#e2e8f0" strokeWidth="1.5" />
-                <line x1="51" y1="72" x2="79" y2="72" stroke="#e2e8f0" strokeWidth="1.5" />
-              </g>
-
-              {/* Exhaust Pipe & Smoke */}
-              <rect x="14" y="66" width="8" height="3" fill="#64748b" />
+            {/* Aerodynamic Airliner Vector Body */}
+            <svg viewBox="0 0 120 40" className="tinda-street-planeBody">
+              {/* Stabilizer Fin / Tail */}
+              <path d="M30 4 L40 4 L52 18 L30 18Z" fill="#cbd5e1" />
+              {/* Fuselage Main Body */}
+              <path d="M14 19 Q10 19 10 22 Q10 25 14 25 L100 25 Q112 25 116 21.5 Q112 18 100 18 L14 18Z" fill="#f8fafc" />
+              {/* Fuselage Underside Shading */}
+              <path d="M10 22 Q10 25 14 25 L100 25 Q108 25 113 23 Z" fill="#cbd5e1" />
+              {/* Lower Swept Wing */}
+              <path d="M50 22 L66 22 L52 36 L44 36Z" fill="#94a3b8" />
+              {/* Cabin Windows (Cyan Tint) */}
+              <circle cx="30" cy="20.6" r="1" fill="#38bdf8" />
+              <circle cx="38" cy="20.6" r="1" fill="#38bdf8" />
+              <circle cx="46" cy="20.6" r="1" fill="#38bdf8" />
+              <circle cx="54" cy="20.6" r="1" fill="#38bdf8" />
+              <circle cx="62" cy="20.6" r="1" fill="#38bdf8" />
+              <circle cx="70" cy="20.6" r="1" fill="#38bdf8" />
+              <circle cx="78" cy="20.6" r="1" fill="#38bdf8" />
+              <circle cx="86" cy="20.6" r="1" fill="#38bdf8" />
+              <circle cx="94" cy="20.6" r="1" fill="#38bdf8" />
+              {/* Cockpit Windshield */}
+              <path d="M105 19.4 L111 19.4 L113 21 L105 21Z" fill="#1e293b" />
+              {/* TINDA Emerald Livery Stripe */}
+              <rect x="20" y="21" width="80" height="1.3" fill="#10b981" />
+              {/* Wingtip Navigation Lights (Port Red / Starboard Green) */}
+              <circle className="tinda-street-navLight" cx="36" cy="4.5" r="1.6" fill="#ef4444" />
+              <circle className="tinda-street-navLight" cx="48" cy="35.5" r="1.6" fill="#22c55e" style={{ animationDelay: '-0.6s' }} />
             </svg>
           </div>
-        </div>
 
-        {/* ── 5. The Stainless Tricycle (Passing smoothly from opposite lane) ── */}
-        <div className="absolute bottom-16 z-20 animate-tricycle-drive pointer-events-none">
-          <div className="w-[120px] sm:w-[140px] opacity-90">
-            <svg viewBox="0 0 160 90" className="w-full h-auto drop-shadow-lg">
-              {/* Tricycle Roof & Stainless Cab */}
-              <rect x="20" y="20" width="70" height="5" rx="2" fill="#cbd5e1" />
-              <rect x="25" y="25" width="60" height="30" rx="3" fill="#0284c7" opacity="0.85" />
-              <rect x="30" y="30" width="30" height="14" rx="2" fill="#0f172a" />
-              {/* Motorcycle Section */}
-              <circle cx="115" cy="42" r="4" fill="#fbbf24" /> {/* Rider */}
-              <polygon points="95,45 130,40 135,62 100,62" fill="#475569" />
-              {/* Wheels */}
-              <circle cx="45" cy="68" r="10" fill="#09090b" stroke="#64748b" strokeWidth="2" />
-              <circle cx="125" cy="68" r="10" fill="#09090b" stroke="#64748b" strokeWidth="2" />
+          {/* Manananggal Mythical Night Flyer (Visible in Cyber-Gabi) */}
+          <div className="tinda-street-manananggal">
+            <svg className="tinda-street-manananggalBody" viewBox="0 0 120 80">
+              <g className="tinda-street-wing">
+                <path d="M60 30 L20 10 L25 21 L10 22 L22 31 L12 39 L28 38 L40 45Z" fill="#2e1065" />
+                <path d="M60 30 L102 8 L97 20 L112 21 L100 31 L110 39 L93 38 L80 45Z" fill="#3b0764" />
+              </g>
+              <path d="M48 16 Q62 10 70 20 Q78 32 96 30 Q84 40 70 33 Q62 29 58 34Z" fill="#0b0b0f" />
+              <circle cx="49.5" cy="22.5" r="1.4" fill="#ef4444" />
+              <circle cx="53.5" cy="22.5" r="1.4" fill="#ef4444" />
             </svg>
           </div>
+
+          {/* ── 4. The Full Panoramic Philippine Neighborhood Street SVG ── */}
+          <div className="tinda-street-street">
+            <StreetPanoramicSvg
+              onJeepneyClick={handleJeepneyClick}
+              onStoreClick={handleStoreClick}
+            />
+          </div>
+
+          {/* ── 5. Monsoon Rain & Thunder Lightning Overlay ── */}
+          {isRaining && (
+            <>
+              <div className="tinda-street-rainShade" />
+              <div className="tinda-street-rain">
+                {[...Array(26)].map((_, i) => (
+                  <span
+                    key={i}
+                    className="tinda-street-drop"
+                    style={{
+                      left: `${(i * 3.8) % 100}%`,
+                      height: `${16 + (i % 14)}px`,
+                      opacity: 0.6 + (i % 4) * 0.1,
+                      animationDelay: `${(i * 0.08) % 1.2}s`,
+                      animationDuration: `${0.6 + (i % 3) * 0.15}s`
+                    }}
+                  />
+                ))}
+              </div>
+              <div className="tinda-street-lightning">
+                <div className="tinda-street-flash tinda-street-strikeA" />
+                <div className="tinda-street-flash tinda-street-strikeB" />
+                <svg className="tinda-street-bolt tinda-street-boltA tinda-street-strikeA" viewBox="0 0 60 160" preserveAspectRatio="none">
+                  <path d="M36 0 L16 72 L30 72 L10 160 L48 60 L33 60 L50 0Z" fill="#fef08a" />
+                </svg>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* ── 6. Two-Lane Asphalt Highway & Sidewalk Curb ── */}
-        <div className="absolute bottom-0 inset-x-0 h-16 bg-[#12151a] border-t-2 border-stone-700/80">
-          {/* Dashed Center Road Line */}
-          <div className="absolute top-1/2 left-0 right-0 h-1 border-b-2 border-dashed border-amber-400/70" />
-          {/* Asphalt Texture */}
-          <div className="absolute inset-0 bg-[radial-gradient(#262626_1px,transparent_1px)] [background-size:12px_12px] opacity-40 pointer-events-none" />
-        </div>
-
-        {/* ── 7. Interactive Floating Speech Bubble ── */}
+        {/* ── 6. Interactive Floating Speech Bubble ── */}
         {activeBubble && (
-          <div className="absolute top-16 left-1/2 -translate-x-1/2 z-40 max-w-md w-[90%] sm:w-auto px-4 py-2.5 rounded-2xl bg-obsidian-950/95 border border-emerald-500/40 text-stone-100 text-xs font-sans font-medium shadow-[0_10px_30px_rgba(0,0,0,0.8),0_0_20px_rgba(16,185,129,0.3)] animate-fade-in flex items-center gap-2.5 backdrop-blur-xl">
+          <div className="absolute top-8 left-1/2 -translate-x-1/2 z-40 max-w-md w-[92%] sm:w-auto px-4 py-2.5 rounded-2xl bg-obsidian-950/95 border border-emerald-500/40 text-stone-100 text-xs font-sans font-medium shadow-[0_10px_30px_rgba(0,0,0,0.85),0_0_25px_rgba(16,185,129,0.35)] animate-fade-in flex items-center gap-2.5 backdrop-blur-xl">
             <Sparkles className="w-4 h-4 text-emerald-400 shrink-0 animate-pulse" />
             <p className="leading-snug">{activeBubble}</p>
           </div>
         )}
-      </div>
+      </section>
 
-      {/* ── 8. Bottom Telemetry Ticker (Philippine Retail Standard) ── */}
+      {/* ── 7. Bottom Telemetry Ticker (Philippine Retail Standard) ── */}
       <div className="px-4 sm:px-6 py-3 bg-obsidian-950 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
         <div className="flex items-center gap-2 text-stone-400">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-          <span className="text-emerald-400 font-bold">EDGE STATION: BRGY-01</span>
+          <span className="text-emerald-400 font-bold">STATION: CEBU-BRGY-01</span>
           <span className="text-stone-600">·</span>
           <span>Dexie DB 100% Offline-1st</span>
           <span className="hidden md:inline text-stone-600">·</span>
           <span className="hidden md:inline text-stone-300">172 DTI SRP Ceilings Active</span>
+          <span className="hidden lg:inline text-stone-600">·</span>
+          <span className="hidden lg:inline text-amber-300">Live Jeepney &amp; Neighborhood Simulation</span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -516,7 +364,7 @@ export function CyberStreetScene({
             <button
               type="button"
               onClick={onOpenLogin}
-              className="px-3 py-1 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 font-bold transition-all cursor-pointer"
+              className="px-3 py-1 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 font-bold transition-all cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.4)]"
             >
               Sign In →
             </button>

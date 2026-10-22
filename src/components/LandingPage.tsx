@@ -382,7 +382,7 @@ export function LandingPage({
                   TINDA POS
                 </span>
                 <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[0.625rem] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                  Web v1.0.8
+                  Web v1.1.0
                 </span>
               </div>
               <span className="hidden md:block text-[0.6875rem] font-sans font-semibold tracking-[0.16em] uppercase text-emerald-400/80 mt-0.5">

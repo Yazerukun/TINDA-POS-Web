@@ -1,0 +1,253 @@
+.tinda-street-hero{--street-h:clamp(200px, 26vw, 380px);--lights:1;--tint:#081633;--tint-o:.55;--far:#16213b;--stars:1;--cloud-o:.16;--cloud-fill:#94a3b8;--sun-core:#fffbe6;--sun-mid:#ffe066;--sun-edge:#ffb703;--sun-glow:#ffd65a8c;--mtn-far:#1b2846;--mtn-near:#213650;--mtn-tree:#1a2c42;background:#050b1a;position:relative;overflow:hidden}
+.tinda-street-hero[data-phase=morning]{--mtn-far:#a3b3d2;--mtn-near:#7fa88a;--mtn-tree:#5f8c6b;--lights:0;--tint:#ff9a5a;--tint-o:.08;--far:#8193b8;--stars:0;--cloud-o:.9;--cloud-fill:#fff1e6;--sun-mid:#ffd36b;--sun-edge:#ff9f43;--sun-glow:#ffaa5a99}
+.tinda-street-hero[data-phase=noon]{--mtn-far:#8fb0d6;--mtn-near:#5f9e6e;--mtn-tree:#457f53;--lights:0;--tint:#fff;--tint-o:0;--far:#93abd0;--stars:0;--cloud-o:.95;--cloud-fill:#fff}
+.tinda-street-hero[data-phase=afternoon]{--mtn-far:#a68aa8;--mtn-near:#8f8a6c;--mtn-tree:#6e6a50;--lights:.15;--tint:#ff7a2e;--tint-o:.16;--far:#8e7698;--stars:0;--cloud-o:.85;--cloud-fill:#ffd9c2;--sun-mid:#ffb347;--sun-edge:#ff7b29;--sun-glow:#ff8c3c99}
+.tinda-street-backdrop{z-index:0;pointer-events:none;position:absolute;inset:0}
+.tinda-street-sky{opacity:0;transition:opacity 1.2s;position:absolute;inset:0}
+.tinda-street-skyMorning{background:linear-gradient(#2f5ea8 0%,#6f9fd8 45%,#f7c59f 100%)}
+.tinda-street-skyNoon{background:linear-gradient(#1565c0 0%,#3d8fe0 50%,#8cc8f5 100%)}
+.tinda-street-skyAfternoon{background:linear-gradient(#2b3f78 0%,#b0607a 55%,#f29b54 100%)}
+.tinda-street-skyNight{background:linear-gradient(#030712 0%,#0b1530 55%,#1c2c52 100%)}
+.tinda-street-hero[data-phase=morning] .tinda-street-skyMorning,.tinda-street-hero[data-phase=noon] .tinda-street-skyNoon,.tinda-street-hero[data-phase=afternoon] .tinda-street-skyAfternoon,.tinda-street-hero[data-phase=night] .tinda-street-skyNight{opacity:1}
+.tinda-street-stars{opacity:0;transition:opacity 1.2s;position:absolute;inset:0}
+.tinda-street-hero[data-phase] .tinda-street-stars{opacity:var(--stars)}
+.tinda-street-star{background:#fff;border-radius:9999px;animation:3.2s ease-in-out infinite alternate tinda-street-twinkle;position:absolute;box-shadow:0 0 4px #fffc}
+.tinda-street-sun,.tinda-street-moon{opacity:0;border-radius:9999px;transition:opacity 1.2s;position:absolute}
+.tinda-street-sun{background:radial-gradient(circle at 40% 40%, var(--sun-core), var(--sun-mid) 45%, var(--sun-edge) 100%);width:76px;height:76px;box-shadow:0 0 40px 12px var(--sun-glow), 0 0 140px 50px var(--sun-glow);animation:6s ease-in-out infinite alternate tinda-street-sunPulse}
+.tinda-street-hero[data-phase=morning] .tinda-street-sun{opacity:1;right:7%;bottom:calc(var(--street-h) * .6)}
+.tinda-street-hero[data-phase=noon] .tinda-street-sun{opacity:1;top:14px;right:8%}
+.tinda-street-hero[data-phase=noon] .tinda-street-sun{left:8%;right:auto}
+.tinda-street-hero[data-phase=afternoon] .tinda-street-sun{opacity:1;left:5%;bottom:calc(var(--street-h) * .62)}
+.tinda-street-moon{background:radial-gradient(circle at 35% 35%,#fffef5,#ece8d8 65%,#d6d0bc 100%);width:56px;height:56px;top:32px;right:11%;box-shadow:0 0 30px 8px #e2e8f059,0 0 100px 34px #94a3b82e}
+.tinda-street-moon:before,.tinda-street-moon:after{content:"";background:#78715c2e;border-radius:9999px;position:absolute}
+.tinda-street-moon:before{width:12px;height:12px;top:14px;left:28px}
+.tinda-street-moon:after{width:8px;height:8px;top:32px;left:16px}
+.tinda-street-hero[data-phase=night] .tinda-street-moon{opacity:1}
+.tinda-street-clouds{opacity:0;color:var(--cloud-fill);transition:opacity 1.2s,color 1.2s;position:absolute;inset:0}
+.tinda-street-hero[data-phase] .tinda-street-clouds{opacity:var(--cloud-o)}
+.tinda-street-cloud{animation:linear infinite tinda-street-drift;position:absolute;left:0}
+.tinda-street-manananggal{opacity:0;transition:opacity 1.2s;animation:30s linear -4s infinite tinda-street-flyAcross;position:absolute;top:16%;left:0}
+.tinda-street-hero[data-phase=night] .tinda-street-manananggal{opacity:1}
+.tinda-street-manananggalBody{filter:drop-shadow(0 0 8px #ef444459);width:84px;animation:1.8s ease-in-out infinite alternate tinda-street-hover}
+.tinda-street-manananggalBody{width:116px}
+.tinda-street-wing{transform-box:view-box;transform-origin:60px 30px;animation:.45s ease-in-out infinite alternate tinda-street-flap}
+.tinda-street-entrails{transform-box:fill-box;transform-origin:50% 0;animation:1.2s ease-in-out infinite alternate tinda-street-dangle}
+.tinda-street-scrim{top:0;left:0;right:0;bottom:calc(var(--street-h) * .5);background:#02061761;position:absolute;-webkit-mask-image:linear-gradient(#000 70%,#0000);mask-image:linear-gradient(#000 70%,#0000)}
+.tinda-street-scrim{background:radial-gradient(55% 75% at 50% 40%,#0206178c 0%,#0206174d 55%,#0000 100%)}
+.tinda-street-mountains{translate:calc(var(--px,0) * -4px) 0;transition:translate .6s cubic-bezier(.16,1,.3,1)}
+.tinda-street-mtnFar{fill:var(--mtn-far);stroke:var(--mtn-far);transition:fill 1.2s,stroke 1.2s}
+.tinda-street-mtnNear{fill:var(--mtn-near);transition:fill 1.2s}
+.tinda-street-mtnTree{fill:var(--mtn-tree);transition:fill 1.2s}
+.tinda-street-street{height:var(--street-h);opacity:0;transition:opacity .8s;position:absolute;bottom:0;left:0;right:0}
+.tinda-street-hero[data-phase] .tinda-street-street{opacity:1}
+.tinda-street-streetSvg{width:100%;height:100%;display:block;overflow:visible}
+.tinda-street-far{fill:var(--far);transition:fill 1.2s}
+.tinda-street-tint{opacity:var(--tint-o);transition:fill 1.2s,opacity 1.2s}
+.tinda-street-tintStop{stop-color:var(--tint);transition:stop-color 1.2s}
+.tinda-street-lit,.tinda-street-litFar{opacity:var(--lights);transition:opacity 1.2s}
+.tinda-street-walkRight{animation:linear infinite tinda-street-walkRight}
+.tinda-street-walkLeft{animation:linear infinite tinda-street-walkLeft}
+.tinda-street-legA,.tinda-street-legB,.tinda-street-armA,.tinda-street-armB,.tinda-street-dogLegA,.tinda-street-dogLegB{transform-box:fill-box;transform-origin:50% 0;animation:.9s ease-in-out infinite alternate tinda-street-swing}
+.tinda-street-legB{animation-name:tinda-street-swingBack}
+.tinda-street-armA{animation-name:tinda-street-armSwing}
+.tinda-street-armB{animation-name:tinda-street-armSwingBack}
+.tinda-street-dogLegA,.tinda-street-dogLegB{animation-duration:.35s}
+.tinda-street-dogLegB{animation-name:tinda-street-swingBack}
+.tinda-street-wag{transform-box:fill-box;transform-origin:100% 100%;animation:.3s ease-in-out infinite alternate tinda-street-wag}
+.tinda-street-catTail{transform-box:fill-box;transform-origin:0 100%;animation:2.4s ease-in-out infinite alternate tinda-street-catTail}
+.tinda-street-rainShade{opacity:0;pointer-events:none;background:#1e293b61;transition:opacity 1s;position:absolute;inset:0}
+.tinda-street-rain{opacity:0;pointer-events:none;transition:opacity .8s;position:absolute;inset:0;overflow:hidden}
+.tinda-street-hero[data-rain] .tinda-street-rainShade,.tinda-street-hero[data-rain] .tinda-street-rain{opacity:1}
+.tinda-street-drop{background:linear-gradient(#e2eeff00,#e2eeffe6);border-radius:1px;width:1.5px;animation:linear infinite tinda-street-rainFall;position:absolute;top:-40px;rotate:12deg}
+.tinda-street-hero[data-rain] .tinda-street-clouds{opacity:.95;color:#94a3b8}
+.tinda-street-hero[data-rain] .tinda-street-sun{opacity:.15}
+.tinda-street-lightning{pointer-events:none;position:absolute;inset:0}
+.tinda-street-flash{opacity:0;background:#e2e8ff73;position:absolute;inset:0}
+.tinda-street-bolt{fill:#f8fafc;filter:drop-shadow(0 0 6px #bfdbfef2)drop-shadow(0 0 18px #93c5fdb3);opacity:0;position:absolute;top:0}
+.tinda-street-boltA{width:72px;height:52%;left:20%}
+.tinda-street-boltB{width:52px;height:40%;left:74%}
+.tinda-street-hero[data-rain] .tinda-street-strikeA{animation:7.5s linear 1.2s infinite tinda-street-strike}
+.tinda-street-hero[data-rain] .tinda-street-strikeB{animation:11s linear 4.8s infinite tinda-street-strike}
+.tinda-street-hero[data-rain] .tinda-street-flash{animation-name:tinda-street-strikeFlash}
+.tinda-street-flagWave{transform-box:fill-box;transform-origin:0;animation:2.2s ease-in-out infinite tinda-street-flagWave}
+.tinda-street-gcashLed{animation:1.6s ease-in-out infinite tinda-street-gcashLed}
+.tinda-street-blink{transform-box:fill-box;transform-origin:50%;animation:5s infinite tinda-street-blink}
+.tinda-street-sway{transform-box:view-box;animation:4s ease-in-out infinite alternate tinda-street-sway}
+.tinda-street-jeep,.tinda-street-car{animation:24s linear -5s infinite tinda-street-jeepDrive}
+.tinda-street-car{animation-name:tinda-street-carDrive}
+.tinda-street-stepBob{animation:.45s ease-in-out infinite alternate tinda-street-stepBob}
+.tinda-street-ballerMove,.tinda-street-ballerWalk,.tinda-street-ballerShoot,.tinda-street-pumpFake{animation-duration:40s;animation-timing-function:linear;animation-iteration-count:infinite;animation-delay:-6s}
+.tinda-street-ballerMove{animation-name:tinda-street-ballerMove}
+.tinda-street-ballerWalk{animation-name:tinda-street-ballerWalk}
+.tinda-street-ballerShoot{animation-name:tinda-street-ballerShoot}
+.tinda-street-pumpFake{animation-name:tinda-street-pumpFake}
+.tinda-street-dribble{animation:.45s ease-in infinite alternate tinda-street-dribble}
+.tinda-street-dribbleArm{transform-box:fill-box;transform-origin:50% 0;animation:.45s ease-in-out infinite alternate tinda-street-dribbleArm}
+.tinda-street-runnerMove,.tinda-street-runnerRun,.tinda-street-runnerFall,.tinda-street-runnerWalk,.tinda-street-fallRotate,.tinda-street-runnerOuch,.tinda-street-puff{animation-duration:36s;animation-timing-function:linear;animation-iteration-count:infinite;animation-delay:-2s}
+.tinda-street-runnerMove{animation-name:tinda-street-runnerMove}
+.tinda-street-runnerRun{animation-name:tinda-street-runnerRun}
+.tinda-street-runnerFall{animation-name:tinda-street-runnerFall}
+.tinda-street-runnerWalk{animation-name:tinda-street-runnerWalk}
+.tinda-street-fallRotate{animation-name:tinda-street-fallRotate}
+.tinda-street-runnerOuch{animation-name:tinda-street-runnerOuch}
+.tinda-street-puff{transform-box:fill-box;transform-origin:50%;animation-name:tinda-street-puff}
+.tinda-street-running :is(.tinda-street-legA,.tinda-street-legB,.tinda-street-armA,.tinda-street-armB){animation-duration:.28s}
+.tinda-street-running .tinda-street-stepBob{animation-duration:.14s}
+.tinda-street-dizzy{transform-box:fill-box;transform-origin:50%;animation:1.2s linear infinite tinda-street-spin}
+.tinda-street-eldersMove{animation:110s linear -40s infinite tinda-street-walkLeft}
+.tinda-street-elderly :is(.tinda-street-legA,.tinda-street-legB,.tinda-street-armA,.tinda-street-armB){animation-duration:1.4s}
+.tinda-street-elderly .tinda-street-legA{animation-name:tinda-street-swingSmall}
+.tinda-street-elderly .tinda-street-legB{animation-name:tinda-street-swingSmallBack}
+.tinda-street-elderly .tinda-street-stepBob{animation-duration:.7s}
+.tinda-street-drinkArm{transform-box:fill-box;transform-origin:50% 0;animation:7s ease-in-out infinite tinda-street-drinkArm}
+.tinda-street-tagay{animation:7s linear infinite tinda-street-tagay}
+.tinda-street-laugh{animation:5s linear infinite tinda-street-laugh}
+.tinda-street-smokeArm{transform-box:fill-box;transform-origin:50% 0;animation:8s ease-in-out infinite tinda-street-smokeArm}
+.tinda-street-smoke{transform-box:fill-box;transform-origin:50%;animation:3.3s ease-out infinite tinda-street-smoke}
+.tinda-street-exhale{transform-box:fill-box;transform-origin:50%;animation:8s ease-out infinite tinda-street-exhale}
+.tinda-street-girlMove,.tinda-street-girlWalk,.tinda-street-girlShock,.tinda-street-girlBag,.tinda-street-snatcherMove,.tinda-street-snatchedBag,.tinda-street-policeMove{animation-duration:40s;animation-timing-function:linear;animation-iteration-count:infinite;animation-delay:-4s}
+.tinda-street-girlMove{animation-name:tinda-street-girlMove}
+.tinda-street-girlWalk{animation-name:tinda-street-girlWalk}
+.tinda-street-girlShock{animation-name:tinda-street-girlShock}
+.tinda-street-girlBag{animation-name:tinda-street-girlBag}
+.tinda-street-hop{animation:.35s ease-out infinite alternate tinda-street-hop}
+.tinda-street-snatcherMove{animation-name:tinda-street-snatcherMove}
+.tinda-street-snatchedBag{animation-name:tinda-street-snatchedBag}
+.tinda-street-policeMove{animation-name:tinda-street-policeMove}
+.tinda-street-plane{animation:60s linear -12s infinite tinda-street-planeFly;position:absolute;top:78px;left:0}
+.tinda-street-planeBody{width:78px;display:block;position:relative}
+.tinda-street-planeBody{width:104px}
+.tinda-street-contrail{opacity:0;background:linear-gradient(270deg,#ffffffbf,#0000);border-radius:9999px;width:280px;height:2px;transition:opacity 1.2s;position:absolute;top:52%;right:92%}
+.tinda-street-hero[data-phase=morning] .tinda-street-contrail,.tinda-street-hero[data-phase=noon] .tinda-street-contrail,.tinda-street-hero[data-phase=afternoon] .tinda-street-contrail{opacity:1}
+.tinda-street-navLight{animation:1.2s step-end infinite tinda-street-navBlink}
+.tinda-street-birds{opacity:0;transition:opacity 1.2s;position:absolute;inset:0}
+.tinda-street-hero[data-phase=morning] .tinda-street-birds,.tinda-street-hero[data-phase=noon] .tinda-street-birds,.tinda-street-hero[data-phase=afternoon] .tinda-street-birds{opacity:.85}
+.tinda-street-bird{animation:linear infinite tinda-street-birdFly;position:absolute;left:0}
+.tinda-street-birdFlap{transform-origin:50%;animation:.5s ease-in-out infinite alternate tinda-street-birdFlap;display:block}
+.tinda-street-moto{animation:24s linear -9s infinite tinda-street-motoDrive}
+.tinda-street-crosser,.tinda-street-crosserSideIn,.tinda-street-crosserFront,.tinda-street-crosserBack,.tinda-street-crosserSideOut{animation-duration:24s;animation-timing-function:linear;animation-iteration-count:infinite}
+.tinda-street-crosser{animation-name:tinda-street-crosser}
+.tinda-street-crosserSideIn{animation-name:tinda-street-crosserSideIn}
+.tinda-street-crosserFront{animation-name:tinda-street-crosserFront}
+.tinda-street-crosserBack{animation-name:tinda-street-crosserBack}
+.tinda-street-crosserSideOut{animation-name:tinda-street-crosserSideOut}
+.tinda-street-frontStepA,.tinda-street-frontStepB,.tinda-street-frontArmA,.tinda-street-frontArmB{transform-box:fill-box;transform-origin:50% 0;animation:.45s ease-in-out infinite alternate tinda-street-frontStep}
+.tinda-street-frontStepB{animation-name:tinda-street-frontStepB}
+.tinda-street-frontArmA{animation-name:tinda-street-frontArmA}
+.tinda-street-frontArmB{animation-name:tinda-street-frontArmB}
+.tinda-street-wheel{transform-box:fill-box;transform-origin:50%;animation:.5s linear infinite tinda-street-spin}
+.tinda-street-bob{animation:.4s ease-in-out infinite alternate tinda-street-bob}
+.tinda-street-stars{translate:calc(var(--px,0) * -6px) calc(var(--py,0) * -4px)}
+.tinda-street-sun,.tinda-street-moon{translate:calc(var(--px,0) * -10px) calc(var(--py,0) * -6px)}
+.tinda-street-clouds{translate:calc(var(--px,0) * -18px) calc(var(--py,0) * -8px)}
+.tinda-street-stars,.tinda-street-sun,.tinda-street-moon,.tinda-street-clouds{transition-property:opacity,color,translate;transition-duration:1.2s,1.2s,.6s;transition-timing-function:ease,ease,cubic-bezier(.16,1,.3,1)}
+.tinda-street-street{transition:opacity .8s,translate 1.1s cubic-bezier(.16,1,.3,1);translate:0 36px}
+.tinda-street-hero[data-phase] .tinda-street-street{translate:0}
+.tinda-street-content{animation:linear both tinda-street-copyLift;animation-timeline:scroll(root);animation-range:0 60vh}
+.tinda-street-stars,.tinda-street-sun,.tinda-street-moon,.tinda-street-clouds,.tinda-street-mountains,.tinda-street-street{translate:none!important}
+.tinda-street-content{animation:none!important}
+.tinda-street-backdrop *,.tinda-street-backdrop :before,.tinda-street-backdrop :after{animation-play-state:paused!important}
+
+@keyframes tinda-street-twinkle{0%{opacity:.25}to{opacity:1}}
+@keyframes tinda-street-sunPulse{0%{transform:scale(1)}to{transform:scale(1.06)}}
+@keyframes tinda-street-drift{0%{transform:translate(-220px)}to{transform:translate(calc(100vw + 40px))}}
+@keyframes tinda-street-flyAcross{0%{transform:translate(calc(100vw + 40px))}25%{transform:translate(70vw,40px)}50%{transform:translate(30vw,-10px)}70%,to{transform:translate(-180px,30px)}}
+@keyframes tinda-street-hover{0%{transform:translateY(-8px)rotate(-3deg)}to{transform:translateY(8px)rotate(3deg)}}
+@keyframes tinda-street-flap{0%{transform:scaleY(1)}to{transform:scaleY(.3)}}
+@keyframes tinda-street-dangle{0%{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
+@keyframes tinda-street-walkRight{0%{transform:translate(-120px)}to{transform:translate(1560px)}}
+@keyframes tinda-street-walkLeft{0%{transform:translate(1560px)}to{transform:translate(-120px)}}
+@keyframes tinda-street-swing{0%{transform:rotate(24deg)}to{transform:rotate(-24deg)}}
+@keyframes tinda-street-swingBack{0%{transform:rotate(-24deg)}to{transform:rotate(24deg)}}
+@keyframes tinda-street-armSwing{0%{transform:rotate(-18deg)}to{transform:rotate(18deg)}}
+@keyframes tinda-street-armSwingBack{0%{transform:rotate(18deg)}to{transform:rotate(-18deg)}}
+@keyframes tinda-street-wag{0%{transform:rotate(-18deg)}to{transform:rotate(18deg)}}
+@keyframes tinda-street-catTail{0%{transform:rotate(-12deg)}to{transform:rotate(14deg)}}
+@keyframes tinda-street-rainFall{to{transform:translate(-150px,900px)}}
+@keyframes tinda-street-strike{0%,6%,to{opacity:0}1%{opacity:1}2%{opacity:.15}3%{opacity:1}}
+@keyframes tinda-street-strikeFlash{0%,8%,to{opacity:0}1%{opacity:.9}2%{opacity:.1}3%{opacity:.7}}
+@keyframes tinda-street-flagWave{0%,to{transform:skewY(0)scaleX(1)}50%{transform:skewY(-5deg)scaleX(.94)}}
+@keyframes tinda-street-gcashLed{0%,to{opacity:1}50%{opacity:.25}}
+@keyframes tinda-street-blink{0%,94%,to{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+@keyframes tinda-street-sway{0%{transform:rotate(-1.5deg)}to{transform:rotate(1.5deg)}}
+@keyframes tinda-street-jeepDrive{0%{transform:translate(-260px)}50%,to{transform:translate(1700px)}}
+@keyframes tinda-street-carDrive{0%,50%{transform:translate(-200px)}92%,to{transform:translate(1700px)}}
+@keyframes tinda-street-stepBob{0%{transform:translateY(0)}to{transform:translateY(-.9px)}}
+@keyframes tinda-street-ballerMove{0%{transform:translate(-120px)}52%,64%{transform:translate(880px)}to{transform:translate(1560px)}}
+@keyframes tinda-street-ballerWalk{0%,51.9%{opacity:1}52%,63.9%{opacity:0}64%,to{opacity:1}}
+@keyframes tinda-street-ballerShoot{0%,51.9%{opacity:0}52%,63.9%{opacity:1}64%,to{opacity:0}}
+@keyframes tinda-street-pumpFake{0%,53.5%{transform:translateY(0)}54.5%{transform:translateY(-4px)}56%,57.5%{transform:translateY(0)}58.5%{transform:translateY(-4px)}60%,to{transform:translateY(0)}}
+@keyframes tinda-street-dribble{0%{transform:translateY(0)}to{transform:translateY(15.4px)}}
+@keyframes tinda-street-dribbleArm{0%{transform:rotate(-8deg)}to{transform:rotate(10deg)}}
+@keyframes tinda-street-runnerMove{0%{transform:translate(-120px)}14%{transform:translate(500px)}15.5%,25.5%{transform:translate(525px)}35%{transform:translate(790px)}36.5%,47%{transform:translate(815px)}to{transform:translate(1560px)}}
+@keyframes tinda-street-runnerRun{0%,13.9%{opacity:1}14%,25.4%{opacity:0}25.5%,34.9%{opacity:1}35%,to{opacity:0}}
+@keyframes tinda-street-runnerFall{0%,13.9%{opacity:0}14%,25.4%{opacity:1}25.5%,34.9%{opacity:0}35%,46.9%{opacity:1}47%,to{opacity:0}}
+@keyframes tinda-street-runnerWalk{0%,46.9%{opacity:0}47%,to{opacity:1}}
+@keyframes tinda-street-fallRotate{0%,14%{transform:translateY(0)rotate(0)}15.5%,23%{transform:translateY(-4px)rotate(88deg)}25.5%,35%{transform:translateY(0)rotate(0)}36.5%,44%{transform:translateY(-4px)rotate(88deg)}47%,to{transform:translateY(0)rotate(0)}}
+@keyframes tinda-street-runnerOuch{0%,15.4%{opacity:0}15.5%,23%{opacity:1}23.1%,36.4%{opacity:0}36.5%,44%{opacity:1}44.1%,to{opacity:0}}
+@keyframes tinda-street-puff{0%,15.4%{opacity:0;transform:scale(.4)}15.5%{opacity:.9;transform:scale(.5)}18%,36.4%{opacity:0;transform:scale(1.6)}36.5%{opacity:.9;transform:scale(.5)}39%,to{opacity:0;transform:scale(1.6)}}
+@keyframes tinda-street-swingSmall{0%{transform:rotate(13deg)}to{transform:rotate(-13deg)}}
+@keyframes tinda-street-swingSmallBack{0%{transform:rotate(-13deg)}to{transform:rotate(13deg)}}
+@keyframes tinda-street-drinkArm{0%,55%{transform:rotate(0)}62%,76%{transform:rotate(-65deg)}84%,to{transform:rotate(0)}}
+@keyframes tinda-street-tagay{0%,52%{opacity:0}54%,78%{opacity:1}80%,to{opacity:0}}
+@keyframes tinda-street-laugh{0%,to{transform:translateY(0)}4%,12%,20%{transform:translateY(-1.4px)rotate(-4deg)}8%,16%{transform:translateY(.4px)}24%{transform:translateY(0)}}
+@keyframes tinda-street-smokeArm{0%,50%{transform:rotate(0)}56%,68%{transform:rotate(-92deg)}76%,to{transform:rotate(0)}}
+@keyframes tinda-street-smoke{0%{opacity:.6;transform:translate(0)scale(.6)}to{opacity:0;transform:translate(4px,-18px)scale(2.2)}}
+@keyframes tinda-street-exhale{0%,70%{opacity:0;transform:translate(0)scale(.6)}72%{opacity:.8;transform:translate(0)scale(.8)}86%,to{opacity:0;transform:translate(8px,-10px)scale(2.6)}}
+@keyframes tinda-street-girlMove{0%{transform:translate(-120px)}36%,50%{transform:translate(560px)}to{transform:translate(1560px)}}
+@keyframes tinda-street-girlWalk{0%,35.9%{opacity:1}36%,49.9%{opacity:0}50%,to{opacity:1}}
+@keyframes tinda-street-girlShock{0%,35.9%{opacity:0}36%,49.9%{opacity:1}50%,to{opacity:0}}
+@keyframes tinda-street-girlBag{0%,35.9%{opacity:1}36%,to{opacity:0}}
+@keyframes tinda-street-hop{0%{transform:translateY(0)}to{transform:translateY(-3px)}}
+@keyframes tinda-street-snatcherMove{0%,24%{transform:translate(-120px)}36%{transform:translate(556px)}50%,to{transform:translate(1600px)}}
+@keyframes tinda-street-snatchedBag{0%,35.9%{opacity:0}36%,to{opacity:1}}
+@keyframes tinda-street-policeMove{0%,38%{transform:translate(-120px)}58%,to{transform:translate(1600px)}}
+@keyframes tinda-street-planeFly{0%{transform:translate(-220px)}55%,to{transform:translate(calc(100vw + 280px))}}
+@keyframes tinda-street-navBlink{0%,60%{opacity:1}61%,to{opacity:.15}}
+@keyframes tinda-street-birdFly{0%{transform:translate(-60px)}50%{transform:translate(50vw,-14px)}to{transform:translate(calc(100vw + 60px),6px)}}
+@keyframes tinda-street-birdFlap{0%{transform:scaleY(1)}to{transform:scaleY(-.5)}}
+@keyframes tinda-street-crosser{0%{opacity:0;transform:translate(440px,205px)scale(1)}2%{opacity:1}6.25%{transform:translate(578px,205px)scale(1)}35.4%{opacity:1;transform:translate(578px,292px)scale(1.25)}35.8%,51.9%{opacity:0;transform:translate(578px,292px)scale(1.25)}52.1%{opacity:1;transform:translate(578px,292px)scale(1.25)}81.25%{transform:translate(578px,205px)scale(1)}87.5%{opacity:1;transform:translate(440px,205px)scale(1)}89.6%,to{opacity:0;transform:translate(440px,205px)scale(1)}}
+@keyframes tinda-street-crosserSideIn{0%,6.2%{opacity:1}6.25%,to{opacity:0}}
+@keyframes tinda-street-crosserFront{0%,6.2%{opacity:0}6.25%,51.9%{opacity:1}52%,to{opacity:0}}
+@keyframes tinda-street-crosserBack{0%,51.9%{opacity:0}52%,81.2%{opacity:1}81.25%,to{opacity:0}}
+@keyframes tinda-street-crosserSideOut{0%,81.2%{opacity:0}81.25%,to{opacity:1}}
+@keyframes tinda-street-frontStep{0%{transform:scaleY(1)}to{transform:scaleY(.86)}}
+@keyframes tinda-street-frontStepB{0%{transform:scaleY(.86)}to{transform:scaleY(1)}}
+@keyframes tinda-street-frontArmA{0%{transform:rotate(0)}to{transform:rotate(7deg)}}
+@keyframes tinda-street-frontArmB{0%{transform:rotate(-7deg)}to{transform:rotate(0)}}
+@keyframes tinda-street-motoDrive{0%{transform:translate(1620px)}45%,to{transform:translate(-120px)}}
+@keyframes tinda-street-spin{to{transform:rotate(360deg)}}
+@keyframes tinda-street-bob{0%{transform:translateY(0)}to{transform:translateY(-1.2px)}}
+@keyframes tinda-street-copyLift{to{opacity:0;translate:0 -56px}}
+/* TINDA POS Custom Enhancements */
+.tinda-street-hero {
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 80px -15px rgba(0, 0, 0, 0.8), 0 0 50px -10px rgba(16, 185, 129, 0.15);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: clamp(380px, 45vw, 500px);
+}
+.tinda-street-street {
+  height: var(--street-h);
+  opacity: 1 !important;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  pointer-events: auto !important;
+}
+.tinda-street-streetSvg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.tinda-street-plane {
+  cursor: pointer;
+  z-index: 20;
+  pointer-events: auto !important;
+}
+.tinda-street-jeep {
+  cursor: pointer;
+}
